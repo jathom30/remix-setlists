@@ -13,6 +13,19 @@ async function seed() {
 
   const hashedPassword = await bcrypt.hash("racheliscool", 10);
 
+  const band = await prisma.band.create({
+    data: {
+      name: 'Starter Band',
+      code: '123-ABC',
+      icon: {
+        create: {
+          backgroundColor: '#C7FFDA',
+          textColor: '#7B1E7A'
+        }
+      }
+    },
+  })
+
   const user = await prisma.user.create({
     data: {
       email,
@@ -21,23 +34,22 @@ async function seed() {
           hash: hashedPassword,
         },
       },
-      name: 'Rachel'
-    },
-  });
-
-  const band = await prisma.band.create({
-    data: {
-      name: 'Starter Band',
-      code: '123-ABC',
-      members: {
+      name: 'Rachel',
+      bands: {
+        // created band above, here created connection between band and user
         create: [
           {
-            userId: user.id,
+            role: 'ADMIN',
+            band: {
+              connect: {
+                id: band.id
+              }
+            }
           }
         ]
       }
-    }
-  })
+    },
+  });
 
   const setlist = await prisma.setlist.create({
     data: {
@@ -56,7 +68,9 @@ async function seed() {
     data: {
       name: 'Song One',
       length: 3,
-      tempo: 'Medium',
+      keyLetter: 'Db',
+      isMinor: true,
+      tempo: 2,
       position: 'Opener',
       rank: 'star',
       setId: set.id,
@@ -67,7 +81,7 @@ async function seed() {
     data: {
       name: 'Song Two',
       length: 4,
-      tempo: 'Up',
+      tempo: 3,
       position: 'Closer',
       setId: set.id,
       bandId: band.id,
@@ -77,7 +91,8 @@ async function seed() {
   await prisma.feel.create({
     data: {
       label: 'Swing',
-      songId: songOne.id
+      songId: songOne.id,
+      color: '#2a9d8f'
     }
   })
 
@@ -92,3 +107,4 @@ seed()
   .finally(async () => {
     await prisma.$disconnect();
   });
+

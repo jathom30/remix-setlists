@@ -16,7 +16,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   password Password?
-  bands    MembersInBands[]
+  bands    UsersInBands[]
 }
 
 model Password {
@@ -36,18 +36,32 @@ model Band {
 
   setlists Setlist[]
   songs    Song[]
-  members  MembersInBands[]
+  members  UsersInBands[]
+
+  icon BandIcon?
 }
 
-model MembersInBands {
+model UsersInBands {
   user   User   @relation(fields: [userId], references: [id])
   userId String
   band   Band   @relation(fields: [bandId], references: [id])
   bandId String
-
-  assignedAt DateTime @default(now())
+  role   String
 
   @@id([userId, bandId])
+}
+
+model BandIcon {
+  id              String  @id @default(cuid())
+  path            String?
+  backgroundColor String?
+  textColor       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  band   Band   @relation(fields: [bandId], references: [id])
+  bandId String @unique
 }
 
 model Setlist {
@@ -75,14 +89,14 @@ model Set {
 }
 
 model Song {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   name      String
   length    Int
-  isCover   Boolean?
+  isCover   Boolean @default(false)
   note      String?
   keyLetter String?
-  isMinor   Boolean?
-  tempo     String
+  isMinor   Boolean @default(false)
+  tempo     Int
   position  String?
   rank      String?
   feels     Feel[]
@@ -96,8 +110,9 @@ model Song {
 }
 
 model Feel {
-  id    String @id @default(cuid())
+  id    String  @id @default(cuid())
   label String
+  color String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -60,3 +60,10 @@ export async function verifyLogin(
 
   return userWithoutPassword;
 }
+
+export async function getUserBands(userId: User['id']) {
+  // return prisma.membersInBands.findMany({
+  //   where: { userId },
+  // })
+}
+

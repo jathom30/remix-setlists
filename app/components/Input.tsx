@@ -6,13 +6,13 @@ type InputProps = {
   onChange?: React.InputHTMLAttributes<HTMLInputElement>['onChange']
 }
 
-const classNames = "w-full p-2 text-base rounded border-1 border-text-subdued relative bg-component-background text-text"
+export const inputStyles = "w-full p-2 text-base rounded border-1 border-text-subdued relative bg-component-background text-text"
 
 export const Input = ({ name, type = 'text', placeholder, defaultValue, onChange }: InputProps) => {
   return (
     <input
       type={type}
-      className={classNames}
+      className={inputStyles}
       name={name}
       placeholder={placeholder}
       defaultValue={defaultValue}

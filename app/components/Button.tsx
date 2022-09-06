@@ -31,7 +31,7 @@ export function Button({ isCollapsing = false, onClick, tabIndex, icon, name, va
       tabIndex={tabIndex}
     >
       {icon ? <FontAwesomeIcon icon={icon} /> : null}
-      <div className={`${isCollapsing ? 'hidden md:block' : ''}`}>{children}</div>
+      <div className={isCollapsing ? 'hidden md:block' : ''}>{children}</div>
     </button>
   )
 }

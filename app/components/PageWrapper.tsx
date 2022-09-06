@@ -1,11 +1,13 @@
 import React from "react";
-import { MaxWidth, SiteHeader } from "./";
+import { SiteHeader } from "./";
 
 export function PageWrapper({ children }: { children: React.ReactNode }) {
   return (
-    <div>
+    <div className="h-full">
       <SiteHeader />
-      <MaxWidth>{children}</MaxWidth>
+      <main className="h-full bg-background">
+        {children}
+      </main>
     </div>
   )
 }

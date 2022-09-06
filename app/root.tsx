@@ -7,7 +7,6 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useCatch,
 } from "@remix-run/react";
 
 import tailwindStylesheetUrl from "./styles/tailwind.css";
@@ -16,8 +15,6 @@ import { getUser } from "./session.server";
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import faStylesheetUrl from '@fortawesome/fontawesome-svg-core/styles.css';
 import { config } from "@fortawesome/fontawesome-svg-core";
-import { PageWrapper } from "./components";
-import { useOptionalUser } from "./utils";
 // Prevent fontawesome from dynamically adding its css since we are going to include it manually
 config.autoAddCss = false;
 
@@ -27,7 +24,7 @@ export const links: LinksFunction = () => {
     { rel: 'preconnect', href: 'https://fonts.gstatic.com' },
     { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Fascinate&family=Poppins:wght@100;400;700&display=swap' },
     { rel: "stylesheet", href: tailwindStylesheetUrl },
-    { rel: 'stylesheet', href: faStylesheetUrl }
+    { rel: 'stylesheet', href: faStylesheetUrl },
   ];
 };
 
@@ -44,29 +41,17 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export default function App() {
-  const user = useOptionalUser();
   return (
     <html lang="en" className="h-full">
       <head>
         <Meta />
         <Links />
       </head>
-      <body className="h-full">
-        {user ? (
-          <PageWrapper>
-            <Outlet />
-            <ScrollRestoration />
-            <Scripts />
-            <LiveReload />
-          </PageWrapper>
-        ) : (
-          <>
-            <Outlet />
-            <ScrollRestoration />
-            <Scripts />
-            <LiveReload />
-          </>
-        )}
+      <body className="h-full bg-background">
+        <Outlet />
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
       </body>
     </html>
   );

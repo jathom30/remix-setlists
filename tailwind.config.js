@@ -4,7 +4,7 @@ module.exports = {
   content: ["./app/**/*.{ts,tsx,jsx,js}"],
   theme: {
     fontFamily: {
-      'poppins': ['Poppins', 'sans-serif'],
+      'sans': ['Poppins', 'sans-serif'],
     },
     extend: {
       colors: {
@@ -12,15 +12,16 @@ module.exports = {
         'component-background': '#ffffff',
         'component-background-alt': '#e6e6e6',
         'component-background-darken': '#cbcbcb',
-        text: '#023047',
-        'text-subdued': '#808080',
-        'primary': '#FB8500',
+        'component-border': '#cbcbcb',
+        text: '#264653',
+        'text-subdued': '#647b84',
+        'primary': '#f4a261',
         'primary-text': '#FFE7CE',
-        'primary-darken': '#E47600',
+        'primary-darken': '#e76f51',
         'success': '#90ee90',
         'success-text': '#008000',
         'danger': '#ff4400',
-        'secondary': '#023047',
+        'secondary': '#457b9d',
       },
       borderWidth: {
         1: '1px'
