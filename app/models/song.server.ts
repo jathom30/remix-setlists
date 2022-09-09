@@ -15,3 +15,25 @@ export async function getSong(songId: Song['id']) {
     include: { feels: true }
   })
 }
+
+export async function updateSong(songId: Song['id'], song: Omit<Song, 'id' | 'updatedAt' | 'createdAt'>) {
+  return prisma.song.update({
+    where: { id: songId },
+    data: song
+  })
+}
+
+export async function createSong(bandId: Band['id'], song: Omit<Song, 'id' | 'updatedAt' | 'createdAt' | 'bandId'>) {
+  return prisma.song.create({
+    data: {
+      ...song,
+      bandId
+    }
+  })
+}
+
+export async function deleteSong(songId: Song['id']) {
+  return prisma.song.delete({
+    where: { id: songId }
+  })
+}

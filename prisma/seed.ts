@@ -71,8 +71,8 @@ async function seed() {
       keyLetter: 'Db',
       isMinor: true,
       tempo: 2,
-      position: 'Opener',
-      rank: 'star',
+      position: 'opener',
+      rank: 'include',
       setId: set.id,
       bandId: band.id,
     }
@@ -82,9 +82,11 @@ async function seed() {
       name: 'Song Two',
       length: 4,
       tempo: 3,
-      position: 'Closer',
+      position: 'closer',
+      rank: 'no_preference',
       setId: set.id,
       bandId: band.id,
+      isCover: true,
     }
   })
 
@@ -92,7 +94,17 @@ async function seed() {
     data: {
       label: 'Swing',
       songId: songOne.id,
-      color: '#2a9d8f'
+      color: '#2a9d8f',
+      bandId: band.id
+    }
+  })
+
+  await prisma.feel.create({
+    data: {
+      label: 'Rock',
+      songId: songOne.id,
+      color: '#080808',
+      bandId: band.id
     }
   })
 

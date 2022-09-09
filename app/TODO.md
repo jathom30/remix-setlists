@@ -4,3 +4,4 @@
 - ~~Active link to show where user is~~
 - Band name click returns to band/index -> Show create options, members, roles, add/remove members, etc
 - Create feels
+- Better style for current route in Sidebar

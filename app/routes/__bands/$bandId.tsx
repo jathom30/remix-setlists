@@ -32,7 +32,7 @@ export default function Band() {
 
   const { pathname } = useLocation()
   const isActive = (path: string) => pathname.includes(path)
-  const activeClass = "bg-slate-200"
+  const activeClass = "border-r-primary bg-slate-100"
 
   return (
     <MaxHeightContainer
@@ -40,37 +40,49 @@ export default function Band() {
     >
       <div className="flex h-full w-full">
         <SideBar>
-          <div className="thing w-40">
-            <Link to="." className="flex items-center justify-between border-b border-component-border whitespace-nowrap p-2 font-bold hover:bg-slate-100">
-              {band.name}
-              <FontAwesomeIcon icon={faCog} />
-            </Link>
-            <FlexList gap={2}>
-              <Collapsible
-                isOpen={showSetlists}
-                header={
-                  <CollapsibleHeader isOpen={showSetlists} label="Setlists" onClick={() => setShowSetlists(!showSetlists)} newTo="setlists/new" />
-                }
-              >
-                <FlexList gap={0}>
-                  {setlists.map(setlist => (
-                    <Link key={setlist.id} to={`setlists/${setlist.id}`} className={`p-2 hover:bg-slate-100 ${isActive(setlist.id) ? activeClass : ''}`}>{setlist.name}</Link>
-                  ))}
-                </FlexList>
-              </Collapsible>
-              <Collapsible
-                isOpen={showSongs}
-                header={
-                  <CollapsibleHeader isOpen={showSongs} label="Songs" onClick={() => setShowSongs(!showSongs)} newTo="songs/new" />
-                }
-              >
-                <FlexList gap={0}>
-                  {songs.map(song => (
-                    <Link key={song.id} to={`songs/${song.id}`} className={`p-2 hover:bg-slate-100 ${isActive(song.id) ? activeClass : ''}`}>{song.name}</Link>
-                  ))}
-                </FlexList>
-              </Collapsible>
-            </FlexList>
+          <div className="w-40 h-full">
+            <MaxHeightContainer
+              header={
+                <Link to="." className="flex items-center justify-between border-b border-component-border whitespace-nowrap p-2 font-bold hover:bg-slate-100">
+                  {band.name}
+                  <FontAwesomeIcon icon={faCog} />
+                </Link>
+              }
+              fullHeight
+            >
+              <FlexList gap={0}>
+                <Collapsible
+                  isOpen={showSetlists}
+                  header={
+                    <CollapsibleHeader isOpen={showSetlists} label="Setlists" onClick={() => setShowSetlists(!showSetlists)} newTo="setlists/new" />
+                  }
+                >
+                  <FlexList pad={2} items="end">
+                    <span className="px-2 border text-xs text-text-subdued">MOST RECENT</span>
+                  </FlexList>
+                  <FlexList gap={0}>
+                    {setlists.map(setlist => (
+                      <Link key={setlist.id} to={`setlists/${setlist.id}`} className={`p-2 hover:bg-slate-100 ${isActive(setlist.id) ? activeClass : ''}`}>{setlist.name}</Link>
+                    ))}
+                  </FlexList>
+                </Collapsible>
+                <Collapsible
+                  isOpen={showSongs}
+                  header={
+                    <CollapsibleHeader isOpen={showSongs} label="Songs" onClick={() => setShowSongs(!showSongs)} newTo="songs/new" />
+                  }
+                >
+                  <FlexList pad={2} items="end">
+                    <span className="px-2 border text-xs text-text-subdued">MOST RECENT</span>
+                  </FlexList>
+                  <FlexList gap={0}>
+                    {songs.map(song => (
+                      <Link key={song.id} to={`songs/${song.id}`} className={`p-2 border-r-4 border-r-transparent hover:bg-slate-100 ${isActive(song.id) ? activeClass : ''}`}>{song.name}</Link>
+                    ))}
+                  </FlexList>
+                </Collapsible>
+              </FlexList>
+            </MaxHeightContainer>
           </div>
         </SideBar>
         <MaxWidth>

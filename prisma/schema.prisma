@@ -38,7 +38,8 @@ model Band {
   songs    Song[]
   members  UsersInBands[]
 
-  icon BandIcon?
+  icon  BandIcon?
+  feels Feel[]
 }
 
 model UsersInBands {
@@ -97,8 +98,8 @@ model Song {
   keyLetter String?
   isMinor   Boolean @default(false)
   tempo     Int
-  position  String?
-  rank      String?
+  position  String
+  rank      String
   feels     Feel[]
 
   createdAt DateTime @default(now())
@@ -118,4 +119,7 @@ model Feel {
   updatedAt DateTime @updatedAt
   song      Song?    @relation(fields: [songId], references: [id])
   songId    String?
+
+  band   Band   @relation(fields: [bandId], references: [id])
+  bandId String
 }
