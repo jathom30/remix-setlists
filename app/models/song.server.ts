@@ -1,10 +1,17 @@
 import type { Band, Song } from "@prisma/client";
 import { prisma } from "~/db.server";
 
-export async function getSongs(bandId: Band['id']) {
+export async function getSongs(bandId: Band['id'], params?: { q?: string }) {
   return prisma.song.findMany({
-    where: { bandId },
-    select: { name: true, id: true },
+    where: {
+      bandId,
+      ...(params?.q ? {
+        name: {
+          contains: params.q
+        }
+      } : null)
+    },
+
     orderBy: { name: 'asc' }
   })
 }

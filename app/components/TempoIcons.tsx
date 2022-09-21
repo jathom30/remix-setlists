@@ -4,9 +4,9 @@ import { FlexList } from "./FlexList"
 
 export const TempoIcons = ({ tempo }: { tempo: number }) => {
   return (
-    <FlexList direction="row" gap={2}>
+    <FlexList direction="row" gap={0}>
       {Array.from({ length: 5 }, (_, i) => (
-        <FontAwesomeIcon icon={faBolt} key={i} color={i < tempo ? 'black' : 'lightgrey'} />
+        <FontAwesomeIcon icon={faBolt} size="xs" key={i} color={i < tempo ? 'black' : 'lightgrey'} />
       ))}
     </FlexList>
   )

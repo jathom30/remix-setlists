@@ -1,40 +1,76 @@
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/node"
 import invariant from "tiny-invariant";
-import { Link, FlexList, Header, Button, Label } from "~/components";
-import { getBand } from "~/models/band.server";
+import { FlexList, Collapsible, CollapsibleHeader, SongLink } from "~/components"
 import { requireUserId } from "~/session.server";
-import { useLoaderData } from "@remix-run/react";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Link, useLoaderData } from "@remix-run/react";
+import { getSetlists } from "~/models/setlist.server";
+import { getSongs } from "~/models/song.server";
+import { useState } from "react";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
   const bandId = params.bandId
   invariant(bandId, 'bandId note found')
-  const band = await getBand(bandId)
-  if (!band) {
-    throw new Response("Band not found", { status: 404 })
-  }
-  return json({ band })
+
+  const setlists = await getSetlists(bandId)
+  const songs = await getSongs(bandId)
+  return json({ setlists, songs })
 }
 
 export default function BandIndex() {
-  const { band } = useLoaderData<typeof loader>()
+  const { setlists, songs } = useLoaderData<typeof loader>()
+  const [showSetlists, setShowSetlists] = useState(true)
+  const [showSongs, setShowSongs] = useState(true)
   return (
-    <FlexList pad={4}>
-      <Header>
-        <h1 className="font-bold text-3xl">Band Settings</h1>
-        <Button kind="danger" isRounded isCollapsing icon={faTrash}>Delete band</Button>
-      </Header>
-      <h2>{band.name}</h2>
-      <h3>Members</h3>
-      {band.members.map(member => (
-        <p key={member.userId}>{member.userId}</p>
-      ))}
-      <Label>Creation</Label>
-      <Link to="setlists/new">New Setlist</Link>
-      <Link to="songs/new">New Song</Link>
-      <Link to="feels/new">New Feel</Link>
+    <FlexList gap={0}>
+      <div className="border-b border-slate-300 w-full">
+        <Collapsible
+          header={
+            <CollapsibleHeader isOpen={showSetlists} onClick={() => setShowSetlists(!showSetlists)}>
+              <FlexList gap={0}>
+                <span className="text-sm font-bold">Setlists</span>
+                <span className="uppercase text-text-subdued text-sm">Most recent</span>
+              </FlexList>
+            </CollapsibleHeader>
+          }
+          isOpen={showSetlists}
+        >
+          <SetlistLink />
+        </Collapsible>
+      </div>
+
+      <div className="border-b border-slate-300 w-full">
+        <Collapsible
+          header={
+            <CollapsibleHeader isOpen={showSongs} onClick={() => setShowSongs(!showSongs)}>
+              <FlexList gap={0} items="start">
+                <span className="text-sm font-bold">Songs</span>
+                <span className="uppercase text-text-subdued text-sm">Most recent</span>
+              </FlexList>
+            </CollapsibleHeader>
+          }
+          isOpen={showSongs}
+        >
+          {songs.map(song => (
+            <SongLink key={song.id} song={song} />
+          ))}
+        </Collapsible>
+      </div>
     </FlexList>
+  )
+}
+
+const SetlistLink = () => {
+  return (
+    <Link className="hover:bg-slate-200" to=".">
+      <FlexList pad={{ x: 4, y: 2 }} gap={0}>
+        <span className="font-bold">First Setlist</span>
+        <FlexList direction="row" justify="between">
+          <span className="text-xs text-text-subdued">Two 45 minute sets</span>
+          <span className="text-xs text-text-subdued whitespace-nowrap">Jan 1, 2022</span>
+        </FlexList>
+      </FlexList>
+    </Link>
   )
 }

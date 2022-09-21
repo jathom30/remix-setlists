@@ -8,8 +8,8 @@ async function seed() {
 
   // cleanup the existing database
   await prisma.user.delete({ where: { email } }).catch(() => {
-    // no worries if it doesn't exist yet
-  });
+
+  })
 
   const hashedPassword = await bcrypt.hash("racheliscool", 10);
 
@@ -62,6 +62,7 @@ async function seed() {
   const set = await prisma.set.create({
     data: {
       setlistId: setlist.id,
+      length: 45
     }
   })
   const songOne = await prisma.song.create({

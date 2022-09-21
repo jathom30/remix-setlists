@@ -70,15 +70,8 @@ export default function EditSong() {
   const actionData = useActionData()
 
   return (
-    <FlexList pad={4}>
-      <FlexList direction="row" items="center">
-        <Link kind="secondary" isRounded to={`/${bandId}/songs/${songId}`}><FontAwesomeIcon icon={faChevronLeft} /></Link>
-        <h1 className="font-bold text-3xl">Edit Song</h1>
-      </FlexList>
-
-      <Form method="put">
-        <SongForm song={song} feels={feels} errors={actionData?.errors} cancelTo={`/${bandId}/songs/${songId}`} />
-      </Form>
-    </FlexList>
+    <Form method="put">
+      <SongForm song={song} feels={feels} errors={actionData?.errors} cancelTo={`/${bandId}/songs/${songId}`} />
+    </Form>
   )
 }

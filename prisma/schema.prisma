@@ -79,7 +79,8 @@ model Setlist {
 }
 
 model Set {
-  id String @id @default(cuid())
+  id     String @id @default(cuid())
+  length Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

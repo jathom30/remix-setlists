@@ -2,10 +2,17 @@ import type { Band, Setlist } from "@prisma/client";
 import { prisma } from "~/db.server";
 
 export async function getSetlists(bandId: Band['id']) {
-  return prisma.setlist.findMany({
+  const setlists = prisma.setlist.findMany({
     where: { bandId },
-    select: { name: true, id: true },
+    include: { sets: true },
     orderBy: { updatedAt: 'asc' },
+  })
+  return (await setlists).map(setlist => {
+    return {
+      ...setlist,
+      number_of_sets: setlist.sets.length,
+      length: 45
+    }
   })
 }
 

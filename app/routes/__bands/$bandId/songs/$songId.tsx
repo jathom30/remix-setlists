@@ -1,11 +1,10 @@
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Form, useCatch, useLoaderData, useParams } from "@remix-run/react";
+import { Outlet, useCatch, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import { json } from '@remix-run/node'
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
-import { redirect } from "@remix-run/server-runtime";
+import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Button, FeelTag, FlexList, Header, ItemBox, Label, Link, TempoIcons } from "~/components";
-import { deleteSong, getSong } from "~/models/song.server";
+import { Drawer, FeelTag, FlexList, ItemBox, Label, Link, TempoIcons } from "~/components";
+import { getSong } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import pluralize from 'pluralize'
 import { setlistAutoGenImportanceEnums } from "~/utils/enums";
@@ -22,28 +21,23 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ song })
 }
 
-export async function action({ request, params }: ActionArgs) {
-  await requireUserId(request)
-  const { songId, bandId } = params
-  invariant(songId, 'songId not found')
-  invariant(bandId, 'bandId not found')
-
-  await deleteSong(songId)
-  return redirect(`/${bandId}`)
-}
-
 export default function SongDetails() {
   const { song } = useLoaderData<typeof loader>()
+  const { pathname } = useLocation()
+  const navigate = useNavigate()
   return (
     <FlexList pad={4}>
-      <Header>
-        <h1 className="font-bold text-3xl">{song.name}</h1>
-        <Link to="edit" kind="secondary" icon={faPenToSquare} isCollapsing isRounded>Edit song</Link>
-      </Header>
+      <FlexList direction="row" justify="end">
+        <Link to="edit" kind="secondary" icon={faPenToSquare} isRounded>Edit song</Link>
+      </FlexList>
       <FlexList gap={2}>
         <Label>Details</Label>
         <ItemBox>
           <FlexList gap={2}>
+            <FlexList direction="row" items="center">
+              <Label>Name</Label>
+              <span>{song.name}</span>
+            </FlexList>
             <FlexList direction="row" items="center">
               <Label>Artist</Label>
               <span>{song.isCover ? 'Cover' : 'Original'}</span>
@@ -81,18 +75,20 @@ export default function SongDetails() {
         </ItemBox>
       </FlexList>
 
-      {song.note ? (
-        <FlexList gap={2}>
-          <Label>Notes</Label>
-          <ItemBox>
-            <FlexList gap={2}>
-              {song.note.split('\n').map((section, i) => (
-                <p key={i}>{section}</p>
-              ))}
-            </FlexList>
-          </ItemBox>
-        </FlexList>
-      ) : null}
+      {
+        song.note ? (
+          <FlexList gap={2}>
+            <Label>Notes</Label>
+            <ItemBox>
+              <FlexList gap={2}>
+                {song.note.split('\n').map((section, i) => (
+                  <p key={i}>{section}</p>
+                ))}
+              </FlexList>
+            </ItemBox>
+          </FlexList>
+        ) : null
+      }
 
       <FlexList gap={2}>
         <Label>Settings</Label>
@@ -112,13 +108,14 @@ export default function SongDetails() {
               <span>Delete this song</span>
               <span className="text-text-subdued">Once you delete this song, it will be removed from this band and any setlists it was used in.</span>
             </FlexList>
-            <Form method="post">
-              <Button kind="danger" type="submit" icon={faTrash}>Delete</Button>
-            </Form>
+            <Link to="delete" kind="danger" type="submit" icon={faTrash}>Delete</Link>
           </FlexList>
         </ItemBox>
       </FlexList>
-    </FlexList>
+      <Drawer open={['edit', 'delete'].some(path => pathname.includes(path))} onClose={() => navigate('.')}>
+        <Outlet />
+      </Drawer>
+    </FlexList >
   )
 }
 

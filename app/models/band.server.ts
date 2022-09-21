@@ -17,7 +17,7 @@ export async function getBands(userId: User['id']) {
 export async function getBand(bandId: Band['id']) {
   return prisma.band.findUnique({
     where: { id: bandId },
-    include: { members: true },
+    include: { icon: true },
   })
 }
 
