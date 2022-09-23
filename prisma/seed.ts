@@ -42,9 +42,10 @@ async function seed() {
             role: 'ADMIN',
             band: {
               connect: {
-                id: band.id
+                id: band.id,
               }
-            }
+            },
+            bandName: band.name
           }
         ]
       }

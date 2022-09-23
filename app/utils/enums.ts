@@ -9,3 +9,9 @@ export const setlistAutoGenImportanceEnums = {
   include: 'Always include',
   no_preference: 'No preference',
 }
+
+export const roleEnums = {
+  admin: 'ADMIN',
+  member: 'MEMBER',
+  sub: 'SUB'
+}

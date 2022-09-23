@@ -1,7 +1,7 @@
-import type { Band, BandIcon } from "@prisma/client"
+import type { BandIcon } from "@prisma/client"
 import type { SerializeFrom } from "@remix-run/node"
 
-export const Avatar = ({ band, size = 'md' }: { band: SerializeFrom<Band & { icon: BandIcon | null }>; size?: 'sm' | 'md' | 'lg' }) => {
+export const Avatar = ({ icon, bandName, size = 'md' }: { icon?: SerializeFrom<BandIcon> | null; bandName: string; size?: 'sm' | 'md' | 'lg' }) => {
   const getSize = () => {
     switch (size) {
       case 'sm':
@@ -28,14 +28,14 @@ export const Avatar = ({ band, size = 'md' }: { band: SerializeFrom<Band & { ico
   }
   return (
     <div className={`${getSize().width} aspect-square`}>
-      {band.icon?.path ? (
-        <img src={band.icon?.path} alt={`${band.name} icon`} />
+      {icon?.path ? (
+        <img src={icon?.path} alt={`${bandName} icon`} />
       ) : (
         <div
           className={`h-full flex items-center justify-center bg-primary ${getSize().text} rounded-md font-bold`}
-          style={{ backgroundColor: band.icon?.backgroundColor || undefined, color: band.icon?.textColor || undefined }}
+          style={{ backgroundColor: icon?.backgroundColor || undefined, color: icon?.textColor || undefined }}
         >
-          <span>{band.name[0]}</span>
+          <span>{bandName[0]}</span>
         </div>
       )}
     </div>

@@ -2,15 +2,14 @@ import invariant from "tiny-invariant";
 import { json } from '@remix-run/node'
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
-import { FlexList, Link, SongForm } from "~/components";
+import { MaxHeightContainer, SongForm } from "~/components";
 import { getSong, updateSong } from "~/models/song.server";
 import { getFields } from "~/utils/form";
 import { requireUserId } from "~/session.server";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { getFeels } from "~/models/feel.server";
 import { Form, useActionData, useLoaderData, useParams } from "@remix-run/react";
 import type { Feel, Song } from "@prisma/client";
+import { SaveButtons } from "~/components/SaveButtons";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -71,7 +70,14 @@ export default function EditSong() {
 
   return (
     <Form method="put">
-      <SongForm song={song} feels={feels} errors={actionData?.errors} cancelTo={`/${bandId}/songs/${songId}`} />
+      <MaxHeightContainer
+        fullHeight
+        footer={
+          <SaveButtons saveLabel="Save" cancelTo={`/${bandId}/songs/${songId}`} />
+        }
+      >
+        <SongForm song={song} feels={feels} errors={actionData?.errors} />
+      </MaxHeightContainer>
     </Form>
   )
 }

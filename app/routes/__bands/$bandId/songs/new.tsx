@@ -3,12 +3,13 @@ import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/server-ru
 import { redirect } from "@remix-run/server-runtime";
 import { Form, useActionData, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { FlexList, SongForm } from "~/components";
+import { FlexList, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongForm } from "~/components";
 import { requireUserId } from "~/session.server";
 import { getFeels } from '~/models/feel.server';
 import { getFields } from '~/utils/form';
 import type { Feel, Song } from '@prisma/client';
 import { createSong } from '~/models/song.server';
+import { SaveButtons } from '~/components/SaveButtons';
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -51,9 +52,18 @@ export default function NewSong() {
   const actionData = useActionData()
   const { bandId } = useParams()
   return (
-    <FlexList pad={4}>
-      <h1 className="font-bold text-3xl">New Song</h1>
-      <Form method="post">
+    <Form method="post">
+      <MaxHeightContainer
+        fullHeight
+        header={
+          <RouteHeader>
+            <RouteHeaderBackLink label='New song' to={`/${bandId}/songs`} />
+          </RouteHeader>
+        }
+        footer={
+          <SaveButtons saveLabel="Create song" cancelTo={`/${bandId}/songs`} />
+        }
+      >
         <SongForm
           feels={feels}
           song={{
@@ -61,9 +71,8 @@ export default function NewSong() {
             rank: 'no_preference'
           }}
           errors={actionData?.errors}
-          cancelTo={`/${bandId}`}
         />
-      </Form>
-    </FlexList>
+      </MaxHeightContainer>
+    </Form>
   )
 }

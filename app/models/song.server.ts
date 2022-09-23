@@ -23,6 +23,13 @@ export async function getSong(songId: Song['id']) {
   })
 }
 
+export async function getSongName(songId: Song['id']) {
+  return prisma.song.findUnique({
+    where: { id: songId },
+    select: { name: true }
+  })
+}
+
 export async function updateSong(songId: Song['id'], song: Omit<Song, 'id' | 'updatedAt' | 'createdAt'>) {
   return prisma.song.update({
     where: { id: songId },

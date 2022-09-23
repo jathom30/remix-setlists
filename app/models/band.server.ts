@@ -15,9 +15,9 @@ export async function getBands(userId: User['id']) {
 }
 
 export async function getBand(bandId: Band['id']) {
-  return prisma.band.findUnique({
+  return await prisma.band.findUnique({
     where: { id: bandId },
-    include: { icon: true },
+    include: { icon: true, members: true },
   })
 }
 
@@ -35,7 +35,8 @@ export async function createBand(band: Pick<Band, 'name' | 'code'>, userId: User
               connect: {
                 id: userId
               }
-            }
+            },
+            bandName: name
           }
         ]
       }

@@ -45,10 +45,10 @@ export default function Bands() {
             <NavLink
               key={band.id}
               className={` hover:bg-slate-200 ${isActive(band.id) ? activeStyles : ''}`}
-              to={band.id}
+              to={`${band.id}/home`}
             >
               <FlexList direction="row" pad={4} items="center">
-                <Avatar size="lg" band={band} />
+                <Avatar size="lg" icon={band.icon} bandName={band.name} />
                 <FlexList gap={0}>
                   <h2 className="text-2xl">{band.name}</h2>
                   <div>

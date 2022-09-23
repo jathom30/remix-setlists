@@ -14,7 +14,9 @@ export const additionalStyles = ({ isDisabled, kind }: { isDisabled: boolean, ki
     case 'danger':
       return 'text-danger bg-transparent border border-danger hover:text-white hover:bg-danger'
     case 'text':
-      return 'text-text-subdued bg-transparent hover: bg-background-alt'
+      return 'text-text-subdued bg-transparent hover:bg-background-alt'
+    case 'invert':
+      return 'text-white bg-transparent hover:bg-white hover:text-text'
     default:
       return ''
   }

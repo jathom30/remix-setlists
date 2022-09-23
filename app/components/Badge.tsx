@@ -19,8 +19,9 @@ export const Badge = ({ children, size = 'md', invert = false }: {
   }
 
   const color = invert ? 'white' : 'slate-400'
+  const borderColor = invert ? 'border-white' : `border-slate-400`
 
   return (
-    <span className={`px-3 w-max whitespace-nowrap rounded border border-${color} text-${color} ${getSize()}`}>{children}</span>
+    <span className={`px-3 w-max whitespace-nowrap rounded border ${borderColor} text-${color} ${getSize()}`}>{children}</span>
   )
 }

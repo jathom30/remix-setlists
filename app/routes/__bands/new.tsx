@@ -17,7 +17,7 @@ export async function action({ request }: ActionArgs) {
 
   if (hasCode && hasName) {
     const band = await createBand({ name, code }, userId)
-    return redirect(band.id)
+    return redirect(`${band.id}/home`)
   }
   return null
 }

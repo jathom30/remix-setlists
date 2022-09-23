@@ -43,11 +43,12 @@ model Band {
 }
 
 model UsersInBands {
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-  band   Band   @relation(fields: [bandId], references: [id])
-  bandId String
-  role   String
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+  bandName String
+  band     Band   @relation(fields: [bandId], references: [id])
+  bandId   String
+  role     String
 
   @@id([userId, bandId])
 }

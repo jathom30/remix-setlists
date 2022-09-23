@@ -26,3 +26,10 @@ export async function getSetlist(setlistId: Setlist['id']) {
     }
   })
 }
+
+export async function getSetlistName(setlistId: Setlist['id']) {
+  return prisma.setlist.findUnique({
+    where: { id: setlistId },
+    select: { name: true }
+  })
+}

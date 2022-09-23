@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react"
 import { additionalStyles, defaultButtonStyles } from "~/styleUtils";
 
-export type ButtonKind = 'default' | 'primary' | 'danger' | 'text' | 'secondary'
+export type ButtonKind = 'default' | 'primary' | 'danger' | 'text' | 'secondary' | 'invert'
 
 export type ButtonProps = {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
