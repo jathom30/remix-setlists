@@ -11,3 +11,10 @@ export async function updateBandMemberRole(bandId: Band['id'], memberId: User['i
     data: { role }
   })
 }
+
+export async function getMemberRole(bandId: Band['id'], userId: User['id']) {
+  const band = await prisma.usersInBands.findUnique({
+    where: { userId_bandId: { userId, bandId } }
+  })
+  return band?.role || 'SUB'
+}

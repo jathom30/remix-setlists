@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json } from "@remix-run/node"
 import { Form, useLoaderData, useParams } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/server-runtime";
-import { Badge, Button, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
+import { Badge, Button, FlexHeader, FlexList, Label, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
 import { getUserWithBands } from "~/models/user.server";
 
 export async function loader({ request, params }: LoaderArgs) {

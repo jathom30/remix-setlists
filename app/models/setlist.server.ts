@@ -1,19 +1,18 @@
 import type { Band, Setlist } from "@prisma/client";
 import { prisma } from "~/db.server";
 
-export async function getSetlists(bandId: Band['id']) {
+export async function getSetlists(bandId: Band['id'], params?: { q?: string }) {
   const setlists = prisma.setlist.findMany({
-    where: { bandId },
+    where: {
+      bandId,
+      name: {
+        contains: params?.q
+      }
+    },
     include: { sets: true },
     orderBy: { updatedAt: 'asc' },
   })
-  return (await setlists).map(setlist => {
-    return {
-      ...setlist,
-      number_of_sets: setlist.sets.length,
-      length: 45
-    }
-  })
+  return setlists
 }
 
 export async function getSetlist(setlistId: Setlist['id']) {
@@ -31,5 +30,18 @@ export async function getSetlistName(setlistId: Setlist['id']) {
   return prisma.setlist.findUnique({
     where: { id: setlistId },
     select: { name: true }
+  })
+}
+
+export async function updateSetlist(setlistId: Setlist['id'], setlist: Partial<Setlist>) {
+  return prisma.setlist.update({
+    where: { id: setlistId },
+    data: setlist
+  })
+}
+
+export async function deleteSetlist(setlistId: Setlist['id']) {
+  return prisma.setlist.delete({
+    where: { id: setlistId }
   })
 }

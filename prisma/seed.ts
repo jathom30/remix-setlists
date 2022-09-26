@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { contrastColor, generateRandomHex } from "~/utils/assorted";
 
 const prisma = new PrismaClient();
 
@@ -13,14 +14,15 @@ async function seed() {
 
   const hashedPassword = await bcrypt.hash("racheliscool", 10);
 
+  const bandIconBackgroundColor = `#${generateRandomHex()}`
   const band = await prisma.band.create({
     data: {
       name: 'Starter Band',
-      code: '123-ABC',
+      code: '123ABC',
       icon: {
         create: {
-          backgroundColor: '#C7FFDA',
-          textColor: '#7B1E7A'
+          backgroundColor: bandIconBackgroundColor,
+          textColor: contrastColor(bandIconBackgroundColor)
         }
       }
     },
@@ -75,7 +77,11 @@ async function seed() {
       tempo: 2,
       position: 'opener',
       rank: 'include',
-      setId: set.id,
+      sets: {
+        connect: {
+          id: set.id,
+        }
+      },
       bandId: band.id,
     }
   })
@@ -86,7 +92,11 @@ async function seed() {
       tempo: 3,
       position: 'closer',
       rank: 'no_preference',
-      setId: set.id,
+      sets: {
+        connect: {
+          id: set.id
+        }
+      },
       bandId: band.id,
       isCover: true,
     }

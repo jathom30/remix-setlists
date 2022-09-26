@@ -47,8 +47,7 @@
     "react-dom": "^18.2.0",
     "react-select": "^5.4.0",
     "remix-validated-form": "^4.5.5",
-    "tiny-invariant": "^1.2.0",
-    "yup": "^0.32.11"
+    "tiny-invariant": "^1.2.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.4.0",

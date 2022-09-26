@@ -3,7 +3,9 @@ import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
-import { useLoaderData } from "@remix-run/react";
+import { Outlet, useCatch, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
+import { Drawer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongLink } from "~/components";
+import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -19,20 +21,73 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ setlist })
 }
 
+const subRoutes = ['rename', 'edit', 'condensed', 'data', 'delete', 'menu']
+
 export default function Setlist() {
   const { setlist } = useLoaderData<typeof loader>()
+  const { pathname } = useLocation()
+  const { bandId } = useParams()
+  const navigate = useNavigate()
 
   return (
-    <div>
-      <h1>{setlist.name}</h1>
-      {setlist.sets.map(set => (
-        <div key={set.id}>
-          <h2>Songs</h2>
+    <MaxHeightContainer
+      fullHeight
+      header={
+        <RouteHeader>
+          <RouteHeaderBackLink label={setlist.name} to={`/${bandId}/setlists`} />
+          <Link to="menu" kind="invert" icon={faEllipsisV} isRounded isCollapsing>Menu</Link>
+        </RouteHeader>
+      }
+      footer={
+        <Drawer open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
+          <Outlet />
+        </Drawer>
+      }
+    >
+      {setlist.sets.map((set, i) => (
+        <div key={set.id} className="border-b border-slate-300">
+          <div className="p-4 pb-0">
+            <FlexHeader>
+              <Label>Set {i + 1} - {set.length} minutes</Label>
+            </FlexHeader>
+          </div>
           {set.songs.map(song => (
-            <p key={song.id}>{song.name}</p>
+            <SongLink key={song.id} song={song} />
           ))}
         </div>
       ))}
-    </div>
+    </MaxHeightContainer>
   )
+}
+
+export function ErrorBoundary({ error }: { error: { message: string, stack: string } }) {
+  return (
+    <FlexList pad={4}>
+      <h1>Error</h1>
+      <p>{error.message}</p>
+      <p>The stack trace is:</p>
+      <pre>{error.stack}</pre>
+    </FlexList>
+  );
+}
+
+export function CatchBoundary() {
+  const caught = useCatch()
+  const { bandId } = useParams()
+
+  if (caught.status === 404) {
+    return (
+      <div>
+        <RouteHeader>
+          <RouteHeaderBackLink label="Not Found" to={`/${bandId}/setlists`} />
+        </RouteHeader>
+        <FlexList pad={4}>
+          <h1 className="text-5xl font-bold">404</h1>
+          <p>Oops...</p>
+          <p>That setlist could not be found.</p>
+        </FlexList>
+      </div>
+    )
+  }
+  throw new Error(`Unhandled error: ${caught.status}`)
 }

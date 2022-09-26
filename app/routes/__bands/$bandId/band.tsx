@@ -41,15 +41,23 @@ export default function BandSettingsPage() {
   // sub routes can include member id if user is updating member's role
   const subRoutes = ['newMember', 'edit', 'updateMember', 'removeSelf', 'delete', ...members.map(m => m.id)]
   return (
-    <MaxHeightContainer fullHeight header={
-      <RouteHeader>
-        <FlexHeader>
-          <RouteHeaderBackLink label="Band" to={`/${bandId}/home`} />
-          {isAdmin ? <Link to="edit" kind="invert">Edit</Link> : null}
-        </FlexHeader>
-      </RouteHeader>
-    }>
-      <FlexList height="full" pad={4}>
+    <MaxHeightContainer
+      fullHeight
+      header={
+        <RouteHeader>
+          <FlexHeader>
+            <RouteHeaderBackLink label="Band" to={`/${bandId}/home`} />
+            {isAdmin ? <Link to="edit" kind="invert">Edit</Link> : null}
+          </FlexHeader>
+        </RouteHeader>
+      }
+      footer={
+        <Drawer open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
+          <Outlet />
+        </Drawer>
+      }
+    >
+      <FlexList pad={4}>
         <FlexHeader>
           <h1 className="text-3xl font-bold">Band name</h1>
           <Avatar bandName={band.name || ''} icon={band.icon} size="lg" />
@@ -108,9 +116,6 @@ export default function BandSettingsPage() {
           ) : null}
         </FlexList>
       </FlexList>
-      <Drawer open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
-        <Outlet />
-      </Drawer>
     </MaxHeightContainer>
   )
 }

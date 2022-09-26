@@ -18,7 +18,7 @@ module.exports = {
         'primary': '#f4a261',
         'primary-text': '#FFE7CE',
         'primary-darken': '#e76f51',
-        'success': '#90ee90',
+        'success': '#2ae598',
         'success-text': '#008000',
         'danger': '#ff4400',
         'secondary': '#457b9d',

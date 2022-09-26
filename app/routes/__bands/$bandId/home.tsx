@@ -1,34 +1,38 @@
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/node"
 import invariant from "tiny-invariant";
-import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, Drawer } from "~/components"
+import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, Drawer, SetlistLink } from "~/components"
 import { requireUserId } from "~/session.server";
-import { Link, Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
+import { Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import { getSetlists } from "~/models/setlist.server";
 import { getSongs } from "~/models/song.server";
-import { useState } from "react";
 import { getBand } from "~/models/band.server";
+import { getMemberRole } from "~/models/usersInBands.server";
+import { roleEnums } from "~/utils/enums";
+import { useState } from "react";
 
 export async function loader({ request, params }: LoaderArgs) {
-  await requireUserId(request)
+  const userId = await requireUserId(request)
   const bandId = params.bandId
   invariant(bandId, 'bandId note found')
 
+  const role = await getMemberRole(bandId, userId)
   const band = await getBand(bandId)
   const setlists = await getSetlists(bandId)
   const songs = await getSongs(bandId)
   if (!band) {
     throw new Response("Band not found", { status: 404 })
   }
-  return json({ band, setlists, songs })
+  return json({ band, setlists, songs, isSub: role === roleEnums.sub })
 }
 
 export default function BandIndex() {
-  const { band, setlists, songs } = useLoaderData<typeof loader>()
+  const { band, setlists, songs, isSub } = useLoaderData<typeof loader>()
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const [showSetlists, setShowSetlists] = useState(true)
   const [showSongs, setShowSongs] = useState(true)
+
   return (
     <MaxHeightContainer
       fullHeight
@@ -58,7 +62,9 @@ export default function BandIndex() {
               }
               isOpen={showSetlists}
             >
-              <SetlistLink />
+              {setlists.map(setlist => (
+                <SetlistLink key={setlist.id} setlist={setlist} />
+              ))}
             </Collapsible>
           </div>
 
@@ -81,24 +87,10 @@ export default function BandIndex() {
           </div>
         </FlexList>
       </div>
-      <CreateNewButton to="new" />
+      {!isSub ? <CreateNewButton to="new" /> : null}
       <Drawer open={pathname.includes('new')} onClose={() => navigate('.')}>
         <Outlet />
       </Drawer>
     </MaxHeightContainer>
-  )
-}
-
-const SetlistLink = () => {
-  return (
-    <Link className="hover:bg-slate-200" to=".">
-      <FlexList pad={{ x: 4, y: 2 }} gap={0}>
-        <span className="font-bold">First Setlist</span>
-        <FlexList direction="row" justify="between">
-          <span className="text-xs text-text-subdued">Two 45 minute sets</span>
-          <span className="text-xs text-text-subdued whitespace-nowrap">Jan 1, 2022</span>
-        </FlexList>
-      </FlexList>
-    </Link>
   )
 }

@@ -7,7 +7,7 @@ import { requireUserId } from "~/session.server";
 import invariant from "tiny-invariant";
 import { getBand } from "~/models/band.server";
 import { roleEnums } from "~/utils/enums";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useParams } from "@remix-run/react";
 
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request)
@@ -23,9 +23,10 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export default function NewMember() {
   const { isAdmin, band } = useLoaderData<typeof loader>()
+  const { bandId } = useParams()
 
   if (!isAdmin) {
-    return <RestrictedAlert />
+    return <RestrictedAlert dismissTo={`/${bandId}/band`} />
   }
   return (
     <FlexList pad={4}>

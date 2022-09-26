@@ -10,13 +10,11 @@ export async function action({ request }: ActionArgs) {
   const formData = await request.formData()
 
   const name = formData.get('name')
-  const code = formData.get('code')
 
   const hasName = name && typeof name === 'string'
-  const hasCode = code && typeof code === 'string'
 
-  if (hasCode && hasName) {
-    const band = await createBand({ name, code }, userId)
+  if (hasName) {
+    const band = await createBand({ name }, userId)
     return redirect(`${band.id}/home`)
   }
   return null
@@ -29,7 +27,6 @@ export default function NewBand() {
         <FlexList pad={4}>
           <h1>Create a new band</h1>
           <Input name="name" placeholder="Band name..." />
-          <Input name="code" placeholder="Band code..." />
           <Button type="submit">Create</Button>
         </FlexList>
       </Form>

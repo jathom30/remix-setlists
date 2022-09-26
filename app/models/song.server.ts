@@ -5,11 +5,9 @@ export async function getSongs(bandId: Band['id'], params?: { q?: string }) {
   return prisma.song.findMany({
     where: {
       bandId,
-      ...(params?.q ? {
-        name: {
-          contains: params.q
-        }
-      } : null)
+      name: {
+        contains: params?.q
+      }
     },
 
     orderBy: { name: 'asc' }

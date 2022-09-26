@@ -2,26 +2,28 @@ import invariant from "tiny-invariant";
 import { json } from '@remix-run/node'
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
-import { MaxHeightContainer, SongForm } from "~/components";
+import { MaxHeightContainer, RestrictedAlert, SongForm, SaveButtons } from "~/components";
 import { getSong, updateSong } from "~/models/song.server";
 import { getFields } from "~/utils/form";
 import { requireUserId } from "~/session.server";
 import { getFeels } from "~/models/feel.server";
 import { Form, useActionData, useLoaderData, useParams } from "@remix-run/react";
 import type { Feel, Song } from "@prisma/client";
-import { SaveButtons } from "~/components/SaveButtons";
+import { getMemberRole } from "~/models/usersInBands.server";
+import { roleEnums } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderArgs) {
-  await requireUserId(request)
+  const userId = await requireUserId(request)
   const { songId, bandId } = params
   invariant(songId, 'songId not found')
   invariant(bandId, 'bandId not found')
   const feels = await getFeels(bandId)
   const song = await getSong(songId)
+  const role = await getMemberRole(bandId, userId)
   if (!song) {
     throw new Response('Song not found', { status: 404 })
   }
-  return json({ song, feels })
+  return json({ song, feels, isSub: role === roleEnums.sub })
 }
 
 export async function action({ request, params }: ActionArgs) {
@@ -64,9 +66,13 @@ export async function action({ request, params }: ActionArgs) {
 }
 
 export default function EditSong() {
-  const { song, feels } = useLoaderData<typeof loader>()
+  const { song, feels, isSub } = useLoaderData<typeof loader>()
   const { songId, bandId } = useParams()
   const actionData = useActionData()
+
+  if (isSub) {
+    return <RestrictedAlert dismissTo={`/${bandId}/songs/${songId}`} />
+  }
 
   return (
     <Form method="put">

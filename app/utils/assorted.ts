@@ -1,5 +1,7 @@
 export const capitalizeFirstLetter = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
+export const generateRandomHex = () => Math.floor(Math.random() * 16777215).toString(16)
+
 export function contrastColor(hex: string) {
   if (hex.indexOf('#') === 0) {
     hex = hex.slice(1);

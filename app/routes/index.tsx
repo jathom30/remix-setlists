@@ -39,7 +39,7 @@ export default function Bands() {
       }
       fullHeight
     >
-      <div className="bg-white h-full">
+      <div className="bg-white">
         <FlexList gap={0}>
           {bands.map(band => (
             <NavLink
@@ -52,7 +52,7 @@ export default function Bands() {
                 <FlexList gap={0}>
                   <h2 className="text-2xl">{band.name}</h2>
                   <div>
-                    <Badge>{band.code}</Badge>
+                    <Badge>{band.members[0].role}</Badge>
                   </div>
                 </FlexList>
               </FlexList>

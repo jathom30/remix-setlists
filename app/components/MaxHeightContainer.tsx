@@ -11,7 +11,7 @@ export const MaxHeightContainer = ({ children, header, footer, fullHeight }: Max
   return (
     <div className={`flex flex-col max-h-full w-full ${fullHeight ? 'h-full' : ''}`}>
       {header ? <div className="relative z-10">{header}</div> : null}
-      <div className="overflow-auto flex-grow relative z-0">{children}</div>
+      <div className="overflow-auto flex-grow relative z-0 h-full">{children}</div>
       {footer ? <div className="relative z-10">{footer}</div> : null}
     </div>
   )

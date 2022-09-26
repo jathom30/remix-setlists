@@ -7,22 +7,26 @@ import { Drawer, FeelTag, FlexList, ItemBox, Label, Link, MaxHeightContainer, Ro
 import { getSong } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import pluralize from 'pluralize'
-import { setlistAutoGenImportanceEnums } from "~/utils/enums";
+import { roleEnums, setlistAutoGenImportanceEnums } from "~/utils/enums";
+import { getMemberRole } from "~/models/usersInBands.server";
 
 export async function loader({ request, params }: LoaderArgs) {
-  await requireUserId(request)
-  const { songId } = params
+  const userId = await requireUserId(request)
+  const { songId, bandId } = params
   invariant(songId, 'songId not found')
+  invariant(bandId, 'bandId not found')
+
+  const role = await getMemberRole(bandId, userId)
 
   const song = await getSong(songId)
   if (!song) {
     throw new Response('Song not found', { status: 404 })
   }
-  return json({ song })
+  return json({ song, isSub: role === roleEnums.sub })
 }
 
 export default function SongDetails() {
-  const { song } = useLoaderData<typeof loader>()
+  const { song, isSub } = useLoaderData<typeof loader>()
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const { bandId } = useParams()
@@ -32,11 +36,16 @@ export default function SongDetails() {
       header={
         <RouteHeader>
           <RouteHeaderBackLink label={song.name} to={`/${bandId}/songs`} />
-          <Link to="edit" kind="invert" icon={faPenToSquare} isRounded>Edit song</Link>
+          {!isSub ? <Link to="edit" kind="invert" icon={faPenToSquare} isRounded isCollapsing>Edit song</Link> : null}
         </RouteHeader>
       }
+      footer={
+        <Drawer open={['edit', 'delete'].some(path => pathname.includes(path))} onClose={() => navigate('.')}>
+          <Outlet />
+        </Drawer>
+      }
     >
-      <FlexList pad={4} height="full">
+      <FlexList pad={4}>
         <FlexList gap={2}>
           <Label>Details</Label>
           <ItemBox>
@@ -107,22 +116,21 @@ export default function SongDetails() {
           </ItemBox>
         </FlexList>
 
-        <FlexList gap={2}>
-          <Label>Danger zone</Label>
-          <ItemBox isDanger>
-            <FlexList>
-              <FlexList gap={0}>
-                <span>Delete this song</span>
-                <p className="text-sm text-text-subdued">Once you delete this song, it will be removed from this band and any setlists it was used in.</p>
+        {!isSub ? (
+          <FlexList gap={2}>
+            <Label>Danger zone</Label>
+            <ItemBox isDanger>
+              <FlexList>
+                <FlexList gap={0}>
+                  <span>Delete this song</span>
+                  <p className="text-sm text-text-subdued">Once you delete this song, it will be removed from this band and any setlists it was used in.</p>
+                </FlexList>
+                <Link to="delete" kind="danger" type="submit" icon={faTrash}>Delete</Link>
               </FlexList>
-              <Link to="delete" kind="danger" type="submit" icon={faTrash}>Delete</Link>
-            </FlexList>
-          </ItemBox>
-        </FlexList>
+            </ItemBox>
+          </FlexList>
+        ) : null}
       </FlexList >
-      <Drawer open={['edit', 'delete'].some(path => pathname.includes(path))} onClose={() => navigate('.')}>
-        <Outlet />
-      </Drawer>
     </MaxHeightContainer>
   )
 }

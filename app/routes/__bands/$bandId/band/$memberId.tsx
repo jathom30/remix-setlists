@@ -6,7 +6,7 @@ import { FlexList, ItemBox, Label, Link, RadioGroup, RestrictedAlert } from "~/c
 import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { roleEnums } from "~/utils/enums";
-import { Form, useLoaderData, useSubmit } from "@remix-run/react";
+import { Form, useLoaderData, useParams, useSubmit } from "@remix-run/react";
 import { getUserById } from "~/models/user.server";
 import type { FormEvent } from "react";
 import { updateBandMemberRole } from "~/models/usersInBands.server";
@@ -53,10 +53,11 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function EditMember() {
   const { isAdmin, member } = useLoaderData<typeof loader>()
+  const { bandId } = useParams()
   const submit = useSubmit()
 
   if (!isAdmin) {
-    return <RestrictedAlert />
+    return <RestrictedAlert dismissTo={`/${bandId}/band`} />
   }
 
   const handleRoleChange = (e: FormEvent<HTMLFormElement>) => {
