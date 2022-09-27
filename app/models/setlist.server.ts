@@ -10,7 +10,7 @@ export async function getSetlists(bandId: Band['id'], params?: { q?: string }) {
       }
     },
     include: { sets: true },
-    orderBy: { updatedAt: 'asc' },
+    orderBy: { name: 'asc' },
   })
   return setlists
 }
@@ -43,5 +43,14 @@ export async function updateSetlist(setlistId: Setlist['id'], setlist: Partial<S
 export async function deleteSetlist(setlistId: Setlist['id']) {
   return prisma.setlist.delete({
     where: { id: setlistId }
+  })
+}
+
+export async function getRecentSetlists(bandId: Band['id']) {
+  return prisma.setlist.findMany({
+    where: { bandId },
+    orderBy: { updatedAt: 'desc' },
+    include: { sets: true },
+    take: 5,
   })
 }

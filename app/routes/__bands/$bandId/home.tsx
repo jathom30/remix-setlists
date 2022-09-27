@@ -4,8 +4,8 @@ import invariant from "tiny-invariant";
 import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, Drawer, SetlistLink } from "~/components"
 import { requireUserId } from "~/session.server";
 import { Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
-import { getSetlists } from "~/models/setlist.server";
-import { getSongs } from "~/models/song.server";
+import { getRecentSetlists } from "~/models/setlist.server";
+import { getRecentSongs } from "~/models/song.server";
 import { getBand } from "~/models/band.server";
 import { getMemberRole } from "~/models/usersInBands.server";
 import { roleEnums } from "~/utils/enums";
@@ -18,8 +18,8 @@ export async function loader({ request, params }: LoaderArgs) {
 
   const role = await getMemberRole(bandId, userId)
   const band = await getBand(bandId)
-  const setlists = await getSetlists(bandId)
-  const songs = await getSongs(bandId)
+  const setlists = await getRecentSetlists(bandId)
+  const songs = await getRecentSongs(bandId)
   if (!band) {
     throw new Response("Band not found", { status: 404 })
   }
@@ -40,7 +40,7 @@ export default function BandIndex() {
         <RouteHeader>
           <RouteHeaderBackLink
             label={band.name}
-            to="/"
+            to="/bandSelect"
           >
             <Avatar size="sm" bandName={band.name} icon={band.icon} />
           </RouteHeaderBackLink>

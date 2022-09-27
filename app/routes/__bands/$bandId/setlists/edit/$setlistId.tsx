@@ -1,10 +1,10 @@
-import { faGripVertical, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faGripVertical, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from '@remix-run/node'
 import { NavLink, Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { Button, Drawer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongDisplay } from "~/components";
+import { Drawer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongDisplay } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 
@@ -22,7 +22,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ setlist })
 }
 
-const subRoutes = ['newSet', 'addSongs', 'removeSong']
+const subRoutes = ['newSet', 'addSongs', 'removeSong', 'createSet']
 
 export default function EditSetlist() {
   const { setlist } = useLoaderData<typeof loader>()
@@ -34,8 +34,7 @@ export default function EditSetlist() {
       fullHeight
       header={
         <RouteHeader>
-          <RouteHeaderBackLink label="Edit" to={`/${bandId}/setlists/${setlistId}`} />
-          <Button isCollapsing isRounded icon={faSave} kind="primary">Save changes</Button>
+          <RouteHeaderBackLink label={`Editing ${setlist.name}`} to={`/${bandId}/setlists/${setlistId}`} />
         </RouteHeader>
       }
       footer={
@@ -51,14 +50,14 @@ export default function EditSetlist() {
               <FlexList direction="row" items="center">
                 <Label>Set {i + 1} - {set.length} minutes</Label>
               </FlexList>
-              <Link to={`addSongs/${set.id}`} icon={faPlus} isRounded isCollapsing>Add songs</Link>
+              <Link to={`${set.id}/addSongs`} icon={faPlus} isRounded isCollapsing>Add songs</Link>
             </FlexHeader>
           </div>
           {set.songs.map(song => (
             <FlexList key={song.id} gap={2} direction="row" items="center" pad={{ x: 4, y: 0 }}>
               <FontAwesomeIcon icon={faGripVertical} />
               <SongDisplay song={song} />
-              <NavLink to={`removeSong/${song.id}`}>
+              <NavLink to={`${set.id}/removeSong/${song.id}`}>
                 <FontAwesomeIcon icon={faTrash} />
               </NavLink>
             </FlexList>
@@ -66,17 +65,8 @@ export default function EditSetlist() {
         </div>
       ))}
       <FlexList pad={4}>
-        <Button>Create new set</Button>
+        <Link to="createSet">Create new set</Link>
       </FlexList>
     </MaxHeightContainer>
   )
 }
-
-
-
-// TODO
-// * Get setlist in loader
-// * Update SongLink to include drag handle and delete button
-// * Add Song button across from set number
-// * Create new set button after all sets
-// * Outlet to add song/new set drawer with multi select

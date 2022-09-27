@@ -5,24 +5,16 @@ import invariant from "tiny-invariant";
 import { ConfirmDelete, FlexList, Link } from "~/components";
 import { requireUserId } from "~/session.server";
 import { removeSongFromSet } from "~/models/set.server";
-import { getSetlist } from "~/models/setlist.server";
 
 export async function action({ request, params }: ActionArgs) {
   await requireUserId(request)
-  const { songId, setlistId, bandId } = params
+  const { songId, setlistId, bandId, setId } = params
   invariant(songId, 'songId not found')
   invariant(setlistId, 'setlistId not found')
   invariant(bandId, 'bandId not found')
+  invariant(setId, 'setId not found')
 
-  const setlist = await getSetlist(setlistId)
-  const set = setlist?.sets.find(set => set.songs.some(song => song.id === songId))
-
-  if (!set?.id) {
-    throw new Response('Set could not be found', { status: 404 })
-  }
-
-  await removeSongFromSet(set.id, songId)
-
+  await removeSongFromSet(setId, songId)
   return redirect(`/${bandId}/setlists/edit/${setlistId}`)
 }
 
