@@ -1,13 +1,13 @@
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node"
 import { useLoaderData } from "@remix-run/react";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node"
+import { json, redirect } from "@remix-run/node"
 import invariant from "tiny-invariant";
 import { MulitSongSelect } from "~/components";
-import { addSongsToSet } from "~/models/set.server";
 import { getSongsNotInSetlist } from "~/models/song.server";
 import { getMemberRole } from "~/models/usersInBands.server";
 import { requireUserId } from "~/session.server";
 import { roleEnums } from "~/utils/enums";
+import { createSet } from "~/models/set.server";
 
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request)
@@ -34,17 +34,17 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export async function action({ request, params }: ActionArgs) {
-  const { setId, bandId, setlistId } = params
-  invariant(setId, 'setId not found')
+  const { setlistId, bandId } = params
+  invariant(setlistId, 'setlistId not found')
   const formData = await request.formData()
   const songIds = formData.getAll('songs').map(songId => songId.toString())
 
-  await addSongsToSet(setId, songIds)
+  await createSet(setlistId, songIds)
   return redirect(`/${bandId}/setlists/edit/${setlistId}`)
 }
 
-export default function AddSongsToSet() {
+export default function CreateSet() {
   const { songs } = useLoaderData<typeof loader>()
 
-  return <MulitSongSelect songs={songs} />
+  return <MulitSongSelect label="New set" songs={songs} />
 }
