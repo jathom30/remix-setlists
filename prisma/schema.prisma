@@ -29,7 +29,7 @@ model Password {
 model Band {
   id   String @id @default(cuid())
   name String
-  code String
+  code String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

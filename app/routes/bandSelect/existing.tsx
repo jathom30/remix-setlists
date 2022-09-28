@@ -1,5 +1,27 @@
 import { Form } from "@remix-run/react";
+import { json } from '@remix-run/node'
+import type { ActionArgs } from "@remix-run/server-runtime";
+import { redirect } from "@remix-run/server-runtime";
 import { FlexList, Input, Label, SaveButtons } from "~/components";
+import { requireUserId } from "~/session.server";
+import { getFields } from "~/utils/form";
+import { updateBandByCode } from "~/models/band.server";
+
+export async function action({ request }: ActionArgs) {
+  const userId = await requireUserId(request)
+  const formData = await request.formData()
+
+  const { fields, errors } = getFields<{ bandCode: string }>(formData, [
+    { name: 'bandCode', type: 'string', isRequired: true }
+  ])
+
+  if (Object.keys(errors).length) {
+    return json({ errors }, { status: 400 })
+  }
+
+  await updateBandByCode(fields.bandCode, userId)
+  return redirect('.')
+}
 
 export default function ExisitingBand() {
   return (

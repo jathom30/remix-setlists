@@ -66,3 +66,26 @@ export async function updateBand(bandId: Band['id'], band: Partial<Band>) {
     data: band
   })
 }
+
+export async function updateBandByCode(code: Band['code'], userId: User['id']) {
+  const band = await prisma.band.findFirst({
+    where: { code },
+  })
+  if (!band) {
+    return null
+  }
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      bands: {
+        create: [{
+          role: 'SUB',
+          band: {
+            connect: { id: band.id },
+          },
+          bandName: band.name
+        }]
+      }
+    }
+  })
+}

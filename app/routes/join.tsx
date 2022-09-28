@@ -18,28 +18,37 @@ export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
+  const name = formData.get("name");
   const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
 
   if (!validateEmail(email)) {
     return json(
-      { errors: { email: "Email is invalid", password: null } },
+      { errors: { email: "Email is invalid", password: null, name: null } },
       { status: 400 }
     );
   }
 
   if (typeof password !== "string" || password.length === 0) {
     return json(
-      { errors: { email: null, password: "Password is required" } },
+      { errors: { email: null, password: "Password is required", name: null } },
+      { status: 400 }
+    );
+  }
+
+  if (typeof name !== "string" || name.length === 0) {
+    return json(
+      { errors: { email: null, password: null, name: "Name is required" } },
       { status: 400 }
     );
   }
 
   if (password.length < 8) {
     return json(
-      { errors: { email: null, password: "Password is too short" } },
+      { errors: { email: null, password: "Password is too short", name: null } },
       { status: 400 }
     );
   }
+
 
   const existingUser = await getUserByEmail(email);
   if (existingUser) {
@@ -48,13 +57,14 @@ export async function action({ request }: ActionArgs) {
         errors: {
           email: "A user already exists with this email",
           password: null,
+          name: null
         },
       },
       { status: 400 }
     );
   }
 
-  const user = await createUser(email, password);
+  const user = await createUser(email, password, name);
 
   return createUserSession({
     request,
@@ -89,6 +99,33 @@ export default function Join() {
     <div className="flex min-h-full flex-col justify-center">
       <div className="mx-auto w-full max-w-md px-8">
         <Form method="post" className="space-y-6">
+          <div>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Name
+            </label>
+            <div className="mt-1">
+              <input
+                ref={emailRef}
+                id="name"
+                required
+                autoFocus={true}
+                name="name"
+                type="text"
+                aria-invalid={actionData?.errors?.name ? true : undefined}
+                aria-describedby="name-error"
+                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+              />
+              {actionData?.errors?.name && (
+                <div className="pt-1 text-red-700" id="email-error">
+                  {actionData.errors.name}
+                </div>
+              )}
+            </div>
+          </div>
+
           <div>
             <label
               htmlFor="email"
