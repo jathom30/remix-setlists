@@ -15,3 +15,8 @@ export const roleEnums = {
   member: 'MEMBER',
   sub: 'SUB'
 }
+
+export const showHideEnums = {
+  show: 'SHOW',
+  hide: 'HIDE',
+}

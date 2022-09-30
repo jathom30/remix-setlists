@@ -10,7 +10,6 @@ export async function getSongs(bandId: Band['id'], params?: { q?: string }) {
         contains: params?.q
       }
     },
-
     orderBy: { name: 'asc' }
   })
 }

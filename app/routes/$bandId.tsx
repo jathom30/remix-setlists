@@ -1,7 +1,7 @@
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { FlexList, MaxHeightContainer } from "~/components"
 import { requireUserId } from "~/session.server"
-import { Link, Outlet, useCatch, useLocation, useParams } from "@remix-run/react"
+import { Link, Outlet, useLocation } from "@remix-run/react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faHouse, faList, faMusic, faUsers } from "@fortawesome/free-solid-svg-icons"
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons"
@@ -49,7 +49,6 @@ export default function BandRoute() {
             {routes.map(route => (
               <RouteIcon key={route.label} icon={route.icon} label={route.label} to={route.to} />
             ))}
-
           </FlexList>
         </div>
       }

@@ -70,3 +70,14 @@ export default function EditSetlist() {
     </MaxHeightContainer>
   )
 }
+
+export function ErrorBoundary() {
+  return (
+    <div>Error</div>
+  )
+}
+export function CatchBoundary() {
+  return (
+    <div>Error</div>
+  )
+}

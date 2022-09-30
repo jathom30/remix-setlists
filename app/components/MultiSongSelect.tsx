@@ -7,7 +7,7 @@ import { Link } from "./Link"
 import { SaveButtons } from "./SaveButtons"
 import { SongDisplay } from "./SongDisplay"
 
-export const MulitSongSelect = ({ songs, label }: { songs: SerializeFrom<Song[]>; label: string }) => {
+export const MulitSongSelect = ({ songs, label }: { songs: SerializeFrom<Song[]>; label?: string }) => {
 
   const { setlistId, bandId } = useParams()
   const [params, setParams] = useSearchParams()
@@ -30,7 +30,7 @@ export const MulitSongSelect = ({ songs, label }: { songs: SerializeFrom<Song[]>
       <FlexList gap={0}>
         <div className="border-b border-slate-300 p-4 w-full">
           <FlexList gap={2}>
-            <span>{label}</span>
+            {label ? <span>{label}</span> : null}
             <Input name="query" placeholder="Search..." defaultValue={searchParam || ''} onChange={e => setParams({ query: e.target.value })} />
           </FlexList>
         </div>

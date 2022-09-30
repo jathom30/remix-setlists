@@ -2,7 +2,7 @@ import { Form } from "@remix-run/react";
 import { json } from '@remix-run/node'
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
-import { FlexList, Input, Label, SaveButtons } from "~/components";
+import { FlexList, Input, Label, Link, SaveButtons } from "~/components";
 import { requireUserId } from "~/session.server";
 import { getFields } from "~/utils/form";
 import { updateBandByCode } from "~/models/band.server";
@@ -25,7 +25,7 @@ export async function action({ request }: ActionArgs) {
 
 export default function ExisitingBand() {
   return (
-    <Form method="post">
+    <Form method="put">
       <FlexList gap={0} pad={4}>
         <Label>Band Code</Label>
         <Input name="bandCode" placeholder="Enter your band code here..." />
@@ -35,5 +35,17 @@ export default function ExisitingBand() {
         cancelTo="/bandSelect"
       />
     </Form>
+  )
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  console.error(error)
+
+  return (
+    <FlexList pad={4} gap={2}>
+      <h1 className="text-3xl font-bold">Oops</h1>
+      <p>{error.message}</p>
+      <Link to=".">Try again?</Link>
+    </FlexList>
   )
 }

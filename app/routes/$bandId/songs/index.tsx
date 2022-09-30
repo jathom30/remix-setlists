@@ -45,12 +45,15 @@ export default function SongsList() {
         </RouteHeader>
       }
       footer={
-        <Drawer
-          open={showFilters}
-          onClose={() => setShowFilters(false)}
-        >
-          <SongFilters />
-        </Drawer>
+        <>
+          {!isSub ? <CreateNewButton to="new" /> : null}
+          <Drawer
+            open={showFilters}
+            onClose={() => setShowFilters(false)}
+          >
+            <SongFilters />
+          </Drawer>
+        </>
       }
     >
       <FlexList height="full">
@@ -70,7 +73,6 @@ export default function SongsList() {
           ))}
         </FlexList>
       </FlexList>
-      {!isSub ? <CreateNewButton to="new" /> : null}
     </MaxHeightContainer>
   )
 }

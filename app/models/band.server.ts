@@ -72,7 +72,14 @@ export async function updateBandByCode(code: Band['code'], userId: User['id']) {
     where: { code },
   })
   if (!band) {
-    return null
+    throw new Error('Band not found')
+  }
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { bands: true }
+  })
+  if (user?.bands.some(b => b.bandId === band.id)) {
+    throw new Error('User already in band')
   }
   return prisma.user.update({
     where: { id: userId },

@@ -65,7 +65,7 @@ async function seed() {
   const set = await prisma.set.create({
     data: {
       setlistId: setlist.id,
-      length: 45
+      length: 7
     }
   })
   const songOne = await prisma.song.create({

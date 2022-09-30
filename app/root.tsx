@@ -12,7 +12,6 @@ import {
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 import { getUser } from "./session.server";
 
-import '@fortawesome/fontawesome-svg-core/styles.css';
 import faStylesheetUrl from '@fortawesome/fontawesome-svg-core/styles.css';
 import { config } from "@fortawesome/fontawesome-svg-core";
 // Prevent fontawesome from dynamically adding its css since we are going to include it manually
@@ -30,7 +29,7 @@ export const links: LinksFunction = () => {
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "Setlists",
+  title: "Setlists App",
   viewport: "width=device-width,initial-scale=1",
 });
 

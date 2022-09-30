@@ -39,6 +39,7 @@ export default function SetlistsRoute() {
           <RouteHeaderBackLink label="Setlists" to={`/${bandId}/home`} />
         </RouteHeader>
       }
+      footer={!isSub ? <CreateNewButton to="new" /> : null}
     >
       <FlexList height="full">
         <div className="border-b border-slate-300 w-full">
@@ -54,7 +55,6 @@ export default function SetlistsRoute() {
           ))}
         </FlexList>
       </FlexList>
-      {!isSub ? <CreateNewButton to="new" /> : null}
     </MaxHeightContainer>
   )
 }

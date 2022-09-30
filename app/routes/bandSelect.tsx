@@ -11,7 +11,7 @@ export async function loader({ request }: LoaderArgs) {
   const userId = await requireUserId(request)
   const bands = await getBands(userId)
   if (!bands) {
-    throw new Response("Band not found", { status: 404 })
+    throw new Response("Bands not found", { status: 404 })
   }
   return json({ bands })
 }
@@ -23,6 +23,7 @@ const subRoutes = ['new', 'existing', 'menu']
 
 export default function Bands() {
   const { bands } = useLoaderData<typeof loader>()
+
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const isActive = (path: string) => pathname.includes(path)

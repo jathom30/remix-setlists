@@ -11,4 +11,3 @@ export const CreateNewButton = ({ to }: { to: string }) => {
     </div>
   )
 }
-// TODO `to` prop
