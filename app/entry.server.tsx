@@ -4,6 +4,7 @@ import { Response } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
 import isbot from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
+import { resetServerContext } from "@hello-pangea/dnd";
 
 const ABORT_DELAY = 5000;
 
@@ -19,6 +20,8 @@ export default function handleRequest(
 
   return new Promise((resolve, reject) => {
     let didError = false;
+
+    resetServerContext(); // added for react dnd
 
     const { pipe, abort } = renderToPipeableStream(
       <RemixServer context={remixContext} url={request.url} />,

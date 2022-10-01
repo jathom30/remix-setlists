@@ -55,7 +55,7 @@ export async function updateSetlist(setlistId: Setlist['id'], setlist: Partial<S
 
 export async function deleteSetlist(setlistId: Setlist['id']) {
   return prisma.setlist.delete({
-    where: { id: setlistId }
+    where: { id: setlistId },
   })
 }
 
@@ -63,7 +63,7 @@ export async function getRecentSetlists(bandId: Band['id']) {
   return prisma.setlist.findMany({
     where: { bandId },
     orderBy: { updatedAt: 'desc' },
-    include: { sets: true },
+    include: { sets: { select: { length: true } } },
     take: 5,
   })
 }

@@ -11,12 +11,24 @@ export async function getBands(userId: User['id']) {
         }
       },
     },
-    include: {
+    select: {
+      id: true,
+      name: true,
       icon: true,
       members: {
         where: { userId },
         select: { role: true }
       }
+    }
+  })
+}
+
+export async function getBandHome(bandId: Band['id']) {
+  return await prisma.band.findUnique({
+    where: { id: bandId },
+    select: {
+      icon: true,
+      name: true,
     }
   })
 }

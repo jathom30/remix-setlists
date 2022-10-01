@@ -1,11 +1,11 @@
-import type { Setlist, Set } from "@prisma/client"
+import type { Set, Setlist } from "@prisma/client"
 import type { SerializeFrom } from "@remix-run/node"
 import { Link, useParams } from "@remix-run/react"
 import { FlexList } from "./FlexList"
 
 const setCount = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']
 
-export const SetlistLink = ({ setlist }: { setlist: SerializeFrom<Setlist & { sets: Set[] }> }) => {
+export const SetlistLink = ({ setlist }: { setlist: SerializeFrom<Setlist & { sets: { length: Set['length'] }[] }> }) => {
   const { bandId } = useParams()
 
   const getDisplaySetLength = Math.ceil(setlist.sets.reduce((total, set) => {

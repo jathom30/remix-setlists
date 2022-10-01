@@ -86,7 +86,7 @@ model Set {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  setlist   Setlist @relation(fields: [setlistId], references: [id])
+  setlist   Setlist? @relation(fields: [setlistId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   setlistId String
   songs     Song[]
 }

@@ -6,7 +6,7 @@ import { requireUserId } from "~/session.server";
 import { Outlet, useLoaderData, useLocation, useNavigate, useSearchParams } from "@remix-run/react";
 import { getRecentSetlists } from "~/models/setlist.server";
 import { getRecentSongs } from "~/models/song.server";
-import { getBand } from "~/models/band.server";
+import { getBandHome } from "~/models/band.server";
 import { getMemberRole } from "~/models/usersInBands.server";
 import { roleEnums, showHideEnums } from "~/utils/enums";
 
@@ -20,7 +20,7 @@ export async function loader({ request, params }: LoaderArgs) {
   const searchParams = Object.fromEntries(url.searchParams.entries())
 
   const role = await getMemberRole(bandId, userId)
-  const band = await getBand(bandId)
+  const band = await getBandHome(bandId)
   const setlists = await getRecentSetlists(bandId)
   const songs = await getRecentSongs(bandId)
   if (!band) {

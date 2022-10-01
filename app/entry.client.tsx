@@ -6,9 +6,9 @@ const hydrate = () => {
   startTransition(() => {
     hydrateRoot(
       document,
-      <StrictMode>
-        <RemixBrowser />
-      </StrictMode>
+      // ! <StrictMode> removed for dnd
+      <RemixBrowser />
+      // </StrictMode>
     );
   });
 };

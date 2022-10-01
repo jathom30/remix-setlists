@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 export async function loader({ request }: LoaderArgs) {
   const userId = await requireUserId(request)
   const bands = await getBands(userId)
+
   if (!bands) {
     throw new Response("Bands not found", { status: 404 })
   }

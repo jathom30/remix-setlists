@@ -30,6 +30,8 @@ export default function SongDetails() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const { bandId } = useParams()
+
+  console.log(song.sets)
   return (
     <MaxHeightContainer
       fullHeight

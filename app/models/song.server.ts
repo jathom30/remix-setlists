@@ -1,6 +1,5 @@
 import type { Band, Setlist, Song } from "@prisma/client";
 import { prisma } from "~/db.server";
-import { removeSongFromSet } from "./set.server";
 
 export async function getSongs(bandId: Band['id'], params?: { q?: string }) {
   return prisma.song.findMany({

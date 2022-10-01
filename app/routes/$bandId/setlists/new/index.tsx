@@ -11,7 +11,7 @@ export default function NewSetlist() {
     <FlexList pad={4}>
       <FlexList gap={2}>
         <Link to="manual" className={linkClasses}>
-          <FlexList pad={8} gap={2} items="center">
+          <FlexList pad={4} gap={2} items="center">
             <FontAwesomeIcon icon={faHammer} />
             <span>Manual</span>
           </FlexList>
@@ -20,7 +20,7 @@ export default function NewSetlist() {
       </FlexList>
       <FlexList gap={2}>
         <Link to="auto" className={linkClasses}>
-          <FlexList pad={8} gap={2} items="center">
+          <FlexList pad={4} gap={2} items="center">
             <FontAwesomeIcon icon={faMagicWandSparkles} />
             <span>Auto-magical</span>
           </FlexList>
