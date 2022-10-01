@@ -60,7 +60,7 @@ export async function deleteSong(songId: Song['id']) {
   })
 }
 
-export async function getSongsNotInSetlist(setlistId: Setlist['id'], params?: { q?: string }) {
+export async function getSongsNotInSetlist(bandId: Band['id'], setlistId: Setlist['id'], params?: { q?: string }) {
   const setlist = await prisma.setlist.findUnique({
     where: { id: setlistId },
     include: {
@@ -83,6 +83,7 @@ export async function getSongsNotInSetlist(setlistId: Setlist['id'], params?: { 
   }, [])
   return prisma.song.findMany({
     where: {
+      bandId,
       id: {
         notIn: songIdsInSetlist
       },

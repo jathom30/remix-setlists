@@ -1,5 +1,6 @@
-import type { LoaderArgs } from "@remix-run/server-runtime";
+import type { LoaderArgs, SerializeFrom } from "@remix-run/server-runtime";
 import { json } from '@remix-run/node'
+import type { Song } from "@prisma/client";
 import invariant from "tiny-invariant";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
@@ -29,6 +30,8 @@ export default function Setlist() {
   const { bandId } = useParams()
   const navigate = useNavigate()
 
+  const setLength = (songs: SerializeFrom<Song>[]) => songs.reduce((total, song) => total += song.length, 0)
+
   return (
     <MaxHeightContainer
       fullHeight
@@ -48,7 +51,7 @@ export default function Setlist() {
         <div key={set.id} className="border-b border-slate-300">
           <div className="p-4 pb-0">
             <FlexHeader>
-              <Label>Set {i + 1} - {set.length} minutes</Label>
+              <Label>Set {i + 1} - {setLength(set.songs)} minutes</Label>
             </FlexHeader>
           </div>
           {set.songs.map(song => (

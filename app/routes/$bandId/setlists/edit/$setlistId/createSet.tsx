@@ -28,7 +28,7 @@ export async function loader({ request, params }: LoaderArgs) {
     ...(q ? { q } : null)
   }
 
-  const songs = await getSongsNotInSetlist(setlistId, songParams)
+  const songs = await getSongsNotInSetlist(bandId, setlistId, songParams)
 
   return json({ songs })
 }

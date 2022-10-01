@@ -15,14 +15,14 @@ export async function createSetlist(bandId: Band['id'], songIds: Song['id'][]) {
 }
 
 export async function getSetlists(bandId: Band['id'], params?: { q?: string }) {
-  const setlists = prisma.setlist.findMany({
+  const setlists = await prisma.setlist.findMany({
     where: {
       bandId,
       name: {
         contains: params?.q
       }
     },
-    include: { sets: true },
+    include: { sets: { select: { songs: { select: { length: true } } } } },
     orderBy: { name: 'asc' },
   })
   return setlists
@@ -63,7 +63,7 @@ export async function getRecentSetlists(bandId: Band['id']) {
   return prisma.setlist.findMany({
     where: { bandId },
     orderBy: { updatedAt: 'desc' },
-    include: { sets: { select: { length: true } } },
+    include: { sets: { select: { songs: { select: { length: true } } } } },
     take: 5,
   })
 }

@@ -26,16 +26,12 @@ export async function getSetLength(songIds: Song['id'][]) {
 }
 
 export async function addSongsToSet(setId: Set['id'], songIds: Song['id'][]) {
-  const currentSet = await prisma.set.findUnique({ where: { id: setId }, include: { songs: { select: { id: true } } } })
-  const currentSongIds = currentSet?.songs.map(song => song.id) || []
-  const currentLength = await getSetLength(currentSongIds)
   return prisma.set.update({
     where: { id: setId },
     data: {
       songs: {
         connect: songIds.map(songId => ({ id: songId }))
       },
-      length: await getSetLength(songIds) + currentLength
     }
   })
 }
@@ -45,7 +41,6 @@ export async function createSet(setlistId: Setlist['id'], songIds: Song['id'][])
   return prisma.set.create({
     data: {
       setlistId,
-      length: await getSetLength(songIds),
       songs: {
         connect: songIds.map(songId => ({ id: songId })),
       }

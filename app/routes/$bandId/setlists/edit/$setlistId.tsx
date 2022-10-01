@@ -9,6 +9,7 @@ import { Drawer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHea
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { AnimatePresence, motion } from "framer-motion";
+import { Song } from "@prisma/client";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -31,6 +32,10 @@ export default function EditSetlist() {
   const { bandId, setlistId } = useParams()
   const { pathname } = useLocation()
   const navigate = useNavigate()
+
+  const setLength = (songs: Song[]) => {
+    return songs.reduce((total, song) => total += song.length, 0)
+  }
 
   return (
     <MaxHeightContainer
@@ -57,7 +62,7 @@ export default function EditSetlist() {
             <div className="p-4 pb-0">
               <FlexHeader>
                 <FlexList direction="row" items="center">
-                  <Label>Set {i + 1} - {set.length} minutes</Label>
+                  <Label>Set {i + 1} - {setLength(set.songs)} minutes</Label>
                 </FlexList>
                 <Link to={`${set.id}/addSongs`} icon={faPlus} isRounded isCollapsing>Add songs</Link>
               </FlexHeader>
