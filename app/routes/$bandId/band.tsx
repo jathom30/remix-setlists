@@ -1,4 +1,4 @@
-import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
+import { Outlet, useCatch, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import { json } from "@remix-run/node"
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
@@ -59,7 +59,7 @@ export default function BandSettingsPage() {
     >
       <FlexList pad={4}>
         <FlexHeader>
-          <h1 className="text-3xl font-bold">Band name</h1>
+          <h1 className="text-3xl font-bold">{band.name}</h1>
           <Avatar bandName={band.name || ''} icon={band.icon} size="lg" />
         </FlexHeader>
         <FlexHeader>
@@ -121,6 +121,8 @@ export default function BandSettingsPage() {
 }
 
 export function CatchBoundary() {
+  const caught = useCatch()
+  console.log(caught.data)
   return (
     <div>Oops</div>
   )

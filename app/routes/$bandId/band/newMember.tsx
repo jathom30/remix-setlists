@@ -7,7 +7,9 @@ import { requireUserId } from "~/session.server";
 import invariant from "tiny-invariant";
 import { getBand } from "~/models/band.server";
 import { roleEnums } from "~/utils/enums";
-import { useLoaderData, useParams } from "@remix-run/react";
+import { useCatch, useLoaderData } from "@remix-run/react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request)
@@ -18,16 +20,30 @@ export async function loader({ request, params }: LoaderArgs) {
   const band = await getBand(bandId)
   const isAdmin = band?.members.find(m => m.userId === userId)?.role === roleEnums.admin
 
-  return json({ isAdmin, band })
+  if (!isAdmin) {
+    throw new Response('Access denied', { status: 403 })
+  }
+
+  return json({ band })
 }
 
 export default function NewMember() {
-  const { isAdmin, band } = useLoaderData<typeof loader>()
-  const { bandId } = useParams()
+  const { band } = useLoaderData<typeof loader>()
+  const [showSuccess, setShowSuccess] = useState(false)
 
-  if (!isAdmin) {
-    return <RestrictedAlert dismissTo={`/${bandId}/band`} />
+  const handleCopy = () => {
+    navigator.clipboard.writeText(band.code).then(() => setShowSuccess(true))
   }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (showSuccess) {
+        setShowSuccess(false)
+      }
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [showSuccess])
+
   return (
     <FlexList pad={4}>
       <FlexList gap={0}>
@@ -37,10 +53,25 @@ export default function NewMember() {
 
       <FlexList gap={0}>
         <Label>Band code</Label>
-        <button className=" rounded border flex justify-between items-center p-2">
-          <span className="font-bold">{band?.code}</span>
-          <FontAwesomeIcon icon={faCopy} />
-        </button>
+        <div className="relative">
+          <button onClick={handleCopy} className=" rounded border flex justify-between items-center p-2 w-full">
+            <span className="font-bold">{band.code}</span>
+            <FontAwesomeIcon icon={faCopy} />
+          </button>
+          <AnimatePresence>
+            {showSuccess ? (
+              <motion.span
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ opacity: .2 }}
+                className="absolute top-full right-0 text-primary"
+              >
+                Band code copied!
+              </motion.span>
+            ) : null}
+          </AnimatePresence>
+        </div>
       </FlexList>
 
       <div>
@@ -48,6 +79,19 @@ export default function NewMember() {
         <p className="text-sm">All invited members will automatically be added as <b>SUB</b>s. They will be able to see your setlists and songs, but will not be able to make any changes.</p>
         <p className="text-sm">If you wish to upgrade their role, you can do so by clicking on their name in the members list after they join this band.</p>
       </div>
+    </FlexList>
+  )
+}
+
+export function CatchBoundary() {
+  const caught = useCatch()
+
+  if (caught.status === 403) {
+    return <RestrictedAlert dismissTo={`..`} />
+  }
+  return (
+    <FlexList pad={4}>
+      Caught
     </FlexList>
   )
 }

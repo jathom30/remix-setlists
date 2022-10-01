@@ -31,8 +31,6 @@ export default function Setlist() {
   const navigate = useNavigate()
   const [to] = useState(state as string)
 
-  console.log(state)
-
   const setLength = (songs: SerializeFrom<Song>[]) => songs.reduce((total, song) => total += song.length, 0)
 
   return (
