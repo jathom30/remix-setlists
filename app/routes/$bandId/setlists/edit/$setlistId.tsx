@@ -1,15 +1,15 @@
 import { faGripVertical, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
-import { NavLink, Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
+import { NavLink, Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Drawer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongDisplay } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { AnimatePresence, motion } from "framer-motion";
-import { Song } from "@prisma/client";
+import type { Song } from "@prisma/client";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -29,11 +29,10 @@ const subRoutes = ['newSet', 'addSongs', 'removeSong', 'createSet']
 
 export default function EditSetlist() {
   const { setlist } = useLoaderData<typeof loader>()
-  const { bandId, setlistId } = useParams()
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
-  const setLength = (songs: Song[]) => {
+  const setLength = (songs: SerializeFrom<Song>[]) => {
     return songs.reduce((total, song) => total += song.length, 0)
   }
 
@@ -42,7 +41,7 @@ export default function EditSetlist() {
       fullHeight
       header={
         <RouteHeader>
-          <RouteHeaderBackLink label={`Editing ${setlist.name}`} to={`/${bandId}/setlists/${setlistId}`} />
+          <RouteHeaderBackLink label={`Editing ${setlist.name}`} />
         </RouteHeader>
       }
       footer={

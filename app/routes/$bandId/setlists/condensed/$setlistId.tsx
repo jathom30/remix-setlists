@@ -4,7 +4,7 @@ import invariant from "tiny-invariant";
 import { FlexList, Label, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
-import { useLoaderData, useParams } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -21,13 +21,12 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export default function CondensedSetlist() {
   const { setlist } = useLoaderData<typeof loader>()
-  const { bandId, setlistId } = useParams()
   return (
     <MaxHeightContainer
       fullHeight
       header={
         <RouteHeader>
-          <RouteHeaderBackLink label="Condensed" to={`/${bandId}/setlists/${setlistId}`} />
+          <RouteHeaderBackLink label="Condensed" />
         </RouteHeader>
       }
     >

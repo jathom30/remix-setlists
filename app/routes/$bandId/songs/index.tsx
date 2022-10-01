@@ -41,7 +41,7 @@ export default function SongsList() {
       fullHeight
       header={
         <RouteHeader>
-          <RouteHeaderBackLink label="Songs" to={`/${bandId || ''}/home`} />
+          <RouteHeaderBackLink label="Songs" to={`/${bandId}/home`} />
         </RouteHeader>
       }
       footer={

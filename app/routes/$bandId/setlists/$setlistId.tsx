@@ -4,9 +4,10 @@ import type { Song } from "@prisma/client";
 import invariant from "tiny-invariant";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
-import { Outlet, useCatch, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
+import { Outlet, useCatch, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import { Drawer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongLink } from "~/components";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -26,9 +27,11 @@ const subRoutes = ['rename', 'edit', 'condensed', 'data', 'delete', 'menu']
 
 export default function Setlist() {
   const { setlist } = useLoaderData<typeof loader>()
-  const { pathname } = useLocation()
-  const { bandId } = useParams()
+  const { pathname, state } = useLocation()
   const navigate = useNavigate()
+  const [to] = useState(state as string)
+
+  console.log(state)
 
   const setLength = (songs: SerializeFrom<Song>[]) => songs.reduce((total, song) => total += song.length, 0)
 
@@ -37,7 +40,7 @@ export default function Setlist() {
       fullHeight
       header={
         <RouteHeader>
-          <RouteHeaderBackLink label={setlist.name} to={`/${bandId}/setlists`} />
+          <RouteHeaderBackLink label={setlist.name} to={to} />
           <Link to="menu" kind="invert" icon={faEllipsisV} isRounded isCollapsing>Menu</Link>
         </RouteHeader>
       }
@@ -76,13 +79,12 @@ export function ErrorBoundary({ error }: { error: { message: string, stack: stri
 
 export function CatchBoundary() {
   const caught = useCatch()
-  const { bandId } = useParams()
 
   if (caught.status === 404) {
     return (
       <div>
         <RouteHeader>
-          <RouteHeaderBackLink label="Not Found" to={`/${bandId}/setlists`} />
+          <RouteHeaderBackLink label="Not Found" />
         </RouteHeader>
         <FlexList pad={4}>
           <h1 className="text-5xl font-bold">404</h1>

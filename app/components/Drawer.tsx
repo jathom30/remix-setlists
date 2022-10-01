@@ -6,15 +6,13 @@ export const Drawer = ({ children, open, onClose }: {
   open: boolean;
   onClose: () => void;
 }) => {
-  const state = open ? 'open' : 'close'
 
   return (
     <AnimatePresence>
-      {state === 'open' ? (
+      {open ? (
         <motion.div
           key="drawer"
           className="sticky inset-0"
-          animate={state}
         >
           <motion.div
             role="presentation"

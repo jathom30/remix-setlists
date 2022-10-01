@@ -1,7 +1,7 @@
 import { faCaretRight } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import type { MouseEvent, ReactNode } from "react"
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 
 type CollapsibleProps = {
   children?: ReactNode
@@ -11,9 +11,22 @@ type CollapsibleProps = {
 
 export const Collapsible = ({ children, header, isOpen = true }: CollapsibleProps) => {
   return (
-    <div className="w-full">
+    <div
+      className="w-full"
+    >
       {header}
-      {isOpen ? children : null}
+      <AnimatePresence>
+        {isOpen ? (
+          <motion.div
+            initial={{ opacity: 0, height: 0, scaleY: 0, transformOrigin: 'top' }}
+            animate={{ opacity: 1, height: 'auto', scaleY: 1 }}
+            exit={{ opacity: 0, height: 0, scaleY: 0 }}
+            transition={{ opacity: .2 }}
+          >
+            {children}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   )
 }

@@ -56,7 +56,7 @@ export default function NewSong() {
         fullHeight
         header={
           <RouteHeader>
-            <RouteHeaderBackLink label='New song' to={`/${bandId}/songs`} />
+            <RouteHeaderBackLink label='New song' />
           </RouteHeader>
         }
         footer={

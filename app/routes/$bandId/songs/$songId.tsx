@@ -9,6 +9,7 @@ import { requireUserId } from "~/session.server";
 import pluralize from 'pluralize'
 import { roleEnums, setlistAutoGenImportanceEnums } from "~/utils/enums";
 import { getMemberRole } from "~/models/usersInBands.server";
+import { useState } from "react";
 
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request)
@@ -27,17 +28,16 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export default function SongDetails() {
   const { song, isSub } = useLoaderData<typeof loader>()
-  const { pathname } = useLocation()
+  const { pathname, state } = useLocation()
+  const [to] = useState<string>(state as string)
   const navigate = useNavigate()
-  const { bandId } = useParams()
 
-  console.log(song.sets)
   return (
     <MaxHeightContainer
       fullHeight
       header={
         <RouteHeader>
-          <RouteHeaderBackLink label={song.name} to={`/${bandId}/songs`} />
+          <RouteHeaderBackLink label={song.name} to={to} />
           {!isSub ? <Link to="edit" kind="invert" icon={faPenToSquare} isRounded isCollapsing>Edit song</Link> : null}
         </RouteHeader>
       }
