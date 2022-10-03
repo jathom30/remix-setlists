@@ -6,6 +6,9 @@ import { Input } from "./Input"
 import { Link } from "./Link"
 import { SaveButtons } from "./SaveButtons"
 import { SongDisplay } from "./SongDisplay"
+import { FlexHeader } from "./FlexHeader"
+import { MaxHeightContainer } from "./MaxHeightContainer"
+import { faPlus } from "@fortawesome/free-solid-svg-icons"
 
 export const MulitSongSelect = ({ songs, label }: { songs: SerializeFrom<Song[]>; label?: string }) => {
 
@@ -27,28 +30,34 @@ export const MulitSongSelect = ({ songs, label }: { songs: SerializeFrom<Song[]>
 
   return (
     <Form method="put" action="." className="w-full">
-      <FlexList gap={0}>
-        <div className="border-b border-slate-300 p-4 w-full">
-          <FlexList gap={2}>
-            {label ? <span>{label}</span> : null}
-            <Input name="query" placeholder="Search..." defaultValue={searchParam || ''} onChange={e => setParams({ query: e.target.value })} />
-          </FlexList>
-        </div>
-        <FlexList gap={0}>
-          {songs.map(song => (
-            <label key={song.id} htmlFor={song.id} className="hover:bg-slate-200">
-              <FlexList direction="row" gap={0}>
-                <input id={song.id} value={song.id} type="checkbox" name="songs" className="ml-4" />
-                <SongDisplay song={song} />
-              </FlexList>
-            </label>
-          ))}
-        </FlexList>
-      </FlexList>
-      <SaveButtons
-        saveLabel={label}
-        cancelTo={`/${bandId}/setlists/edit/${setlistId}`}
-      />
+      <MaxHeightContainer
+        header={
+          <div className="border-b border-slate-300 p-4 w-full">
+            <FlexList gap={2}>
+              <FlexHeader>
+                {label ? <span>{label}</span> : null}
+                <Link to={`/${bandId}/songs/new`} kind="secondary" icon={faPlus} isCollapsing isRounded>New song</Link>
+              </FlexHeader>
+              <Input name="query" placeholder="Search..." defaultValue={searchParam || ''} onChange={e => setParams({ query: e.target.value })} />
+            </FlexList>
+          </div>
+        }
+        footer={
+          <SaveButtons
+            saveLabel={label}
+            cancelTo={`/${bandId}/setlists/edit/${setlistId}`}
+          />
+        }
+      >
+        {songs.map(song => (
+          <label key={song.id} htmlFor={song.id} className="hover:bg-slate-200">
+            <FlexList direction="row" gap={0}>
+              <input id={song.id} value={song.id} type="checkbox" name="songs" className="ml-4" />
+              <SongDisplay song={song} />
+            </FlexList>
+          </label>
+        ))}
+      </MaxHeightContainer>
     </Form>
   )
 }

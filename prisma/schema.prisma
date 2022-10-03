@@ -35,18 +35,18 @@ model Band {
   updatedAt DateTime @updatedAt
 
   setlists Setlist[]
-  songs    Song[]
   members  UsersInBands[]
 
   icon  BandIcon?
   feels Feel[]
+  song  Song[]
 }
 
 model UsersInBands {
   user     User   @relation(fields: [userId], references: [id])
   userId   String
   bandName String
-  band     Band   @relation(fields: [bandId], references: [id])
+  band     Band   @relation(fields: [bandId], references: [id], onDelete: Cascade)
   bandId   String
   role     String
 
@@ -62,7 +62,7 @@ model BandIcon {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  band   Band   @relation(fields: [bandId], references: [id])
+  band   Band   @relation(fields: [bandId], references: [id], onDelete: Cascade)
   bandId String @unique
 }
 
@@ -74,7 +74,7 @@ model Setlist {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  band   Band   @relation(fields: [bandId], references: [id])
+  band   Band   @relation(fields: [bandId], references: [id], onDelete: Cascade)
   bandId String
   sets   Set[]
 }
@@ -106,7 +106,7 @@ model Song {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   sets      Set[]
-  band      Band?    @relation(fields: [bandId], references: [id])
+  band      Band?    @relation(fields: [bandId], references: [id], onDelete: Cascade)
   bandId    String?
 }
 
@@ -120,6 +120,6 @@ model Feel {
   song      Song?    @relation(fields: [songId], references: [id])
   songId    String?
 
-  band   Band   @relation(fields: [bandId], references: [id])
+  band   Band   @relation(fields: [bandId], references: [id], onDelete: Cascade)
   bandId String
 }

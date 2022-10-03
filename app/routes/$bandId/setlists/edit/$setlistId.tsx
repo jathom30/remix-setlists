@@ -2,7 +2,6 @@ import { faGripVertical, faPlus, faTrash } from "@fortawesome/free-solid-svg-ico
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
-import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import { NavLink, Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Drawer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongDisplay } from "~/components";
@@ -10,6 +9,10 @@ import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Song } from "@prisma/client";
+import type { DragEndEvent } from "@dnd-kit/core";
+import { rectIntersection } from "@dnd-kit/core";
+import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -36,6 +39,17 @@ export default function EditSetlist() {
     return songs.reduce((total, song) => total += song.length, 0)
   }
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    console.log(event)
+  }
+
   return (
     <MaxHeightContainer
       fullHeight
@@ -55,7 +69,12 @@ export default function EditSetlist() {
         </>
       }
     >
-      <DragDropContext onDragEnd={console.log}>
+      <DndContext
+        id={setlist.id}
+        sensors={sensors}
+        onDragEnd={handleDragEnd}
+        collisionDetection={rectIntersection}
+      >
         {setlist.sets.map((set, i) => (
           <div key={set.id} className="border-b border-slate-300">
             <div className="p-4 pb-0">
@@ -66,50 +85,85 @@ export default function EditSetlist() {
                 <Link to={`${set.id}/addSongs`} icon={faPlus} isRounded isCollapsing>Add songs</Link>
               </FlexHeader>
             </div>
-            <Droppable key={set.id} droppableId={set.id} type="SONG">
-              {(provided, snapshot) => (
-                <div
-                  className={`border-b border-slate-300 ${snapshot.isDraggingOver ? 'bg-slate-200' : ''}`}
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                >
-                  <AnimatePresence>
-                    {set.songs.map((song, index) => (
-                      <Draggable key={song.id} draggableId={song.id} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className={snapshot.isDragging ? 'bg-white' : ''}
-                          >
-                            <motion.div
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: 'auto' }}
-                              exit={{ opacity: 0, height: 0, background: '#ff4400' }}
-                              transition={{ opacity: .2 }}
-                            >
-                              <FlexList key={song.id} gap={2} direction="row" items="center" pad={{ x: 4, y: 0 }}>
-                                <FontAwesomeIcon icon={faGripVertical} />
-                                <SongDisplay song={song} />
-                                <NavLink to={`${set.id}/removeSong/${song.id}`}>
-                                  <FontAwesomeIcon icon={faTrash} />
-                                </NavLink>
-                              </FlexList>
-                            </motion.div>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                  </AnimatePresence>
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
+
+            <div className={`border-b border-slate-300`}>
+              <SortableContext id={set.id} items={set.songs} strategy={verticalListSortingStrategy}>
+                <AnimatePresence>
+                  {set.songs.map((song) => (
+                    <SortableSong song={song} setId={set.id} key={song.id} />
+                  ))}
+                </AnimatePresence>
+              </SortableContext>
+            </div>
+
           </div>
         ))}
-      </DragDropContext>
+      </DndContext>
+
     </MaxHeightContainer>
+  )
+}
+
+const SortableSong = ({ song, setId }: { song: SerializeFrom<Song>; setId: string }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    isDragging,
+  } = useSortable({ id: song.id, transition: null });
+
+  const initialStyles = {
+    x: 0,
+    y: 0,
+    scale: 1,
+  };
+
+  return (
+    <motion.div
+      layoutId={song.id}
+      // initial={{ opacity: 0, height: 0 }}
+      // animate={{ opacity: 1, height: 'auto' }}
+      animate={
+        transform
+          ? {
+            x: transform.x,
+            y: transform.y,
+            scale: isDragging ? 1.05 : 1,
+            zIndex: isDragging ? 1 : 0,
+            boxShadow: isDragging
+              ? '0 0 0 1px rgba(63, 63, 68, 0.05), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)'
+              : undefined,
+          }
+          : initialStyles
+      }
+      transition={{
+        duration: !isDragging ? 0.25 : 0,
+        easings: {
+          type: 'spring',
+        },
+        scale: {
+          duration: 0.25,
+        },
+        zIndex: {
+          delay: isDragging ? 0 : 0.25,
+        },
+      }}
+
+
+      exit={{ opacity: 0, height: 0, background: '#ff4400' }}
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+    >
+      <FlexList key={song.id} gap={2} direction="row" items="center" pad={{ x: 4, y: 0 }}>
+        <FontAwesomeIcon icon={faGripVertical} />
+        <SongDisplay song={song} />
+        <NavLink to={`${setId}/removeSong/${song.id}`}>
+          <FontAwesomeIcon icon={faTrash} />
+        </NavLink>
+      </FlexList>
+    </motion.div>
   )
 }
 

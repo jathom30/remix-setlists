@@ -12,7 +12,7 @@ export const valueAsType = (type: string, value: FormDataEntryValue | null) => {
   }
 }
 
-export const getFields = <T>(formData: FormData, schema: { name: keyof T, type: string, isRequired: boolean }[]) => {
+export const getFields = <T extends object>(formData: FormData, schema: { name: keyof T, type: string, isRequired: boolean }[]) => {
   const fieldValues = schema.reduce<T>((acc, field) => {
     const { name, type } = field
     const value = formData.get(name.toString())

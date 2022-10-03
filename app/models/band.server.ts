@@ -40,6 +40,13 @@ export async function getBand(bandId: Band['id']) {
   })
 }
 
+export async function getBandName(bandId: Band['id']) {
+  return await prisma.band.findUnique({
+    where: { id: bandId },
+    select: { name: true }
+  })
+}
+
 export async function createBand(band: Pick<Band, 'name'>, userId: User['id']) {
   const { name } = band
   const code = Math.random().toString(36).substring(2, 8).toUpperCase()
@@ -106,5 +113,11 @@ export async function updateBandByCode(code: Band['code'], userId: User['id']) {
         }]
       }
     }
+  })
+}
+
+export async function deleteBand(bandId: Band['id']) {
+  await prisma.band.delete({
+    where: { id: bandId }
   })
 }

@@ -67,3 +67,7 @@ export async function getRecentSetlists(bandId: Band['id']) {
     take: 5,
   })
 }
+
+export async function createSetlistAuto(bandId: Band['id'], setlist: Partial<Setlist>) {
+
+}
