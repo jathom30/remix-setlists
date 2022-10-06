@@ -88,7 +88,7 @@ export default function EditSetlist() {
 
             <div className={`border-b border-slate-300`}>
               <SortableContext id={set.id} items={set.songs} strategy={verticalListSortingStrategy}>
-                <AnimatePresence>
+                <AnimatePresence initial={false}>
                   {set.songs.map((song) => (
                     <SortableSong song={song} setId={set.id} key={song.id} />
                   ))}
@@ -122,8 +122,7 @@ const SortableSong = ({ song, setId }: { song: SerializeFrom<Song>; setId: strin
   return (
     <motion.div
       layoutId={song.id}
-      // initial={{ opacity: 0, height: 0 }}
-      // animate={{ opacity: 1, height: 'auto' }}
+      layout
       animate={
         transform
           ? {

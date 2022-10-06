@@ -2,13 +2,13 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import invariant from "tiny-invariant";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
-import { FlexList, ItemBox, Label, Link, RadioGroup, RestrictedAlert } from "~/components";
+import { Button, FlexList, ItemBox, Label, Link, RestrictedAlert, Tabs } from "~/components";
 import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { roleEnums } from "~/utils/enums";
-import { Form, useLoaderData, useParams, useSubmit } from "@remix-run/react";
+import { Form, useLoaderData, useParams } from "@remix-run/react";
 import { getUserById } from "~/models/user.server";
-import type { FormEvent } from "react";
+import { useState } from "react";
 import { updateBandMemberRole } from "~/models/usersInBands.server";
 import { getFields } from "~/utils/form";
 
@@ -22,6 +22,11 @@ export async function loader({ request, params }: LoaderArgs) {
 
   const band = await getBand(bandId)
   const isAdmin = band?.members.find(m => m.userId === userId)?.role === roleEnums.admin
+
+  if (!isAdmin) {
+    throw new Response('Permission denied', { status: 403 })
+  }
+
   const member = await getUserById(memberId)
   const memberWithRole = {
     ...member,
@@ -53,15 +58,11 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function EditMember() {
   const { isAdmin, member } = useLoaderData<typeof loader>()
+  const [roleTab, setRoleTab] = useState(member.role)
   const { bandId } = useParams()
-  const submit = useSubmit()
 
   if (!isAdmin) {
     return <RestrictedAlert dismissTo={`/${bandId}/band`} />
-  }
-
-  const handleRoleChange = (e: FormEvent<HTMLFormElement>) => {
-    submit(e.currentTarget, { replace: true })
   }
 
   return (
@@ -76,21 +77,25 @@ export default function EditMember() {
         <span className="font-bold">{member.role}</span>
       </FlexList>
 
-      <Form method="put" onChange={handleRoleChange} action=".">
-        <FlexList gap={0}>
-          <Label>Update member role</Label>
-          <RadioGroup
-            name="role"
-            options={[
-              { label: 'Admin', value: roleEnums.admin },
-              { label: 'Member', value: roleEnums.member },
-              { label: 'Sub', value: roleEnums.sub },
-            ]}
-            isChecked={val => member.role === val}
-          />
-          <p className="text-text-subdued text-sm">{roleExplanitoryText[member.role || 'NOT_FOUND']}</p>
-        </FlexList>
-      </Form>
+      <FlexList gap={2}>
+        <Label>Update member role</Label>
+        <Tabs
+          tabs={[
+            { label: 'Admin', isActive: roleTab === roleEnums.admin, onClick: () => setRoleTab(roleEnums.admin) },
+            { label: 'Member', isActive: roleTab === roleEnums.member, onClick: () => setRoleTab(roleEnums.member) },
+            { label: 'Sub', isActive: roleTab === roleEnums.sub, onClick: () => setRoleTab(roleEnums.sub) },
+          ]}
+        >
+          <FlexList>
+            <p className="text-text-subdued text-sm">{roleExplanitoryText[roleTab || 'NOT_FOUND']}</p>
+            <Form method="put" action=".">
+              <FlexList>
+                <Button type="submit" isDisabled={roleTab === member.role} name="role" value={roleTab} kind="secondary">{roleTab === member.role ? 'Current role' : `Set role as ${roleTab}`}</Button>
+              </FlexList>
+            </Form>
+          </FlexList>
+        </Tabs>
+      </FlexList>
 
 
       <FlexList gap={2}>
