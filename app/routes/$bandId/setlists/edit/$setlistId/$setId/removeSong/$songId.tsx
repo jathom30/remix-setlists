@@ -2,7 +2,7 @@ import { Form, useCatch, useParams } from "@remix-run/react";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { ConfirmDelete, FlexList, Link } from "~/components";
+import { ConfirmDelete, ErrorContainer, FlexList, Link } from "~/components";
 import { requireUserId } from "~/session.server";
 import { removeSongFromSet } from "~/models/set.server";
 
@@ -32,15 +32,9 @@ export default function RemoveSongFromSetlist() {
   )
 }
 
-export function ErrorBoundary({ error }: { error: unknown }) {
-  const { bandId, setlistId, songId } = useParams()
-  console.error(error)
+export function ErrorBoundary({ error }: { error: Error }) {
   return (
-    <FlexList pad={4} gap={2}>
-      <h1 className="text-3xl font-bold">Oops...</h1>
-      <p>Looks like we made a mistake.</p>
-      <Link to={`/${bandId}/setlists/edit/${setlistId}/removeSong/${songId}`}>Please try again.</Link>
-    </FlexList>
+    <ErrorContainer error={error} />
   )
 }
 

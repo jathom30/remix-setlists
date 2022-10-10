@@ -92,18 +92,9 @@ export default function BandSettingsPage() {
           </FlexList>
         </ItemBox>
 
-        <FlexList gap={2}>
-          <Label>Danger Zone</Label>
-          <ItemBox isDanger>
-            <FlexList>
-              <FlexList>
-                <span className="font-bold">Remove self from band</span>
-                <p className="text-sm text-text-subdued">This will remove your access to the band, but keep the band intact for other users</p>
-              </FlexList>
-              <Link to="removeSelf" kind="danger" icon={faTrash}>Remove</Link>
-            </FlexList>
-          </ItemBox>
-          {isAdmin ? (
+        {isAdmin ? (
+          <FlexList gap={2}>
+            <Label>Danger Zone</Label>
             <ItemBox isDanger>
               <FlexList>
                 <FlexList>
@@ -113,8 +104,8 @@ export default function BandSettingsPage() {
                 <Link to="delete" kind="danger" icon={faTrash}>Delete</Link>
               </FlexList>
             </ItemBox>
-          ) : null}
-        </FlexList>
+          </FlexList>
+        ) : null}
       </FlexList>
     </MaxHeightContainer>
   )

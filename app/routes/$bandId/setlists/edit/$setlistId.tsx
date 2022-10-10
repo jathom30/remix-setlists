@@ -4,15 +4,14 @@ import type { LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
 import { NavLink, Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { Drawer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongDisplay } from "~/components";
+import { Drawer, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongDisplay } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Song } from "@prisma/client";
-import type { DragEndEvent } from "@dnd-kit/core";
-import { rectIntersection } from "@dnd-kit/core";
-import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors, closestCenter } from "@dnd-kit/core";
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -46,10 +45,6 @@ export default function EditSetlist() {
     })
   );
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    console.log(event)
-  }
-
   return (
     <MaxHeightContainer
       fullHeight
@@ -72,32 +67,35 @@ export default function EditSetlist() {
       <DndContext
         id={setlist.id}
         sensors={sensors}
-        onDragEnd={handleDragEnd}
-        collisionDetection={rectIntersection}
+        onDragEnd={console.log}
+        collisionDetection={closestCenter}
+        modifiers={[restrictToFirstScrollableAncestor]}
       >
-        {setlist.sets.map((set, i) => (
-          <div key={set.id} className="border-b border-slate-300">
-            <div className="p-4 pb-0">
-              <FlexHeader>
-                <FlexList direction="row" items="center">
-                  <Label>Set {i + 1} - {setLength(set.songs)} minutes</Label>
-                </FlexList>
-                <Link to={`${set.id}/addSongs`} icon={faPlus} isRounded isCollapsing>Add songs</Link>
-              </FlexHeader>
-            </div>
+        <SortableContext items={setlist.sets} strategy={verticalListSortingStrategy}>
+          {setlist.sets.map((set, i) => (
+            <div key={set.id} className="border-b border-slate-300">
+              <div className="p-4 pb-0">
+                <FlexHeader>
+                  <FlexList direction="row" items="center">
+                    <Label>Set {i + 1} - {setLength(set.songs)} minutes</Label>
+                  </FlexList>
+                  <Link to={`${set.id}/addSongs`} icon={faPlus} isRounded isCollapsing>Add songs</Link>
+                </FlexHeader>
+              </div>
 
-            <div className={`border-b border-slate-300`}>
-              <SortableContext id={set.id} items={set.songs} strategy={verticalListSortingStrategy}>
-                <AnimatePresence initial={false}>
-                  {set.songs.map((song) => (
-                    <SortableSong song={song} setId={set.id} key={song.id} />
-                  ))}
-                </AnimatePresence>
-              </SortableContext>
-            </div>
+              <div className={`border-b border-slate-300`}>
+                <SortableContext id={set.id} items={set.songs} strategy={verticalListSortingStrategy}>
+                  <AnimatePresence initial={false}>
+                    {set.songs.map((song) => (
+                      <SortableSong song={song} setId={set.id} key={song.id} />
+                    ))}
+                  </AnimatePresence>
+                </SortableContext>
+              </div>
 
-          </div>
-        ))}
+            </div>
+          ))}
+        </SortableContext>
       </DndContext>
 
     </MaxHeightContainer>
@@ -121,6 +119,7 @@ const SortableSong = ({ song, setId }: { song: SerializeFrom<Song>; setId: strin
 
   return (
     <motion.div
+      style={{ touchAction: 'none' }}
       layoutId={song.id}
       layout
       animate={
@@ -166,9 +165,9 @@ const SortableSong = ({ song, setId }: { song: SerializeFrom<Song>; setId: strin
   )
 }
 
-export function ErrorBoundary() {
+export function ErrorBoundary({ error }: { error: Error }) {
   return (
-    <div>Error</div>
+    <ErrorContainer error={error} />
   )
 }
 export function CatchBoundary() {

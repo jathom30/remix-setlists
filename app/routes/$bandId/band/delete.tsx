@@ -2,7 +2,7 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { Button, ErrorMessage, FlexList, Input } from "~/components";
+import { Button, ErrorContainer, ErrorMessage, FlexList, Input } from "~/components";
 import { deleteBand, getBandName } from "~/models/band.server";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import type { ChangeEvent } from "react";
@@ -64,10 +64,7 @@ export default function DeleteBand() {
 
 export function ErrorBoundary({ error }: { error: Error }) {
   return (
-    <FlexList pad={4}>
-      <h3 className="font-bold">Oops</h3>
-      <p>{error.message}</p>
-    </FlexList>
+    <ErrorContainer error={error} />
   )
 }
 

@@ -3,7 +3,7 @@ import { Outlet, useCatch, useLoaderData, useLocation, useNavigate, useParams } 
 import { json } from '@remix-run/node'
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Drawer, FeelTag, FlexList, ItemBox, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, TempoIcons } from "~/components";
+import { Drawer, ErrorContainer, FeelTag, FlexList, ItemBox, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, TempoIcons } from "~/components";
 import { getSong } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import pluralize from 'pluralize'
@@ -137,12 +137,10 @@ export default function SongDetails() {
   )
 }
 
-export function ErrorBoundary({ error }: { error: unknown }) {
+export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error)
   return (
-    <div>
-      "I don't know where and I don't know when, but something terrible is about to happen."
-    </div>
+    <ErrorContainer error={error} />
   )
 }
 

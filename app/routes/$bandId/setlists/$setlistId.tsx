@@ -5,7 +5,7 @@ import invariant from "tiny-invariant";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { Outlet, useCatch, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
-import { Drawer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongLink } from "~/components";
+import { Drawer, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongLink } from "~/components";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 
@@ -64,14 +64,9 @@ export default function Setlist() {
   )
 }
 
-export function ErrorBoundary({ error }: { error: { message: string, stack: string } }) {
+export function ErrorBoundary({ error }: { error: Error }) {
   return (
-    <FlexList pad={4}>
-      <h1>Error</h1>
-      <p>{error.message}</p>
-      <p>The stack trace is:</p>
-      <pre>{error.stack}</pre>
-    </FlexList>
+    <ErrorContainer error={error} />
   );
 }
 

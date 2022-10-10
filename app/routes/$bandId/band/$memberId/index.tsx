@@ -15,9 +15,8 @@ import { getFields } from "~/utils/form";
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request)
 
-  const bandId = params.bandId
+  const { bandId, memberId } = params
   invariant(bandId, 'bandId not found')
-  const memberId = params.memberId
   invariant(memberId, 'memberId not found')
 
   const band = await getBand(bandId)
@@ -27,13 +26,15 @@ export async function loader({ request, params }: LoaderArgs) {
     throw new Response('Permission denied', { status: 403 })
   }
 
+  const canRemoveMember = userId !== memberId && band.members.reduce((total, member) => total += member.role === roleEnums.admin ? 1 : 0, 0) > 0
+
   const member = await getUserById(memberId)
   const memberWithRole = {
     ...member,
     role: band?.members.find(m => m.userId === memberId)?.role
   }
 
-  return json({ isAdmin, member: memberWithRole })
+  return json({ isAdmin, member: memberWithRole, canRemoveMember })
 }
 
 export async function action({ request, params }: ActionArgs) {
@@ -57,7 +58,7 @@ export async function action({ request, params }: ActionArgs) {
 }
 
 export default function EditMember() {
-  const { isAdmin, member } = useLoaderData<typeof loader>()
+  const { isAdmin, member, canRemoveMember } = useLoaderData<typeof loader>()
   const [roleTab, setRoleTab] = useState(member.role)
   const { bandId } = useParams()
 
@@ -103,8 +104,17 @@ export default function EditMember() {
         <ItemBox isDanger>
           <FlexList gap={2}>
             <span className="font-bold">Remove this member</span>
-            <p className="text-text-subdued text-sm">Removing this member will remove their access to this band's songs and setlists.</p>
-            <Link to="." icon={faTrash} kind="danger">Remove</Link>
+            {canRemoveMember ? (
+              <p className="text-text-subdued text-sm">
+                Removing this member will remove their access to this band's songs and setlists.
+              </p>
+            ) : (
+              <p className="text-danger text-sm">
+                You are the only admin. Make at least one other member an Admin before removing yourself.
+              </p>
+            )}
+
+            <Link isDisabled={!canRemoveMember} to="delete" icon={faTrash} kind="danger">Remove</Link>
           </FlexList>
         </ItemBox>
       </FlexList>

@@ -2,7 +2,7 @@ import type { Band, User } from "@prisma/client";
 import { prisma } from "~/db.server";
 
 export async function updateBandMemberRole(bandId: Band['id'], memberId: User['id'], role: string) {
-  return await prisma.usersInBands.update({
+  return prisma.usersInBands.update({
     where: {
       userId_bandId: {
         userId: memberId, bandId
@@ -17,4 +17,10 @@ export async function getMemberRole(bandId: Band['id'], userId: User['id']) {
     where: { userId_bandId: { userId, bandId } }
   })
   return band?.role || 'SUB'
+}
+
+export async function removeMemberFromBand(bandId: Band['id'], userId: User['id']) {
+  return prisma.usersInBands.delete({
+    where: { userId_bandId: { userId, bandId } }
+  })
 }

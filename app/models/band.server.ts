@@ -128,14 +128,3 @@ export async function deleteBand(bandId: Band['id']) {
     where: { id: bandId }
   })
 }
-
-export async function removeMemberFromBand(bandId: Band['id'], userId: User['id']) {
-  return prisma.band.update({
-    where: { id: bandId },
-    data: {
-      members: {
-        disconnect: { userId_bandId: { userId, bandId } }
-      }
-    }
-  })
-}

@@ -2,7 +2,7 @@ import { Form, useActionData, useCatch } from "@remix-run/react";
 import { json } from '@remix-run/node'
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
-import { ErrorMessage, FlexList, Input, Label, Link, SaveButtons } from "~/components";
+import { ErrorContainer, ErrorMessage, FlexList, Input, Label, Link, SaveButtons } from "~/components";
 import { requireUserId } from "~/session.server";
 import { getFields } from "~/utils/form";
 import { updateBandByCode } from "~/models/band.server";
@@ -43,10 +43,6 @@ export default function ExisitingBand() {
 
 export function ErrorBoundary({ error }: { error: Error }) {
   return (
-    <FlexList pad={4}>
-      <h1 className="text-3xl font-bold">Oops</h1>
-      <p>{error.message}</p>
-      <Link to=".">Try again?</Link>
-    </FlexList>
+    <ErrorContainer error={error} />
   )
 }
