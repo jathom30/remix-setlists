@@ -81,3 +81,10 @@ export async function getUserWithBands(request: Request) {
   })
   return bands
 }
+
+export async function updateUser(id: User['id'], user: Partial<User>) {
+  return prisma.user.update({
+    where: { id },
+    data: user
+  })
+}

@@ -1,9 +1,9 @@
-import { faSignOut, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faSignOut, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json } from "@remix-run/node"
-import { Form, useLoaderData, useParams } from "@remix-run/react";
+import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, Link as RemixLink } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/server-runtime";
-import { Badge, Button, FlexHeader, FlexList, Label, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
+import { Badge, Button, Drawer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
 import { getUserWithBands } from "~/models/user.server";
 
 export async function loader({ request, params }: LoaderArgs) {
@@ -15,9 +15,13 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ user })
 }
 
+const subRoutes = ['edit', 'remove']
+
 export default function UserRoute() {
   const { user } = useLoaderData<typeof loader>()
   const { bandId } = useParams()
+  const { pathname } = useLocation()
+  const navigate = useNavigate()
   return (
     <MaxHeightContainer
       fullHeight
@@ -25,11 +29,21 @@ export default function UserRoute() {
         <RouteHeader>
           <FlexHeader>
             <RouteHeaderBackLink label="User" to={`/${bandId}/home`} />
-            <Form action="/logout" method="post">
-              <Button type="submit" kind="invert" isCollapsing icon={faSignOut}>Sign out</Button>
-            </Form>
+            <Link to="edit" kind="invert" icon={faPenToSquare} isRounded isCollapsing>Edit user</Link>
           </FlexHeader>
         </RouteHeader>
+      }
+      footer={
+        <>
+          <Form action="/logout" method="post">
+            <FlexList pad={4}>
+              <Button type="submit" icon={faSignOut}>Sign out</Button>
+            </FlexList>
+          </Form>
+          <Drawer open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
+            <Outlet />
+          </Drawer>
+        </>
       }
     >
       <FlexList pad={4}>
@@ -44,7 +58,7 @@ export default function UserRoute() {
         <FlexList gap={0}>
           <Label>Associated bands</Label>
           {user.bands.map(band => (
-            <button key={band.bandId} className="p-4 py-2 rounded">
+            <RemixLink to={`remove/${band.bandId}`} key={band.bandId} className="p-4 py-2 rounded">
               <FlexHeader>
                 <FlexList direction="row" items="center">
                   <FontAwesomeIcon icon={faTrash} />
@@ -52,7 +66,7 @@ export default function UserRoute() {
                 </FlexList>
                 <Badge>{band.role}</Badge>
               </FlexHeader>
-            </button>
+            </RemixLink>
           ))}
         </FlexList>
       </FlexList>

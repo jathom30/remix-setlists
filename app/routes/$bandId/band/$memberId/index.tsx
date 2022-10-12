@@ -34,7 +34,7 @@ export async function loader({ request, params }: LoaderArgs) {
     role: band?.members.find(m => m.userId === memberId)?.role
   }
 
-  return json({ isAdmin, member: memberWithRole, canRemoveMember })
+  return json({ member: memberWithRole, canRemoveMember })
 }
 
 export async function action({ request, params }: ActionArgs) {
@@ -58,13 +58,8 @@ export async function action({ request, params }: ActionArgs) {
 }
 
 export default function EditMember() {
-  const { isAdmin, member, canRemoveMember } = useLoaderData<typeof loader>()
+  const { member, canRemoveMember } = useLoaderData<typeof loader>()
   const [roleTab, setRoleTab] = useState(member.role)
-  const { bandId } = useParams()
-
-  if (!isAdmin) {
-    return <RestrictedAlert dismissTo={`/${bandId}/band`} />
-  }
 
   return (
     <FlexList pad={4}>

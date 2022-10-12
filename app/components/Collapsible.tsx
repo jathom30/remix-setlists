@@ -15,7 +15,7 @@ export const Collapsible = ({ children, header, isOpen = true }: CollapsibleProp
       className="w-full"
     >
       {header}
-      <AnimatePresence>
+      <AnimatePresence initial={false}>
         {isOpen ? (
           <motion.div
             initial={{ opacity: 0, height: 0, scaleY: 0, transformOrigin: 'top' }}
