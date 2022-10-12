@@ -1,12 +1,13 @@
 import type { Band, Setlist, Song } from "@prisma/client";
 import { prisma } from "~/db.server";
+import { createRandomSetsByPosition, SetlistSettings, setOfLength, sortSetsByPosition } from "~/utils/setlists";
 import { createSet } from "./set.server";
+import { getSongs } from "./song.server";
 
 export async function createSetlist(bandId: Band['id'], songIds: Song['id'][]) {
   const setlist = await prisma.setlist.create({
     data: {
       name: 'Temp name',
-      updatedBy: 'remove this field',
       bandId,
     },
   })
@@ -68,6 +69,40 @@ export async function getRecentSetlists(bandId: Band['id']) {
   })
 }
 
-export async function createSetlistAuto(bandId: Band['id'], setlist: Partial<Setlist>) {
+export async function createSetlistAuto(bandId: Band['id'], settings: SetlistSettings) {
+  const { filters, setCount, setLength } = settings
+  const { noBallads, noCovers, onlyCovers } = filters
+  // sets need a setlistId
+  const setlist = await prisma.setlist.create({
+    data: {
+      name: 'Auto-magical temp name',
+      bandId,
+    },
+  })
+  // const setlistId = setlist.id
+  // get all songs filtered based on filter params
+  const params = {
+    ...(noBallads ? { tempos: [2, 3, 4, 5] } : null),
+    ...(noCovers ? { isCover: false } : null),
+    ...(onlyCovers ? { isCover: true } : null),
+  }
+  const songs = await getSongs(bandId, params)
+  // split songs into sets by position so each desired set has an even distribution of openers and closers
+  const setsByPosition = createRandomSetsByPosition(songs, setCount)
 
+  // trim above sets to desired minute length and sort songs so sets start with openers and end with closers
+  const setsByLength = Object.keys(setsByPosition).reduce((sets: Record<string, Song[]>, key) => ({
+    ...sets,
+    [key]: setOfLength(setsByPosition[key], setLength)
+  }), {})
+
+  // sort by position
+  const sortedByPosition = sortSetsByPosition(setsByLength)
+
+  // create sets in db
+  Object.values(sortedByPosition).forEach(async songs => {
+    await createSet(setlist.id, songs.map(song => song.id))
+  })
+
+  return setlist.id
 }

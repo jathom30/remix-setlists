@@ -1,8 +1,8 @@
-import { Form, useActionData, useCatch } from "@remix-run/react";
+import { Form, useActionData } from "@remix-run/react";
 import { json } from '@remix-run/node'
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
-import { ErrorContainer, ErrorMessage, FlexList, Input, Label, Link, SaveButtons } from "~/components";
+import { ErrorContainer, ErrorMessage, FlexList, Input, Label, SaveButtons } from "~/components";
 import { requireUserId } from "~/session.server";
 import { getFields } from "~/utils/form";
 import { updateBandByCode } from "~/models/band.server";
@@ -31,7 +31,7 @@ export default function ExisitingBand() {
       <FlexList gap={0} pad={4}>
         <Label>Band Code</Label>
         <Input name="bandCode" placeholder="Enter your band code here..." />
-        {actionData?.errors.bandCode ? <ErrorMessage message={actionData.errors.bandCode} /> : null}
+        {actionData?.errors?.bandCode ? <ErrorMessage message={actionData.errors.bandCode} /> : null}
       </FlexList>
       <SaveButtons
         saveLabel="Add me to this band"

@@ -57,7 +57,6 @@ async function seed() {
   const setlist = await prisma.setlist.create({
     data: {
       name: 'My First Setlist',
-      updatedBy: user.email,
       bandId: band.id
     }
   })

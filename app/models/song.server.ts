@@ -1,13 +1,19 @@
 import type { Band, Setlist, Song } from "@prisma/client";
 import { prisma } from "~/db.server";
 
-export async function getSongs(bandId: Band['id'], params?: { q?: string }) {
+export async function getSongs(bandId: Band['id'], params?: { q?: string, tempos?: number[], isCover?: boolean }) {
+  console.log(params)
   return prisma.song.findMany({
     where: {
       bandId,
       name: {
-        contains: params?.q
-      }
+        contains: params?.q,
+      },
+      tempo: {
+        in: params?.tempos
+      },
+      ...(params?.isCover === false ? { NOT: { isCover: true } } : null),
+      ...(params?.isCover === true ? { isCover: true } : null),
     },
     orderBy: { name: 'asc' }
   })
@@ -44,17 +50,6 @@ export async function createSong(bandId: Band['id'], song: Omit<Song, 'id' | 'up
 }
 
 export async function deleteSong(songId: Song['id']) {
-  // TODO
-  // await prisma.set.updateMany({
-  //   where: {
-  //     songs: {
-  //       some: { id: songId }
-  //     }
-  //   },
-  //   data: {
-
-  //   }
-  // })
   return prisma.song.delete({
     where: { id: songId },
   })
