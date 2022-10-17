@@ -2,9 +2,12 @@ import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { Avatar, ErrorMessage, FlexList, Input, Label, SaveButtons } from "~/components";
+import { HexColorPicker } from "react-colorful"
+import { ErrorMessage, FlexList, Input, Label, SaveButtons } from "~/components";
 import { getBand, updateBand } from "~/models/band.server";
 import { getFields } from "~/utils/form";
+import { useState } from "react";
+import { contrastColor } from "~/utils/assorted";
 
 export async function loader({ params }: LoaderArgs) {
   const { bandId } = params
@@ -23,19 +26,26 @@ export async function action({ request, params }: ActionArgs) {
 
   const formData = await request.formData()
 
-  const { fields, errors } = getFields<{ name: string }>(formData, [{ name: 'name', type: 'string', isRequired: true }])
+  const { fields, errors } = getFields<{ name: string; backgroundColor: string }>(formData, [
+    { name: 'name', type: 'string', isRequired: true },
+    { name: 'backgroundColor', type: 'string', isRequired: true },
+  ])
 
   if (Object.keys(errors).length) {
     return json({ errors })
   }
 
   await updateBand(bandId, fields)
+
   return redirect(`/${bandId}/band`)
 }
 
 export default function EditBand() {
   const { band } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
+
+  const [color, setColor] = useState(band.icon?.backgroundColor || '');
+
   return (
     <Form method="put">
       <FlexList pad={4}>
@@ -46,8 +56,20 @@ export default function EditBand() {
         </FlexList>
         <FlexList gap={0}>
           <Label>Icon</Label>
-          <Avatar bandName={band.name} icon={band.icon} size="lg" />
+          <FlexList direction="row" justify="center">
+            <div
+              className="flex items-center justify-center aspect-square h-20 text-3xl font-bold rounded"
+              style={{
+                backgroundColor: color,
+                color: contrastColor(color),
+              }}
+            >
+              {band.name[0]}
+            </div>
+            <HexColorPicker color={color} onChange={setColor} />
+          </FlexList>
         </FlexList>
+        <input hidden name="backgroundColor" value={color} />
       </FlexList>
       <SaveButtons
         saveLabel="Save"

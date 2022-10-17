@@ -2,11 +2,11 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import invariant from "tiny-invariant";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
-import { Button, FlexList, ItemBox, Label, Link, RestrictedAlert, Tabs } from "~/components";
+import { Button, FlexList, ItemBox, Label, Link, Tabs } from "~/components";
 import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { roleEnums } from "~/utils/enums";
-import { Form, useLoaderData, useParams } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import { getUserById } from "~/models/user.server";
 import { useState } from "react";
 import { updateBandMemberRole } from "~/models/usersInBands.server";
@@ -26,7 +26,7 @@ export async function loader({ request, params }: LoaderArgs) {
     throw new Response('Permission denied', { status: 403 })
   }
 
-  const canRemoveMember = userId !== memberId && band.members.reduce((total, member) => total += member.role === roleEnums.admin ? 1 : 0, 0) > 0
+  const canRemoveMember = band.members.reduce((total, member) => total += member.role === roleEnums.admin ? 1 : 0, 0) > (userId === memberId ? 1 : 0)
 
   const member = await getUserById(memberId)
   const memberWithRole = {

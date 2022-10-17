@@ -1,4 +1,4 @@
-import type { Band, User } from "@prisma/client";
+import type { Band, BandIcon, User } from "@prisma/client";
 import { prisma } from "~/db.server";
 import { contrastColor, generateRandomHex } from "~/utils/assorted";
 
@@ -86,10 +86,18 @@ export async function createBand(band: Pick<Band, 'name'>, userId: User['id']) {
   })
 }
 
-export async function updateBand(bandId: Band['id'], band: Partial<Band>) {
+export async function updateBand(bandId: Band['id'], band: { name: Band['name'], backgroundColor: BandIcon['backgroundColor'] }) {
   return prisma.band.update({
     where: { id: bandId },
-    data: band
+    data: {
+      name: band.name,
+      icon: {
+        update: {
+          backgroundColor: band.backgroundColor,
+          textColor: contrastColor(band.backgroundColor || '')
+        }
+      }
+    }
   })
 }
 
