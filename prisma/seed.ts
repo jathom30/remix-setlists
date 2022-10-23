@@ -76,9 +76,12 @@ async function seed() {
       position: 'opener',
       rank: 'include',
       sets: {
-        connect: {
-          id: set.id,
-        }
+        create: [{
+          positionInSet: 0,
+          set: {
+            connect: { id: set.id }
+          }
+        }]
       },
       bandId: band.id,
     }
@@ -91,9 +94,12 @@ async function seed() {
       position: 'closer',
       rank: 'no_preference',
       sets: {
-        connect: {
-          id: set.id
-        }
+        create: [{
+          positionInSet: 1,
+          set: {
+            connect: { id: set.id }
+          }
+        }]
       },
       bandId: band.id,
       isCover: true,

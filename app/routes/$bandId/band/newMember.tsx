@@ -3,25 +3,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
 import { FlexList, Label, RestrictedAlert } from "~/components";
-import { requireUserId } from "~/session.server";
+import { requireAdminMember } from "~/session.server";
 import invariant from "tiny-invariant";
 import { getBand } from "~/models/band.server";
-import { roleEnums } from "~/utils/enums";
 import { useCatch, useLoaderData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 export async function loader({ request, params }: LoaderArgs) {
-  const userId = await requireUserId(request)
-
   const bandId = params.bandId
   invariant(bandId, 'bandId not found')
+  await requireAdminMember(request, bandId)
 
   const band = await getBand(bandId)
-  const isAdmin = band?.members.find(m => m.userId === userId)?.role === roleEnums.admin
 
-  if (!isAdmin) {
-    throw new Response('Access denied', { status: 403 })
+  if (!band) {
+    throw new Response('Band not found', { status: 404 })
   }
 
   return json({ band })
@@ -91,7 +88,7 @@ export function CatchBoundary() {
   }
   return (
     <FlexList pad={4}>
-      Caught
+      Band not found
     </FlexList>
   )
 }

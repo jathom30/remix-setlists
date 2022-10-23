@@ -4,25 +4,18 @@ import { json, redirect } from "@remix-run/node"
 import invariant from "tiny-invariant";
 import { MulitSongSelect } from "~/components";
 import { getSongsNotInSetlist } from "~/models/song.server";
-import { getMemberRole } from "~/models/usersInBands.server";
-import { requireUserId } from "~/session.server";
-import { roleEnums } from "~/utils/enums";
+import { requireNonSubMember } from "~/session.server";
 import { createSet } from "~/models/set.server";
 
 export async function loader({ request, params }: LoaderArgs) {
-  const userId = await requireUserId(request)
   const { bandId, setlistId } = params
   invariant(bandId, 'bandId not found')
   invariant(setlistId, 'setlistId not found')
+
+  await requireNonSubMember(request, bandId)
+
   const url = new URL(request.url)
   const q = url.searchParams.get('query')
-
-  const role = await getMemberRole(bandId, userId)
-  const isSub = role === roleEnums.sub
-
-  if (isSub) {
-    throw new Response('Access denied', { status: 404 })
-  }
 
   const songParams = {
     ...(q ? { q } : null)
@@ -35,7 +28,9 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export async function action({ request, params }: ActionArgs) {
   const { setlistId, bandId } = params
+  invariant(bandId, 'bandId not found')
   invariant(setlistId, 'setlistId not found')
+  await requireNonSubMember(request, bandId)
   const formData = await request.formData()
   const songIds = formData.getAll('songs').map(songId => songId.toString())
 

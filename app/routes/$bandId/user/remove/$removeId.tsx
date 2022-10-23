@@ -4,36 +4,35 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
 import { Button, ConfirmDelete, ErrorContainer, FlexList } from "~/components";
 import { removeMemberFromBand } from "~/models/usersInBands.server";
-import { requireUserId } from "~/session.server";
+import { requireAdminMember, requireUserId } from "~/session.server";
 import { getBand } from "~/models/band.server";
-import { roleEnums } from "~/utils/enums";
+import { RoleEnum } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request)
   const { bandId, removeId } = params
   invariant(bandId, 'bandId not found')
   invariant(removeId, 'removeId not found')
-
+  await requireAdminMember(request, bandId)
   const band = await getBand(bandId)
-  const isAdmin = band?.members.find(m => m.userId === userId)?.role === roleEnums.admin
 
-  if (!isAdmin) {
-    throw new Response('Permission denied', { status: 403 })
+  if (!band) {
+    throw new Response('Band not found', { status: 404 })
   }
 
   const isCurrentBand = bandId === removeId
   const canRemoveMember = band.members
     .filter(member => isCurrentBand ? member.userId !== userId : true)
-    .reduce((total, member) => total += member.role === roleEnums.admin ? 1 : 0, 0) > 0
+    .reduce((total, member) => total += member.role as unknown as RoleEnum === RoleEnum.ADMIN ? 1 : 0, 0) > 0
 
   return json({ canRemoveMember })
 }
 
 export async function action({ request, params }: ActionArgs) {
-  const userId = await requireUserId(request)
   const { removeId, bandId } = params
   invariant(removeId, 'removeId not found')
   invariant(bandId, 'bandId not found')
+  const userId = await requireAdminMember(request, bandId)
 
   await removeMemberFromBand(removeId, userId)
   if (bandId !== removeId) {

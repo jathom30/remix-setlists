@@ -6,14 +6,22 @@ import { createSet } from "./set.server";
 import { getSongs } from "./song.server";
 
 export async function createSetlist(bandId: Band['id'], songIds: Song['id'][]) {
-  const setlist = await prisma.setlist.create({
+  return await prisma.setlist.create({
     data: {
       name: 'Temp name',
       bandId,
+      sets: {
+        create: [{
+          songs: {
+            create: songIds.map((songId, index) => ({
+              songId,
+              positionInSet: index
+            }))
+          }
+        }]
+      }
     },
   })
-  await createSet(setlist.id, songIds)
-  return setlist
 }
 
 export async function getSetlists(bandId: Band['id'], params?: { q?: string }) {
@@ -24,7 +32,7 @@ export async function getSetlists(bandId: Band['id'], params?: { q?: string }) {
         contains: params?.q
       }
     },
-    include: { sets: { select: { songs: { select: { length: true } } } } },
+    include: { sets: { select: { songs: { include: { song: { select: { length: true } } } } } } },
     orderBy: { name: 'asc' },
   })
   return setlists
@@ -35,9 +43,22 @@ export async function getSetlist(setlistId: Setlist['id']) {
     where: { id: setlistId },
     include: {
       sets: {
-        include: { songs: true }
+        include: { songs: { include: { song: true }, orderBy: { positionInSet: 'asc' } } }
       }
     }
+  })
+}
+
+export async function getCondensedSetlist(setlistId: Setlist['id']) {
+  return prisma.setlist.findUnique({
+    where: { id: setlistId },
+    include: {
+      sets: {
+        include: {
+          songs: { include: { song: { select: { name: true } } }, orderBy: { positionInSet: 'asc' } },
+        }
+      }
+    },
   })
 }
 
@@ -65,7 +86,7 @@ export async function getRecentSetlists(bandId: Band['id']) {
   return prisma.setlist.findMany({
     where: { bandId },
     orderBy: { updatedAt: 'desc' },
-    include: { sets: { select: { songs: { select: { length: true } } } } },
+    include: { sets: { select: { songs: { include: { song: { select: { length: true } } } } } } },
     take: 5,
   })
 }

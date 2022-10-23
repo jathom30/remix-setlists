@@ -4,10 +4,11 @@ import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
 import { Avatar, Badge, Drawer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
 import { getBand } from "~/models/band.server";
-import { getUser, requireUserId } from "~/session.server";
+import { requireUserId } from "~/session.server";
 import { getUsersById } from "~/models/user.server";
-import { roleEnums } from "~/utils/enums";
+import { RoleEnum } from "~/utils/enums";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { useMemberRole } from "~/utils";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -25,15 +26,14 @@ export async function loader({ request, params }: LoaderArgs) {
     role: band.members.find(m => m.userId === member.id)?.role
   }))
 
-  const user = await getUser(request)
-  const isAdmin = augmentedMembers.find(m => m.id === user?.id)?.role === roleEnums.admin
-
-  return json({ band, members: augmentedMembers, isAdmin })
+  return json({ band, members: augmentedMembers })
 }
 
 
 export default function BandSettingsPage() {
-  const { band, members, isAdmin } = useLoaderData<typeof loader>()
+  const { band, members } = useLoaderData<typeof loader>()
+  const memberRole = useMemberRole()
+  const isAdmin = memberRole === RoleEnum.ADMIN
   const { bandId } = useParams()
   const { pathname } = useLocation()
   const navigate = useNavigate()
@@ -44,10 +44,11 @@ export default function BandSettingsPage() {
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader>
+        <RouteHeader
+          action={isAdmin ? <Link to="edit" kind="invert">Edit</Link> : null}
+        >
           <FlexHeader>
             <RouteHeaderBackLink label="Band" to={`/${bandId}/home`} />
-            {isAdmin ? <Link to="edit" kind="invert">Edit</Link> : null}
           </FlexHeader>
         </RouteHeader>
       }

@@ -3,9 +3,8 @@ import invariant from "tiny-invariant";
 
 import type { User } from "~/models/user.server";
 import { getUserById } from "~/models/user.server";
-import { prisma } from "./db.server";
-import { getBand } from "./models/band.server";
 import { getMemberRole } from "./models/usersInBands.server";
+import { RoleEnum } from "./utils/enums";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
@@ -55,6 +54,31 @@ export async function requireUserId(
     throw redirect(`/login?${searchParams}`);
   }
   return userId;
+}
+
+
+export async function requireMemberOfRole(request: Request, bandId: string, role: RoleEnum) {
+  const userId = await requireUserId(request)
+  const memberRole = await getMemberRole(bandId, userId) as unknown as RoleEnum
+
+  if (memberRole !== role) {
+    throw new Response('Permission denied', { status: 403 })
+  }
+  return userId
+}
+
+export async function requireAdminMember(request: Request, bandId: string) {
+  return requireMemberOfRole(request, bandId, RoleEnum.ADMIN)
+}
+
+export async function requireNonSubMember(request: Request, bandId: string) {
+  const userId = await requireUserId(request)
+  const memberRole = await getMemberRole(bandId, userId) as unknown as RoleEnum
+
+  if (memberRole === RoleEnum.SUB) {
+    throw new Response('Permission denied', { status: 403 })
+  }
+  return memberRole
 }
 
 export async function requireUser(request: Request) {

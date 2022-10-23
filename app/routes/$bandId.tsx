@@ -1,4 +1,5 @@
-import type { LoaderArgs } from "@remix-run/server-runtime"
+import type { LoaderArgs } from "@remix-run/server-runtime";
+import { json } from "@remix-run/node"
 import { FlexList, MaxHeightContainer } from "~/components"
 import { requireUserId } from "~/session.server"
 import { Link, Outlet, useLocation } from "@remix-run/react"
@@ -6,10 +7,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faHouse, faList, faMusic, faUsers } from "@fortawesome/free-solid-svg-icons"
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons"
 import { faUser } from "@fortawesome/free-regular-svg-icons"
+import { getMemberRole } from "~/models/usersInBands.server";
+import invariant from "tiny-invariant";
 
-export async function loader({ request }: LoaderArgs) {
-  await requireUserId(request)
-  return null
+export async function loader({ request, params }: LoaderArgs) {
+  const userId = await requireUserId(request)
+  const { bandId } = params
+  invariant(bandId, 'bandId not found')
+  const memberRole = await getMemberRole(bandId, userId)
+  // used in useMemberRole hook in child routes
+  return json({ memberRole })
 }
 
 const routes = [

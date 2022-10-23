@@ -1,17 +1,15 @@
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/node"
 import invariant from "tiny-invariant";
-import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, Drawer, SetlistLink, Button, Link } from "~/components"
-import { requireUserId } from "~/session.server";
+import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, Drawer, SetlistLink, Button, Link, ErrorContainer } from "~/components"
 import { Outlet, useLoaderData, useLocation, useNavigate, useSearchParams } from "@remix-run/react";
 import { getRecentSetlists } from "~/models/setlist.server";
 import { getRecentSongs } from "~/models/song.server";
 import { getBandHome } from "~/models/band.server";
-import { getMemberRole } from "~/models/usersInBands.server";
-import { roleEnums, showHideEnums } from "~/utils/enums";
+import { RoleEnum, showHideEnums } from "~/utils/enums";
+import { useMemberRole } from "~/utils";
 
 export async function loader({ request, params }: LoaderArgs) {
-  const userId = await requireUserId(request)
   const bandId = params.bandId
   invariant(bandId, 'bandId note found')
 
@@ -19,18 +17,17 @@ export async function loader({ request, params }: LoaderArgs) {
   // returning the searchParams so that the browser will remember them if combined with other params
   const searchParams = Object.fromEntries(url.searchParams.entries())
 
-  const role = await getMemberRole(bandId, userId)
-  const band = await getBandHome(bandId)
-  const setlists = await getRecentSetlists(bandId)
-  const songs = await getRecentSongs(bandId)
+  const [band, setlists, songs] = await Promise.all([getBandHome(bandId), getRecentSetlists(bandId), getRecentSongs(bandId)])
   if (!band) {
     throw new Response("Band not found", { status: 404 })
   }
-  return json({ band, setlists, songs, isSub: role === roleEnums.sub, role, searchParams })
+  return json({ band, setlists, songs, searchParams })
 }
 
 export default function BandIndex() {
-  const { band, setlists, songs, isSub, role, searchParams } = useLoaderData<typeof loader>()
+  const { band, setlists, songs, searchParams } = useLoaderData<typeof loader>()
+  const memberRole = useMemberRole()
+  const isSub = memberRole === RoleEnum.SUB
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
@@ -48,14 +45,15 @@ export default function BandIndex() {
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader>
+        <RouteHeader
+          action={<Badge invert size="sm">{memberRole}</Badge>}
+        >
           <RouteHeaderBackLink
             label={band.name}
             to="/bandSelect"
           >
             <Avatar size="sm" bandName={band.name} icon={band.icon} />
           </RouteHeaderBackLink>
-          <Badge invert size="sm">{role}</Badge>
         </RouteHeader>
       }
       footer={
@@ -108,4 +106,8 @@ export default function BandIndex() {
       </div>
     </MaxHeightContainer>
   )
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ErrorContainer error={error} />
 }

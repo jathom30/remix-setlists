@@ -1,16 +1,23 @@
 import { Form, useParams } from "@remix-run/react";
-import type { ActionArgs } from "@remix-run/server-runtime";
+import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { redirect } from '@remix-run/node'
 import invariant from "tiny-invariant";
-import { ConfirmDelete, ErrorContainer, FlexList, Link } from "~/components";
+import { ConfirmDelete, ErrorContainer } from "~/components";
 import { deleteSetlist } from "~/models/setlist.server";
-import { requireUserId } from "~/session.server";
+import { requireNonSubMember } from "~/session.server";
+
+export async function loader({ request, params }: LoaderArgs) {
+  const { bandId } = params
+  invariant(bandId, 'bandId not found')
+  await requireNonSubMember(request, bandId)
+  return null
+}
 
 export async function action({ request, params }: ActionArgs) {
-  await requireUserId(request)
   const { setlistId, bandId } = params
   invariant(setlistId, 'setlistId not found')
   invariant(bandId, 'bandId not found')
+  await requireNonSubMember(request, bandId)
 
   await deleteSetlist(setlistId)
   return redirect(`/${bandId}/setlists`)

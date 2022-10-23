@@ -3,16 +3,16 @@ import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { ConfirmDelete, ErrorContainer, FlexList, Link } from "~/components";
-import { requireUserId } from "~/session.server";
+import { requireNonSubMember } from "~/session.server";
 import { removeSongFromSet } from "~/models/set.server";
 
 export async function action({ request, params }: ActionArgs) {
-  await requireUserId(request)
   const { songId, setlistId, bandId, setId } = params
   invariant(songId, 'songId not found')
   invariant(setlistId, 'setlistId not found')
   invariant(bandId, 'bandId not found')
   invariant(setId, 'setId not found')
+  await requireNonSubMember(request, bandId)
 
   await removeSongFromSet(setId, songId)
   return redirect(`/${bandId}/setlists/edit/${setlistId}`)

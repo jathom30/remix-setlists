@@ -5,11 +5,11 @@ import { FlexList } from "./FlexList"
 
 const setCount = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']
 
-export const SetlistLink = ({ setlist }: { setlist: SerializeFrom<Setlist & { sets: { songs: { length: Song['length'] }[] }[] }> }) => {
+export const SetlistLink = ({ setlist }: { setlist: SerializeFrom<Setlist & { sets: { songs: { song: { length: Song['length'] } }[] }[] }> }) => {
   const { bandId } = useParams()
   const { pathname } = useLocation()
   const getDisplaySetLength = Math.ceil(setlist.sets.reduce((total, set) => {
-    const setLength = set.songs.reduce((total, song) => total += song.length, 0)
+    const setLength = set.songs.reduce((total, song) => total += song.song.length, 0)
     return total += setLength
   }, 0) / setlist.sets.length)
 

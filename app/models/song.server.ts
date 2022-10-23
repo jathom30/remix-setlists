@@ -1,19 +1,26 @@
-import type { Band, Setlist, Song } from "@prisma/client";
+import type { Band, Feel, Setlist, Song } from "@prisma/client";
 import { prisma } from "~/db.server";
 
-export async function getSongs(bandId: Band['id'], params?: { q?: string, tempos?: number[], isCover?: boolean }) {
-  console.log(params)
+type SongParams = {
+  q?: string
+  tempos?: Song['tempo'][]
+  isCover?: Song['isCover']
+  feels?: Feel['id'][]
+  positions?: Song['position'][]
+}
+
+export async function getSongs(bandId: Band['id'], params?: SongParams) {
   return prisma.song.findMany({
     where: {
       bandId,
       name: {
         contains: params?.q,
       },
-      tempo: {
-        in: params?.tempos
-      },
       ...(params?.isCover === false ? { NOT: { isCover: true } } : null),
       ...(params?.isCover === true ? { isCover: true } : null),
+      ...(params?.feels?.length ? { feels: { some: { id: { in: params?.feels } } } } : null),
+      ...(params?.tempos?.length ? { tempo: { in: params.tempos } } : null),
+      ...(params?.positions?.length ? { position: { in: params.positions } } : null),
     },
     orderBy: { name: 'asc' }
   })
@@ -33,18 +40,34 @@ export async function getSongName(songId: Song['id']) {
   })
 }
 
-export async function updateSong(songId: Song['id'], song: Omit<Song, 'id' | 'updatedAt' | 'createdAt'>) {
+export async function updateSong(songId: Song['id'], song: Omit<Song, 'id' | 'updatedAt' | 'createdAt'>, feelIds: Feel['id'][]) {
+  const currentFeelIds = (await prisma.song.findUnique({ where: { id: songId }, include: { feels: { select: { id: true } } } }))?.feels.map(feel => feel.id)
+
+  const newFeels = feelIds.filter(feelId => !currentFeelIds?.includes(feelId)) || []
+  const removedFeels = currentFeelIds?.filter(feelId => !feelIds.includes(feelId)) || []
+
   return prisma.song.update({
     where: { id: songId },
-    data: song
+    data: {
+      ...song,
+      feels: {
+        disconnect: removedFeels.map(feel => ({ id: feel })),
+        connect: newFeels.map(feel => ({ id: feel })),
+      }
+    }
   })
 }
 
-export async function createSong(bandId: Band['id'], song: Omit<Song, 'id' | 'updatedAt' | 'createdAt' | 'bandId'>) {
+export async function createSong(bandId: Band['id'], song: Omit<Song, 'id' | 'updatedAt' | 'createdAt' | 'bandId'>, feelIds: Feel['id'][]) {
   return prisma.song.create({
     data: {
       ...song,
-      bandId
+      bandId,
+      ...(feelIds.length ? {
+        feels: {
+          connect: feelIds.map(feelId => ({ id: feelId }))
+        }
+      } : {})
     }
   })
 }
@@ -62,7 +85,7 @@ export async function getSongsNotInSetlist(bandId: Band['id'], setlistId: Setlis
       sets: {
         include: {
           songs: {
-            select: { id: true }
+            select: { songId: true }
           }
         }
       }
@@ -72,7 +95,7 @@ export async function getSongsNotInSetlist(bandId: Band['id'], setlistId: Setlis
     return [
       ...songIds,
       ...set.songs.reduce((ids: string[], song) => {
-        return [...ids, song.id]
+        return [...ids, song.songId]
       }, [])
     ]
   }, [])

@@ -1,13 +1,13 @@
-import type { LoaderArgs, SerializeFrom } from "@remix-run/server-runtime";
+import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from '@remix-run/node'
-import type { Song } from "@prisma/client";
 import invariant from "tiny-invariant";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
-import { Outlet, useCatch, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
-import { Drawer, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongLink } from "~/components";
+import { Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
+import { CatchContainer, Drawer, ErrorContainer, FlexHeader, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongLink } from "~/components";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
+import { getSetLength } from "~/utils/setlists";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -31,7 +31,7 @@ export default function Setlist() {
   const navigate = useNavigate()
   const [to] = useState(state as string)
 
-  const setLength = (songs: SerializeFrom<Song>[]) => songs.reduce((total, song) => total += song.length, 0)
+  // const setLength = (songs: SerializeFrom<SongsInSets & { song: Song | null }>[]) => songs.reduce((total, song) => total += song.song?.length || 0, 0)
 
   return (
     <MaxHeightContainer
@@ -52,12 +52,15 @@ export default function Setlist() {
         <div key={set.id} className="border-b border-slate-300">
           <div className="p-4 pb-0">
             <FlexHeader>
-              <Label>Set {i + 1} - {setLength(set.songs)} minutes</Label>
+              <Label>Set {i + 1} - {getSetLength(set.songs)} minutes</Label>
             </FlexHeader>
           </div>
-          {set.songs.map(song => (
-            <SongLink key={song.id} song={song} />
-          ))}
+          {set.songs.map(song => {
+            if (!song.song) { return null }
+            return (
+              <SongLink key={song.songId} song={song.song} />
+            )
+          })}
         </div>
       ))}
     </MaxHeightContainer>
@@ -65,27 +68,9 @@ export default function Setlist() {
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  return (
-    <ErrorContainer error={error} />
-  );
+  return <ErrorContainer error={error} />
 }
 
 export function CatchBoundary() {
-  const caught = useCatch()
-
-  if (caught.status === 404) {
-    return (
-      <div>
-        <RouteHeader>
-          <RouteHeaderBackLink label="Not Found" />
-        </RouteHeader>
-        <FlexList pad={4}>
-          <h1 className="text-5xl font-bold">404</h1>
-          <p>Oops...</p>
-          <p>That setlist could not be found.</p>
-        </FlexList>
-      </div>
-    )
-  }
-  throw new Error(`Unhandled error: ${caught.status}`)
+  return <CatchContainer />
 }

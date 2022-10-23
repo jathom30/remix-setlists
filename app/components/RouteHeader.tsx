@@ -1,9 +1,17 @@
+import { useTransition } from "@remix-run/react"
 import type { ReactNode } from "react"
+import { Spinner } from "./Spinner"
 
-export const RouteHeader = ({ children }: { children: ReactNode }) => {
+export const RouteHeader = ({ children, action }: { children: ReactNode; action?: ReactNode }) => {
+  const transition = useTransition()
+  const isTransitioning = !!transition.submission
   return (
-    <div className="bg-slate-400 h-14 flex flex-row p-2 items-center justify-between">
-      {children}
+    <div className="bg-slate-400 h-14 flex p-2 items-center justify-between w-full">
+      <div className="flex items-center gap-4 w-full">
+        {children}
+        {isTransitioning ? <Spinner invert /> : null}
+      </div>
+      {action}
     </div>
   )
 }

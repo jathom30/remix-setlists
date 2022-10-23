@@ -12,8 +12,25 @@ import { keyLetters, majorMinorOptions } from "~/utils/songConstants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RadioGroup } from "./RadioGroup";
 import { ErrorMessage } from "./ErrorMessage";
+import { useEffect, useState } from "react";
+import { Checkbox } from "./Checkbox";
 
-export const SongForm = ({ song, feels, errors }: { song?: Partial<SerializeFrom<Song>>; feels: SerializeFrom<Feel>[]; errors?: Record<keyof SerializeFrom<Song>, string>; }) => {
+export const SongForm = ({ song, feels, errors, onCreateFeel }: {
+  song?: Partial<SerializeFrom<Song & { feels: Feel[] }>>; feels: SerializeFrom<Feel>[];
+  errors?: Record<keyof SerializeFrom<Song>, string>;
+  onCreateFeel: (newFeel: string) => void;
+}) => {
+  const [originalFeels] = useState(feels)
+  const [selectedFeels, setSelectedFeels] = useState(song?.feels || [])
+
+  useEffect(() => {
+    setSelectedFeels(prevFeels => {
+      const [newFeel] = feels?.filter(feel => originalFeels?.every(og => og.id !== feel.id)) || []
+      const newFeels = [...prevFeels, newFeel]
+      return newFeels
+    })
+  }, [originalFeels, feels])
+
   return (
     <FlexList pad={4}>
       <Field name="name" label="Name" isRequired>
@@ -45,35 +62,34 @@ export const SongForm = ({ song, feels, errors }: { song?: Partial<SerializeFrom
         </div>
       </FlexList>
 
-      <div className="grid grid-cols-2 gap-4">
-        <Field name="tempo" label="Tempo" isRequired>
-          <FlexList direction="row">
-            <FontAwesomeIcon size="sm" icon={faArrowDown} />
-            <input defaultValue={song?.tempo} className="w-full" type="range" min={1} max={5} name="tempo" />
-            <FontAwesomeIcon size="lg" icon={faArrowUp} />
-          </FlexList>
-        </Field>
-        <Field name="feels" label="Feels">
-          <CreatableSelect
-            name="feels"
-            isMulti
-            instanceId="feels"
-            options={feels}
-            // onCreateOption={newFeel => console.log(newFeel)}
-            getOptionLabel={feel => feel.label}
-            getOptionValue={feel => feel.id}
-          />
-        </Field>
-      </div>
+      <Field name="tempo" label="Tempo" isRequired>
+        <FlexList direction="row">
+          <FontAwesomeIcon size="sm" icon={faArrowDown} />
+          <input defaultValue={song?.tempo} className="w-full" type="range" min={1} max={5} name="tempo" />
+          <FontAwesomeIcon size="lg" icon={faArrowUp} />
+        </FlexList>
+      </Field>
+      <Field name="feels" label="Feels">
+        <CreatableSelect
+          value={selectedFeels}
+          onChange={newFeels => {
+            setSelectedFeels(Array.from(newFeels))
+          }}
+          name="feels"
+          isMulti
+          instanceId="feels"
+          options={feels}
+          onCreateOption={newFeel => {
+            onCreateFeel(newFeel)
+          }}
+          getOptionLabel={feel => feel.label}
+          getOptionValue={feel => feel.id}
+        />
+      </Field>
 
       <FlexList direction="row">
         <Field name='isCover' label="Cover">
-          <div className="p-2 rounded hover:bg-slate-100">
-            <FlexList direction="row" items="center">
-              <input id="isCover" name="isCover" type="checkbox" defaultChecked={song?.isCover} />
-              <span className="text-sm">Is a cover</span>
-            </FlexList>
-          </div>
+          <Checkbox name="isCover" label="Is a cover" />
         </Field>
       </FlexList>
 

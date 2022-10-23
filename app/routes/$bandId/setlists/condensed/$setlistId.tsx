@@ -2,7 +2,7 @@ import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { FlexList, Label, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
-import { getSetlist } from "~/models/setlist.server";
+import { getCondensedSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { useLoaderData } from "@remix-run/react";
 
@@ -11,7 +11,7 @@ export async function loader({ request, params }: LoaderArgs) {
   const { setlistId } = params
   invariant(setlistId, 'setlistId not found')
 
-  const setlist = await getSetlist(setlistId)
+  const setlist = await getCondensedSetlist(setlistId)
 
   if (!setlist) {
     throw new Response("Setlist not found", { status: 404 })
@@ -36,7 +36,7 @@ export default function CondensedSetlist() {
             <Label>Set {i + 1}</Label>
             <FlexList gap={0}>
               {set.songs.map(song => (
-                <span key={song.id}>{song.name}</span>
+                <span key={song.songId}>{song.song?.name}</span>
               ))}
             </FlexList>
           </div>

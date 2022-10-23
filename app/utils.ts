@@ -2,6 +2,7 @@ import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
 
 import type { User } from "~/models/user.server";
+import { RoleEnum } from "./utils/enums";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -54,6 +55,18 @@ export function useOptionalUser(): User | undefined {
     return undefined;
   }
   return data.user;
+}
+
+function isMemberRole(role: any): role is RoleEnum {
+  return role && typeof role === 'string'
+}
+
+export function useMemberRole(): RoleEnum {
+  const data = useMatchesData('routes/$bandId')
+  if (!data || !isMemberRole(data.memberRole)) {
+    return RoleEnum.SUB
+  }
+  return data.memberRole
 }
 
 export function useUser(): User {

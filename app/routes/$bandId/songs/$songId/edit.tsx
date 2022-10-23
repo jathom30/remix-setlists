@@ -2,38 +2,42 @@ import invariant from "tiny-invariant";
 import { json } from '@remix-run/node'
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
-import { MaxHeightContainer, RestrictedAlert, SongForm, SaveButtons } from "~/components";
+import { MaxHeightContainer, SongForm, SaveButtons, ErrorContainer, CatchContainer } from "~/components";
 import { getSong, updateSong } from "~/models/song.server";
 import { getFields } from "~/utils/form";
-import { requireUserId } from "~/session.server";
-import { getFeels } from "~/models/feel.server";
-import { Form, useActionData, useLoaderData, useParams } from "@remix-run/react";
+import { requireNonSubMember } from "~/session.server";
+import { createFeel, getFeels } from "~/models/feel.server";
+import { useActionData, useFetcher, useLoaderData, useParams } from "@remix-run/react";
 import type { Feel, Song } from "@prisma/client";
-import { getMemberRole } from "~/models/usersInBands.server";
-import { roleEnums } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderArgs) {
-  const userId = await requireUserId(request)
   const { songId, bandId } = params
   invariant(songId, 'songId not found')
   invariant(bandId, 'bandId not found')
+  await requireNonSubMember(request, bandId)
   const feels = await getFeels(bandId)
   const song = await getSong(songId)
-  const role = await getMemberRole(bandId, userId)
   if (!song) {
     throw new Response('Song not found', { status: 404 })
   }
-  return json({ song, feels, isSub: role === roleEnums.sub })
+
+  return json({ song, feels })
 }
 
 export async function action({ request, params }: ActionArgs) {
-  await requireUserId(request)
   const { songId, bandId } = params
-  const formData = await request.formData()
-  // const newFeel = formData.get('newFeel')
-
   invariant(bandId, 'bandId not found')
   invariant(songId, 'songId not found')
+  await requireNonSubMember(request, bandId)
+
+  const formData = await request.formData()
+  const newFeel = formData.get('newFeel')
+
+  if (newFeel && typeof newFeel === 'string') {
+    return json({
+      newFeel: await createFeel(newFeel, bandId)
+    })
+  }
 
   const { fields, errors } = getFields<SerializeFrom<Song & { feels: Feel['id'][] }>>(formData, [
     { name: 'name', type: 'string', isRequired: true },
@@ -41,49 +45,68 @@ export async function action({ request, params }: ActionArgs) {
     { name: 'keyLetter', type: 'string', isRequired: false },
     { name: 'isMinor', type: 'boolean', isRequired: false },
     { name: 'tempo', type: 'number', isRequired: true },
-    // { name: 'feels', type: 'array', isRequired: false },
     { name: 'isCover', type: 'boolean', isRequired: false },
     { name: 'position', type: 'string', isRequired: true },
     { name: 'rank', type: 'string', isRequired: true },
     { name: 'note', type: 'string', isRequired: false },
   ])
+  const feels = formData.getAll('feels')
+
+  if (!Array.isArray(feels)) {
+    return json({ errors: { feels: 'Invalid feels' } })
+  }
 
   if (Object.keys(errors).length) {
     return json({ errors }, { status: 400 })
   }
-  // TODO add value to submit button to diff from creating new feel
-  await updateSong(songId, fields)
+
+  const validFeels = feels.reduce((acc: string[], feelId) => {
+    if (feelId.toString().length) {
+      return [
+        ...acc, feelId.toString()
+      ]
+    }
+    return acc
+  }, [])
+
+  await updateSong(songId, fields, validFeels)
   return redirect(`/${bandId}/songs/${songId}`)
-
-
-  // // create new feel and attach to song
-  // if (newFeel && typeof newFeel === 'string') {
-  //   // https://css-tricks.com/snippets/javascript/random-hex-color/
-  //   const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-  //   await createFeelWithSong({ label: newFeel, color: randomColor, songId, bandId })
-  //   return redirect(`/${bandId}/songs/${songId}/edit`)
-  // }
 }
 
+
 export default function EditSong() {
-  const { song, feels, isSub } = useLoaderData<typeof loader>()
+  const { song, feels } = useLoaderData<typeof loader>()
   const { songId, bandId } = useParams()
   const actionData = useActionData()
+  const fetcher = useFetcher<typeof action>()
 
-  if (isSub) {
-    return <RestrictedAlert dismissTo={`/${bandId}/songs/${songId}`} />
+  const handleCreateFeel = (newFeel: string) => {
+    fetcher.submit({ newFeel }, { method: 'post' })
   }
 
   return (
-    <Form method="put">
+    <fetcher.Form method="put" className="h-full">
       <MaxHeightContainer
         fullHeight
         footer={
-          <SaveButtons saveLabel="Save" cancelTo={`/${bandId}/songs/${songId}`} />
+          <SaveButtons isDisabled={fetcher.state !== 'idle'} saveLabel="Save" cancelTo={`/${bandId}/songs/${songId}`} />
         }
       >
-        <SongForm song={song} feels={feels} errors={actionData?.errors} />
+        <SongForm
+          song={song}
+          feels={feels}
+          errors={actionData?.errors}
+          onCreateFeel={handleCreateFeel}
+        />
       </MaxHeightContainer>
-    </Form>
+    </fetcher.Form>
   )
+}
+
+export function CatchBoundary() {
+  return <CatchContainer />
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ErrorContainer error={error} />
 }

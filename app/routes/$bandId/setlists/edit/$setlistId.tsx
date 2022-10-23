@@ -2,22 +2,24 @@ import { faGripVertical, faPlus, faTrash } from "@fortawesome/free-solid-svg-ico
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
-import { NavLink, Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
+import { NavLink, Outlet, useFetcher, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Drawer, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongDisplay } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
-import { requireUserId } from "~/session.server";
+import { requireNonSubMember } from "~/session.server";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Song } from "@prisma/client";
 import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors, closestCenter } from "@dnd-kit/core";
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
+import { getSetLength } from "~/utils/setlists";
 
 export async function loader({ request, params }: LoaderArgs) {
-  await requireUserId(request)
 
-  const setlistId = params.setlistId
+  const { setlistId, bandId } = params
   invariant(setlistId, 'setlistId not found')
+  invariant(bandId, 'bandId not found')
+  await requireNonSubMember(request, bandId)
 
   const setlist = await getSetlist(setlistId)
 
@@ -30,13 +32,10 @@ export async function loader({ request, params }: LoaderArgs) {
 const subRoutes = ['newSet', 'addSongs', 'removeSong', 'createSet']
 
 export default function EditSetlist() {
+  const fetcher = useFetcher()
   const { setlist } = useLoaderData<typeof loader>()
   const { pathname } = useLocation()
   const navigate = useNavigate()
-
-  const setLength = (songs: SerializeFrom<Song>[]) => {
-    return songs.reduce((total, song) => total += song.length, 0)
-  }
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -64,40 +63,44 @@ export default function EditSetlist() {
         </>
       }
     >
-      <DndContext
-        id={setlist.id}
-        sensors={sensors}
-        onDragEnd={console.log}
-        collisionDetection={closestCenter}
-        modifiers={[restrictToFirstScrollableAncestor]}
-      >
-        <SortableContext items={setlist.sets} strategy={verticalListSortingStrategy}>
-          {setlist.sets.map((set, i) => (
-            <div key={set.id} className="border-b border-slate-300">
-              <div className="p-4 pb-0">
-                <FlexHeader>
-                  <FlexList direction="row" items="center">
-                    <Label>Set {i + 1} - {setLength(set.songs)} minutes</Label>
-                  </FlexList>
-                  <Link to={`${set.id}/addSongs`} icon={faPlus} isRounded isCollapsing>Add songs</Link>
-                </FlexHeader>
+      <fetcher.Form method="put">
+        <DndContext
+          id={setlist.id}
+          sensors={sensors}
+          onDragEnd={console.log}
+          collisionDetection={closestCenter}
+          modifiers={[restrictToFirstScrollableAncestor]}
+        >
+          <SortableContext items={setlist.sets} strategy={verticalListSortingStrategy}>
+            {setlist.sets.map((set, i) => (
+              <div key={set.id} className="border-b border-slate-300">
+                <div className="p-4 pb-0">
+                  <FlexHeader>
+                    <FlexList direction="row" items="center">
+                      <Label>Set {i + 1} - {getSetLength(set.songs)} minutes</Label>
+                    </FlexList>
+                    <Link to={`${set.id}/addSongs`} icon={faPlus} isRounded isCollapsing>Add songs</Link>
+                  </FlexHeader>
+                </div>
+
+                <div className={`border-b border-slate-300`}>
+                  <SortableContext id={set.id} items={set.songs.map(song => ({ id: song.songId }))} strategy={verticalListSortingStrategy}>
+                    <AnimatePresence initial={false}>
+                      {set.songs.map((song) => {
+                        if (!song.song) { return null }
+                        return (
+                          <SortableSong song={song.song} setId={set.id} key={song.songId} />
+                        )
+                      })}
+                    </AnimatePresence>
+                  </SortableContext>
+                </div>
+
               </div>
-
-              <div className={`border-b border-slate-300`}>
-                <SortableContext id={set.id} items={set.songs} strategy={verticalListSortingStrategy}>
-                  <AnimatePresence initial={false}>
-                    {set.songs.map((song) => (
-                      <SortableSong song={song} setId={set.id} key={song.id} />
-                    ))}
-                  </AnimatePresence>
-                </SortableContext>
-              </div>
-
-            </div>
-          ))}
-        </SortableContext>
-      </DndContext>
-
+            ))}
+          </SortableContext>
+        </DndContext>
+      </fetcher.Form>
     </MaxHeightContainer>
   )
 }

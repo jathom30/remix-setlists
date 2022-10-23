@@ -84,9 +84,19 @@ model Set {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  setlist   Setlist? @relation(fields: [setlistId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  setlist   Setlist?      @relation(fields: [setlistId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   setlistId String
-  songs     Song[]
+  songs     SongsInSets[]
+}
+
+model SongsInSets {
+  song          Song?  @relation(fields: [songId], references: [id])
+  songId        String
+  positionInSet Int
+  set           Set?   @relation(fields: [setId], references: [id], onDelete: Cascade)
+  setId         String
+
+  @@id([songId, setId])
 }
 
 model Song {
@@ -102,11 +112,11 @@ model Song {
   rank      String
   feels     Feel[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  sets      Set[]
-  band      Band?    @relation(fields: [bandId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  band      Band?         @relation(fields: [bandId], references: [id], onDelete: Cascade)
   bandId    String?
+  sets      SongsInSets[]
 }
 
 model Feel {

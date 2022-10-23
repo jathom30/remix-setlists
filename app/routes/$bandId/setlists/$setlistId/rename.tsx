@@ -2,16 +2,17 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { redirect, json } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { FlexList, Input, Label, SaveButtons } from "~/components";
-import { requireUserId } from "~/session.server";
+import { requireNonSubMember } from "~/session.server";
 import { Form, useActionData, useLoaderData, useParams } from "@remix-run/react";
 import { getFields } from "~/utils/form";
 import { getSetlist, updateSetlist } from "~/models/setlist.server";
 import { ErrorMessage } from "~/components/ErrorMessage";
 
 export async function loader({ request, params }: LoaderArgs) {
-  await requireUserId(request)
-  const { setlistId } = params
+  const { setlistId, bandId } = params
   invariant(setlistId, 'setlistId not found')
+  invariant(bandId, 'bandId not found')
+  await requireNonSubMember(request, bandId)
 
   const setlist = await getSetlist(setlistId)
   if (!setlist) {
@@ -22,12 +23,12 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export async function action({ request, params }: ActionArgs) {
-  await requireUserId(request)
   const { bandId, setlistId } = params
-  const formData = await request.formData()
-
   invariant(bandId, 'bandId not found')
   invariant(setlistId, 'setlistId not found')
+  await requireNonSubMember(request, bandId)
+  const formData = await request.formData()
+
 
   const { fields, errors } = getFields<{ name: string }>(formData, [{
     name: 'name', type: 'string', isRequired: true

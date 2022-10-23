@@ -4,13 +4,14 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
 import { Button, FlexList, ItemBox, Label, Link, Tabs } from "~/components";
 import { getBand } from "~/models/band.server";
-import { requireUserId } from "~/session.server";
-import { roleEnums } from "~/utils/enums";
+import { requireAdminMember, requireUserId } from "~/session.server";
+import { RoleEnum } from "~/utils/enums";
 import { Form, useLoaderData } from "@remix-run/react";
 import { getUserById } from "~/models/user.server";
 import { useState } from "react";
 import { updateBandMemberRole } from "~/models/usersInBands.server";
 import { getFields } from "~/utils/form";
+import { useMemberRole } from "~/utils";
 
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request)
@@ -19,14 +20,15 @@ export async function loader({ request, params }: LoaderArgs) {
   invariant(bandId, 'bandId not found')
   invariant(memberId, 'memberId not found')
 
-  const band = await getBand(bandId)
-  const isAdmin = band?.members.find(m => m.userId === userId)?.role === roleEnums.admin
+  await requireAdminMember(request, bandId)
 
-  if (!isAdmin) {
-    throw new Response('Permission denied', { status: 403 })
+  const band = await getBand(bandId)
+
+  if (!band) {
+    throw new Response('Band not found', { status: 404 })
   }
 
-  const canRemoveMember = band.members.reduce((total, member) => total += member.role === roleEnums.admin ? 1 : 0, 0) > (userId === memberId ? 1 : 0)
+  const canRemoveMember = band.members.reduce((total, member) => total += member.role as unknown as RoleEnum === RoleEnum.ADMIN ? 1 : 0, 0) > (userId === memberId ? 1 : 0)
 
   const member = await getUserById(memberId)
   const memberWithRole = {
@@ -59,7 +61,8 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function EditMember() {
   const { member, canRemoveMember } = useLoaderData<typeof loader>()
-  const [roleTab, setRoleTab] = useState(member.role)
+  const memberRole = useMemberRole()
+  const [roleTab, setRoleTab] = useState(memberRole)
 
   return (
     <FlexList pad={4}>
@@ -70,23 +73,23 @@ export default function EditMember() {
 
       <FlexList gap={0}>
         <Label>Access Level</Label>
-        <span className="font-bold">{member.role}</span>
+        <span className="font-bold">{memberRole}</span>
       </FlexList>
 
       <FlexList gap={2}>
         <Label>Update member role</Label>
         <Tabs
           tabs={[
-            { label: 'Admin', isActive: roleTab === roleEnums.admin, onClick: () => setRoleTab(roleEnums.admin) },
-            { label: 'Member', isActive: roleTab === roleEnums.member, onClick: () => setRoleTab(roleEnums.member) },
-            { label: 'Sub', isActive: roleTab === roleEnums.sub, onClick: () => setRoleTab(roleEnums.sub) },
+            { label: 'Admin', isActive: roleTab === RoleEnum.ADMIN, onClick: () => setRoleTab(RoleEnum.ADMIN) },
+            { label: 'Member', isActive: roleTab === RoleEnum.MEMBER, onClick: () => setRoleTab(RoleEnum.MEMBER) },
+            { label: 'Sub', isActive: roleTab === RoleEnum.SUB, onClick: () => setRoleTab(RoleEnum.SUB) },
           ]}
         >
           <FlexList>
             <p className="text-text-subdued text-sm">{roleExplanitoryText[roleTab || 'NOT_FOUND']}</p>
             <Form method="put" action=".">
               <FlexList>
-                <Button type="submit" isDisabled={roleTab === member.role} name="role" value={roleTab} kind="secondary">{roleTab === member.role ? 'Current role' : `Set role as ${roleTab}`}</Button>
+                <Button type="submit" isDisabled={roleTab === memberRole} name="role" value={roleTab as unknown as string} kind="secondary">{roleTab === memberRole ? 'Current role' : `Set role as ${roleTab}`}</Button>
               </FlexList>
             </Form>
           </FlexList>

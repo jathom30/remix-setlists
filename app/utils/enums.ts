@@ -10,10 +10,10 @@ export const setlistAutoGenImportanceEnums = {
   no_preference: 'No preference',
 }
 
-export const roleEnums = {
-  admin: 'ADMIN',
-  member: 'MEMBER',
-  sub: 'SUB'
+export enum RoleEnum {
+  ADMIN = 'ADMIN',
+  MEMBER = 'MEMBER',
+  SUB = 'SUB'
 }
 
 export const showHideEnums = {

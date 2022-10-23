@@ -1,33 +1,33 @@
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Outlet, useCatch, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
+import { Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import { json } from '@remix-run/node'
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Drawer, ErrorContainer, FeelTag, FlexList, ItemBox, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, TempoIcons } from "~/components";
+import { CatchContainer, Drawer, ErrorContainer, FeelTag, FlexList, ItemBox, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, TempoIcons } from "~/components";
 import { getSong } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import pluralize from 'pluralize'
-import { roleEnums, setlistAutoGenImportanceEnums } from "~/utils/enums";
-import { getMemberRole } from "~/models/usersInBands.server";
+import { RoleEnum, setlistAutoGenImportanceEnums } from "~/utils/enums";
 import { useState } from "react";
+import { useMemberRole } from "~/utils";
 
 export async function loader({ request, params }: LoaderArgs) {
-  const userId = await requireUserId(request)
+  await requireUserId(request)
   const { songId, bandId } = params
   invariant(songId, 'songId not found')
   invariant(bandId, 'bandId not found')
-
-  const role = await getMemberRole(bandId, userId)
 
   const song = await getSong(songId)
   if (!song) {
     throw new Response('Song not found', { status: 404 })
   }
-  return json({ song, isSub: role === roleEnums.sub })
+  return json({ song })
 }
 
 export default function SongDetails() {
-  const { song, isSub } = useLoaderData<typeof loader>()
+  const { song } = useLoaderData<typeof loader>()
+  const memberRole = useMemberRole()
+  const isSub = memberRole === RoleEnum.SUB
   const { pathname, state } = useLocation()
   const [to] = useState<string>(state as string)
   const navigate = useNavigate()
@@ -36,9 +36,12 @@ export default function SongDetails() {
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader>
+        <RouteHeader
+          action={
+            !isSub ? <Link to="edit" kind="invert" icon={faPenToSquare} isRounded isCollapsing>Edit song</Link> : null
+          }
+        >
           <RouteHeaderBackLink label={song.name} to={to} />
-          {!isSub ? <Link to="edit" kind="invert" icon={faPenToSquare} isRounded isCollapsing>Edit song</Link> : null}
         </RouteHeader>
       }
       footer={
@@ -82,7 +85,7 @@ export default function SongDetails() {
 
               <FlexList direction="row" items="center">
                 <Label>Feels</Label>
-                <FlexList direction="row" gap={2}>
+                <FlexList direction="row" gap={2} wrap>
                   {song.feels.map(feel => (
                     <FeelTag key={feel.id} feel={feel} />
                   ))}
@@ -145,18 +148,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
 }
 
 export function CatchBoundary() {
-  const caught = useCatch()
-  const { bandId } = useParams()
-
-  if (caught.status === 404) {
-    return (
-      <FlexList pad={4}>
-        <h1 className="text-5xl font-bold">404</h1>
-        <p>Oops...</p>
-        <p>This song could not be found...</p>
-        <Link to={`/${bandId}` || '.'}>Back to band page</Link>
-      </FlexList>
-    )
-  }
-  throw new Error(`Unhandled error: ${caught.status}`)
+  return (
+    <CatchContainer />
+  )
 }

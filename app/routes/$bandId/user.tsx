@@ -26,10 +26,11 @@ export default function UserRoute() {
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader>
+        <RouteHeader
+          action={<Link to="edit" kind="invert" icon={faPenToSquare} isRounded isCollapsing>Edit user</Link>}
+        >
           <FlexHeader>
             <RouteHeaderBackLink label="User" to={`/${bandId}/home`} />
-            <Link to="edit" kind="invert" icon={faPenToSquare} isRounded isCollapsing>Edit user</Link>
           </FlexHeader>
         </RouteHeader>
       }

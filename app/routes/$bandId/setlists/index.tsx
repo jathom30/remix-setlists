@@ -3,19 +3,15 @@ import { json } from "@remix-run/node"
 import { Form, useLoaderData, useParams, useSearchParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { CreateNewButton, FlexList, Input, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SetlistLink } from "~/components";
-import { getMemberRole } from "~/models/usersInBands.server";
-import { requireUserId } from "~/session.server";
-import { roleEnums } from "~/utils/enums";
 import { getSetlists } from "~/models/setlist.server";
+import { useMemberRole } from "~/utils";
+import { RoleEnum } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderArgs) {
-  const userId = await requireUserId(request)
   const bandId = params.bandId
   invariant(bandId, 'bandId not found')
   const url = new URL(request.url)
   const q = url.searchParams.get('query')
-
-  const role = await getMemberRole(bandId, userId)
 
   const filterParams = {
     ...(q ? { q } : null)
@@ -23,11 +19,13 @@ export async function loader({ request, params }: LoaderArgs) {
 
   const setlists = await getSetlists(bandId, filterParams)
 
-  return json({ setlists, isSub: role === roleEnums.sub })
+  return json({ setlists })
 }
 
 export default function SetlistsRoute() {
-  const { setlists, isSub } = useLoaderData<typeof loader>()
+  const { setlists } = useLoaderData<typeof loader>()
+  const memberRole = useMemberRole()
+  const isSub = memberRole === RoleEnum.SUB
   const [params, setParams] = useSearchParams()
   const { bandId } = useParams()
   const searchParam = params.get('query')

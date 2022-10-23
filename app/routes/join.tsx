@@ -84,6 +84,7 @@ export default function Join() {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") ?? undefined;
   const actionData = useActionData<typeof action>();
+  const nameRef = React.useRef<HTMLInputElement>(null);
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
@@ -108,7 +109,7 @@ export default function Join() {
             </label>
             <div className="mt-1">
               <input
-                ref={emailRef}
+                ref={nameRef}
                 id="name"
                 required
                 autoFocus={true}

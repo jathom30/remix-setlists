@@ -1,9 +1,7 @@
-import { useParams } from "@remix-run/react"
 import { FlexList } from "./FlexList"
 import { Link } from "./Link"
 
 export const RestrictedAlert = ({ dismissTo }: { dismissTo: string }) => {
-  const { bandId } = useParams()
   return (
     <FlexList pad={4}>
       <h1 className="text-3xl font-bold">Restricted Access</h1>
