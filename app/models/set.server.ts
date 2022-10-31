@@ -65,6 +65,21 @@ export async function createSet(setlistId: Setlist['id'], songIds: Song['id'][])
   })
 }
 
+export async function updateSet(setId: Set['id'], songIds: Song['id'][]) {
+  return prisma.set.update({
+    where: { id: setId },
+    data: {
+      songs: {
+        deleteMany: {},
+        create: songIds.map((songId, index) => ({
+          songId,
+          positionInSet: index,
+        })),
+      }
+    }
+  })
+}
+
 export async function deleteSet(setId: Set['id']) {
   return prisma.set.delete({
     where: { id: setId }

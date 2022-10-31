@@ -84,6 +84,7 @@ export const SongForm = ({ song, feels, errors, onCreateFeel }: {
           }}
           getOptionLabel={feel => feel.label}
           getOptionValue={feel => feel.id}
+          menuPortalTarget={document.body}
         />
       </Field>
 

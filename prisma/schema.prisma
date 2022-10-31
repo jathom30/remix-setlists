@@ -90,7 +90,7 @@ model Set {
 }
 
 model SongsInSets {
-  song          Song?  @relation(fields: [songId], references: [id])
+  song          Song?  @relation(fields: [songId], references: [id], onDelete: Cascade)
   songId        String
   positionInSet Int
   set           Set?   @relation(fields: [setId], references: [id], onDelete: Cascade)
