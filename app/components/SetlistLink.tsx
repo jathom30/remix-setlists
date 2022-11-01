@@ -14,19 +14,21 @@ export const SetlistLink = ({ setlist }: { setlist: SerializeFrom<Setlist & { se
   }, 0) / setlist.sets.length)
 
   return (
-    <Link
-      className="hover:bg-slate-200"
-      to={`/${bandId}/setlists/${setlist.id}`}
-      prefetch="intent"
-      state={pathname}
-    >
-      <FlexList pad={{ x: 4, y: 2 }} gap={0}>
-        <span className="font-bold">{setlist.name}</span>
-        <FlexList direction="row" justify="between">
-          <span className="text-xs text-text-subdued">{setCount[setlist.sets.length]} {getDisplaySetLength} minute set(s)</span>
-          <span className="text-xs text-text-subdued whitespace-nowrap">{new Date(setlist.updatedAt).toDateString()}</span>
+    <div className="hover:bg-slate-200">
+      <Link
+        className="hover:bg-slate-200"
+        to={`/${bandId}/setlists/${setlist.id}`}
+        prefetch="intent"
+        state={pathname}
+      >
+        <FlexList pad={{ x: 4, y: 2 }} gap={0}>
+          <span className="font-bold">{setlist.name}</span>
+          <FlexList direction="row" justify="between">
+            <span className="text-xs text-text-subdued">{setCount[setlist.sets.length]} {getDisplaySetLength} minute set(s)</span>
+            <span className="text-xs text-text-subdued whitespace-nowrap">{new Date(setlist.updatedAt).toDateString()}</span>
+          </FlexList>
         </FlexList>
-      </FlexList>
-    </Link>
+      </Link>
+    </div>
   )
 }

@@ -1,13 +1,15 @@
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/node"
 import invariant from "tiny-invariant";
-import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, Drawer, SetlistLink, Button, Link, ErrorContainer } from "~/components"
-import { Outlet, useLoaderData, useLocation, useNavigate, useSearchParams } from "@remix-run/react";
+import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, SetlistLink, ErrorContainer, MobileModal, Link } from "~/components"
+import { Link as RemixLink, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams } from "@remix-run/react";
 import { getRecentSetlists } from "~/models/setlist.server";
 import { getRecentSongs } from "~/models/song.server";
 import { getBandHome } from "~/models/band.server";
 import { RoleEnum, showHideEnums } from "~/utils/enums";
 import { useMemberRole } from "~/utils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faList, faMusic } from "@fortawesome/free-solid-svg-icons";
 
 export async function loader({ request, params }: LoaderArgs) {
   const bandId = params.bandId
@@ -30,6 +32,7 @@ export default function BandIndex() {
   const isSub = memberRole === RoleEnum.SUB
   const { pathname } = useLocation()
   const navigate = useNavigate()
+  const { bandId } = useParams()
   const [params, setParams] = useSearchParams()
   const showSongs = params.get('showSongs')
   const showSetlists = params.get('showSetlists')
@@ -57,15 +60,15 @@ export default function BandIndex() {
         </RouteHeader>
       }
       footer={
-        <>
+        <div className="sm:hidden">
           {!isSub ? <CreateNewButton to="new" /> : null}
-          <Drawer open={pathname.includes('new')} onClose={() => navigate('.')}>
+          <MobileModal open={pathname.includes('new')} onClose={() => navigate('.')}>
             <Outlet />
-          </Drawer>
-        </>
+          </MobileModal>
+        </div>
       }
     >
-      <div className="h-full">
+      <div className="h-full sm:hidden">
         <FlexList gap={0}>
           <div className="border-b border-slate-300 w-full">
             <Collapsible
@@ -102,6 +105,22 @@ export default function BandIndex() {
               ))}
             </Collapsible>
           </div>
+        </FlexList>
+      </div>
+      <div className="hidden h-full sm:h-full sm:bg-slate-100 sm:block">
+        <FlexList height="full" pad={4} items="center">
+          <RemixLink className="bg-white p-4 rounded shadow sm:w-4/5 md:w-2/3 hover:bg-slate-100" to={`/${bandId}/setlists/new`}>
+            <FlexList items="center" gap={2}>
+              <FontAwesomeIcon icon={faList} size="2x" />
+              Create setlist
+            </FlexList>
+          </RemixLink>
+          <RemixLink className="bg-white p-4 rounded shadow sm:w-4/5 md:w-2/3 hover:bg-slate-100" to={`/${bandId}/songs/new`}>
+            <FlexList items="center" gap={2}>
+              <FontAwesomeIcon icon={faMusic} size="2x" />
+              Create song
+            </FlexList>
+          </RemixLink>
         </FlexList>
       </div>
     </MaxHeightContainer>

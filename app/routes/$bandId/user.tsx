@@ -6,7 +6,7 @@ import type { LoaderArgs } from "@remix-run/server-runtime";
 import { Badge, Button, Drawer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
 import { getUserWithBands } from "~/models/user.server";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request }: LoaderArgs) {
   const user = await getUserWithBands(request)
 
   if (!user) {
@@ -51,10 +51,6 @@ export default function UserRoute() {
         <FlexList gap={0}>
           <Label>Name</Label>
           <span>{user.name}</span>
-        </FlexList>
-        <FlexList gap={0}>
-          <Label>Update password</Label>
-          <span>**********</span>
         </FlexList>
         <FlexList gap={0}>
           <Label>Associated bands</Label>

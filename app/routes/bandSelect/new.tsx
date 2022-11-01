@@ -1,9 +1,10 @@
-import type { ActionArgs } from "@remix-run/server-runtime"
+import type { ActionArgs } from "@remix-run/server-runtime";
+import { json } from "@remix-run/node"
 import { redirect } from "@remix-run/node";
 import { createBand } from "~/models/band.server"
 import { requireUserId } from "~/session.server"
-import { Form } from "@remix-run/react";
-import { Button, FlexList, Input } from "~/components";
+import { Form, useActionData } from "@remix-run/react";
+import { ErrorMessage, FlexList, Input, SaveButtons } from "~/components";
 
 export async function action({ request }: ActionArgs) {
   const userId = await requireUserId(request)
@@ -17,19 +18,20 @@ export async function action({ request }: ActionArgs) {
     const band = await createBand({ name }, userId)
     return redirect(`${band.id}/home`)
   }
-  return null
+  return json({ errors: { name: 'Band name is required' } })
 }
 
 export default function NewBand() {
+  const actionData = useActionData<typeof action>()
+
   return (
-    <div>
-      <Form method="post">
-        <FlexList pad={4}>
-          <h1>Create a new band</h1>
-          <Input name="name" placeholder="Band name..." />
-          <Button type="submit">Create</Button>
-        </FlexList>
-      </Form>
-    </div>
+    <Form method="post">
+      <FlexList pad={4} gap={0}>
+        <h1>Create a new band</h1>
+        <Input name="name" placeholder="Band name..." />
+        {actionData?.errors.name ? <ErrorMessage message="Band name is required" /> : null}
+      </FlexList>
+      <SaveButtons saveLabel="Create" cancelTo=".." />
+    </Form>
   )
 }

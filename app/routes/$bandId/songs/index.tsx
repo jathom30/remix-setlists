@@ -4,12 +4,13 @@ import invariant from "tiny-invariant";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import { Form, useLoaderData, useParams, useSearchParams } from "@remix-run/react";
-import { Button, CreateNewButton, Drawer, FlexList, Input, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongFilters, SongLink } from "~/components";
-import { faFilter } from "@fortawesome/free-solid-svg-icons";
+import { Button, CreateNewButton, Drawer, FlexList, Input, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongFilters, SongLink } from "~/components";
+import { faBoxOpen, faFilter } from "@fortawesome/free-solid-svg-icons";
 import { useRef, useState } from "react";
 import { getFeels } from "~/models/feel.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -58,6 +59,7 @@ export default function SongsList() {
     })
   }
 
+  const hasSongs = songs.length
 
   return (
     <Form ref={formRef} className="w-full h-full">
@@ -70,7 +72,7 @@ export default function SongsList() {
         }
         footer={
           <>
-            {!isSub ? <CreateNewButton to="new" /> : null}
+            {(!isSub && hasSongs) ? <CreateNewButton to="new" /> : null}
             <Drawer
               open={showFilters}
               onClose={() => setShowFilters(false)}
@@ -95,11 +97,19 @@ export default function SongsList() {
               </div>
             </FlexList>
           </div>
-          <FlexList gap={0}>
-            {songs.map(song => (
-              <SongLink key={song.id} song={song} />
-            ))}
-          </FlexList>
+          {hasSongs ? (
+            <FlexList gap={0}>
+              {songs.map(song => (
+                <SongLink key={song.id} song={song} />
+              ))}
+            </FlexList>
+          ) : (
+            <FlexList pad={4}>
+              <FontAwesomeIcon icon={faBoxOpen} size="3x" />
+              <p className="text-center">Looks like this band doesn't have any songs yet.</p>
+              <Link to="new" kind="primary">Create your first song</Link>
+            </FlexList>
+          )}
         </FlexList>
       </MaxHeightContainer>
     </Form>

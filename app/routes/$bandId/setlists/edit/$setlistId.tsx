@@ -15,7 +15,6 @@ import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors, close
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import type { ReactNode } from "react";
-import { useEffect } from "react";
 import { useSpinDelay } from 'spin-delay';
 import { useState } from "react";
 import { getSetLength } from "~/utils/setlists";
@@ -94,13 +93,6 @@ export default function EditSetlist() {
 
 
   const isLoading = useSpinDelay(fetcher.state !== 'idle')
-
-  useEffect(() => {
-    const formData = fetcher.submission?.formData.entries()
-    if (formData) {
-      console.log(Object.fromEntries(formData))
-    }
-  }, [fetcher])
 
   const [sets, setSets] = useState(keySets)
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null)

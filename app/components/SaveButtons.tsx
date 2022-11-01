@@ -9,7 +9,7 @@ export const SaveButtons = ({ saveLabel, cancelTo, isDisabled = false }: { saveL
   const transition = useTransition()
   const isSubmitting = !!transition.submission
   return (
-    <div className="border-t border-slate-300 w-full">
+    <div className="border-t border-slate-300 w-full bg-white">
       <FlexList gap={2} pad={4} items="stretch">
         <Button icon={faSave} kind="primary" type="submit" isDisabled={isDisabled || isSubmitting}>{isSubmitting ? 'Saving...' : saveLabel}</Button>
         <Link to={cancelTo} type="submit">Cancel</Link>

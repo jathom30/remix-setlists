@@ -5,14 +5,14 @@ import { additionalStyles, defaultButtonStyles } from "~/styleUtils";
 import type { ButtonProps } from "./Button";
 
 export function Link(props: ButtonProps & RemixLinkProps) {
-  const { to, prefetch, children, icon, isCollapsing, isDisabled = false, kind = 'default', isRounded, ...rest } = props
+  const { to, prefetch, children, icon, isCollapsing, isDisabled = false, kind = 'default', isRounded, className, ...rest } = props
 
   return (
     <RemixLink
       {...rest}
       to={to}
       prefetch={prefetch}
-      className={`${defaultButtonStyles} ${additionalStyles({ isDisabled, kind })} ${isRounded ? 'rounded-full' : ''}`}
+      className={`${defaultButtonStyles} ${additionalStyles({ isDisabled, kind })} ${isRounded ? 'rounded-full' : ''} ${className}`}
     >
       {icon ? <FontAwesomeIcon icon={icon} /> : null}
       <div className={`${isCollapsing ? 'hidden md:block' : ''}`}>{children}</div>

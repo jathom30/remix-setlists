@@ -2,7 +2,7 @@ import { Outlet, useCatch, useLoaderData, useLocation, useNavigate, useParams } 
 import { json } from "@remix-run/node"
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Avatar, Badge, Drawer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
+import { Avatar, Badge, CatchContainer, Drawer, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
 import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { getUsersById } from "~/models/user.server";
@@ -112,10 +112,10 @@ export default function BandSettingsPage() {
   )
 }
 
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ErrorContainer error={error} />
+}
+
 export function CatchBoundary() {
-  const caught = useCatch()
-  console.log(caught.data)
-  return (
-    <div>Oops</div>
-  )
+  return <CatchContainer />
 }

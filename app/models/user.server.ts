@@ -82,9 +82,17 @@ export async function getUserWithBands(request: Request) {
   return bands
 }
 
-export async function updateUser(id: User['id'], user: Partial<User>) {
+export async function updateUser(id: User['id'], name: User['name'], password: string) {
+  const hashedPassword = await bcrypt.hash(password, 10);
   return prisma.user.update({
     where: { id },
-    data: user
+    data: {
+      name,
+      password: {
+        update: {
+          hash: hashedPassword
+        }
+      }
+    }
   })
 }

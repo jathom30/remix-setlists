@@ -2,10 +2,12 @@ import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
 import { Form, useLoaderData, useParams, useSearchParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { CreateNewButton, FlexList, Input, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SetlistLink } from "~/components";
+import { CreateNewButton, FlexList, Input, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SetlistLink } from "~/components";
 import { getSetlists } from "~/models/setlist.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBoxOpen } from "@fortawesome/free-solid-svg-icons";
 
 export async function loader({ request, params }: LoaderArgs) {
   const bandId = params.bandId
@@ -29,6 +31,8 @@ export default function SetlistsRoute() {
   const [params, setParams] = useSearchParams()
   const { bandId } = useParams()
   const searchParam = params.get('query')
+
+  const hasSetlists = setlists.length && searchParam === ''
   return (
     <MaxHeightContainer
       fullHeight
@@ -37,7 +41,7 @@ export default function SetlistsRoute() {
           <RouteHeaderBackLink label="Setlists" to={`/${bandId}/home`} />
         </RouteHeader>
       }
-      footer={!isSub ? <CreateNewButton to="new" /> : null}
+      footer={(!isSub && hasSetlists) ? <CreateNewButton to="new" /> : null}
     >
       <FlexList height="full">
         <div className="border-b border-slate-300 w-full">
@@ -47,11 +51,19 @@ export default function SetlistsRoute() {
             </Form>
           </FlexList>
         </div>
-        <FlexList gap={0}>
-          {setlists.map(setlist => (
-            <SetlistLink key={setlist.id} setlist={setlist} />
-          ))}
-        </FlexList>
+        {hasSetlists ? (
+          <FlexList gap={0}>
+            {setlists.map(setlist => (
+              <SetlistLink key={setlist.id} setlist={setlist} />
+            ))}
+          </FlexList>
+        ) : (
+          <FlexList pad={4}>
+            <FontAwesomeIcon icon={faBoxOpen} size="3x" />
+            <p className="text-center">Looks like this band doesn't have any setlists yet.</p>
+            <Link to="new" kind="primary">Create your first setlist</Link>
+          </FlexList>
+        )}
       </FlexList>
     </MaxHeightContainer>
   )

@@ -30,7 +30,7 @@ export default function SetDataMetrics() {
     <MaxHeightContainer
       fullHeight
       header={
-        <h3 className="p-4 pb-0 font-bold">Data metrics</h3>
+        <h3 className="p-4 pb-0 font-bold bg-white">Data metrics</h3>
       }
     >
       <FlexList pad={4}>

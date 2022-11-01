@@ -1,41 +1,66 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useLayoutEffect, useState } from "react";
-import { createPortal } from "react-dom"
+import { createPortal } from "react-dom";
 
-export const Modal = ({ children, onClose }: { children: React.ReactNode; onClose: () => void }) => {
-  const [isOpen, setIsOpen] = useState(false)
+export const Modal = ({ children, open, onClose }: { children: React.ReactNode; open: boolean; onClose: () => void }) => {
+  const [isWindow, setIsWindow] = useState(false)
 
   useLayoutEffect(() => {
-    setIsOpen(true)
+    setIsWindow(true)
   }, [])
 
-  const handleClose = () => {
-    setIsOpen(false)
-    setTimeout(() => {
-      onClose()
-    }, 200);
-  }
-
-  if (!isOpen) {
-    return null
-  }
-  return createPortal(
-    <div className="fixed inset-0">
-      <motion.div
-        role="presentation"
-        className="bg-black fixed inset-0"
-        onClick={handleClose}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: .5 }}
-      />
-      <motion.div
-        className="relative z-10 max-w-2xl flex m-4 bg-white p-4 rounded shadow-lg sm:m-auto sm:mt-4"
-        initial={{ opacity: 0, y: -200 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        {children}
-      </motion.div>
-    </div>
-    , document.body
+  const content = (
+    <AnimatePresence>
+      {open ? (
+        <div
+          key="drawer"
+          className="fixed z-20 inset-0"
+        >
+          <motion.div
+            role="presentation"
+            onTap={onClose}
+            initial={{
+              opacity: 0,
+            }}
+            animate={{
+              opacity: .5
+            }}
+            exit={{
+              opacity: 0
+            }}
+            className="bg-black absolute inset-0"
+          />
+          <motion.div
+            role="dialog"
+            initial={{
+              y: -20,
+              opacity: 0,
+            }}
+            animate={{
+              y: 0,
+              opacity: 1,
+            }}
+            exit={{
+              y: -20,
+              opacity: 0,
+            }}
+            transition={{ ease: 'easeInOut' }}
+            className="absolute top-8 z-20 inset-x-4 bg-white rounded overflow-auto max-w-xl m-auto"
+            style={{ height: 'min-content', maxHeight: '70vh' }}
+          >
+            {children}
+          </motion.div>
+        </div>
+      ) : null}
+    </AnimatePresence>
   )
+
+  if (isWindow) {
+    return createPortal(
+      content,
+      document.body
+    );
+  } else {
+    return null;
+  }
 }
