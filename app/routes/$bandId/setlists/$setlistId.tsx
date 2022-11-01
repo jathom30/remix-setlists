@@ -5,7 +5,7 @@ import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import { CatchContainer, Drawer, ErrorContainer, FlexHeader, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongLink } from "~/components";
-import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import { faDatabase, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { getSetLength } from "~/utils/setlists";
 
@@ -31,8 +31,6 @@ export default function Setlist() {
   const navigate = useNavigate()
   const [to] = useState(state as string)
 
-  // const setLength = (songs: SerializeFrom<SongsInSets & { song: Song | null }>[]) => songs.reduce((total, song) => total += song.song?.length || 0, 0)
-
   return (
     <MaxHeightContainer
       fullHeight
@@ -53,6 +51,7 @@ export default function Setlist() {
           <div className="p-4 pb-0">
             <FlexHeader>
               <Label>Set {i + 1} - {getSetLength(set.songs)} minutes</Label>
+              <Link to={`data/${set.id}`} isCollapsing isRounded icon={faDatabase}>Data metrics</Link>
             </FlexHeader>
           </div>
           {set.songs.map(song => {

@@ -2,9 +2,10 @@ import { faGripVertical, faPlus, faTrash } from "@fortawesome/free-solid-svg-ico
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
-import { NavLink, Outlet, useFetcher, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
+import type { ShouldReloadFunction } from "@remix-run/react";
+import { Form, NavLink, Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { Button, CatchContainer, Drawer, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongDisplay } from "~/components";
+import { CatchContainer, Drawer, ErrorContainer, FlexHeader, FlexList, Label, Link, Loader, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongDisplay } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { motion } from "framer-motion";
@@ -14,6 +15,8 @@ import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors, close
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import type { ReactNode } from "react";
+import { useEffect } from "react";
+import { useSpinDelay } from 'spin-delay';
 import { useState } from "react";
 import { getSetLength } from "~/utils/setlists";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
@@ -56,11 +59,22 @@ export async function action({ request }: ActionArgs) {
   return null
 }
 
-const subRoutes = ['newSet', 'addSongs', 'removeSong', 'createSet']
+const subRoutes = ['addSongs', 'removeSong', 'createSet']
+
+// this feels like some hacky shit
+export const unstable_shouldReload: ShouldReloadFunction = ({ prevUrl }) => {
+  const shouldReload = subRoutes.some(route => prevUrl.pathname.includes(route))
+  if (shouldReload) {
+    document.location.reload()
+  }
+  return true
+}
+
 
 export default function EditSetlist() {
   const fetcher = useFetcher()
   const { setlist } = useLoaderData<typeof loader>()
+  const { bandId, setlistId } = useParams()
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
@@ -78,6 +92,15 @@ export default function EditSetlist() {
     }
   }, {} as Record<string, SetSong[]>)
 
+
+  const isLoading = useSpinDelay(fetcher.state !== 'idle')
+
+  useEffect(() => {
+    const formData = fetcher.submission?.formData.entries()
+    if (formData) {
+      console.log(Object.fromEntries(formData))
+    }
+  }, [fetcher])
 
   const [sets, setSets] = useState(keySets)
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null)
@@ -181,7 +204,8 @@ export default function EditSetlist() {
       fullHeight
       header={
         <RouteHeader>
-          <RouteHeaderBackLink label={`Editing ${setlist.name}`} />
+          <RouteHeaderBackLink label={`Editing ${setlist.name}`} to={`/${bandId}/setlists/${setlistId}`} />
+          {isLoading ? <Loader invert /> : null}
         </RouteHeader>
       }
       footer={
@@ -195,7 +219,7 @@ export default function EditSetlist() {
         </>
       }
     >
-      <fetcher.Form method="put">
+      <Form method="put">
         <DndContext
           id={setlist.id}
           sensors={sensors}
@@ -225,7 +249,7 @@ export default function EditSetlist() {
           ))}
           <SongOverlay isActive={!!activeId} song={getSong(activeId || '')} />
         </DndContext>
-      </fetcher.Form>
+      </Form>
 
     </MaxHeightContainer>
   )

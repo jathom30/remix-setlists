@@ -16,7 +16,6 @@ export default function SetlistMenu() {
         </>
       ) : null}
       <Link to={`/${bandId}/setlists/condensed/${setlistId}`} kind="text">Condensed view</Link>
-      <Link to={`/${bandId}/setlists/data/${setlistId}`} kind="text">Data metrics</Link>
       {!isSub ? (
         <Link to={`/${bandId}/setlists/${setlistId}/delete`} kind="danger">Delete setlist</Link>
       ) : null}

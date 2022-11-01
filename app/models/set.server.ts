@@ -1,4 +1,4 @@
-import type { Set, Setlist, Song } from "@prisma/client";
+import { Prisma, Set, Setlist, Song } from "@prisma/client";
 import { prisma } from "~/db.server";
 
 export async function removeSongFromSet(setId: Set['id'], songId: Song['id']) {
@@ -27,6 +27,15 @@ export async function getSetLength(songIds: Song['id'][]) {
 
 export async function getSet(setId: Set['id']) {
   return prisma.set.findUnique({ where: { id: setId }, include: { songs: true } })
+}
+
+export async function getSetMetrics(setId: Set['id']) {
+  const set = await prisma.set.findUnique({ where: { id: setId }, include: { songs: { include: { song: { include: { feels: true } } } } } })
+  const feels = set?.songs.map(song => song.song?.feels).flat()
+  const tempos = set?.songs.map(song => song.song?.tempo || 0) || []
+  const isCoverLength = set?.songs.filter(song => song.song?.isCover).length || 0
+  const isOriginalLength = set?.songs.filter(song => !song.song?.isCover).length || 0
+  return { feels, tempos, isCoverLength, isOriginalLength }
 }
 
 export async function addSongsToSet(setId: Set['id'], songIds: Song['id'][]) {

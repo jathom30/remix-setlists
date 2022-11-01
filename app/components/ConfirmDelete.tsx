@@ -3,10 +3,11 @@ import { useTransition } from "@remix-run/react"
 import { Button } from "./Button"
 import { FlexList } from "./FlexList"
 import { Link } from "./Link"
+import { useSpinDelay } from 'spin-delay';
 
 export const ConfirmDelete = ({ label, deleteLabel = 'Delete', message, cancelTo }: { label: string; deleteLabel?: string; message: string; cancelTo: string }) => {
   const transition = useTransition()
-  const isSubmitting = !!transition.submission
+  const isSubmitting = useSpinDelay(!!transition.submission)
   return (
     <FlexList pad={4}>
       <h3 className="font-bold">{label}</h3>

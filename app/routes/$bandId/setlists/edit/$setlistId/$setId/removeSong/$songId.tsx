@@ -1,8 +1,8 @@
-import { Form, useCatch, useParams } from "@remix-run/react";
+import { Form, useParams } from "@remix-run/react";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { ConfirmDelete, ErrorContainer, FlexList, Link } from "~/components";
+import { CatchContainer, ConfirmDelete, ErrorContainer } from "~/components";
 import { requireNonSubMember } from "~/session.server";
 import { removeSongFromSet } from "~/models/set.server";
 
@@ -39,15 +39,5 @@ export function ErrorBoundary({ error }: { error: Error }) {
 }
 
 export function CatchBoundary() {
-  const { bandId, setlistId } = useParams()
-  const caught = useCatch()
-
-  console.log(caught)
-  return (
-    <FlexList pad={4} gap={2}>
-      <h1 className="text-3xl font-bold">Oops...</h1>
-      <p>{caught.data}</p>
-      <Link to={`/${bandId}/setlists/edit/${setlistId}`}>Go back</Link>
-    </FlexList>
-  )
+  return <CatchContainer />
 }
