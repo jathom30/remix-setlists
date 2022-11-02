@@ -32,14 +32,16 @@ export default function SetlistsRoute() {
   const { bandId } = useParams()
   const searchParam = params.get('query')
 
-  const hasSetlists = setlists.length && searchParam === ''
+  const hasSetlists = setlists.length
   return (
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader>
-          <RouteHeaderBackLink label="Setlists" to={`/${bandId}/home`} />
-        </RouteHeader>
+        <RouteHeader
+          mobileChildren={<RouteHeaderBackLink label="Setlists" to={`/${bandId}/home`} />}
+          desktopChildren={<h3 className="font-bold text-2xl">Setlists</h3>}
+          desktopAction={<Link to="new" kind="primary">New setlist</Link>}
+        />
       }
       footer={(!isSub && hasSetlists) ? <CreateNewButton to="new" /> : null}
     >
@@ -52,11 +54,13 @@ export default function SetlistsRoute() {
           </FlexList>
         </div>
         {hasSetlists ? (
-          <FlexList gap={0}>
+          <div className="flex flex-col sm:gap-2 sm:p-2">
             {setlists.map(setlist => (
-              <SetlistLink key={setlist.id} setlist={setlist} />
+              <div key={setlist.id} className="sm:rounded sm:overflow-hidden sm:shadow">
+                <SetlistLink setlist={setlist} />
+              </div>
             ))}
-          </FlexList>
+          </div>
         ) : (
           <FlexList pad={4}>
             <FontAwesomeIcon icon={faBoxOpen} size="3x" />

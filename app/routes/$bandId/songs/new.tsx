@@ -81,9 +81,12 @@ export default function NewSong() {
       <MaxHeightContainer
         fullHeight
         header={
-          <RouteHeader>
-            <RouteHeaderBackLink label='New song' />
-          </RouteHeader>
+          <RouteHeader
+            mobileChildren={<RouteHeaderBackLink label='New song' />}
+            desktopChildren={
+              <RouteHeaderBackLink label='New song' invert={false} />
+            }
+          />
         }
         footer={
           <SaveButtons saveLabel="Create song" cancelTo={`/${bandId}/songs`} />

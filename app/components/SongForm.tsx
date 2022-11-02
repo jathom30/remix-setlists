@@ -12,7 +12,7 @@ import { keyLetters, majorMinorOptions } from "~/utils/songConstants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RadioGroup } from "./RadioGroup";
 import { ErrorMessage } from "./ErrorMessage";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Checkbox } from "./Checkbox";
 
 export const SongForm = ({ song, feels, errors, onCreateFeel }: {
@@ -22,6 +22,11 @@ export const SongForm = ({ song, feels, errors, onCreateFeel }: {
 }) => {
   const [originalFeels] = useState(feels)
   const [selectedFeels, setSelectedFeels] = useState(song?.feels || [])
+  const [isWindow, setIsWindow] = useState(false)
+  // something needs window in this component. Without this check, page crashes on reload
+  useLayoutEffect(() => {
+    setIsWindow(true)
+  }, [])
 
   useEffect(() => {
     setSelectedFeels(prevFeels => {
@@ -31,14 +36,16 @@ export const SongForm = ({ song, feels, errors, onCreateFeel }: {
     })
   }, [originalFeels, feels])
 
+  if (!isWindow) { return null }
+
   return (
     <FlexList pad={4}>
       <Field name="name" label="Name" isRequired>
-        <Input name="name" defaultValue={song?.name} />
+        <Input name="name" defaultValue={song?.name} placeholder="Song name..." />
         {errors?.name ? (<ErrorMessage message={errors.name} />) : null}
       </Field>
       <Field name="length" label="Length (in minutes)" isRequired>
-        <Input name="length" defaultValue={song?.length} type="number" />
+        <Input name="length" defaultValue={song?.length} type="number" placeholder="Song length..." />
         {errors?.length ? (<ErrorMessage message={errors.length} />) : null}
       </Field>
 

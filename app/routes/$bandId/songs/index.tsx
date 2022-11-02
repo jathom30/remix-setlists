@@ -4,7 +4,7 @@ import invariant from "tiny-invariant";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import { Form, useLoaderData, useParams, useSearchParams } from "@remix-run/react";
-import { Button, CreateNewButton, Drawer, FlexList, Input, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongFilters, SongLink } from "~/components";
+import { Button, CreateNewButton, Drawer, FlexHeader, FlexList, Input, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, SongFilters, SongLink } from "~/components";
 import { faBoxOpen, faFilter } from "@fortawesome/free-solid-svg-icons";
 import { useRef, useState } from "react";
 import { getFeels } from "~/models/feel.server";
@@ -66,14 +66,20 @@ export default function SongsList() {
       <MaxHeightContainer
         fullHeight
         header={
-          <RouteHeader>
-            <RouteHeaderBackLink label="Songs" to={`/${bandId}/home`} />
-          </RouteHeader>
+          <>
+            <RouteHeader
+              mobileChildren={
+                <RouteHeaderBackLink label="Songs" to={`/${bandId}/home`} />
+              }
+              desktopChildren={<h3 className="font-bold text-2xl">Songs</h3>}
+              desktopAction={<Link to="new" kind="primary">New song</Link>}
+            />
+          </>
         }
         footer={
           <>
             {(!isSub && hasSongs) ? <CreateNewButton to="new" /> : null}
-            <Drawer
+            <MobileModal
               open={showFilters}
               onClose={() => setShowFilters(false)}
             >
@@ -83,7 +89,7 @@ export default function SongsList() {
                 feels={feels}
                 onClearAll={() => setParams({})}
               />
-            </Drawer>
+            </MobileModal>
           </>
         }
       >
@@ -98,11 +104,13 @@ export default function SongsList() {
             </FlexList>
           </div>
           {hasSongs ? (
-            <FlexList gap={0}>
+            <div className="flex flex-col sm:gap-2 sm:p-2">
               {songs.map(song => (
-                <SongLink key={song.id} song={song} />
+                <div key={song.id} className="sm:rounded sm:overflow-hidden sm:shadow">
+                  <SongLink song={song} />
+                </div>
               ))}
-            </FlexList>
+            </div>
           ) : (
             <FlexList pad={4}>
               <FontAwesomeIcon icon={faBoxOpen} size="3x" />

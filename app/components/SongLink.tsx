@@ -6,7 +6,7 @@ import { SongDisplay } from "./SongDisplay"
 export const SongLink = ({ song }: { song: SerializeFrom<Song> }) => {
   const { pathname } = useLocation()
   return (
-    <div className="hover:bg-slate-200">
+    <div className="hover:bg-slate-200 sm:bg-white">
       <Link
         to={`/${song.bandId}/songs/${song.id}`}
         state={pathname}

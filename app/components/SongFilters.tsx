@@ -48,7 +48,7 @@ export function SongFilters({ filters, onChange, feels, onClearAll }: { filters?
   return (
     <MaxHeightContainer
       header={
-        <div className="border-b border-slate-300">
+        <div className="border-b border-slate-300 bg-white">
           <FlexList pad={2} direction="row" justify="between" items="center">
             <span className="font-bold">Filters</span>
             <Button type="button" kind="secondary" onClick={onClearAll}>Clear all</Button>

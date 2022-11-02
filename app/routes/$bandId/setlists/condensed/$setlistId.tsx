@@ -25,9 +25,11 @@ export default function CondensedSetlist() {
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader>
-          <RouteHeaderBackLink label="Condensed" />
-        </RouteHeader>
+        <RouteHeader
+          mobileChildren={
+            <RouteHeaderBackLink label="Condensed" />
+          }
+        />
       }
     >
       <FlexList pad={4} gap={0}>

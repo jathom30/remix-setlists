@@ -49,23 +49,24 @@ export default function BandIndex() {
       fullHeight
       header={
         <RouteHeader
+          mobileChildren={
+            <RouteHeaderBackLink
+              label={band.name}
+              to="/bandSelect"
+            >
+              <Avatar size="sm" bandName={band.name} icon={band.icon} />
+            </RouteHeaderBackLink>
+          }
           action={<Badge invert size="sm">{memberRole}</Badge>}
-        >
-          <RouteHeaderBackLink
-            label={band.name}
-            to="/bandSelect"
-          >
-            <Avatar size="sm" bandName={band.name} icon={band.icon} />
-          </RouteHeaderBackLink>
-        </RouteHeader>
+        />
       }
       footer={
-        <div className="sm:hidden">
+        <>
           {!isSub ? <CreateNewButton to="new" /> : null}
           <MobileModal open={pathname.includes('new')} onClose={() => navigate('.')}>
             <Outlet />
           </MobileModal>
-        </div>
+        </>
       }
     >
       <div className="h-full sm:hidden">

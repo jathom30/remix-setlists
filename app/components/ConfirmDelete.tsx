@@ -11,11 +11,11 @@ export const ConfirmDelete = ({ label, deleteLabel = 'Delete', message, cancelTo
   return (
     <FlexList pad={4}>
       <h3 className="font-bold">{label}</h3>
-      <p className="text-xs text-text-subdued">{message}</p>
-      <FlexList items="stretch" gap={2}>
+      <p className="text-xs text-text-subdued sm:text-sm">{message}</p>
+      <div className="flex flex-col gap-2 sm:flex-row-reverse">
         <Button type="submit" kind="danger" icon={faTrash} isDisabled={isSubmitting}>{isSubmitting ? 'Deleting...' : deleteLabel}</Button>
         <Link to={cancelTo}>Cancel</Link>
-      </FlexList>
+      </div>
     </FlexList>
   )
 }

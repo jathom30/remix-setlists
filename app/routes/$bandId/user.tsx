@@ -27,12 +27,11 @@ export default function UserRoute() {
       fullHeight
       header={
         <RouteHeader
-          action={<Link to="edit" kind="invert" icon={faPenToSquare} isRounded isCollapsing>Edit user</Link>}
-        >
-          <FlexHeader>
+          mobileChildren={
             <RouteHeaderBackLink label="User" to={`/${bandId}/home`} />
-          </FlexHeader>
-        </RouteHeader>
+          }
+          action={<Link to="edit" kind="invert" icon={faPenToSquare} isRounded isCollapsing>Edit user</Link>}
+        />
       }
       footer={
         <>

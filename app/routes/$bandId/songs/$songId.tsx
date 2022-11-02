@@ -3,7 +3,7 @@ import { Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/reac
 import { json } from '@remix-run/node'
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { CatchContainer, Drawer, ErrorContainer, FeelTag, FlexList, ItemBox, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, TempoIcons } from "~/components";
+import { CatchContainer, ErrorContainer, FeelTag, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, TempoIcons } from "~/components";
 import { getSong } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import pluralize from 'pluralize'
@@ -37,17 +37,20 @@ export default function SongDetails() {
       fullHeight
       header={
         <RouteHeader
+          mobileChildren={<RouteHeaderBackLink label={song.name} to={to} />}
+          desktopChildren={<RouteHeaderBackLink label={song.name} to={to} invert={false} />}
           action={
             !isSub ? <Link to="edit" kind="invert" icon={faPenToSquare} isRounded isCollapsing>Edit song</Link> : null
           }
-        >
-          <RouteHeaderBackLink label={song.name} to={to} />
-        </RouteHeader>
+          desktopAction={
+            !isSub ? <Link to="edit" icon={faPenToSquare} isRounded isCollapsing>Edit song</Link> : null
+          }
+        />
       }
       footer={
-        <Drawer open={['edit', 'delete'].some(path => pathname.includes(path))} onClose={() => navigate('.')}>
+        <MobileModal open={['edit', 'delete'].some(path => pathname.includes(path))} onClose={() => navigate('.')}>
           <Outlet />
-        </Drawer>
+        </MobileModal>
       }
     >
       <FlexList pad={4}>
@@ -141,14 +144,9 @@ export default function SongDetails() {
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
-  console.error(error)
-  return (
-    <ErrorContainer error={error} />
-  )
+  return <ErrorContainer error={error} />
 }
 
 export function CatchBoundary() {
-  return (
-    <CatchContainer />
-  )
+  return <CatchContainer />
 }

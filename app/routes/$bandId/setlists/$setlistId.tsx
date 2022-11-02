@@ -4,7 +4,7 @@ import invariant from "tiny-invariant";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
-import { CatchContainer, Drawer, ErrorContainer, FlexHeader, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongLink } from "~/components";
+import { CatchContainer, ErrorContainer, FlexHeader, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, SongLink } from "~/components";
 import { faDatabase, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { getSetLength } from "~/utils/setlists";
@@ -35,15 +35,21 @@ export default function Setlist() {
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader>
-          <RouteHeaderBackLink label={setlist.name} to={to} />
-          <Link to="menu" kind="invert" icon={faEllipsisV} isRounded isCollapsing>Menu</Link>
-        </RouteHeader>
+        <RouteHeader
+          mobileChildren={
+            <>
+              <RouteHeaderBackLink label={setlist.name} to={to} />
+              <Link to="menu" kind="invert" icon={faEllipsisV} isRounded isCollapsing>Menu</Link>
+            </>
+          }
+          desktopChildren={<RouteHeaderBackLink invert={false} label={setlist.name} to={to} />}
+          desktopAction={<Link to="menu" icon={faEllipsisV} isRounded isCollapsing>Menu</Link>}
+        />
       }
       footer={
-        <Drawer open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
+        <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
           <Outlet />
-        </Drawer>
+        </MobileModal>
       }
     >
       {setlist.sets.map((set, i) => (
@@ -54,12 +60,16 @@ export default function Setlist() {
               <Link to={`data/${set.id}`} isCollapsing isRounded icon={faDatabase}>Data metrics</Link>
             </FlexHeader>
           </div>
-          {set.songs.map(song => {
-            if (!song.song) { return null }
-            return (
-              <SongLink key={song.songId} song={song.song} />
-            )
-          })}
+          <div className="flex flex-col sm:p-2 sm:gap-2">
+            {set.songs.map(song => {
+              if (!song.song) { return null }
+              return (
+                <div key={song.songId} className="sm:rounded sm:overflow-hidden">
+                  <SongLink song={song.song} />
+                </div>
+              )
+            })}
+          </div>
         </div>
       ))}
     </MaxHeightContainer>

@@ -45,12 +45,11 @@ export default function BandSettingsPage() {
       fullHeight
       header={
         <RouteHeader
-          action={isAdmin ? <Link to="edit" kind="invert">Edit</Link> : null}
-        >
-          <FlexHeader>
+          mobileChildren={
             <RouteHeaderBackLink label="Band" to={`/${bandId}/home`} />
-          </FlexHeader>
-        </RouteHeader>
+          }
+          action={isAdmin ? <Link to="edit" kind="invert">Edit</Link> : null}
+        />
       }
       footer={
         <Drawer open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>

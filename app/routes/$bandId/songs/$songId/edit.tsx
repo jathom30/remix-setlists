@@ -88,8 +88,13 @@ export default function EditSong() {
     <fetcher.Form method="put" className="h-full">
       <MaxHeightContainer
         fullHeight
+        header={
+          <div className="hidden sm:block sm:bg-white sm:p-4 sm:border-b sm:border-slate-300">
+            <h3 className="font-bold">Edit {song.name}</h3>
+          </div>
+        }
         footer={
-          <SaveButtons isDisabled={fetcher.state !== 'idle'} saveLabel="Save" cancelTo={`/${bandId}/songs/${songId}`} />
+          <SaveButtons isSaving={fetcher.state !== 'idle'} saveLabel="Save" cancelTo={`/${bandId}/songs/${songId}`} />
         }
       >
         <SongForm

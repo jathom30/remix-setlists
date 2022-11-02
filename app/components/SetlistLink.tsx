@@ -14,7 +14,7 @@ export const SetlistLink = ({ setlist }: { setlist: SerializeFrom<Setlist & { se
   }, 0) / setlist.sets.length)
 
   return (
-    <div className="hover:bg-slate-200">
+    <div className="hover:bg-slate-200 sm:bg-white">
       <Link
         className="hover:bg-slate-200"
         to={`/${bandId}/setlists/${setlist.id}`}

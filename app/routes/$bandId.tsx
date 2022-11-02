@@ -77,71 +77,81 @@ export default function BandRoute() {
       }
       fullHeight
     >
-      <div className="h-full sm:grid sm:grid-cols-3 lg:grid-cols-4">
-        <div className="hidden sm:border-r sm:bg-white sm:block sm:shadow-md sm:z-10">
-          <FlexList gap={2} direction="row" justify="between" items="center">
-            <RemixLink className="w-full hover:bg-slate-200" to="home">
-              <FlexList pad={2} gap={0}>
-                <TextOverflow className="font-bold text-lg">{band?.name}</TextOverflow>
-                <Badge size="md">{memberRole}</Badge>
+      <div className="h-full sm:flex">
+        <div className="hidden sm:border-r sm:bg-white sm:w-full sm:max-w-xs sm:flex sm:shadow-md sm:z-10">
+          <MaxHeightContainer
+            header={
+              <div className="bg-white">
+                <FlexList gap={2} direction="row" justify="between" items="center">
+                  <RemixLink className="w-full hover:bg-slate-200" to="home">
+                    <FlexList pad={2} gap={0}>
+                      <TextOverflow className="font-bold text-lg">{band?.name}</TextOverflow>
+                      <Badge size="md">{memberRole}</Badge>
+                    </FlexList>
+                  </RemixLink>
+                  <RemixLink className="rounded-full p-2 mr-2 hover:bg-slate-200" to="band">
+                    <FontAwesomeIcon size="2x" icon={faCog} />
+                  </RemixLink>
+                </FlexList>
+              </div>
+            }>
+            <div className="border-b border-slate-300">
+              <Collapsible
+                header={
+                  <CollapsibleHeader isOpen={showSetlists} onClick={() => setShowSetlists(!showSetlists)}>
+                    <FlexList gap={0}>
+                      <span className="text-sm font-bold">Setlists</span>
+                      <span className="uppercase text-text-subdued text-sm">Most recent</span>
+                    </FlexList>
+                  </CollapsibleHeader>
+                }
+                isOpen={showSetlists}
+              >
+                {setlists.map(setlist => (
+                  <SetlistLink key={setlist.id} setlist={setlist} />
+                ))}
+              </Collapsible>
+              <FlexList direction="row" pad={4} gap={2}>
+                <Link className="grow" to="setlists">All setlists</Link>
+                <Link to="setlists/new" kind="primary">
+                  <FontAwesomeIcon icon={faPlus} />
+                </Link>
               </FlexList>
-            </RemixLink>
-            <RemixLink className="rounded-full p-2 mr-2 hover:bg-slate-200" to="band">
-              <FontAwesomeIcon size="2x" icon={faCog} />
-            </RemixLink>
-          </FlexList>
-
-          <div className="border-b border-slate-300 w-full">
-            <Collapsible
-              header={
-                <CollapsibleHeader isOpen={showSetlists} onClick={() => setShowSetlists(!showSetlists)}>
-                  <FlexList gap={0}>
-                    <span className="text-sm font-bold">Setlists</span>
-                    <span className="uppercase text-text-subdued text-sm">Most recent</span>
-                  </FlexList>
-                </CollapsibleHeader>
-              }
-              isOpen={showSetlists}
-            >
-              {setlists.map(setlist => (
-                <SetlistLink key={setlist.id} setlist={setlist} />
-              ))}
-            </Collapsible>
-            <FlexList direction="row" pad={4} gap={2}>
-              <Link className="grow" to="setlists">All setlists</Link>
-              <Link to="setlists/new" kind="primary">
-                <FontAwesomeIcon icon={faPlus} />
-              </Link>
-            </FlexList>
-          </div>
-
-          <div className="border-b border-slate-300 w-full">
-            <Collapsible
-              header={
-                <CollapsibleHeader isOpen={showSongs} onClick={() => setShowSongs(!showSongs)}>
-                  <FlexList gap={0} items="start">
-                    <span className="text-sm font-bold">Songs</span>
-                    <span className="uppercase text-text-subdued text-sm">Most recent</span>
-                  </FlexList>
-                </CollapsibleHeader>
-              }
-              isOpen={showSongs}
-            >
-              {songs.map(song => (
-                <SongLink key={song.id} song={song} />
-              ))}
-            </Collapsible>
-            <FlexList direction="row" pad={4} gap={2}>
-              <Link className="grow" to="songs">All songs</Link>
-              <Link to="songs/new" kind="primary">
-                <FontAwesomeIcon icon={faPlus} />
-              </Link>
-            </FlexList>
-          </div>
+            </div>
+            <div className="border-b border-slate-300">
+              <Collapsible
+                header={
+                  <CollapsibleHeader isOpen={showSongs} onClick={() => setShowSongs(!showSongs)}>
+                    <FlexList gap={0} items="start">
+                      <span className="text-sm font-bold">Songs</span>
+                      <span className="uppercase text-text-subdued text-sm">Most recent</span>
+                    </FlexList>
+                  </CollapsibleHeader>
+                }
+                isOpen={showSongs}
+              >
+                {songs.map(song => (
+                  <SongLink key={song.id} song={song} />
+                ))}
+              </Collapsible>
+              <FlexList direction="row" pad={4} gap={2}>
+                <Link className="grow" to="songs">All songs</Link>
+                <Link to="songs/new" kind="primary">
+                  <FontAwesomeIcon icon={faPlus} />
+                </Link>
+              </FlexList>
+            </div>
+          </MaxHeightContainer>
         </div>
-        <div className="col-span-2 lg:col-span-3">
+        <div className="h-full sm:hidden">
           <Outlet />
         </div>
+        <div className="hidden sm:block sm:w-full sm:overflow-auto">
+          <Outlet />
+        </div>
+        {/* <div className="hidden sm:block sm:col-span-2 lg:col-span-3">
+          <Outlet />
+        </div> */}
       </div>
     </MaxHeightContainer>
   )

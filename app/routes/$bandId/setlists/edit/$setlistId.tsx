@@ -195,10 +195,14 @@ export default function EditSetlist() {
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader>
-          <RouteHeaderBackLink label={`Editing ${setlist.name}`} to={`/${bandId}/setlists/${setlistId}`} />
-          {isLoading ? <Loader invert /> : null}
-        </RouteHeader>
+        <RouteHeader
+          mobileChildren={
+            <>
+              <RouteHeaderBackLink label={`Editing ${setlist.name}`} to={`/${bandId}/setlists/${setlistId}`} />
+              {isLoading ? <Loader invert /> : null}
+            </>
+          }
+        />
       }
       footer={
         <>
