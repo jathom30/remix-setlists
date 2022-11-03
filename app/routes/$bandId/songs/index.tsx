@@ -4,7 +4,7 @@ import invariant from "tiny-invariant";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import { Form, useLoaderData, useParams, useSearchParams } from "@remix-run/react";
-import { Button, CreateNewButton, Drawer, FlexHeader, FlexList, Input, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, SongFilters, SongLink } from "~/components";
+import { Button, CreateNewButton, Drawer, FlexHeader, FlexList, Input, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, SongFilters, SongLink, Title } from "~/components";
 import { faBoxOpen, faFilter } from "@fortawesome/free-solid-svg-icons";
 import { useRef, useState } from "react";
 import { getFeels } from "~/models/feel.server";
@@ -71,7 +71,7 @@ export default function SongsList() {
               mobileChildren={
                 <RouteHeaderBackLink label="Songs" to={`/${bandId}/home`} />
               }
-              desktopChildren={<h3 className="font-bold text-2xl">Songs</h3>}
+              desktopChildren={<Title>Songs</Title>}
               desktopAction={<Link to="new" kind="primary">New song</Link>}
             />
           </>

@@ -29,8 +29,9 @@ export const MulitSongSelect = ({ songs, label }: { songs: SerializeFrom<Song[]>
   }
 
   return (
-    <Form method="put" action="." className="w-full">
+    <Form method="put" action="." className="w-full h-full">
       <MaxHeightContainer
+        fullHeight
         header={
           <div className="border-b border-slate-300 p-4 w-full">
             <FlexList gap={2}>

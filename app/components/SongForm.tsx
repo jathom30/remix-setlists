@@ -12,7 +12,7 @@ import { keyLetters, majorMinorOptions } from "~/utils/songConstants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RadioGroup } from "./RadioGroup";
 import { ErrorMessage } from "./ErrorMessage";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { Checkbox } from "./Checkbox";
 
 export const SongForm = ({ song, feels, errors, onCreateFeel }: {
@@ -28,7 +28,7 @@ export const SongForm = ({ song, feels, errors, onCreateFeel }: {
     setIsWindow(true)
   }, [])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setSelectedFeels(prevFeels => {
       const [newFeel] = feels?.filter(feel => originalFeels?.every(og => og.id !== feel.id)) || []
       const newFeels = [...prevFeels, newFeel]

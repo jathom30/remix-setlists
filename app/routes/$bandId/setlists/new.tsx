@@ -1,36 +1,35 @@
 import { Outlet, useLocation, useParams } from "@remix-run/react"
-import { MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components"
+import { Breadcrumbs, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components"
 
 
-const getHeader = (pathname: string, defaultTo: string) => {
+const getHeader = (pathname: string) => {
   if (pathname.includes('manual')) {
-    return {
-      label: 'Manual',
-    }
+    return 'Manual'
   }
   if (pathname.includes('auto')) {
-    return {
-      label: 'Auto-magical',
-    }
+    return 'Auto-magical'
   }
-  return {
-    label: 'New',
-  }
+  return 'New'
 }
 
 export default function NewSetlist() {
   const { bandId } = useParams()
   const { pathname } = useLocation()
 
-  const { label } = getHeader(pathname, `/${bandId}/setlists`)
-
+  const label = getHeader(pathname)
+  const isNewBase = getHeader(pathname) === 'New'
   return (
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader>
-          <RouteHeaderBackLink label={label} />
-        </RouteHeader>
+        <RouteHeader
+          mobileChildren={<RouteHeaderBackLink label={label} />}
+          desktopChildren={<Breadcrumbs breadcrumbs={[
+            { label: 'Setlists', to: `/${bandId}/setlists` },
+            { label: 'New', to: isNewBase ? '.' : `/${bandId}/setlists/new` },
+            ...(!isNewBase ? [{ label: getHeader(pathname), to: '.' }] : [])
+          ]} />}
+        />
       }
     >
       <Outlet />

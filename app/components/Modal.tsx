@@ -14,7 +14,7 @@ export const Modal = ({ children, open, onClose }: { children: React.ReactNode; 
       {open ? (
         <div
           key="drawer"
-          className="fixed z-20 inset-0"
+          className="fixed inset-0"
         >
           <motion.div
             role="presentation"
@@ -45,7 +45,7 @@ export const Modal = ({ children, open, onClose }: { children: React.ReactNode; 
               opacity: 0,
             }}
             transition={{ ease: 'easeInOut' }}
-            className="absolute top-8 z-20 inset-x-4 bg-white rounded overflow-auto max-w-xl m-auto"
+            className="absolute top-8 inset-x-4 bg-white rounded overflow-auto max-w-xl m-auto"
             style={{ height: 'min-content', maxHeight: '90vh' }}
           >
             {children}

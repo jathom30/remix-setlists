@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, Link as RemixLink } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/server-runtime";
-import { Badge, Button, Drawer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
+import { Badge, Button, Drawer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, Title } from "~/components";
 import { getUserWithBands } from "~/models/user.server";
 
 export async function loader({ request }: LoaderArgs) {
@@ -31,6 +31,8 @@ export default function UserRoute() {
             <RouteHeaderBackLink label="User" to={`/${bandId}/home`} />
           }
           action={<Link to="edit" kind="invert" icon={faPenToSquare} isRounded isCollapsing>Edit user</Link>}
+          desktopChildren={<Title>User settings</Title>}
+          desktopAction={<Link to="edit" kind="secondary" icon={faPenToSquare} isRounded isCollapsing>Edit user</Link>}
         />
       }
       footer={
@@ -40,9 +42,9 @@ export default function UserRoute() {
               <Button type="submit" icon={faSignOut}>Sign out</Button>
             </FlexList>
           </Form>
-          <Drawer open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
+          <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
             <Outlet />
-          </Drawer>
+          </MobileModal>
         </>
       }
     >

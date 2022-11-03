@@ -3,11 +3,12 @@ import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
-import { Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
-import { CatchContainer, ErrorContainer, FlexHeader, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, SongLink } from "~/components";
-import { faDatabase, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import { Outlet, useLoaderData, useLocation, useNavigate, Link as RemixLink, useParams } from "@remix-run/react";
+import { Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, SongLink, Title } from "~/components";
+import { faChevronLeft, faDatabase, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { getSetLength } from "~/utils/setlists";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -29,6 +30,7 @@ export default function Setlist() {
   const { setlist } = useLoaderData<typeof loader>()
   const { pathname, state } = useLocation()
   const navigate = useNavigate()
+  const { bandId } = useParams()
   const [to] = useState(state as string)
 
   return (
@@ -42,7 +44,12 @@ export default function Setlist() {
               <Link to="menu" kind="invert" icon={faEllipsisV} isRounded isCollapsing>Menu</Link>
             </>
           }
-          desktopChildren={<RouteHeaderBackLink invert={false} label={setlist.name} to={to} />}
+          desktopChildren={
+            <Breadcrumbs breadcrumbs={[
+              { label: 'Setlists', to: `/${bandId}/setlists` },
+              { label: setlist.name, to: '.' },
+            ]} />
+          }
           desktopAction={<Link to="menu" icon={faEllipsisV} isRounded isCollapsing>Menu</Link>}
         />
       }

@@ -1,8 +1,8 @@
-import { Outlet, useCatch, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
+import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import { json } from "@remix-run/node"
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Avatar, Badge, CatchContainer, Drawer, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
+import { Avatar, Badge, CatchContainer, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, Title } from "~/components";
 import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { getUsersById } from "~/models/user.server";
@@ -49,12 +49,14 @@ export default function BandSettingsPage() {
             <RouteHeaderBackLink label="Band" to={`/${bandId}/home`} />
           }
           action={isAdmin ? <Link to="edit" kind="invert">Edit</Link> : null}
+          desktopChildren={<Title>Band Settings</Title>}
+          desktopAction={isAdmin ? <Link to="edit" kind="secondary">Edit</Link> : null}
         />
       }
       footer={
-        <Drawer open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
+        <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
           <Outlet />
-        </Drawer>
+        </MobileModal>
       }
     >
       <FlexList pad={4}>

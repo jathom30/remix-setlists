@@ -1,18 +1,18 @@
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/node"
 import invariant from "tiny-invariant";
-import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, SetlistLink, ErrorContainer, MobileModal, Link } from "~/components"
-import { Link as RemixLink, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams } from "@remix-run/react";
+import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, SetlistLink, ErrorContainer, MobileModal, Title, Link, Label } from "~/components"
+import { Outlet, useLoaderData, useLocation, useNavigate, useSearchParams, Link as RemixLink, useParams } from "@remix-run/react";
 import { getRecentSetlists } from "~/models/setlist.server";
 import { getRecentSongs } from "~/models/song.server";
 import { getBandHome } from "~/models/band.server";
 import { RoleEnum, showHideEnums } from "~/utils/enums";
 import { useMemberRole } from "~/utils";
+import { faHammer, faList, faMagicWandSparkles, faMusic, faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faList, faMusic } from "@fortawesome/free-solid-svg-icons";
 
 export async function loader({ request, params }: LoaderArgs) {
-  const bandId = params.bandId
+  const { bandId } = params
   invariant(bandId, 'bandId note found')
 
   const url = new URL(request.url)
@@ -58,6 +58,7 @@ export default function BandIndex() {
             </RouteHeaderBackLink>
           }
           action={<Badge invert size="sm">{memberRole}</Badge>}
+          desktopChildren={<Title>Home</Title>}
         />
       }
       footer={
@@ -108,21 +109,36 @@ export default function BandIndex() {
           </div>
         </FlexList>
       </div>
-      <div className="hidden h-full sm:h-full sm:bg-slate-100 sm:block">
-        <FlexList height="full" pad={4} items="center">
-          <RemixLink className="bg-white p-4 rounded shadow sm:w-4/5 md:w-2/3 hover:bg-slate-100" to={`/${bandId}/setlists/new`}>
-            <FlexList items="center" gap={2}>
-              <FontAwesomeIcon icon={faList} size="2x" />
-              Create setlist
-            </FlexList>
-          </RemixLink>
-          <RemixLink className="bg-white p-4 rounded shadow sm:w-4/5 md:w-2/3 hover:bg-slate-100" to={`/${bandId}/songs/new`}>
-            <FlexList items="center" gap={2}>
-              <FontAwesomeIcon icon={faMusic} size="2x" />
-              Create song
-            </FlexList>
-          </RemixLink>
-        </FlexList>
+
+      <div className="hidden h-full sm:h-full sm:bg-slate-100 sm:flex sm:flex-col sm:gap-4 sm:p-4">
+        <div>
+          <Label>Create a setlist</Label>
+          <div className="grid grid-cols-2 gap-4">
+            <RemixLink to={`/${bandId}/setlists/new/manual`}>
+              <div className="bg-white p-4 rounded flex gap-4 items-center shadow-md h-full">
+                <FontAwesomeIcon icon={faHammer} size="3x" />
+                <Title>Manual</Title>
+              </div>
+            </RemixLink>
+            <RemixLink to={`/${bandId}/setlists/new/auto`}>
+              <div className="bg-white p-4 rounded flex gap-4 items-center shadow-md h-full">
+                <FontAwesomeIcon icon={faMagicWandSparkles} size="3x" />
+                <Title>Auto-magical</Title>
+              </div>
+            </RemixLink>
+          </div>
+        </div>
+        <div>
+          <Label>Songs</Label>
+          <div className="col-span-2">
+            <RemixLink to={`/${bandId}/songs/new`}>
+              <div className="bg-white p-4 rounded flex gap-4 justify-center items-center shadow-md">
+                <FontAwesomeIcon icon={faMusic} size="3x" />
+                <Title>Create Song</Title>
+              </div>
+            </RemixLink>
+          </div>
+        </div>
       </div>
     </MaxHeightContainer>
   )

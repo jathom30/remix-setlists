@@ -32,7 +32,7 @@ export const Avatar = ({ icon, bandName, size = 'md' }: { icon?: SerializeFrom<B
         <img src={icon?.path} alt={`${bandName} icon`} />
       ) : (
         <div
-          className={`h-full flex items-center justify-center bg-primary ${getSize().text} rounded-md font-bold`}
+          className={`h-full aspect-square flex items-center justify-center bg-primary ${getSize().text} rounded-md font-bold`}
           style={{ backgroundColor: icon?.backgroundColor || undefined, color: icon?.textColor || undefined }}
         >
           <span>{bandName[0]}</span>

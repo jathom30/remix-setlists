@@ -1,6 +1,6 @@
 import type { ButtonKind } from "~/components"
 
-export const defaultButtonStyles = "flex items-center gap-2 rounded justify-center font-bold py-2 px-4 h-8 border-0 bg-component-background-alt text-sm text-text-subdued transition-all hover:bg-component-background-darken"
+export const defaultButtonStyles = "flex items-center gap-2 rounded justify-center font-bold py-2 px-4 h-8 border-0 text-sm transition-all"
 
 export const additionalStyles = ({ isDisabled, kind }: { isDisabled: boolean, kind: ButtonKind }) => {
   if (isDisabled) {
@@ -14,10 +14,10 @@ export const additionalStyles = ({ isDisabled, kind }: { isDisabled: boolean, ki
     case 'danger':
       return 'text-danger bg-transparent border border-danger hover:text-white hover:bg-danger'
     case 'text':
-      return 'text-text-subdued bg-transparent hover:bg-background-alt'
+      return 'text-text-subdued bg-transparent hover:bg-slate-300 hover:text-white'
     case 'invert':
       return 'text-white bg-transparent hover:bg-white hover:text-text'
     default:
-      return ''
+      return 'text-text-subdued bg-slate-100 hover:bg-slate-300 hover:text-white'
   }
 }

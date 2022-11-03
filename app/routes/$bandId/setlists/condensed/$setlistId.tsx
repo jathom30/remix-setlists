@@ -1,10 +1,12 @@
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
-import { FlexList, Label, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
+import { Breadcrumbs, CatchContainer, ErrorContainer, FlexList, Label, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, Title } from "~/components";
 import { getCondensedSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useParams } from "@remix-run/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -21,13 +23,21 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export default function CondensedSetlist() {
   const { setlist } = useLoaderData<typeof loader>()
+  const { bandId } = useParams()
   return (
     <MaxHeightContainer
       fullHeight
       header={
         <RouteHeader
-          mobileChildren={
-            <RouteHeaderBackLink label="Condensed" />
+          mobileChildren={<RouteHeaderBackLink label="Condensed" />}
+          desktopChildren={
+            <Breadcrumbs
+              breadcrumbs={[
+                { label: 'Setlists', to: `/${bandId}/setlists` },
+                { label: setlist.name, to: `/${bandId}/setlists/${setlist.id}` },
+                { label: 'Condensed', to: '.' },
+              ]}
+            />
           }
         />
       }
@@ -46,4 +56,12 @@ export default function CondensedSetlist() {
       </FlexList>
     </MaxHeightContainer>
   )
+}
+
+export function CatchBoundary() {
+  return <CatchContainer />
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ErrorContainer error={error} />
 }

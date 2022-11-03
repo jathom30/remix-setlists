@@ -5,7 +5,7 @@ import { json } from '@remix-run/node'
 import type { ShouldReloadFunction } from "@remix-run/react";
 import { Form, NavLink, Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { CatchContainer, Drawer, ErrorContainer, FlexHeader, FlexList, Label, Link, Loader, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongDisplay } from "~/components";
+import { Breadcrumbs, CatchContainer, Drawer, ErrorContainer, FlexHeader, FlexList, Label, Link, Loader, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongDisplay } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { motion } from "framer-motion";
@@ -202,6 +202,11 @@ export default function EditSetlist() {
               {isLoading ? <Loader invert /> : null}
             </>
           }
+          desktopChildren={<Breadcrumbs breadcrumbs={[
+            { label: 'Setlists', to: `/${bandId}/setlists` },
+            { label: setlist.name, to: `/${bandId}/setlists/${setlist.id}` },
+            { label: 'Edit', to: '.' },
+          ]} />}
         />
       }
       footer={
