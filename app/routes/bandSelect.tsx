@@ -45,12 +45,17 @@ export default function Bands() {
         </div>
       }
       footer={
-        <div className="sm:hidden">
-          <RemixLink className={`${linkStyles}`} to="menu">
-            <FontAwesomeIcon size="2x" icon={faPlusCircle} />
-            <h5>Add a band</h5>
-          </RemixLink>
-        </div>
+        <>
+          <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
+            <Outlet />
+          </MobileModal>
+          <div className="sm:hidden">
+            <RemixLink className={`${linkStyles}`} to="menu">
+              <FontAwesomeIcon size="2x" icon={faPlusCircle} />
+              <h5>Add a band</h5>
+            </RemixLink>
+          </div>
+        </>
       }
       fullHeight
     >
@@ -73,9 +78,6 @@ export default function Bands() {
           ))}
         </div>
       </div>
-      <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
-        <Outlet />
-      </MobileModal>
     </MaxHeightContainer>
   )
 }

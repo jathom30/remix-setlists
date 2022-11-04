@@ -8,7 +8,7 @@ import { getRecentSongs } from "~/models/song.server";
 import { getBandHome } from "~/models/band.server";
 import { RoleEnum, showHideEnums } from "~/utils/enums";
 import { useMemberRole } from "~/utils";
-import { faHammer, faList, faMagicWandSparkles, faMusic, faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
+import { faHammer, faMagicWandSparkles, faMusic } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export async function loader({ request, params }: LoaderArgs) {

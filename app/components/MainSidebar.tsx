@@ -1,9 +1,10 @@
-import { faCaretLeft, faCaretRight, faChevronLeft, faCog, faList, faMusic, faPlus, faUser } from "@fortawesome/free-solid-svg-icons"
+import { faCaretLeft, faCaretRight, faCheck, faCog, faList, faMusic, faPlus, faSort, faUser } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import type { BandIcon, Setlist, Song, SongsInSets } from "@prisma/client"
-import { Link as RemixLink } from "@remix-run/react"
+import { Popover } from 'react-tiny-popover'
 import type { SerializeFrom } from "@remix-run/server-runtime"
 import { AnimatePresence, motion } from "framer-motion"
+import type { ReactNode } from "react";
 import { useState } from "react"
 import { useUser } from "~/utils"
 import { Avatar } from "./Avatar"
@@ -17,6 +18,7 @@ import { MaxHeightContainer } from "./MaxHeightContainer"
 import { SetlistLink } from "./SetlistLink"
 import { SongLink } from "./SongLink"
 import { TextOverflow } from "./TextOverflow"
+import { useLocation, Link as RemixLink, useParams } from "@remix-run/react"
 
 type MainSidebarProps = {
   band: SerializeFrom<{
@@ -33,11 +35,20 @@ type MainSidebarProps = {
         } | null;
       })[];
     }[];
-  })[]>
+  })[]>;
+  bands: SerializeFrom<{
+    name: string;
+    icon: BandIcon | null;
+    id: string;
+    members: {
+      role: string;
+    }[];
+  }>[]
 }
 
-export const MainSidebar = ({ band, memberRole, songs, setlists }: MainSidebarProps) => {
+export const MainSidebar = ({ band, memberRole, songs, setlists, bands }: MainSidebarProps) => {
   const user = useUser()
+  const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const state = isOpen ? 'open' : 'closed'
 
@@ -53,19 +64,20 @@ export const MainSidebar = ({ band, memberRole, songs, setlists }: MainSidebarPr
       >
         <MaxHeightContainer
           header={
-            <div className="bg-white border-b flex flex-col">
-              <RemixLink className="hover:bg-slate-200" to="/bandSelect">
-                <FlexList direction="row" gap={2} pad={4} items="center">
-                  {isOpen ? <FontAwesomeIcon icon={faChevronLeft} /> : null}
-                  <Avatar icon={band?.icon} bandName={band?.name || ''} size="md" />
-                  {isOpen ? (
-                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: .1 }} className="flex flex-col">
-                      <TextOverflow className="font-bold text-lg">{band?.name}</TextOverflow>
-                      <Badge size="md">{memberRole}</Badge>
-                    </motion.div>
-                  ) : null}
-                </FlexList>
-              </RemixLink>
+            <div className="bg-white border-b flex items-center justify-center">
+              <Popover
+                isOpen={isPopupOpen}
+                positions={['right']}
+                padding={8}
+                onClickOutside={() => setIsPopupOpen(false)}
+                content={<BandSelectPopup bands={bands} />}
+              >
+                <button className="w-full hover:bg-slate-100" onClick={() => setIsPopupOpen(!isPopupOpen)}>
+                  <BandOption band={band} isCollapsed={!isOpen} memberRole={memberRole}>
+                    <FontAwesomeIcon icon={faSort} />
+                  </BandOption>
+                </button>
+              </Popover>
             </div>
           }
           footer={
@@ -95,11 +107,15 @@ export const MainSidebar = ({ band, memberRole, songs, setlists }: MainSidebarPr
                     </FlexHeader>
                   </motion.div>
                   <FlexList gap={0}>
-                    {setlists.map(setlist => (
-                      <div key={setlist.id} className="rounded overflow-hidden">
-                        <SetlistLink setlist={setlist} />
-                      </div>
-                    ))}
+                    {setlists.length ? (
+                      setlists.map(setlist => (
+                        <div key={setlist.id} className="rounded overflow-hidden">
+                          <SetlistLink setlist={setlist} />
+                        </div>
+                      ))
+                    ) : (
+                      <span>No recent setlists</span>
+                    )}
                   </FlexList>
                   <Link className="grow" to="setlists">All setlists</Link>
                 </FlexList>
@@ -117,11 +133,15 @@ export const MainSidebar = ({ band, memberRole, songs, setlists }: MainSidebarPr
                     </FlexHeader>
                   </motion.div>
                   <FlexList gap={0}>
-                    {songs.map(song => (
-                      <div key={song.id} className="rounded overflow-hidden">
-                        <SongLink song={song} />
-                      </div>
-                    ))}
+                    {songs.length ? (
+                      songs.map(song => (
+                        <div key={song.id} className="rounded overflow-hidden">
+                          <SongLink song={song} />
+                        </div>
+                      ))
+                    ) : (
+                      <span>No recent songs</span>
+                    )}
                   </FlexList>
                   <Link className="grow" to="songs">All songs</Link>
                 </FlexList>
@@ -137,5 +157,48 @@ export const MainSidebar = ({ band, memberRole, songs, setlists }: MainSidebarPr
         </MaxHeightContainer>
       </motion.div>
     </AnimatePresence>
+  )
+}
+
+const BandSelectPopup = ({ bands }: { bands: MainSidebarProps['bands'] }) => {
+  const { bandId } = useParams()
+  const { pathname } = useLocation()
+  const isSelected = (bandId: MainSidebarProps['bands'][number]['id']) => pathname.includes(bandId)
+  return (
+    <div className="bg-white rounded shadow-md">
+      <FlexList pad={2} gap={2}>
+        {bands.map(band => (
+          <RemixLink
+            key={band.id}
+            to={`/${band.id}`}
+            className={`rounded hover:bg-slate-200 ${isSelected(band.id) ? 'bg-slate-100' : ''}`}
+          >
+            <BandOption isCollapsed={false} band={band} memberRole={band.members[0].role}>
+              {isSelected(band.id) ? <FontAwesomeIcon icon={faCheck} /> : null}
+            </BandOption>
+          </RemixLink>
+        ))}
+        <Link kind="secondary" to={`/${bandId}/home/newBand`} icon={faPlus}>New band</Link>
+      </FlexList>
+    </div>
+  )
+}
+
+const BandOption = ({ band, memberRole, isCollapsed = false, children }: { band: MainSidebarProps['band'] | MainSidebarProps['bands'][number]; memberRole: string; isCollapsed?: boolean; children?: ReactNode }) => {
+  return (
+    <FlexList direction="row" justify={isCollapsed ? 'center' : 'between'} items="center" pad={isCollapsed ? 2 : 4}>
+      <FlexList direction="row" gap={2} items="center">
+        <Avatar icon={band?.icon} bandName={band?.name || ''} size="md" />
+        {!isCollapsed ? (
+          <>
+            <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: .1 }} className="flex flex-col">
+              <TextOverflow className="font-bold text-lg">{band?.name}</TextOverflow>
+              <Badge size="md">{memberRole}</Badge>
+            </motion.div>
+          </>
+        ) : null}
+      </FlexList>
+      {!isCollapsed ? children : null}
+    </FlexList>
   )
 }

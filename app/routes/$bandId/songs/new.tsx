@@ -3,7 +3,7 @@ import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/server-ru
 import { redirect } from "@remix-run/server-runtime";
 import { useActionData, useFetcher, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { SaveButtons, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongForm, ErrorContainer, CatchContainer } from "~/components";
+import { SaveButtons, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongForm, ErrorContainer, CatchContainer, Breadcrumbs } from "~/components";
 import { requireNonSubMember } from "~/session.server";
 import { createFeel, getFeels } from '~/models/feel.server';
 import { getFields } from '~/utils/form';
@@ -83,9 +83,10 @@ export default function NewSong() {
         header={
           <RouteHeader
             mobileChildren={<RouteHeaderBackLink label='New song' />}
-            desktopChildren={
-              <RouteHeaderBackLink label='New song' invert={false} />
-            }
+            desktopChildren={<Breadcrumbs breadcrumbs={[
+              { label: 'Songs', to: `/${bandId}/songs` },
+              { label: 'New', to: '.' },
+            ]} />}
           />
         }
         footer={
