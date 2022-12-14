@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Drawer } from "./Drawer";
 import { Modal } from "./Modal";
 
@@ -6,7 +6,7 @@ export const MobileModal = ({ children, open, onClose }: { children: React.React
   const [isMobile, setIsMobile] = useState(true)
   const mobileWidth = 640
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (typeof window === 'undefined') {
       return
     }

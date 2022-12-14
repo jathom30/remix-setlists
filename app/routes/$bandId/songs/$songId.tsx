@@ -3,7 +3,7 @@ import { Outlet, useLoaderData, useLocation, useNavigate, useParams, Link as Rem
 import { json } from '@remix-run/node'
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Breadcrumbs, CatchContainer, ErrorContainer, FeelTag, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, TempoIcons, Title } from "~/components";
+import { Breadcrumbs, CatchContainer, ErrorContainer, ErrorMessage, FeelTag, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, TempoIcons, Title } from "~/components";
 import { getSong } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import pluralize from 'pluralize'
@@ -126,6 +126,13 @@ export default function SongDetails() {
               <Label>Setlist auto-generation importance</Label>
               <span>{setlistAutoGenImportanceEnums[song.rank as keyof typeof setlistAutoGenImportanceEnums]}</span>
             </FlexList>
+          </ItemBox>
+        </FlexList>
+
+        <FlexList>
+          <Label>Add to set?</Label>
+          <ItemBox>
+            <ErrorMessage message="// Should the user be able to add a song directly to a set form here?" />
           </ItemBox>
         </FlexList>
 

@@ -17,7 +17,9 @@ export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request)
   const { bandId } = params
   invariant(bandId, 'bandId not found')
-  const [band, setlists, songs, memberRole, bands] = await Promise.all([getBandHome(bandId), getRecentSetlists(bandId), getRecentSongs(bandId), getMemberRole(bandId, userId), getBands(userId)])
+  const [band, setlists, songs, memberRole, bands] = await Promise.all([
+    getBandHome(bandId), getRecentSetlists(bandId), getRecentSongs(bandId), getMemberRole(bandId, userId), getBands(userId)
+  ])
   // used in useMemberRole hook in child routes
   return json({ band, setlists, songs, memberRole, bands })
 }

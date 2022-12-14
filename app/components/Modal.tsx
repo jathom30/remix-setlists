@@ -1,11 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 export const Modal = ({ children, open, onClose }: { children: React.ReactNode; open: boolean; onClose: () => void }) => {
   const [isWindow, setIsWindow] = useState(false)
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setIsWindow(true)
   }, [])
 

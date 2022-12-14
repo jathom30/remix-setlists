@@ -12,29 +12,37 @@ import { keyLetters, majorMinorOptions } from "~/utils/songConstants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { RadioGroup } from "./RadioGroup";
 import { ErrorMessage } from "./ErrorMessage";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Checkbox } from "./Checkbox";
+import { useFetcher, useParams } from "@remix-run/react";
 
-export const SongForm = ({ song, feels, errors, onCreateFeel }: {
+export const SongForm = ({ song, feels, errors }: {
   song?: Partial<SerializeFrom<Song & { feels: Feel[] }>>; feels: SerializeFrom<Feel>[];
   errors?: Record<keyof SerializeFrom<Song>, string>;
-  onCreateFeel: (newFeel: string) => void;
 }) => {
   const [originalFeels] = useState(feels)
   const [selectedFeels, setSelectedFeels] = useState(song?.feels || [])
   const [isWindow, setIsWindow] = useState(false)
-  // something needs window in this component. Without this check, page crashes on reload
-  useLayoutEffect(() => {
+  const fetcher = useFetcher()
+  const { bandId } = useParams()
+
+  // Select's portal needs window in this component. Without this check, page crashes on reload
+  useEffect(() => {
     setIsWindow(true)
   }, [])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setSelectedFeels(prevFeels => {
       const [newFeel] = feels?.filter(feel => originalFeels?.every(og => og.id !== feel.id)) || []
       const newFeels = [...prevFeels, newFeel]
       return newFeels
     })
   }, [originalFeels, feels])
+
+  // uses a resourse route to create new so parent route doesn't have to filter requests
+  const handleCreateFeel = (newFeel: string) => {
+    fetcher.submit({ newFeel }, { method: 'post', action: `${bandId}/resources/createNewFeel` })
+  }
 
   if (!isWindow) { return null }
 
@@ -79,16 +87,12 @@ export const SongForm = ({ song, feels, errors, onCreateFeel }: {
       <Field name="feels" label="Feels">
         <CreatableSelect
           value={selectedFeels}
-          onChange={newFeels => {
-            setSelectedFeels(Array.from(newFeels))
-          }}
+          onChange={newFeels => setSelectedFeels(Array.from(newFeels))}
           name="feels"
           isMulti
           instanceId="feels"
           options={feels}
-          onCreateOption={newFeel => {
-            onCreateFeel(newFeel)
-          }}
+          onCreateOption={handleCreateFeel}
           getOptionLabel={feel => feel.label}
           getOptionValue={feel => feel.id}
           menuPortalTarget={document.body}

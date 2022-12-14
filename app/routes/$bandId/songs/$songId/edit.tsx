@@ -6,7 +6,7 @@ import { MaxHeightContainer, SongForm, SaveButtons, ErrorContainer, CatchContain
 import { getSong, updateSong } from "~/models/song.server";
 import { getFields } from "~/utils/form";
 import { requireNonSubMember } from "~/session.server";
-import { createFeel, getFeels } from "~/models/feel.server";
+import { getFeels } from "~/models/feel.server";
 import { useActionData, useFetcher, useLoaderData, useParams } from "@remix-run/react";
 import type { Feel, Song } from "@prisma/client";
 
@@ -31,13 +31,6 @@ export async function action({ request, params }: ActionArgs) {
   await requireNonSubMember(request, bandId)
 
   const formData = await request.formData()
-  const newFeel = formData.get('newFeel')
-
-  if (newFeel && typeof newFeel === 'string') {
-    return json({
-      newFeel: await createFeel(newFeel, bandId)
-    })
-  }
 
   const { fields, errors } = getFields<SerializeFrom<Song & { feels: Feel['id'][] }>>(formData, [
     { name: 'name', type: 'string', isRequired: true },
@@ -80,10 +73,6 @@ export default function EditSong() {
   const actionData = useActionData()
   const fetcher = useFetcher<typeof action>()
 
-  const handleCreateFeel = (newFeel: string) => {
-    fetcher.submit({ newFeel }, { method: 'post' })
-  }
-
   return (
     <fetcher.Form method="put" className="h-full">
       <MaxHeightContainer
@@ -101,7 +90,6 @@ export default function EditSong() {
           song={song}
           feels={feels}
           errors={actionData?.errors}
-          onCreateFeel={handleCreateFeel}
         />
       </MaxHeightContainer>
     </fetcher.Form>
