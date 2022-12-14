@@ -2,7 +2,6 @@ import { faArrowDown, faArrowUp } from "@fortawesome/free-solid-svg-icons";
 import type { Feel, Song } from "@prisma/client"
 import type { SerializeFrom } from '@remix-run/node'
 import Select from "react-select"
-import CreatableSelect from 'react-select/creatable';
 import { positionEnums, setlistAutoGenImportanceEnums } from '~/utils/enums'
 import { FlexList } from "./FlexList"
 import { Label } from "./Label"
@@ -14,35 +13,18 @@ import { RadioGroup } from "./RadioGroup";
 import { ErrorMessage } from "./ErrorMessage";
 import { useEffect, useState } from "react";
 import { Checkbox } from "./Checkbox";
-import { useFetcher, useParams } from "@remix-run/react";
+import { FeelSelect } from "~/routes/$bandId/resources/FeelSelect";
 
 export const SongForm = ({ song, feels, errors }: {
   song?: Partial<SerializeFrom<Song & { feels: Feel[] }>>; feels: SerializeFrom<Feel>[];
   errors?: Record<keyof SerializeFrom<Song>, string>;
 }) => {
-  const [originalFeels] = useState(feels)
-  const [selectedFeels, setSelectedFeels] = useState(song?.feels || [])
   const [isWindow, setIsWindow] = useState(false)
-  const fetcher = useFetcher()
-  const { bandId } = useParams()
 
   // Select's portal needs window in this component. Without this check, page crashes on reload
   useEffect(() => {
     setIsWindow(true)
   }, [])
-
-  useEffect(() => {
-    setSelectedFeels(prevFeels => {
-      const [newFeel] = feels?.filter(feel => originalFeels?.every(og => og.id !== feel.id)) || []
-      const newFeels = [...prevFeels, newFeel]
-      return newFeels
-    })
-  }, [originalFeels, feels])
-
-  // uses a resourse route to create new so parent route doesn't have to filter requests
-  const handleCreateFeel = (newFeel: string) => {
-    fetcher.submit({ newFeel }, { method: 'post', action: `${bandId}/resources/createNewFeel` })
-  }
 
   if (!isWindow) { return null }
 
@@ -85,18 +67,7 @@ export const SongForm = ({ song, feels, errors }: {
         </FlexList>
       </Field>
       <Field name="feels" label="Feels">
-        <CreatableSelect
-          value={selectedFeels}
-          onChange={newFeels => setSelectedFeels(Array.from(newFeels))}
-          name="feels"
-          isMulti
-          instanceId="feels"
-          options={feels}
-          onCreateOption={handleCreateFeel}
-          getOptionLabel={feel => feel.label}
-          getOptionValue={feel => feel.id}
-          menuPortalTarget={document.body}
-        />
+        <FeelSelect feels={feels} defaultFeels={song?.feels} />
       </Field>
 
       <FlexList direction="row">
