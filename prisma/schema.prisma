@@ -126,8 +126,7 @@ model Feel {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  song      Song?    @relation(fields: [songId], references: [id])
-  songId    String?
+  songs     Song[]
 
   band   Band   @relation(fields: [bandId], references: [id], onDelete: Cascade)
   bandId String

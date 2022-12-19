@@ -28,7 +28,7 @@ async function seed() {
     },
   })
 
-  const user = await prisma.user.create({
+  await prisma.user.create({
     data: {
       email,
       password: {
@@ -109,18 +109,26 @@ async function seed() {
   await prisma.feel.create({
     data: {
       label: 'Swing',
-      songId: songOne.id,
       color: '#2a9d8f',
-      bandId: band.id
+      bandId: band.id,
+      songs: {
+        connect: [
+          { id: songOne.id }
+        ]
+      }
     }
   })
 
   await prisma.feel.create({
     data: {
       label: 'Rock',
-      songId: songOne.id,
       color: '#080808',
-      bandId: band.id
+      bandId: band.id,
+      songs: {
+        connect: [
+          { id: songOne.id }
+        ]
+      }
     }
   })
 
