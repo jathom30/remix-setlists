@@ -104,6 +104,9 @@ export default function BandSettingsPage() {
           <Label>Feels</Label>
           <ItemBox>
             <FlexList>
+              {feels.length === 0 ? (
+                <Label>No feels created yet</Label>
+              ) : null}
               {feels.map(feel => (
                 <FlexHeader key={feel.id}>
                   <FeelTag feel={feel} />
@@ -113,6 +116,7 @@ export default function BandSettingsPage() {
                   </FlexList>
                 </FlexHeader>
               ))}
+
             </FlexList>
           </ItemBox>
         </FlexList>
