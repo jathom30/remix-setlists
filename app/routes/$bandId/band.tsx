@@ -111,7 +111,7 @@ export default function BandSettingsPage() {
                 <FlexHeader key={feel.id}>
                   <FeelTag feel={feel} />
                   <FlexList direction="row" items="center">
-                    <Label>Used on {pluralize('song', feel.songs.length, true)}</Label>
+                    <Label>Found in {pluralize('song', feel.songs.length, true)}</Label>
                     <Link to={`feel/${feel.id}/delete`} kind="danger" icon={faTrash} isCollapsing isRounded>Delete</Link>
                   </FlexList>
                 </FlexHeader>

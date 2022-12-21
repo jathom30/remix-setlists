@@ -101,6 +101,14 @@ export async function updateBand(bandId: Band['id'], band: { name: Band['name'],
   })
 }
 
+export async function updateBandCode(bandId: Band['id']) {
+  const code = Math.random().toString(36).substring(2, 8).toUpperCase()
+  return prisma.band.update({
+    where: { id: bandId },
+    data: { code }
+  })
+}
+
 export async function updateBandByCode(code: Band['code'], userId: User['id']) {
   const band = await prisma.band.findFirst({
     where: { code },

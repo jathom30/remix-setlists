@@ -32,7 +32,8 @@ export function Button({ isSaving = false, isCollapsing = false, onClick, tabInd
       value={value}
       tabIndex={tabIndex}
     >
-      {icon ? isSaving ? <Loader /> : <FontAwesomeIcon icon={icon} /> : null}
+      {(icon && !isSaving) ? <FontAwesomeIcon icon={icon} /> : null}
+      {isSaving ? <Loader /> : null}
       <div className={isCollapsing ? 'hidden md:block' : ''}>{children}</div>
     </button>
   )
