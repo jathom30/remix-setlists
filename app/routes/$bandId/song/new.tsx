@@ -56,7 +56,7 @@ export async function action({ request, params }: ActionArgs) {
   }, [])
 
   const song = await createSong(bandId, fields, validFeels)
-  return redirect(`/${bandId}/songs/${song.id}`)
+  return redirect(`/${bandId}/song/${song.id}`)
 }
 
 export default function NewSong() {

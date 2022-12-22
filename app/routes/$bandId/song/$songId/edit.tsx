@@ -63,7 +63,7 @@ export async function action({ request, params }: ActionArgs) {
   }, [])
 
   await updateSong(songId, fields, validFeels)
-  return redirect(`/${bandId}/songs/${songId}`)
+  return redirect(`/${bandId}/song/${songId}`)
 }
 
 

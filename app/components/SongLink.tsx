@@ -8,7 +8,7 @@ export const SongLink = ({ song }: { song: SerializeFrom<Song> }) => {
   return (
     <div className="hover:bg-slate-200 sm:bg-white">
       <Link
-        to={`/${song.bandId}/songs/${song.id}`}
+        to={`/${song.bandId}/song/${song.id}`}
         state={pathname}
         prefetch="intent"
       >

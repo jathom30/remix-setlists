@@ -7,9 +7,12 @@ type SongParams = {
   isCover?: Song['isCover']
   feels?: Feel['id'][]
   positions?: Song['position'][]
+  sort?: string
 }
 
 export async function getSongs(bandId: Band['id'], params?: SongParams) {
+  const splitSort = params?.sort?.split(':')
+  const orderBy: Record<string, string> = splitSort?.length ? { [splitSort[0]]: splitSort[1] } : { name: 'asc' }
   return prisma.song.findMany({
     where: {
       bandId,
@@ -22,7 +25,7 @@ export async function getSongs(bandId: Band['id'], params?: SongParams) {
       ...(params?.tempos?.length ? { tempo: { in: params.tempos } } : null),
       ...(params?.positions?.length ? { position: { in: params.positions } } : null),
     },
-    orderBy: { name: 'asc' }
+    orderBy
   })
 }
 
