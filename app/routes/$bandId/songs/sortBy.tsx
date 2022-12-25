@@ -11,23 +11,27 @@ export async function action({ request, params }: ActionArgs) {
   invariant(bandId, 'bandId not found')
   const formData = await request.formData()
 
+  const requestUrl = (new URL(request.url)).searchParams
+
   const sort = formData.get('sort')
 
+  const searchParams = new URLSearchParams(requestUrl)
+
   if (typeof sort !== 'string') {
-    return null
+    return redirect(`/${bandId}/songs?${searchParams.toString()}`)
   }
 
-  const searchParams = new URLSearchParams()
+  searchParams.delete('sort')
   searchParams.append('sort', sort)
 
-  return redirect(`/${bandId}/songs?${searchParams.toString}`)
+  return redirect(`/${bandId}/songs?${searchParams.toString()}`)
 }
 
 export default function SongsSortBy() {
   const [params] = useSearchParams()
   const submit = useSubmit()
   return (
-    <Form action=".." onChange={e => submit(e.currentTarget)}>
+    <Form method="put" onChange={e => submit(e.currentTarget)}>
       <FlexList pad={4}>
         <Label>Sort by</Label>
         <RadioGroup

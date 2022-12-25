@@ -2,7 +2,7 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Feel } from "@prisma/client";
 import { json, redirect } from "@remix-run/node"
-import { Form, useLoaderData, useLocation, useParams, useSearchParams } from "@remix-run/react";
+import { Form, useLoaderData, useLocation, useParams, useSearchParams, useSubmit } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/server-runtime";
 import type { ReactNode } from "react";
 import { useState } from "react";
@@ -29,15 +29,16 @@ export async function action({ request, params }: ActionArgs) {
   invariant(bandId, 'bandId not found')
   const formData = await request.formData()
 
+  const intent = formData.get('intent')
+
   const tempos = formData.getAll('tempos')
   const feels = formData.getAll('feels')
   const isCover = formData.get('isCover')
   const positions = formData.getAll('positions')
-  // const intent = formData.get('intent')
 
-  // if (typeof intent === 'string' && intent === 'reset') {
-
-  // }
+  const requestUrl = (new URL(request.url)).searchParams
+  const searchParams = new URLSearchParams()
+  const sortBy = requestUrl.get('sort')
 
   const tempoError = !Array.isArray(tempos) || [...tempos].some(tempo => typeof tempo !== 'string')
   const feelsError = !Array.isArray(feels) || [...feels].some(feel => typeof feel !== 'string')
@@ -49,7 +50,9 @@ export async function action({ request, params }: ActionArgs) {
     return null
   }
 
-  const searchParams = new URLSearchParams()
+  if (sortBy) {
+    searchParams.append('sort', sortBy)
+  }
   tempos.forEach(tempo => {
     searchParams.append('tempos', tempo.toString())
   })
@@ -65,6 +68,14 @@ export async function action({ request, params }: ActionArgs) {
     searchParams.append('isCover', isCover)
   }
 
+  if (intent === 'reset') {
+    searchParams.delete('tempos')
+    searchParams.delete('feels')
+    searchParams.delete('positions')
+    searchParams.delete('isCover')
+    return redirect(`/${bandId}/songs?${searchParams.toString()}`)
+  }
+
   return redirect(`/${bandId}/songs?${searchParams.toString()}`)
 }
 
@@ -73,6 +84,7 @@ const positions = ['opener', 'closer', 'other'] as const
 export default function SongsFilters() {
   const { feels } = useLoaderData<typeof loader>()
   const { search } = useLocation()
+  const submit = useSubmit()
   const [params] = useSearchParams()
   const { bandId } = useParams()
   const feelParams = params?.getAll('feels').reduce((allFeels: SerializeFrom<Feel>[], feelId) => {
@@ -93,7 +105,7 @@ export default function SongsFilters() {
             <FlexList pad={2} direction="row" justify="between" items="center">
               <Link kind="text" to={{ pathname: `/${bandId}/songs`, search }}><FontAwesomeIcon icon={faChevronLeft} /></Link>
               <span className="font-bold">Filters</span>
-              <Link to=".." type="button" kind="text">Reset</Link>
+              <Button name="intent" value="reset" type="button" kind="text" onClick={e => submit(e.currentTarget)}>Reset</Button>
             </FlexList>
           </div>
         }
