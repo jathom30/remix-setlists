@@ -1,12 +1,12 @@
-import type { LoaderArgs } from "@remix-run/server-runtime";
+import type { LoaderArgs, SerializeFrom } from "@remix-run/server-runtime";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
-import { Breadcrumbs, CatchContainer, ErrorContainer, FlexList, Label, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, Title } from "~/components";
+import { Breadcrumbs, CatchContainer, ErrorContainer, FlexList, Label, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
 import { getCondensedSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { useLoaderData, useParams } from "@remix-run/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import type { Set } from "@prisma/client";
+import pluralize from "pluralize";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -24,6 +24,12 @@ export async function loader({ request, params }: LoaderArgs) {
 export default function CondensedSetlist() {
   const { setlist } = useLoaderData<typeof loader>()
   const { bandId } = useParams()
+
+  const getSetLength = (set: typeof setlist.sets[number]) => {
+    return set.songs.reduce((acc, song) => {
+      return acc += (song.song?.length || 0)
+    }, 0)
+  }
   return (
     <MaxHeightContainer
       fullHeight
@@ -45,7 +51,7 @@ export default function CondensedSetlist() {
       <FlexList pad={4} gap={0}>
         {setlist.sets.map((set, i) => (
           <div key={set.id} className="border-b border-slate-300 pb-2">
-            <Label>Set {i + 1}</Label>
+            <Label>Set {i + 1} - {pluralize('minues', getSetLength(set), true)}</Label>
             <FlexList gap={0}>
               {set.songs.map(song => (
                 <span key={song.songId}>{song.song?.name}</span>

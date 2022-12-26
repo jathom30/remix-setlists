@@ -55,7 +55,7 @@ export async function getCondensedSetlist(setlistId: Setlist['id']) {
     include: {
       sets: {
         include: {
-          songs: { include: { song: { select: { name: true } } }, orderBy: { positionInSet: 'asc' } },
+          songs: { include: { song: { select: { name: true, length: true } } }, orderBy: { positionInSet: 'asc' } },
         }
       }
     },
