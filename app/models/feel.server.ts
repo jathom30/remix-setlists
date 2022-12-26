@@ -4,6 +4,14 @@ import { prisma } from "~/db.server";
 export async function getFeels(bandId: Band['id']) {
   return prisma.feel.findMany({
     where: { bandId },
+    orderBy: { label: 'asc' },
+    include: { songs: { select: { id: true } } }
+  })
+}
+
+export async function getFeel(feelId: Feel['id']) {
+  return prisma.feel.findUnique({
+    where: { id: feelId }
   })
 }
 
@@ -19,5 +27,11 @@ export async function createFeel(label: Feel['label'], bandId: Feel['bandId']) {
 
   return prisma.feel.create({
     data: { label, bandId, color: randomColor() }
+  })
+}
+
+export async function deleteFeel(feelId: Feel['id']) {
+  return prisma.feel.delete({
+    where: { id: feelId }
   })
 }

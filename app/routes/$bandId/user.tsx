@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, Link as RemixLink } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/server-runtime";
-import { Badge, Button, Drawer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, Title } from "~/components";
+import { Badge, Button, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, Title } from "~/components";
 import { getUserWithBands } from "~/models/user.server";
 
 export async function loader({ request }: LoaderArgs) {
@@ -53,19 +53,23 @@ export default function UserRoute() {
           <Label>Name</Label>
           <span>{user.name}</span>
         </FlexList>
-        <FlexList gap={0}>
+        <FlexList gap={2}>
           <Label>Associated bands</Label>
-          {user.bands.map(band => (
-            <RemixLink to={`remove/${band.bandId}`} key={band.bandId} className="p-4 py-2 rounded">
-              <FlexHeader>
-                <FlexList direction="row" items="center">
-                  <FontAwesomeIcon icon={faTrash} />
-                  <span>{band.bandName}</span>
-                </FlexList>
-                <Badge>{band.role}</Badge>
-              </FlexHeader>
-            </RemixLink>
-          ))}
+          <ItemBox pad={2}>
+            <FlexList gap={0}>
+              {user.bands.map(band => (
+                <RemixLink className="p-2 rounded hover:bg-slate-100" to={`remove/${band.bandId}`} key={band.bandId}>
+                  <FlexHeader>
+                    <FlexList direction="row" items="center">
+                      <FontAwesomeIcon icon={faTrash} />
+                      <span>{band.bandName}</span>
+                    </FlexList>
+                    <Badge>{band.role}</Badge>
+                  </FlexHeader>
+                </RemixLink>
+              ))}
+            </FlexList>
+          </ItemBox>
         </FlexList>
       </FlexList>
     </MaxHeightContainer>

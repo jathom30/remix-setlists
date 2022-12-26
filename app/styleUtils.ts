@@ -10,7 +10,7 @@ export const additionalStyles = ({ isDisabled, kind }: { isDisabled: boolean, ki
     case 'primary':
       return "bg-primary text-white hover:bg-primary-darken"
     case 'secondary':
-      return "bg-transparent text-secondary hover:bg-secondary hover:text-white"
+      return "bg-transparent text-secondary border border-secondary hover:bg-secondary hover:text-white"
     case 'danger':
       return 'text-danger bg-transparent border border-danger hover:text-white hover:bg-danger'
     case 'text':

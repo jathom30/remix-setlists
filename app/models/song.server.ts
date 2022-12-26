@@ -1,5 +1,6 @@
 import type { Band, Feel, Setlist, Song } from "@prisma/client";
 import { prisma } from "~/db.server";
+import { getSortFromParam } from "~/utils/params";
 
 type SongParams = {
   q?: string
@@ -7,9 +8,11 @@ type SongParams = {
   isCover?: Song['isCover']
   feels?: Feel['id'][]
   positions?: Song['position'][]
+  sort?: string
 }
 
 export async function getSongs(bandId: Band['id'], params?: SongParams) {
+  const orderBy = getSortFromParam(params?.sort)
   return prisma.song.findMany({
     where: {
       bandId,
@@ -22,7 +25,7 @@ export async function getSongs(bandId: Band['id'], params?: SongParams) {
       ...(params?.tempos?.length ? { tempo: { in: params.tempos } } : null),
       ...(params?.positions?.length ? { position: { in: params.positions } } : null),
     },
-    orderBy: { name: 'asc' }
+    orderBy
   })
 }
 

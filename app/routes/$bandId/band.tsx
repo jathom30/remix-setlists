@@ -2,13 +2,15 @@ import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@rem
 import { json } from "@remix-run/node"
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Avatar, Badge, CatchContainer, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, Title } from "~/components";
+import { Avatar, Badge, CatchContainer, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, Title } from "~/components";
 import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { getUsersById } from "~/models/user.server";
 import { RoleEnum } from "~/utils/enums";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useMemberRole } from "~/utils";
+import { getFeels } from "~/models/feel.server";
+import pluralize from "pluralize";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -26,12 +28,14 @@ export async function loader({ request, params }: LoaderArgs) {
     role: band.members.find(m => m.userId === member.id)?.role
   }))
 
-  return json({ band, members: augmentedMembers })
+  const feels = await getFeels(bandId)
+
+  return json({ band, members: augmentedMembers, feels })
 }
 
 
 export default function BandSettingsPage() {
-  const { band, members } = useLoaderData<typeof loader>()
+  const { band, members, feels } = useLoaderData<typeof loader>()
   const memberRole = useMemberRole()
   const isAdmin = memberRole === RoleEnum.ADMIN
   const { bandId } = useParams()
@@ -39,7 +43,7 @@ export default function BandSettingsPage() {
   const navigate = useNavigate()
 
   // sub routes can include member id if user is updating member's role
-  const subRoutes = ['newMember', 'edit', 'updateMember', 'removeSelf', 'delete', ...members.map(m => m.id)]
+  const subRoutes = ['newMember', 'edit', 'updateMember', 'removeSelf', 'delete', ...members.map(m => m.id), 'feel']
   return (
     <MaxHeightContainer
       fullHeight
@@ -75,24 +79,47 @@ export default function BandSettingsPage() {
           </FlexList>
         </FlexHeader>
 
-        <ItemBox pad={2}>
+        <FlexList gap={2}>
           <Label>Members</Label>
-          <FlexList gap={2}>
-            {members.map(member => (
-              <FlexHeader key={member.id}>
-                {isAdmin ? (
-                  <Link to={member.id} icon={faEdit} kind="secondary">{member.name}</Link>
-                ) : (
-                  <span className="font-bold">{member.name}</span>
-                )}
-                <Badge>{member.role}</Badge>
-              </FlexHeader>
-            ))}
-            {isAdmin ? (
-              <Link to="newMember">Add new member</Link>
-            ) : null}
-          </FlexList>
-        </ItemBox>
+          <ItemBox>
+            <FlexList gap={2}>
+              {members.map(member => (
+                <FlexHeader key={member.id}>
+                  {isAdmin ? (
+                    <Link to={member.id} icon={faEdit} kind="secondary">{member.name}</Link>
+                  ) : (
+                    <span className="font-bold">{member.name}</span>
+                  )}
+                  <Badge>{member.role}</Badge>
+                </FlexHeader>
+              ))}
+              {isAdmin ? (
+                <Link to="newMember">Add new member</Link>
+              ) : null}
+            </FlexList>
+          </ItemBox>
+        </FlexList>
+
+        <FlexList gap={2}>
+          <Label>Feels</Label>
+          <ItemBox>
+            <FlexList>
+              {feels.length === 0 ? (
+                <Label>No feels created yet</Label>
+              ) : null}
+              {feels.map(feel => (
+                <FlexHeader key={feel.id}>
+                  <FeelTag feel={feel} />
+                  <FlexList direction="row" items="center">
+                    <Label>Found in {pluralize('song', feel.songs.length, true)}</Label>
+                    <Link to={`feel/${feel.id}/delete`} kind="danger" icon={faTrash} isCollapsing isRounded>Delete</Link>
+                  </FlexList>
+                </FlexHeader>
+              ))}
+
+            </FlexList>
+          </ItemBox>
+        </FlexList>
 
         {isAdmin ? (
           <FlexList gap={2}>

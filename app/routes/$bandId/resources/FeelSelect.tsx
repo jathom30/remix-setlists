@@ -40,7 +40,7 @@ export const FeelSelect = ({ feels, defaultFeels }: { feels: SerializeFrom<Feel>
   }, [fetcher, selectedFeels])
 
   const handleCreateFeel = (newFeel: string) => {
-    fetcher.submit({ newFeel }, { method: 'post', action: `${bandId}/resources/createNewFeel` })
+    fetcher.submit({ newFeel }, { method: 'post', action: `${bandId}/resources/FeelSelect` })
   }
   return (
     <CreatableSelect

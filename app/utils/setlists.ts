@@ -12,7 +12,7 @@ export type SetlistSettings = {
   setLength: number
 }
 
-export const getSetLength = (songs: SerializeFrom<SongsInSets & { song: Song | null }>[]) => songs.reduce((total, song) => total += song.song?.length || 0, 0)
+export const getSetLength = (songs: Pick<SerializeFrom<SongsInSets & { song: Song | null }>, 'song'>[]) => songs.reduce((total, song) => total += song.song?.length || 0, 0)
 
 function randomIntFromMax(max: number) {
   return Math.floor(Math.random() * max)
