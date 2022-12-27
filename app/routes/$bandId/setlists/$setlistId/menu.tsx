@@ -1,4 +1,4 @@
-import { Form, useParams } from "@remix-run/react";
+import { Form, useParams, useTransition } from "@remix-run/react";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
@@ -23,6 +23,7 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function SetlistMenu() {
   const { bandId, setlistId } = useParams()
+  const transition = useTransition()
   const memberRole = useMemberRole()
   const isSub = memberRole === RoleEnum.SUB
   return (
@@ -32,7 +33,7 @@ export default function SetlistMenu() {
           <Link to={`/${bandId}/setlists/${setlistId}/rename`} kind="text">Rename setlist</Link>
           <Form method="post">
             <FlexList>
-              <Button type="submit" kind="text">Edit setlist</Button>
+              <Button isSaving={transition.state !== 'idle'} type="submit" kind="text">Edit setlist</Button>
             </FlexList>
           </Form>
         </>

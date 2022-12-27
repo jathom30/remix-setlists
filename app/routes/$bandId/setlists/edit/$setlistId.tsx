@@ -1,11 +1,11 @@
-import { faGripVertical, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft, faGripVertical, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
-import type { ShouldReloadFunction } from "@remix-run/react";
-import { NavLink, Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
+import { ShouldReloadFunction, useBeforeUnload } from "@remix-run/react";
+import { NavLink, Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams, Link as RemixLink } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, FlexList, Label, Link, Loader, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, SongDisplay } from "~/components";
+import { Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, FlexList, Label, Link, Loader, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, SongDisplay, TextOverflow } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { CSS } from "@dnd-kit/utilities";
@@ -61,7 +61,7 @@ export async function action({ request, params }: ActionArgs) {
   return null
 }
 
-const subRoutes = ['addSongs', 'removeSong', 'createSet', 'saveChanges']
+const subRoutes = ['addSongs', 'removeSong', 'createSet', 'saveChanges', 'confirmCancel']
 
 // this feels like some hacky shit
 export const unstable_shouldReload: ShouldReloadFunction = ({ prevUrl }) => {
@@ -76,9 +76,13 @@ export const unstable_shouldReload: ShouldReloadFunction = ({ prevUrl }) => {
 export default function EditSetlist() {
   const fetcher = useFetcher()
   const { setlist } = useLoaderData<typeof loader>()
-  const { bandId, setlistId } = useParams()
+  const { bandId } = useParams()
   const { pathname } = useLocation()
   const navigate = useNavigate()
+
+  useBeforeUnload((e) => {
+    console.log(e)
+  })
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -199,12 +203,13 @@ export default function EditSetlist() {
       fullHeight
       header={
         <RouteHeader
-          action={<Link to="saveChanges" icon={faSave}>Save</Link>}
+          action={<Link to="saveChanges" isSaving={isLoading} icon={faSave}>Save</Link>}
+          desktopAction={<Link to="saveChanges" icon={faSave}>Save</Link>}
           mobileChildren={
-            <>
-              <RouteHeaderBackLink label={`Editing ${setlist.name}`} to={`/${bandId}/setlists/${setlistId}`} />
-              {isLoading ? <Loader invert /> : null}
-            </>
+            <RemixLink to="confirmCancel" className="text-white w-full flex gap-2 items-center">
+              <FontAwesomeIcon icon={faChevronLeft} />
+              <TextOverflow className="text-lg font-bold">{`Editing ${setlist.name}`}</TextOverflow>
+            </RemixLink>
           }
           desktopChildren={<Breadcrumbs breadcrumbs={[
             { label: 'Setlists', to: `/${bandId}/setlists` },
