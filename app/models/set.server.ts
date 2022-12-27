@@ -1,4 +1,4 @@
-import { Prisma, Set, Setlist, Song } from "@prisma/client";
+import type { Set, Setlist, Song } from "@prisma/client";
 import { prisma } from "~/db.server";
 
 export async function removeSongFromSet(setId: Set['id'], songId: Song['id']) {

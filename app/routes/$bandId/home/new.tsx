@@ -6,7 +6,7 @@ export default function CreateNewSelection() {
   return (
     <FlexList pad={4}>
       <Link to={`/${bandId}/setlists/new`}>Create setlist</Link>
-      <Link to={`/${bandId}/songs/new`}>Create song</Link>
+      <Link to={`/${bandId}/song/new`}>Create song</Link>
     </FlexList>
   )
 }

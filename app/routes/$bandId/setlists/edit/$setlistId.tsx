@@ -1,11 +1,11 @@
-import { faGripVertical, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faGripVertical, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
 import type { ShouldReloadFunction } from "@remix-run/react";
 import { NavLink, Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { Breadcrumbs, CatchContainer, Drawer, ErrorContainer, FlexHeader, FlexList, Label, Link, Loader, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongDisplay } from "~/components";
+import { Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, FlexList, Label, Link, Loader, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, SongDisplay } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { CSS } from "@dnd-kit/utilities";
@@ -31,8 +31,8 @@ type SetSong = SerializeFrom<{
 
 export async function loader({ request, params }: LoaderArgs) {
   const { setlistId, bandId } = params
-  invariant(setlistId, 'setlistId not found')
   invariant(bandId, 'bandId not found')
+  invariant(setlistId, 'setlistId not found')
   await requireNonSubMember(request, bandId)
 
   const setlist = await getSetlist(setlistId)
@@ -43,7 +43,10 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ setlist })
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request, params }: ActionArgs) {
+  const { bandId } = params
+  invariant(bandId, 'bandId not found')
+  await requireNonSubMember(request, bandId)
   const formData = await request.formData()
 
   const entries = Object.fromEntries(formData.entries())
@@ -58,7 +61,7 @@ export async function action({ request }: ActionArgs) {
   return null
 }
 
-const subRoutes = ['addSongs', 'removeSong', 'createSet']
+const subRoutes = ['addSongs', 'removeSong', 'createSet', 'saveChanges']
 
 // this feels like some hacky shit
 export const unstable_shouldReload: ShouldReloadFunction = ({ prevUrl }) => {
@@ -196,6 +199,7 @@ export default function EditSetlist() {
       fullHeight
       header={
         <RouteHeader
+          action={<Link to="saveChanges" icon={faSave}>Save</Link>}
           mobileChildren={
             <>
               <RouteHeaderBackLink label={`Editing ${setlist.name}`} to={`/${bandId}/setlists/${setlistId}`} />
@@ -214,9 +218,9 @@ export default function EditSetlist() {
           <FlexList pad={4}>
             <Link to="createSet">Create new set</Link>
           </FlexList>
-          <Drawer open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
+          <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
             <Outlet />
-          </Drawer>
+          </MobileModal>
         </>
       }
     >
