@@ -3,7 +3,7 @@ import { redirect, json } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { FlexList, Input, Label, SaveButtons } from "~/components";
 import { requireNonSubMember } from "~/session.server";
-import { Form, useActionData, useLoaderData, useParams } from "@remix-run/react";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { getFields } from "~/utils/form";
 import { getSetlist, updateSetlist } from "~/models/setlist.server";
 import { ErrorMessage } from "~/components/ErrorMessage";
@@ -39,11 +39,10 @@ export async function action({ request, params }: ActionArgs) {
   }
 
   await updateSetlist(setlistId, fields)
-  return redirect(`/${bandId}/setlists/${setlistId}`)
+  return redirect(`/${bandId}/setlist/${setlistId}`)
 }
 
 export default function RenameSetlist() {
-  const { bandId, setlistId } = useParams()
   const { setlist } = useLoaderData<typeof loader>()
   const data = useActionData<typeof action>()
 
@@ -55,7 +54,7 @@ export default function RenameSetlist() {
           <Input name="name" defaultValue={setlist.name} />
           {data?.errors.name ? <ErrorMessage message="A setlist name is required" /> : null}
         </FlexList>
-        <SaveButtons saveLabel="Update name" cancelTo={`/${bandId}/setlists/${setlistId}`} />
+        <SaveButtons saveLabel="Update name" cancelTo=".." />
       </FlexList>
     </Form>
   )

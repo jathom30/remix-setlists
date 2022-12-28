@@ -1,60 +1,52 @@
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
-import invariant from "tiny-invariant";
-import { getSongs } from "~/models/song.server";
-import { requireUserId } from "~/session.server";
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
-import { CatchContainer, CreateNewButton, ErrorContainer, FlexList, Input, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, SongLink, Title } from "~/components";
-import { faBoxOpen, faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
+import invariant from "tiny-invariant";
+import { CreateNewButton, FlexList, Input, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, SetlistLink, Title } from "~/components";
+import { getSetlists } from "~/models/setlist.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBoxOpen, faSort } from "@fortawesome/free-solid-svg-icons";
 import { getSortFromParam } from "~/utils/params";
 import { capitalizeFirstLetter } from "~/utils/assorted";
+import { requireUserId } from "~/session.server";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
-  const { bandId } = params
+  const bandId = params.bandId
   invariant(bandId, 'bandId not found')
 
   const url = new URL(request.url)
   const q = url.searchParams.get('query')
 
   const sort = url.searchParams.get('sort')
-  const feelParams = url.searchParams.getAll('feels')
-  const tempoParams = url.searchParams.getAll('tempos')
-  const isCoverParam = url.searchParams.get('isCover')
-  const positionParams = url.searchParams.getAll('positions')
 
-  const songParams = {
+  const filterParams = {
     ...(q ? { q } : null),
     ...(sort ? { sort } : null),
-    feels: feelParams,
-    tempos: tempoParams.map(tempo => parseInt(tempo)),
-    ...(isCoverParam ? { isCover: isCoverParam === 'true' } : null),
-    positions: positionParams,
   }
 
-  const songs = await getSongs(bandId, songParams)
+  const setlists = await getSetlists(bandId, filterParams)
 
-  return json({ songs })
+  return json({ setlists })
 }
 
 const subRoutes = ['sortBy', 'filters']
 
-export default function SongsList() {
-  const { songs } = useLoaderData<typeof loader>()
-  const submit = useSubmit()
+export default function SetlistsRoute() {
+  const { setlists } = useLoaderData<typeof loader>()
   const memberRole = useMemberRole()
   const isSub = memberRole === RoleEnum.SUB
   const [params] = useSearchParams()
-  const hasParams = [...params.keys()].filter(key => key !== 'query' && key !== 'sort').length > 0
-  const query = params.get('query')
+  // const hasParams = [...params.keys()].filter(key => key !== 'query' && key !== 'sort').length > 0
   const { bandId } = useParams()
+  const query = params.get('query')
+  const submit = useSubmit()
   const { pathname, search } = useLocation()
   const navigate = useNavigate()
 
-  const hasSongs = songs.length
+  const hasSetlists = setlists.length
 
   const sortByLabel = () => {
     const sortObject = getSortFromParam(params.get('sort') ?? undefined)
@@ -84,11 +76,9 @@ export default function SongsList() {
       header={
         <>
           <RouteHeader
-            mobileChildren={
-              <RouteHeaderBackLink label="Songs" to={`/${bandId}/home`} />
-            }
-            desktopChildren={<Title>Songs</Title>}
-            desktopAction={<Link to={`/${bandId}/song/new`} kind="primary">New song</Link>}
+            mobileChildren={<RouteHeaderBackLink label="Setlists" to={`/${bandId}/home`} />}
+            desktopChildren={<Title>Setlists</Title>}
+            desktopAction={<Link to="new" kind="primary">New setlist</Link>}
           />
           <div className="border-b border-slate-300 w-full">
             <FlexList pad={4} gap={4}>
@@ -102,10 +92,10 @@ export default function SongsList() {
                     <span>{sortByLabel()}</span>
                   </FlexList>
                 </Link>
-                <div className="relative">
+                {/* <div className="relative">
                   <Link to={{ pathname: 'filters', search: params.toString() }} kind="secondary" icon={faFilter}>Filters</Link>
                   {hasParams ? <div className="w-2 h-2 top-1 right-1 bg-red-600 rounded-full absolute" /> : null}
-                </div>
+                </div> */}
               </FlexList>
             </FlexList>
           </div>
@@ -113,10 +103,10 @@ export default function SongsList() {
       }
       footer={
         <>
-          {(!isSub && hasSongs) ? <CreateNewButton to={`/${bandId}/song/new`} /> : null}
+          {(!isSub && hasSetlists) ? <CreateNewButton to={`/${bandId}/setlist/new`} /> : null}
           <MobileModal
             open={subRoutes.some(path => pathname.includes(path))}
-            onClose={() => navigate({ pathname: `/${bandId}/songs`, search })}
+            onClose={() => navigate({ pathname: `/${bandId}/setlists`, search })}
           >
             <Outlet />
           </MobileModal>
@@ -124,30 +114,22 @@ export default function SongsList() {
       }
     >
       <FlexList height="full">
-        {hasSongs ? (
+        {hasSetlists ? (
           <div className="flex flex-col sm:gap-2 sm:p-2">
-            {songs.map(song => (
-              <div key={song.id} className="sm:rounded sm:overflow-hidden sm:shadow">
-                <SongLink song={song} />
+            {setlists.map(setlist => (
+              <div key={setlist.id} className="sm:rounded sm:overflow-hidden sm:shadow">
+                <SetlistLink setlist={setlist} />
               </div>
             ))}
           </div>
         ) : (
           <FlexList pad={4}>
             <FontAwesomeIcon icon={faBoxOpen} size="3x" />
-            <p className="text-center">Looks like this band doesn't have any songs yet.</p>
-            <Link to="new" kind="primary">Create your first song</Link>
+            <p className="text-center">Looks like this band doesn't have any setlists yet.</p>
+            <Link to="new" kind="primary">Create your first setlist</Link>
           </FlexList>
         )}
       </FlexList>
     </MaxHeightContainer>
   )
-}
-
-export function CatchBoundary() {
-  return <CatchContainer />
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
 }

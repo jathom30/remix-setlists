@@ -18,12 +18,12 @@ export async function action({ request, params }: ActionArgs) {
   // if confirms cancel, delete cloned setlist and route to OG setlist
   if (intent === 'submit') {
     const setlist = await deleteSetlist(setlistId)
-    return redirect(`/${bandId}/setlists/${setlist.editedFromId}`)
+    return redirect(`/${bandId}/setlist/${setlist.editedFromId}`)
   }
 
   // if user wants to continue editing, redirect to edit route
   if (intent === 'cancel') {
-    return redirect(`/${bandId}/setlists/edit/${setlistId}`)
+    return redirect(`/${bandId}/setlist/edit/${setlistId}`)
   }
 }
 

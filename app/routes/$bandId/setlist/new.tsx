@@ -26,7 +26,7 @@ export default function NewSetlist() {
           mobileChildren={<RouteHeaderBackLink label={label} />}
           desktopChildren={<Breadcrumbs breadcrumbs={[
             { label: 'Setlists', to: `/${bandId}/setlists` },
-            { label: 'New', to: isNewBase ? '.' : `/${bandId}/setlists/new` },
+            { label: 'New', to: isNewBase ? '.' : `/${bandId}/setlist/new` },
             ...(!isNewBase ? [{ label: getHeader(pathname), to: '.' }] : [])
           ]} />}
         />

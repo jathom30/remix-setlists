@@ -15,7 +15,7 @@ export async function action({ request, params }: ActionArgs) {
   await requireNonSubMember(request, bandId)
 
   await removeSongFromSet(setId, songId)
-  return redirect(`/${bandId}/setlists/edit/${setlistId}`)
+  return redirect(`/${bandId}/setlist/edit/${setlistId}`)
 }
 
 export default function RemoveSongFromSetlist() {
@@ -26,7 +26,7 @@ export default function RemoveSongFromSetlist() {
         label="Remove this song?"
         deleteLabel="Remove"
         message="This will remove this song from the set. You can add it back at any time by clicking the “Add songs” button."
-        cancelTo={`/${bandId}/setlists/edit/${setlistId}`}
+        cancelTo={`/${bandId}/setlist/edit/${setlistId}`}
       />
     </Form>
   )

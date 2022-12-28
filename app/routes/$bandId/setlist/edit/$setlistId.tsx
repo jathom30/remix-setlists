@@ -2,10 +2,10 @@ import { faChevronLeft, faGripVertical, faPlus, faSave, faTrash } from "@fortawe
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
-import { ShouldReloadFunction, useBeforeUnload } from "@remix-run/react";
+import type { ShouldReloadFunction } from "@remix-run/react";
 import { NavLink, Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams, Link as RemixLink } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, FlexList, Label, Link, Loader, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, SongDisplay, TextOverflow } from "~/components";
+import { Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, SongDisplay, TextOverflow } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { CSS } from "@dnd-kit/utilities";
@@ -79,10 +79,6 @@ export default function EditSetlist() {
   const { bandId } = useParams()
   const { pathname } = useLocation()
   const navigate = useNavigate()
-
-  useBeforeUnload((e) => {
-    console.log(e)
-  })
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -213,7 +209,7 @@ export default function EditSetlist() {
           }
           desktopChildren={<Breadcrumbs breadcrumbs={[
             { label: 'Setlists', to: `/${bandId}/setlists` },
-            { label: setlist.name, to: `/${bandId}/setlists/${setlist.id}` },
+            { label: setlist.name, to: `/${bandId}/setlist/${setlist.id}` },
             { label: 'Edit', to: '.' },
           ]} />}
         />

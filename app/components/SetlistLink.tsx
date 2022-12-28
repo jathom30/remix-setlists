@@ -17,7 +17,7 @@ export const SetlistLink = ({ setlist }: { setlist: SerializeFrom<Setlist & { se
     <div className="hover:bg-slate-200 sm:bg-white">
       <Link
         className="hover:bg-slate-200"
-        to={`/${bandId}/setlists/${setlist.id}`}
+        to={`/${bandId}/setlist/${setlist.id}`}
         prefetch="intent"
         state={pathname}
       >

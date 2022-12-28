@@ -5,7 +5,7 @@ export default function CreateNewSelection() {
   const { bandId } = useParams()
   return (
     <FlexList pad={4}>
-      <Link to={`/${bandId}/setlists/new`}>Create setlist</Link>
+      <Link to={`/${bandId}/setlist/new`}>Create setlist</Link>
       <Link to={`/${bandId}/song/new`}>Create song</Link>
     </FlexList>
   )

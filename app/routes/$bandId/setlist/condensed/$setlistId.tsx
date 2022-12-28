@@ -1,11 +1,10 @@
-import type { LoaderArgs, SerializeFrom } from "@remix-run/server-runtime";
+import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { Breadcrumbs, CatchContainer, ErrorContainer, FlexList, Label, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
 import { getCondensedSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { useLoaderData, useParams } from "@remix-run/react";
-import type { Set } from "@prisma/client";
 import pluralize from "pluralize";
 
 export async function loader({ request, params }: LoaderArgs) {
@@ -40,7 +39,7 @@ export default function CondensedSetlist() {
             <Breadcrumbs
               breadcrumbs={[
                 { label: 'Setlists', to: `/${bandId}/setlists` },
-                { label: setlist.name, to: `/${bandId}/setlists/${setlist.id}` },
+                { label: setlist.name, to: `/${bandId}/setlist/${setlist.id}` },
                 { label: 'Condensed', to: '.' },
               ]}
             />

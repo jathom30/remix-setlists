@@ -34,7 +34,7 @@ export async function action({ request, params }: ActionArgs) {
   const songIds = formData.getAll('songs').map(songId => songId.toString())
 
   await addSongsToSet(setId, songIds)
-  return redirect(`/${bandId}/setlists/edit/${setlistId}`)
+  return redirect(`/${bandId}/setlist/edit/${setlistId}`)
 }
 
 export default function AddSongsToSet() {

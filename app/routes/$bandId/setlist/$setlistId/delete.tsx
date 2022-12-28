@@ -30,7 +30,7 @@ export default function DeleteBand() {
       <ConfirmDelete
         label="Delete this setlist?"
         message="Once you delete this setlist it will be removed permanently."
-        cancelTo={`/${bandId}/setlists/${setlistId}`}
+        cancelTo={`/${bandId}/setlist/${setlistId}`}
       />
     </Form>
   )

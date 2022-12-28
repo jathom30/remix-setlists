@@ -25,15 +25,15 @@ export async function action({ request, params }: ActionArgs) {
   // on new, remove editedFromId and redirect to rename setlist page
   if (intent === 'new') {
     await updateSetlist(setlistId, { editedFromId: null })
-    return redirect(`/${bandId}/setlists/${setlistId}/rename`)
+    return redirect(`/${bandId}/setlist/${setlistId}/rename`)
   }
 
   // on overwrite, update OG setlist to match cloned setlist, then delete clone and redirect to OG
   if (intent === 'overwrite') {
     await overwriteSetlist(clonedSetlist.id)
+    return redirect(`/${bandId}/setlist/${clonedSetlist.editedFromId}`)
   }
-
-  return redirect(`/${bandId}/setlists/${clonedSetlist.editedFromId}`)
+  return null
 }
 
 export default function SaveChanges() {

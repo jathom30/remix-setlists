@@ -18,29 +18,30 @@ export async function action({ request, params }: ActionArgs) {
   if (!cloneSetlist) {
     return new Error('Setlist could not be edited')
   }
-  return redirect(`/${bandId}/setlists/edit/${clonedSetlist?.id}`)
+  return redirect(`/${bandId}/setlist/edit/${clonedSetlist?.id}`)
 }
 
 export default function SetlistMenu() {
   const { bandId, setlistId } = useParams()
   const transition = useTransition()
+  const isLoadingSaveRoute = transition.state !== 'idle' && transition.location.pathname.includes('edit')
   const memberRole = useMemberRole()
   const isSub = memberRole === RoleEnum.SUB
   return (
     <FlexList pad={4} gap={2}>
       {!isSub ? (
         <>
-          <Link to={`/${bandId}/setlists/${setlistId}/rename`} kind="text">Rename setlist</Link>
+          <Link to={`/${bandId}/setlist/${setlistId}/rename`} kind="text">Rename setlist</Link>
           <Form method="post">
             <FlexList>
-              <Button isSaving={transition.state !== 'idle'} type="submit" kind="text">Edit setlist</Button>
+              <Button isSaving={isLoadingSaveRoute} type="submit" kind="text">Edit setlist</Button>
             </FlexList>
           </Form>
         </>
       ) : null}
-      <Link to={`/${bandId}/setlists/condensed/${setlistId}`} kind="text">Condensed view</Link>
+      <Link to={`/${bandId}/setlist/condensed/${setlistId}`} kind="text">Condensed view</Link>
       {!isSub ? (
-        <Link to={`/${bandId}/setlists/${setlistId}/delete`} kind="danger">Delete setlist</Link>
+        <Link to={`/${bandId}/setlist/${setlistId}/delete`} kind="danger">Delete setlist</Link>
       ) : null}
     </FlexList>
   )

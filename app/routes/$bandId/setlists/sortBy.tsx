@@ -18,16 +18,16 @@ export async function action({ request, params }: ActionArgs) {
   const searchParams = new URLSearchParams(requestUrl)
 
   if (typeof sort !== 'string') {
-    return redirect(`/${bandId}/songs?${searchParams.toString()}`)
+    return redirect(`/${bandId}/setlists?${searchParams.toString()}`)
   }
 
   searchParams.delete('sort')
   searchParams.append('sort', sort)
 
-  return redirect(`/${bandId}/songs?${searchParams.toString()}`)
+  return redirect(`/${bandId}/setlists?${searchParams.toString()}`)
 }
 
-export default function SongsSortBy() {
+export default function SetlistsSortBy() {
   const [params] = useSearchParams()
   const submit = useSubmit()
   return (
@@ -52,8 +52,6 @@ export default function SongsSortBy() {
 const sortOptions = [
   { label: 'Name: A-Z', value: 'name:asc' },
   { label: 'Name: Z-A', value: 'name:desc' },
-  { label: 'Tempo: slow-fast', value: 'tempo:asc' },
-  { label: 'Tempo: fast-slow', value: 'tempo:desc' },
   { label: 'Updated: newest first', value: 'updatedAt:desc' },
   { label: 'Updated: oldest first', value: 'updatedAt:asc' },
   { label: 'Created: newest first', value: 'createdAt:desc' },

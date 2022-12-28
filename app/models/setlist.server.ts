@@ -1,5 +1,6 @@
 import type { Band, Setlist, Song } from "@prisma/client";
 import { prisma } from "~/db.server";
+import { getSortFromParam } from "~/utils/params";
 import type { SetlistSettings } from "~/utils/setlists";
 import { createRandomSetsByPosition, setOfLength, sortSetsByPosition } from "~/utils/setlists";
 import { createSet } from "./set.server";
@@ -24,7 +25,8 @@ export async function createSetlist(bandId: Band['id'], songIds: Song['id'][]) {
   })
 }
 
-export async function getSetlists(bandId: Band['id'], params?: { q?: string }) {
+export async function getSetlists(bandId: Band['id'], params?: { q?: string, sort?: string }) {
+  const orderBy = getSortFromParam(params?.sort)
   const setlists = await prisma.setlist.findMany({
     where: {
       bandId,
@@ -33,7 +35,7 @@ export async function getSetlists(bandId: Band['id'], params?: { q?: string }) {
       }
     },
     include: { sets: { select: { songs: { include: { song: { select: { length: true } } } } } } },
-    orderBy: { name: 'asc' },
+    orderBy,
   })
   return setlists
 }
