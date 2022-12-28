@@ -23,7 +23,7 @@ export async function loader({ request, params }: LoaderArgs) {
   if (!band) {
     throw new Response("Band not found", { status: 404 })
   }
-  return json({ band, setlists, songs, searchParams })
+  return json({ band, setlists: setlists.filter(setlist => !setlist.editedFromId), songs, searchParams })
 }
 
 export default function BandIndex() {
