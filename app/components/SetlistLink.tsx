@@ -1,7 +1,9 @@
 import type { Setlist, Song } from "@prisma/client"
 import type { SerializeFrom } from "@remix-run/node"
 import { Link, useLocation, useParams } from "@remix-run/react"
+import { FlexHeader } from "./FlexHeader"
 import { FlexList } from "./FlexList"
+import { Label } from "./Label"
 
 const setCount = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']
 
@@ -22,11 +24,14 @@ export const SetlistLink = ({ setlist }: { setlist: SerializeFrom<Setlist & { se
         state={pathname}
       >
         <FlexList pad={{ x: 4, y: 2 }} gap={0}>
-          <span className="font-bold">{setlist.name}</span>
-          <FlexList direction="row" justify="between">
+          <FlexHeader>
+            <span className="font-bold">{setlist.name}</span>
+            <Label>Last updated:</Label>
+          </FlexHeader>
+          <FlexHeader>
             <span className="text-xs text-text-subdued">{setCount[setlist.sets.length]} {getDisplaySetLength} minute set(s)</span>
             <span className="text-xs text-text-subdued whitespace-nowrap">{new Date(setlist.updatedAt).toDateString()}</span>
-          </FlexList>
+          </FlexHeader>
         </FlexList>
       </Link>
     </div>

@@ -39,7 +39,6 @@ export default function SetlistsRoute() {
   const memberRole = useMemberRole()
   const isSub = memberRole === RoleEnum.SUB
   const [params] = useSearchParams()
-  // const hasParams = [...params.keys()].filter(key => key !== 'query' && key !== 'sort').length > 0
   const { bandId } = useParams()
   const query = params.get('query')
   const submit = useSubmit()
@@ -92,10 +91,6 @@ export default function SetlistsRoute() {
                     <span>{sortByLabel()}</span>
                   </FlexList>
                 </Link>
-                {/* <div className="relative">
-                  <Link to={{ pathname: 'filters', search: params.toString() }} kind="secondary" icon={faFilter}>Filters</Link>
-                  {hasParams ? <div className="w-2 h-2 top-1 right-1 bg-red-600 rounded-full absolute" /> : null}
-                </div> */}
               </FlexList>
             </FlexList>
           </div>
