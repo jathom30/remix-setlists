@@ -42,6 +42,7 @@
     "@remix-run/serve": "^1.8.2",
     "@remix-run/server-runtime": "^1.8.2",
     "@remix-validated-form/with-yup": "^2.0.1",
+    "@sendgrid/mail": "^7.7.0",
     "bcryptjs": "^2.4.3",
     "framer-motion": "^7.2.1",
     "isbot": "^3.5.1",

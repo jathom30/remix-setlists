@@ -1,3 +1,4 @@
+import sgMail from '@sendgrid/mail'
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
@@ -7,6 +8,8 @@ import { getUserId, createUserSession } from "~/session.server";
 
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { safeRedirect, validateEmail } from "~/utils";
+import invariant from 'tiny-invariant';
+import { CatchContainer, ErrorContainer } from '~/components';
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request);
@@ -20,6 +23,7 @@ export async function action({ request }: ActionArgs) {
   const password = formData.get("password");
   const name = formData.get("name");
   const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
+  invariant(process.env.SENDGRID_API_KEY, 'sendgrid api key must be set')
 
   if (!validateEmail(email)) {
     return json(
@@ -65,6 +69,25 @@ export async function action({ request }: ActionArgs) {
   }
 
   const user = await createUser(email, password, name);
+
+  const msg = {
+    to: email, // Change to your recipient
+    from: 'jathom30@gmail.com', // Change to your verified sender
+    subject: 'Sending with SendGrid is Fun',
+    text: 'and easy to do anywhere, even with Node.js',
+    html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+  }
+
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+  sgMail
+    .send(msg)
+    .then((response) => {
+      console.log(response[0].statusCode)
+      console.log(response[0].headers)
+    })
+    .catch((error) => {
+      console.error(error)
+    })
 
   return createUserSession({
     request,
@@ -205,4 +228,12 @@ export default function Join() {
       </div>
     </div>
   );
+}
+
+export function CatchBoundary() {
+  return <CatchContainer />
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ErrorContainer error={error} />
 }
