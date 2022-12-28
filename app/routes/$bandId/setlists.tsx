@@ -27,7 +27,10 @@ export async function loader({ request, params }: LoaderArgs) {
     ...(sort ? { sort } : null),
   }
 
-  const setlists = await getSetlists(bandId, filterParams)
+  const setlists = (await getSetlists(bandId, filterParams))
+    // ! filtering right now incase a user navigates away from editing a setlist (creating a temp clone in the process)
+    // ! in the future, we should have a hook to warn users before navigating away from the edit process
+    .filter(setlist => !setlist.editedFromId)
 
   return json({ setlists })
 }
