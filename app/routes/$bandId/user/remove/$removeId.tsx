@@ -4,16 +4,16 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
 import { Button, ConfirmDelete, ErrorContainer, FlexList } from "~/components";
 import { removeMemberFromBand } from "~/models/usersInBands.server";
-import { requireAdminMember, requireUserId } from "~/session.server";
+import { requireUserId } from "~/session.server";
 import { getBand } from "~/models/band.server";
 import { RoleEnum } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderArgs) {
+  await requireUserId(request)
   const userId = await requireUserId(request)
   const { bandId, removeId } = params
   invariant(bandId, 'bandId not found')
   invariant(removeId, 'removeId not found')
-  await requireAdminMember(request, bandId)
   const band = await getBand(bandId)
 
   if (!band) {
@@ -29,10 +29,10 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export async function action({ request, params }: ActionArgs) {
+  const userId = await requireUserId(request)
   const { removeId, bandId } = params
   invariant(removeId, 'removeId not found')
   invariant(bandId, 'bandId not found')
-  const userId = await requireAdminMember(request, bandId)
 
   await removeMemberFromBand(removeId, userId)
   if (bandId !== removeId) {

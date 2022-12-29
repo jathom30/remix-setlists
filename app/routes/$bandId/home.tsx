@@ -114,13 +114,13 @@ export default function BandIndex() {
         <div>
           <Label>Create a setlist</Label>
           <div className="grid grid-cols-2 gap-4">
-            <RemixLink to={`/${bandId}/setlists/new/manual`}>
+            <RemixLink to={`/${bandId}/setlist/new/manual`}>
               <div className="bg-white p-4 rounded flex gap-4 items-center shadow-md h-full">
                 <FontAwesomeIcon icon={faHammer} size="3x" />
                 <Title>Manual</Title>
               </div>
             </RemixLink>
-            <RemixLink to={`/${bandId}/setlists/new/auto`}>
+            <RemixLink to={`/${bandId}/setlist/new/auto`}>
               <div className="bg-white p-4 rounded flex gap-4 items-center shadow-md h-full">
                 <FontAwesomeIcon icon={faMagicWandSparkles} size="3x" />
                 <Title>Auto-magical</Title>
@@ -131,7 +131,7 @@ export default function BandIndex() {
         <div>
           <Label>Songs</Label>
           <div className="col-span-2">
-            <RemixLink to={`/${bandId}/songs/new`}>
+            <RemixLink to={`/${bandId}/song/new`}>
               <div className="bg-white p-4 rounded flex gap-4 justify-center items-center shadow-md">
                 <FontAwesomeIcon icon={faMusic} size="3x" />
                 <Title>Create Song</Title>

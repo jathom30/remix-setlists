@@ -4,7 +4,7 @@ import { MaxHeightContainer, FlexList, Avatar, Badge, FlexHeader, Button, Link, 
 import { getBands } from "~/models/band.server"
 import { requireUserId } from "~/session.server"
 import { useLoaderData, Link as RemixLink, NavLink, useLocation, useNavigate, Outlet, Form } from "@remix-run/react"
-import { faPlusCircle, faSignOut } from "@fortawesome/free-solid-svg-icons"
+import { faMicrophone, faPlusCircle, faSignOut } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 export async function loader({ request }: LoaderArgs) {
@@ -27,6 +27,8 @@ export default function Bands() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
+  const hasNoBands = bands.length === 0
+
   return (
     <MaxHeightContainer
       header={
@@ -46,37 +48,46 @@ export default function Bands() {
       }
       footer={
         <>
-          <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
-            <Outlet />
-          </MobileModal>
-          <div className="sm:hidden">
+          {!hasNoBands ? (<div className="sm:hidden">
             <RemixLink className={`${linkStyles}`} to="menu">
               <FontAwesomeIcon size="2x" icon={faPlusCircle} />
               <h5>Add a band</h5>
             </RemixLink>
-          </div>
+          </div>) : null}
+          <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
+            <Outlet />
+          </MobileModal>
         </>
       }
       fullHeight
     >
       <div className="bg-white h-full sm:p-4">
-        <div className="grid sm:grid-cols-2 sm:gap-4">
-          {bands.map(band => (
-            <div key={band.id} className="rounded hover:bg-slate-200 sm:border sm:shadow">
-              <NavLink to={`/${band.id}/home`}>
-                <FlexList direction="row" pad={4} items="center">
-                  <Avatar size="lg" icon={band.icon} bandName={band.name} />
-                  <FlexList gap={0}>
-                    <h2 className="text-2xl">{band.name}</h2>
-                    <div>
-                      <Badge>{band.members[0].role}</Badge>
-                    </div>
+        {hasNoBands ? (
+          <FlexList pad={4}>
+            {/* <FontAwesomeIcon icon={faMicrophone} size="5x" /> */}
+            <p>You don't have any bands added to this account.</p>
+            <Link to="new">Create new band</Link>
+            <Link to="existing">Add with code</Link>
+          </FlexList>
+        ) :
+          <div className="grid sm:grid-cols-2 sm:gap-4">
+            {bands.map(band => (
+              <div key={band.id} className="rounded hover:bg-slate-200 sm:border sm:shadow">
+                <NavLink to={`/${band.id}/home`}>
+                  <FlexList direction="row" pad={4} items="center">
+                    <Avatar size="lg" icon={band.icon} bandName={band.name} />
+                    <FlexList gap={0}>
+                      <h2 className="text-2xl">{band.name}</h2>
+                      <div>
+                        <Badge>{band.members[0].role}</Badge>
+                      </div>
+                    </FlexList>
                   </FlexList>
-                </FlexList>
-              </NavLink>
-            </div>
-          ))}
-        </div>
+                </NavLink>
+              </div>
+            ))}
+          </div>
+        }
       </div>
     </MaxHeightContainer>
   )
