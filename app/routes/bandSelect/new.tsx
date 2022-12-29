@@ -16,7 +16,7 @@ export async function action({ request }: ActionArgs) {
 
   if (hasName) {
     const band = await createBand({ name }, userId)
-    return redirect(`${band.id}/home`)
+    return redirect(`/${band.id}/home`)
   }
   return json({ errors: { name: 'Band name is required' } })
 }
