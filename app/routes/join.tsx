@@ -73,9 +73,9 @@ export async function action({ request }: ActionArgs) {
   const msg = {
     to: email, // Change to your recipient
     from: 'jathom30@gmail.com', // Change to your verified sender
-    subject: 'Sending with SendGrid is Fun',
-    text: 'and easy to do anywhere, even with Node.js',
-    html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+    subject: 'Verify your email',
+    text: 'click the link to verify your email address',
+    html: '<div><span>click the link to verify your email address</span><a href="https://google.com">VERIFY</a></div>',
   }
 
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)

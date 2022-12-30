@@ -26,6 +26,12 @@ model Password {
   userId String @unique
 }
 
+model Token {
+  hash      String
+  userId    String   @unique
+  createdAt DateTime @default(now())
+}
+
 model Band {
   id   String @id @default(cuid())
   name String
