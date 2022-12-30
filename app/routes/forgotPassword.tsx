@@ -4,10 +4,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Form, useActionData } from "@remix-run/react"
 import { json } from "@remix-run/node";
 import type { ActionArgs } from "@remix-run/server-runtime"
-import { Button, ErrorMessage, Field, FlexList, Input, ItemBox, Label, Link } from "~/components"
+import { Button, ErrorMessage, Field, FlexList, Input, ItemBox, Link } from "~/components"
 import { validateEmail } from "~/utils"
 import invariant from 'tiny-invariant';
-import { generatePasswordReset, getUserByEmail } from '~/models/user.server';
+import { generateTokenLink, getUserByEmail } from '~/models/user.server';
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData()
@@ -29,7 +29,7 @@ export async function action({ request }: ActionArgs) {
     )
   }
 
-  const magicLink = await generatePasswordReset(email)
+  const magicLink = await generateTokenLink(email, 'resetPassword')
 
   const msg = {
     to: email,
@@ -42,7 +42,7 @@ export async function action({ request }: ActionArgs) {
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
+        <title>Reset</title>
       </head>
       <body>
         <main style="max-width: 500px; margin: auto;">

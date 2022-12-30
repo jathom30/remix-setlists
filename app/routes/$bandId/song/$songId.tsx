@@ -1,16 +1,15 @@
-import { faChevronLeft, faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Outlet, useLoaderData, useLocation, useNavigate, useParams, Link as RemixLink } from "@remix-run/react";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import { json } from '@remix-run/node'
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Breadcrumbs, CatchContainer, ErrorContainer, ErrorMessage, FeelTag, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, TempoIcons, Title } from "~/components";
+import { Breadcrumbs, CatchContainer, ErrorContainer, ErrorMessage, FeelTag, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, TempoIcons } from "~/components";
 import { getSong } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import pluralize from 'pluralize'
 import { RoleEnum, setlistAutoGenImportanceEnums } from "~/utils/enums";
 import { useState } from "react";
 import { useMemberRole } from "~/utils";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)

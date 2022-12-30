@@ -5,7 +5,7 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
 import { Button, ErrorMessage, Field, FlexList, Input, ItemBox, Link } from "~/components";
 import { getFields } from "~/utils/form";
-import { compareResetToken, getUserById, updateUser } from "~/models/user.server";
+import { compareToken, getUserById, updateUser } from "~/models/user.server";
 import invariant from "tiny-invariant";
 import { deleteToken } from "~/models/token.server";
 
@@ -22,7 +22,7 @@ export async function loader({ request }: LoaderArgs) {
     return redirect('/join')
   }
 
-  const isMatchingToken = await compareResetToken(token, id)
+  const isMatchingToken = await compareToken(token, id)
 
   if (!isMatchingToken) {
     throw new Response('token does not match', { status: 404 })

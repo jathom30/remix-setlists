@@ -69,9 +69,6 @@ export async function verifyLogin(
     return null;
   }
 
-  // delete token incase a user creates one and then remembers their password without using it
-  await deleteToken(userWithPassword.id)
-
   const { password: _password, ...userWithoutPassword } = userWithPassword;
 
   return userWithoutPassword;
@@ -101,7 +98,7 @@ export async function updateUser(id: User['id'], name: User['name'], password: s
   })
 }
 
-export async function generatePasswordReset(email: User['email']) {
+export async function generateTokenLink(email: User['email'], pathname: string) {
   const user = await getUserByEmail(email)
   if (!user) { throw new Error("User does not exist") }
   // if token exists for user, delete it
@@ -118,11 +115,11 @@ export async function generatePasswordReset(email: User['email']) {
   // ! look through kentcdodds website to see how to dynamically set url
   const clientURL = 'localhost:3001'
 
-  const link = `${clientURL}/resetPassword?token=${token}&id=${user.id}`
+  const link = `${clientURL}/${pathname}?token=${token}&id=${user.id}`
   return link
 }
 
-export async function compareResetToken(resetToken: string, userId: User['id']) {
+export async function compareToken(resetToken: string, userId: User['id']) {
   const token = await getToken(userId)
   if (!token) throw new Error('not found')
   // handle expired token
@@ -137,4 +134,16 @@ export async function compareResetToken(resetToken: string, userId: User['id']) 
   }
 
   return bcrypt.compare(resetToken, token.hash)
+}
+
+export async function verifyUser(userId: User['id']) {
+  const user = await getUserById(userId)
+  if (!user) throw new Error('not found')
+
+  return await prisma.user.update({
+    where: { id: userId },
+    data: {
+      verified: true,
+    }
+  })
 }
