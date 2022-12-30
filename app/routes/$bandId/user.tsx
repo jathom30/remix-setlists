@@ -49,10 +49,36 @@ export default function UserRoute() {
       }
     >
       <FlexList pad={4}>
-        <FlexList gap={0}>
-          <Label>Name</Label>
-          <span>{user.name}</span>
+        <FlexList gap={2}>
+          <FlexHeader>
+            <Label>User Details</Label>
+            <Link to="."><FontAwesomeIcon icon={faPenToSquare} /></Link>
+          </FlexHeader>
+          <ItemBox>
+            <FlexList gap={0}>
+              <Label>Name</Label>
+              <span>{user.name}</span>
+            </FlexList>
+            <FlexList gap={0}>
+              <Label>Email</Label>
+              <span>{user.email}</span>
+            </FlexList>
+          </ItemBox>
         </FlexList>
+
+        <FlexList gap={2}>
+          <FlexHeader>
+            <Label>Security</Label>
+            <Link to="."><FontAwesomeIcon icon={faPenToSquare} /></Link>
+          </FlexHeader>
+          <ItemBox>
+            <FlexList gap={0}>
+              <Label>Password</Label>
+              <span>************</span>
+            </FlexList>
+          </ItemBox>
+        </FlexList>
+
         <FlexList gap={2}>
           <Label>Associated bands</Label>
           <ItemBox pad={2}>
@@ -68,6 +94,17 @@ export default function UserRoute() {
                   </FlexHeader>
                 </RemixLink>
               ))}
+            </FlexList>
+          </ItemBox>
+        </FlexList>
+
+        <FlexList gap={2}>
+          <Label>Danger zone</Label>
+          <ItemBox isDanger>
+            <FlexList>
+              <span className="font-bold">Delete your account</span>
+              <p className="text-sm text-text-subdued">Deleting this account is a perminant action and cannot be undone.</p>
+              <Link to="." kind="danger">Delete account</Link>
             </FlexList>
           </ItemBox>
         </FlexList>

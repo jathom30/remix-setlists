@@ -4,7 +4,7 @@ import { MaxHeightContainer, FlexList, Avatar, Badge, FlexHeader, Button, Link, 
 import { getBands } from "~/models/band.server"
 import { requireUserId } from "~/session.server"
 import { useLoaderData, Link as RemixLink, NavLink, useLocation, useNavigate, Outlet, Form } from "@remix-run/react"
-import { faMicrophone, faPlusCircle, faSignOut } from "@fortawesome/free-solid-svg-icons"
+import { faBoxOpen, faPlusCircle, faSignOut } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 export async function loader({ request }: LoaderArgs) {
@@ -64,8 +64,8 @@ export default function Bands() {
       <div className="bg-white h-full sm:p-4">
         {hasNoBands ? (
           <FlexList pad={4}>
-            {/* <FontAwesomeIcon icon={faMicrophone} size="5x" /> */}
-            <p>You don't have any bands added to this account.</p>
+            <FontAwesomeIcon icon={faBoxOpen} size="5x" />
+            <p className="text-center">You don't have any bands added to this account.</p>
             <Link to="new">Create new band</Link>
             <Link to="existing">Add with code</Link>
           </FlexList>

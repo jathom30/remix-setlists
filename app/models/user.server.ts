@@ -1,8 +1,9 @@
 import type { Password, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
-
+import crypto from 'crypto';
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
+import { createToken, deleteToken, getToken } from "./token.server";
 
 export type { User } from "@prisma/client";
 
@@ -93,6 +94,56 @@ export async function updateUser(id: User['id'], name: User['name'], password: s
           hash: hashedPassword
         }
       }
+    }
+  })
+}
+
+export async function generateTokenLink(email: User['email'], pathname: string) {
+  const user = await getUserByEmail(email)
+  if (!user) { throw new Error("User does not exist") }
+  // if token exists for user, delete it
+  const preExistingToken = await getToken(user.id)
+  if (preExistingToken) {
+    await deleteToken(user.id)
+  }
+
+  // create new token for email
+  const token = crypto.randomBytes(32).toString('hex')
+  // save hashed token to db
+  await createToken(user.id, token)
+
+  // ! look through kentcdodds website to see how to dynamically set url
+  const clientURL = 'localhost:3001'
+
+  const link = `${clientURL}/${pathname}?token=${token}&id=${user.id}`
+  return link
+}
+
+export async function compareToken(resetToken: string, userId: User['id']) {
+  const token = await getToken(userId)
+  if (!token) throw new Error('not found')
+  // handle expired token
+  const now = (new Date()).getTime()
+  const tenMinutes = 1000 * 60 * 10
+  const expiryTime = token.createdAt.getTime() + tenMinutes
+
+  const isExpired = now > expiryTime
+  if (isExpired) {
+    await deleteToken(userId)
+    throw new Error('expired')
+  }
+
+  return bcrypt.compare(resetToken, token.hash)
+}
+
+export async function verifyUser(userId: User['id']) {
+  const user = await getUserById(userId)
+  if (!user) throw new Error('not found')
+
+  return await prisma.user.update({
+    where: { id: userId },
+    data: {
+      verified: true,
     }
   })
 }

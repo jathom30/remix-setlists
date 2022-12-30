@@ -49,9 +49,13 @@ export async function requireUserId(
   redirectTo: string = new URL(request.url).pathname
 ) {
   const userId = await getUserId(request);
+  const searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
   if (!userId) {
-    const searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
     throw redirect(`/login?${searchParams}`);
+  }
+  const user = await getUserById(userId);
+  if (!user?.verified) {
+    throw redirect(`/join/requestVerification?${searchParams}`)
   }
   return userId;
 }
