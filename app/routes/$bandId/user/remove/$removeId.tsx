@@ -1,4 +1,4 @@
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, Link, useLoaderData, useParams } from "@remix-run/react";
 import { redirect, json } from "@remix-run/node";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
@@ -43,6 +43,7 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function RemoveSelfFromBand() {
   const { canRemoveMember } = useLoaderData<typeof loader>()
+  const { bandId } = useParams()
   if (!canRemoveMember) {
     return (
       <FlexList pad={4}>
@@ -50,6 +51,7 @@ export default function RemoveSelfFromBand() {
         <p className="text-danger text-sm">
           You are the only admin. Make at least one other member an Admin before removing yourself.
         </p>
+        <p>If you would to, instead, delete this band, you can do so <Link className="underline text-blue-500" to={`/${bandId}/band/delete`}>here</Link>.</p>
         <Button isDisabled>Remove</Button>
       </FlexList>
     )

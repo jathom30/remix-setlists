@@ -53,6 +53,10 @@ export default function UserRoute() {
           <Label>Name</Label>
           <span>{user.name}</span>
         </FlexList>
+        <FlexList gap={0}>
+          <Label>Email</Label>
+          <span>{user.email}</span>
+        </FlexList>
         <FlexList gap={2}>
           <Label>Associated bands</Label>
           <ItemBox pad={2}>
