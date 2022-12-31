@@ -21,3 +21,25 @@ export function contrastColor(hex: string) {
     ? '#000000'
     : '#FFFFFF';
 }
+
+export const passwordStrength = (password: string) => {
+  const minCharacters = password.length >= 8
+  const includesLetters = /[a-zA-Z]/g.test(password)
+  const includesNumbers = /\d/.test(password)
+  const includesSpecialCharacters = /[`!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/.test(password)
+
+  const strength = !minCharacters ? 1 : [minCharacters, includesLetters, includesNumbers, includesSpecialCharacters].reduce((acc, cur) => {
+    if (!cur) return acc
+    return acc += 1
+  }, 0)
+
+  return {
+    tests: {
+      minCharacters,
+      includesLetters,
+      includesNumbers,
+      includesSpecialCharacters,
+    },
+    strength
+  }
+}

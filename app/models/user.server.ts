@@ -98,6 +98,16 @@ export async function updateUser(id: User['id'], name: User['name'], password: s
   })
 }
 
+export async function updateUserPassword(userId: User['id'], password: string) {
+  const hash = await bcrypt.hash(password, 10);
+  return prisma.password.update({
+    where: { userId },
+    data: {
+      hash
+    }
+  })
+}
+
 export async function generateTokenLink(email: User['email'], pathname: string) {
   const user = await getUserByEmail(email)
   if (!user) { throw new Error("User does not exist") }

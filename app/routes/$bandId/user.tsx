@@ -15,7 +15,7 @@ export async function loader({ request }: LoaderArgs) {
   return json({ user })
 }
 
-const subRoutes = ['edit', 'remove']
+const subRoutes = ['details', 'password', 'delete', 'remove']
 
 export default function UserRoute() {
   const { user } = useLoaderData<typeof loader>()
@@ -30,16 +30,14 @@ export default function UserRoute() {
           mobileChildren={
             <RouteHeaderBackLink label="User" to={`/${bandId}/home`} />
           }
-          action={<Link to="edit" kind="invert" icon={faPenToSquare} isRounded isCollapsing>Edit user</Link>}
           desktopChildren={<Title>User settings</Title>}
-          desktopAction={<Link to="edit" kind="secondary" icon={faPenToSquare} isRounded isCollapsing>Edit user</Link>}
         />
       }
       footer={
         <>
           <Form action="/logout" method="post">
             <FlexList pad={4}>
-              <Button type="submit" icon={faSignOut}>Sign out</Button>
+              <Button type="submit" icon={faSignOut} kind="secondary">Sign out</Button>
             </FlexList>
           </Form>
           <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
@@ -52,16 +50,18 @@ export default function UserRoute() {
         <FlexList gap={2}>
           <FlexHeader>
             <Label>User Details</Label>
-            <Link to="."><FontAwesomeIcon icon={faPenToSquare} /></Link>
+            <Link to="details"><FontAwesomeIcon icon={faPenToSquare} /></Link>
           </FlexHeader>
           <ItemBox>
-            <FlexList gap={0}>
-              <Label>Name</Label>
-              <span>{user.name}</span>
-            </FlexList>
-            <FlexList gap={0}>
-              <Label>Email</Label>
-              <span>{user.email}</span>
+            <FlexList>
+              <FlexList gap={0}>
+                <Label>Name</Label>
+                <span>{user.name}</span>
+              </FlexList>
+              <FlexList gap={0}>
+                <Label>Email</Label>
+                <span>{user.email}</span>
+              </FlexList>
             </FlexList>
           </ItemBox>
         </FlexList>
@@ -69,7 +69,7 @@ export default function UserRoute() {
         <FlexList gap={2}>
           <FlexHeader>
             <Label>Security</Label>
-            <Link to="."><FontAwesomeIcon icon={faPenToSquare} /></Link>
+            <Link to="password"><FontAwesomeIcon icon={faPenToSquare} /></Link>
           </FlexHeader>
           <ItemBox>
             <FlexList gap={0}>
@@ -104,7 +104,7 @@ export default function UserRoute() {
             <FlexList>
               <span className="font-bold">Delete your account</span>
               <p className="text-sm text-text-subdued">Deleting this account is a perminant action and cannot be undone.</p>
-              <Link to="." kind="danger">Delete account</Link>
+              <Link to="delete" kind="danger">Delete account</Link>
             </FlexList>
           </ItemBox>
         </FlexList>
