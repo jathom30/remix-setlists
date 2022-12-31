@@ -43,3 +43,11 @@ export const passwordStrength = (password: string) => {
     strength
   }
 }
+
+export const getPasswordError = (tests: ReturnType<typeof passwordStrength>['tests']) => {
+  if (!tests.minCharacters) return 'Password must be at least 8 characters'
+  if (!(tests.includesNumbers || tests.includesSpecialCharacters)) return 'Password must include at least 1 number and special character'
+  if (!tests.includesNumbers) return 'Password must include at least 1 number'
+  if (!tests.includesSpecialCharacters) return 'Password must include at least 1 special character'
+  if (!tests.includesLetters) return 'Password must include at least 1 letter'
+}

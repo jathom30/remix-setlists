@@ -5,7 +5,7 @@ import { useState } from "react";
 import invariant from "tiny-invariant";
 import { ErrorMessage, Field, FlexList, Input, PasswordStrength, SaveButtons } from "~/components";
 import { requireUserId } from "~/session.server";
-import { passwordStrength } from "~/utils/assorted";
+import { getPasswordError, passwordStrength } from "~/utils/assorted";
 import { updateUserPassword } from "~/models/user.server";
 
 export async function action({ request, params }: ActionArgs) {
@@ -23,16 +23,10 @@ export async function action({ request, params }: ActionArgs) {
 
   const { tests } = passwordStrength(password)
 
-  const passwordError = () => {
-    if (!tests.minCharacters) return 'Password must be at least 8 characters'
-    if (!(tests.includesNumbers || tests.includesSpecialCharacters)) return 'Password must include at least 1 number and special character'
-    if (!tests.includesNumbers) return 'Password must include at least 1 number'
-    if (!tests.includesSpecialCharacters) return 'Password must include at least 1 special character'
-    if (!tests.includesLetters) return 'Password must include at least 1 letter'
-  }
-  if (passwordError()) {
+  const passwordError = getPasswordError(tests)
+  if (passwordError) {
     return json({
-      errors: { password: passwordError(), verifyPassword: null }
+      errors: { password: passwordError, verifyPassword: null }
     })
   }
   if (password !== verifyPassword) {

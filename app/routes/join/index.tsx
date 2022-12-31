@@ -8,8 +8,9 @@ import { getUserId } from "~/session.server";
 import { createUser, generateTokenLink, getUserByEmail } from "~/models/user.server";
 import { validateEmail } from "~/utils";
 import invariant from 'tiny-invariant';
-import { CatchContainer, ErrorContainer, FlexList } from '~/components';
+import { CatchContainer, ErrorContainer, FlexList, PasswordStrength } from '~/components';
 import { verifyAccount } from '~/email/verify';
+import { getPasswordError, passwordStrength } from "~/utils/assorted";
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request);
@@ -46,13 +47,19 @@ export async function action({ request }: ActionArgs) {
     );
   }
 
-  if (password.length < 8) {
-    return json(
-      { errors: { email: null, password: "Password is too short", name: null } },
-      { status: 400 }
-    );
-  }
+  const { tests } = passwordStrength(password)
+  const passwordError = getPasswordError(tests)
 
+  if (passwordError) {
+    return json({
+      errors: {
+        email: null,
+        password: passwordError,
+        name: null,
+      },
+      success: false
+    }, { status: 400 })
+  }
 
   const existingUser = await getUserByEmail(email);
   if (existingUser) {
@@ -90,6 +97,9 @@ export default function Join() {
   const nameRef = React.useRef<HTMLInputElement>(null);
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
+  const [password, setPassword] = React.useState('')
+
+  const { tests, strength } = passwordStrength(password)
 
   React.useEffect(() => {
     if (actionData?.errors?.email) {
@@ -170,11 +180,15 @@ export default function Join() {
                 ref={passwordRef}
                 name="password"
                 type="password"
+                onChange={e => setPassword(e.target.value)}
                 autoComplete="new-password"
                 aria-invalid={actionData?.errors?.password ? true : undefined}
                 aria-describedby="password-error"
                 className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
               />
+              <div className="pt-1">
+                <PasswordStrength tests={tests} strength={strength} />
+              </div>
               {actionData?.errors?.password && (
                 <div className="pt-1 text-red-700" id="password-error">
                   {actionData.errors.password}

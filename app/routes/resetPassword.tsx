@@ -1,13 +1,14 @@
 import { faChevronLeft, faCircleXmark, faKey } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Form, useActionData, useLoaderData, Link as RemixLink } from "@remix-run/react";
+import { Form, useActionData, useLoaderData, Link as RemixLink, useTransition } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
-import { Button, ErrorMessage, Field, FlexList, Input, ItemBox, Link } from "~/components";
-import { getFields } from "~/utils/form";
-import { compareToken, getUserById, updateUser } from "~/models/user.server";
+import { Button, ErrorMessage, Field, FlexList, Input, ItemBox, Link, PasswordStrength } from "~/components";
+import { compareToken, getUserById, updateUserPassword } from "~/models/user.server";
 import invariant from "tiny-invariant";
 import { deleteToken } from "~/models/token.server";
+import { useState } from "react";
+import { getPasswordError, passwordStrength } from "~/utils/assorted";
 
 export async function loader({ request }: LoaderArgs) {
   const url = new URL(request.url)
@@ -42,27 +43,28 @@ export async function action({ request }: ActionArgs) {
   }
 
   const formData = await request.formData()
-  const { fields, errors } = getFields<{ password: string; verifyPassword: string }>(formData, [
-    { name: 'password', type: 'string', isRequired: true },
-    { name: 'verifyPassword', type: 'string', isRequired: true },
-  ])
+  const password = formData.get('password')
+  const verifyPassword = formData.get('verifyPassword')
 
-  const passwordsDoNotMatch = fields.password !== fields.verifyPassword
-  const passwordTooShort = fields.password.length < 8
-  const passwordErrors = {
-    ...(passwordsDoNotMatch ? { verifyPassword: 'Passwords must match' } : {}),
-    ...(passwordTooShort ? { password: 'Password is too short' } : {})
+  if (typeof password !== 'string' || typeof verifyPassword !== 'string') {
+    throw new Response('passwords are not strings')
   }
 
-  if (Object.keys(passwordErrors).length) {
-    return json({ errors: passwordErrors })
+  const { tests } = passwordStrength(password)
+
+  const passwordError = getPasswordError(tests)
+  if (passwordError) {
+    return json({
+      errors: { password: passwordError, verifyPassword: null }
+    })
+  }
+  if (password !== verifyPassword) {
+    return json({
+      errors: { password: null, verifyPassword: 'passwords must match' }
+    })
   }
 
-  if (Object.keys(errors).length) {
-    return json({ errors })
-  }
-
-  await updateUser(user.id, user.name, fields.password)
+  await updateUserPassword(user.id, password)
   await deleteToken(user.id)
   return redirect('/login')
 }
@@ -70,6 +72,13 @@ export async function action({ request }: ActionArgs) {
 export default function ResetPassword() {
   const { email } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
+  const transition = useTransition()
+  const [password, setPassword] = useState('')
+  const { tests, strength } = passwordStrength(password)
+
+  const isValid = Object.values(tests).every(test => test)
+  const isLoading = transition.state !== 'idle'
+
   return (
     <div className="max-w-lg m-auto mt-8">
       <FlexList pad={4}>
@@ -79,14 +88,15 @@ export default function ResetPassword() {
           <Form method="put">
             <FlexList>
               <Field name="password" label="Password">
-                <Input name="password" type="password" placeholder="Update password" />
+                <Input name="password" type="password" placeholder="Update password" onChange={e => setPassword(e.target.value)} />
                 {actionData?.errors.password ? <ErrorMessage message={actionData?.errors.password} /> : null}
               </Field>
+              <PasswordStrength tests={tests} strength={strength} />
               <Field name="verifyPassword" label="Verify password">
                 <Input name="verifyPassword" type="password" placeholder="Verify password" />
                 {actionData?.errors?.verifyPassword ? <ErrorMessage message="Passwords must match" /> : null}
               </Field>
-              <Button kind="primary" type="submit">Reset password</Button>
+              <Button kind="primary" type="submit" isDisabled={!isValid} isSaving={isLoading}>Reset password</Button>
               <Link to="/login" kind="text" icon={faChevronLeft}>Back to log in</Link>
             </FlexList>
           </Form>
