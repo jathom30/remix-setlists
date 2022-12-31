@@ -65,7 +65,7 @@ export default function DeleteUser() {
     <Form method="delete">
       <FlexList pad={4} gap={2}>
         <h3 className="font-bold">Are you sure?</h3>
-        <p className="text-xs text-text-subdued">Deleting your account is a perminant action and cannot be undone. May god have mercy on your soul.</p>
+        <p className="text-xs text-text-subdued">Deleting your account is a <strong>perminant</strong> action and cannot be undone. If you wish to keep any bands intact after your deletion, promote another user to <strong>ADMIN</strong>. Otherwise, your bands and their songs and setlists will be deleted. Good luck and may god have mercy on your soul.</p>
         <p className="text-xs text-text-subdued">To delete, type your email below.</p>
         <Input onChange={handleChange} name="email" placeholder={userEmail} type="email" />
         {actionData?.errors.email ? (<ErrorMessage message="user email must match" />) : null}
