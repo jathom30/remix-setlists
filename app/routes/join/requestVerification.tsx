@@ -49,7 +49,7 @@ export default function RequestVerification() {
     <FlexList pad={4}>
       <FontAwesomeIcon icon={faEnvelope} size="5x" />
       <h1 className="text-center text-2xl font-bold">Request a verification email</h1>
-      <p className="text-sm text-slate-500 text-center">It looks like this email is not yet verified with us</p>
+      <p className="text-sm text-slate-500 text-center">It looks like your account is not yet verified with us</p>
       <ItemBox>
         <Form method="put">
           <FlexList>

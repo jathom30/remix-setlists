@@ -24,3 +24,10 @@ export async function removeMemberFromBand(bandId: Band['id'], userId: User['id'
     where: { userId_bandId: { userId, bandId } }
   })
 }
+
+export async function getUserBands(userId: User['id']) {
+  return prisma.usersInBands.findMany({
+    where: { userId },
+    select: { bandId: true }
+  })
+}

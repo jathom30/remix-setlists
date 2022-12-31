@@ -42,7 +42,6 @@ export async function action({ request, params }: ActionArgs) {
 export default function DeleteBand() {
   const { bandName } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
-  const inputRef = useRef<HTMLInputElement>(null)
   const [isDisabled, setIsDisabled] = useState(true)
 
 
@@ -56,7 +55,7 @@ export default function DeleteBand() {
         <h3 className="font-bold">Are you sure?</h3>
         <p className="text-xs text-text-subdued">Deleting this band will destroy all songs and setlists associated with the band as well as remove any other band member's connection to this band.</p>
         <p className="text-xs text-text-subdued">To delete, type this band's name below.</p>
-        <Input onChange={handleChange} inputRef={inputRef} name="bandName" placeholder={bandName} />
+        <Input onChange={handleChange} name="bandName" placeholder={bandName} />
         {actionData?.errors.bandName ? (<ErrorMessage message="Band name must match" />) : null}
         <Button kind="danger" type="submit" isDisabled={isDisabled}>Delete</Button>
       </FlexList>

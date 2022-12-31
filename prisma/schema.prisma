@@ -51,7 +51,7 @@ model Band {
 }
 
 model UsersInBands {
-  user     User?  @relation(fields: [userId], references: [id])
+  user     User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   String
   bandName String
   band     Band?  @relation(fields: [bandId], references: [id], onDelete: Cascade)
