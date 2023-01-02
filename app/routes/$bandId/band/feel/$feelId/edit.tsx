@@ -3,14 +3,14 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
 import { ErrorMessage, Field, FlexList, Input, SaveButtons } from "~/components";
 import { getFeel, updateFeel } from "~/models/feel.server";
-import { requireUserId } from "~/session.server";
+import { requireNonSubMember } from "~/session.server";
 import invariant from "tiny-invariant";
 
 export async function loader({ request, params }: LoaderArgs) {
-  await requireUserId(request)
   const { bandId, feelId } = params
   invariant(bandId, 'bandId not found')
   invariant(feelId, 'feelId not found')
+  await requireNonSubMember(request, bandId)
   const feel = await getFeel(feelId)
   if (!feel) {
     throw new Response("Feel not found", { status: 404 })
@@ -19,10 +19,10 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export async function action({ request, params }: ActionArgs) {
-  await requireUserId(request)
   const { bandId, feelId } = params
   invariant(bandId, 'bandId not found')
   invariant(feelId, 'feelId not found')
+  await requireNonSubMember(request, bandId)
   const formData = await request.formData()
   const name = formData.get('name')
 

@@ -3,13 +3,13 @@ import type { ActionArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { ErrorMessage, Field, FlexList, Input, SaveButtons } from "~/components";
-import { requireUserId } from "~/session.server";
+import { requireNonSubMember } from "~/session.server";
 import { createFeel } from "~/models/feel.server";
 
 export async function action({ request, params }: ActionArgs) {
-  await requireUserId(request)
   const { bandId } = params
   invariant(bandId, 'bandId not found')
+  await requireNonSubMember(request, bandId)
 
   const formData = await request.formData()
   const name = formData.get('name')

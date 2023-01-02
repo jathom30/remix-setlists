@@ -4,11 +4,13 @@ import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { ConfirmDelete, ErrorContainer } from "~/components";
 import { removeMemberFromBand } from "~/models/usersInBands.server";
+import { requireNonSubMember } from "~/session.server";
 
 export async function action({ request, params }: ActionArgs) {
   const { memberId, bandId } = params
   invariant(memberId, 'memberId not found')
   invariant(bandId, 'bandId not found')
+  await requireNonSubMember(request, bandId)
 
   await removeMemberFromBand(bandId, memberId)
   return redirect(`/${bandId}/band`)

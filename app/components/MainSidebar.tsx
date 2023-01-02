@@ -98,6 +98,12 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
                   <div className="mb-2">
                     <ItemBox pad={2}>
                       <FlexList gap={2}>
+                        <div className="flex flex-col items-baseline">
+                          <TextOverflow>{user.name}</TextOverflow>
+                          <TextOverflow>
+                            <span className="text-sm text-slate-400">{user.email}</span>
+                          </TextOverflow>
+                        </div>
                         <Link icon={faUser} onClick={() => setIsUserOpen(false)} kind="secondary" to="user">User settings</Link>
                         <Form method="post" action="/logout">
                           <FlexList>
@@ -134,7 +140,7 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
             </div>
           }
         >
-          <div className="flex flex-col h-full p-4 gap-4 justify-between">
+          <div className="flex flex-col h-full p-2 gap-4 justify-between">
             <FlexList gap={2}>
               <SideBarLink to="home" isOpen={isOpen} label="Home" icon={faHome} />
               <SideBarLink to="setlists" isOpen={isOpen} label="Setlists" icon={faListOl} />

@@ -114,7 +114,7 @@ export default function BandSettingsPage() {
               {feels.map(feel => (
                 <FlexHeader key={feel.id}>
                   <FlexList direction="row" gap={2}>
-                    <Link to={`feel/${feel.id}/edit`} kind="text" isRounded><FontAwesomeIcon icon={faPencil} /></Link>
+                    {!isSub ? <Link to={`feel/${feel.id}/edit`} kind="text" isRounded><FontAwesomeIcon icon={faPencil} /></Link> : null}
                     <FeelTag feel={feel} />
                   </FlexList>
                   <FlexList direction="row" items="center">
