@@ -3,15 +3,17 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { HexColorPicker } from "react-colorful"
-import { ErrorMessage, FlexList, Input, Label, SaveButtons } from "~/components";
+import { CatchContainer, ErrorContainer, ErrorMessage, FlexList, Input, Label, SaveButtons } from "~/components";
 import { getBand, updateBand } from "~/models/band.server";
 import { getFields } from "~/utils/form";
 import { useState } from "react";
 import { contrastColor } from "~/utils/assorted";
+import { requireAdminMember } from "~/session.server";
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderArgs) {
   const { bandId } = params
   invariant(bandId, 'bandId not found')
+  await requireAdminMember(request, bandId)
   const band = await getBand(bandId)
 
   if (!band) {
@@ -23,7 +25,7 @@ export async function loader({ params }: LoaderArgs) {
 export async function action({ request, params }: ActionArgs) {
   const { bandId } = params
   invariant(bandId, 'bandId not found')
-
+  await requireAdminMember(request, bandId)
   const formData = await request.formData()
 
   const { fields, errors } = getFields<{ name: string; backgroundColor: string }>(formData, [
@@ -77,4 +79,12 @@ export default function EditBand() {
       />
     </Form>
   )
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ErrorContainer error={error} />
+}
+
+export function CatchBoundary() {
+  return <CatchContainer />
 }
