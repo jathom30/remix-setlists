@@ -123,7 +123,7 @@ export async function updateBandByCode(code: Band['code'], userId: User['id']) {
   if (user?.bands.some(b => b.bandId === band.id)) {
     throw new Error('User already in band')
   }
-  return prisma.user.update({
+  await prisma.user.update({
     where: { id: userId },
     data: {
       bands: {
@@ -137,6 +137,7 @@ export async function updateBandByCode(code: Band['code'], userId: User['id']) {
       }
     }
   })
+  return band
 }
 
 export async function deleteBand(bandId: Band['id']) {

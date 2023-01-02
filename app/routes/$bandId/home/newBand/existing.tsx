@@ -19,8 +19,8 @@ export async function action({ request }: ActionArgs) {
     return json({ errors }, { status: 400 })
   }
 
-  await updateBandByCode(fields.bandCode, userId)
-  return redirect('.')
+  const band = await updateBandByCode(fields.bandCode, userId)
+  return redirect(`/${band.id}`)
 }
 
 export default function ExisitingBand() {

@@ -1,15 +1,13 @@
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/node"
 import invariant from "tiny-invariant";
-import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, SetlistLink, ErrorContainer, MobileModal, Title, Link, Label } from "~/components"
-import { Outlet, useLoaderData, useLocation, useNavigate, useSearchParams, Link as RemixLink, useParams } from "@remix-run/react";
+import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, SetlistLink, ErrorContainer, MobileModal, Title } from "~/components"
+import { Outlet, useLoaderData, useLocation, useNavigate, useSearchParams } from "@remix-run/react";
 import { getRecentSetlists } from "~/models/setlist.server";
 import { getRecentSongs } from "~/models/song.server";
 import { getBandHome } from "~/models/band.server";
 import { RoleEnum, showHideEnums } from "~/utils/enums";
 import { useMemberRole } from "~/utils";
-import { faHammer, faMagicWandSparkles, faMusic } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export async function loader({ request, params }: LoaderArgs) {
   const { bandId } = params
@@ -32,7 +30,6 @@ export default function BandIndex() {
   const isSub = memberRole === RoleEnum.SUB
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const { bandId } = useParams()
   const [params, setParams] = useSearchParams()
   const showSongs = params.get('showSongs')
   const showSetlists = params.get('showSetlists')
@@ -70,7 +67,7 @@ export default function BandIndex() {
         </>
       }
     >
-      <div className="h-full sm:hidden">
+      <div className="h-full">
         <FlexList gap={0}>
           <div className="border-b border-slate-300 w-full">
             <Collapsible
@@ -108,37 +105,6 @@ export default function BandIndex() {
             </Collapsible>
           </div>
         </FlexList>
-      </div>
-
-      <div className="hidden h-full sm:h-full sm:bg-slate-100 sm:flex sm:flex-col sm:gap-4 sm:p-4">
-        <div>
-          <Label>Create a setlist</Label>
-          <div className="grid grid-cols-2 gap-4">
-            <RemixLink to={`/${bandId}/setlist/new/manual`}>
-              <div className="bg-white p-4 rounded flex gap-4 items-center shadow-md h-full">
-                <FontAwesomeIcon icon={faHammer} size="3x" />
-                <Title>Manual</Title>
-              </div>
-            </RemixLink>
-            <RemixLink to={`/${bandId}/setlist/new/auto`}>
-              <div className="bg-white p-4 rounded flex gap-4 items-center shadow-md h-full">
-                <FontAwesomeIcon icon={faMagicWandSparkles} size="3x" />
-                <Title>Auto-magical</Title>
-              </div>
-            </RemixLink>
-          </div>
-        </div>
-        <div>
-          <Label>Songs</Label>
-          <div className="col-span-2">
-            <RemixLink to={`/${bandId}/song/new`}>
-              <div className="bg-white p-4 rounded flex gap-4 justify-center items-center shadow-md">
-                <FontAwesomeIcon icon={faMusic} size="3x" />
-                <Title>Create Song</Title>
-              </div>
-            </RemixLink>
-          </div>
-        </div>
       </div>
     </MaxHeightContainer>
   )

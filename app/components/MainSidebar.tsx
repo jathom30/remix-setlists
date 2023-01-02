@@ -1,4 +1,4 @@
-import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { faHome, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { faCheck, faListOl, faMusic, faPlus, faSignOut, faSort, faUser, faUsers } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import type { BandIcon } from "@prisma/client"
@@ -70,7 +70,11 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
                 positions={['right']}
                 padding={8}
                 onClickOutside={() => setIsPopupOpen(false)}
-                content={<BandSelectPopup bands={bands} />}
+                content={
+                  <div className="mt-2">
+                    <BandSelectPopup bands={bands} onSelect={() => setIsPopupOpen(false)} />
+                  </div>
+                }
               >
                 <button
                   className="w-full hover:bg-slate-100"
@@ -84,14 +88,14 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
             </div>
           }
           footer={
-            <>
-              <div className="border-t">
-                <Popover
-                  isOpen={isUserOpen}
-                  positions={['right']}
-                  padding={8}
-                  onClickOutside={() => setIsUserOpen(false)}
-                  content={
+            <div className="border-t">
+              <Popover
+                isOpen={isUserOpen}
+                positions={['right']}
+                padding={8}
+                onClickOutside={() => setIsUserOpen(false)}
+                content={
+                  <div className="mb-2">
                     <ItemBox pad={2}>
                       <FlexList gap={2}>
                         <Link icon={faUser} onClick={() => setIsUserOpen(false)} kind="secondary" to="user">User settings</Link>
@@ -103,33 +107,34 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
                         <span className="text-xs text-slate-400 text-right">v0.1.0</span>
                       </FlexList>
                     </ItemBox>
-                  }
-                >
-                  <div className="p-2">
-                    <button
-                      className={`${isOpen ? '' : 'justify-center'} ${isActive ? 'text-slate-600 bg-blue-100' : 'text-slate-500'} px-4 py-2 w-full rounded hover:bg-slate-200`}
-                      onClick={() => setIsUserOpen(!isUserOpen)}
-                    >
-                      <FlexList direction="row" items="center" justify={isOpen ? "start" : "center"}>
-                        <FontAwesomeIcon icon={faUser} />
-                        {isOpen ? (
-                          <>
-                            <div className="flex flex-col items-baseline">
-                              <TextOverflow>{user.name}</TextOverflow>
-                              <span className="text-sm text-slate-400">{user.email}</span>
-                            </div>
-                          </>
-                        ) : null}
-                      </FlexList>
-                    </button>
                   </div>
-                </Popover>
-              </div>
-            </>
+                }
+              >
+                <div className="p-2">
+                  <button
+                    className={`${isOpen ? '' : 'justify-center'} ${isActive ? 'text-slate-600 bg-blue-100' : 'text-slate-500'} px-4 py-2 w-full rounded hover:bg-slate-200`}
+                    onClick={() => setIsUserOpen(!isUserOpen)}
+                  >
+                    <FlexList direction="row" items="center" justify={isOpen ? "start" : "center"}>
+                      <FontAwesomeIcon icon={faUser} />
+                      {isOpen ? (
+                        <>
+                          <div className="flex flex-col items-baseline">
+                            <TextOverflow>{user.name}</TextOverflow>
+                            <span className="text-sm text-slate-400">{user.email}</span>
+                          </div>
+                        </>
+                      ) : null}
+                    </FlexList>
+                  </button>
+                </div>
+              </Popover>
+            </div>
           }
         >
           <div className="flex flex-col h-full p-4 gap-4 justify-between">
             <FlexList gap={2}>
+              <SideBarLink to="home" isOpen={isOpen} label="Home" icon={faHome} />
               <SideBarLink to="setlists" isOpen={isOpen} label="Setlists" icon={faListOl} />
               <SideBarLink to="songs" isOpen={isOpen} label="Songs" icon={faMusic} />
             </FlexList>
@@ -158,7 +163,7 @@ const SideBarLink = ({ to, isOpen, label, icon }: { to: string; isOpen: boolean;
   )
 }
 
-const BandSelectPopup = ({ bands }: { bands: MainSidebarProps['bands'] }) => {
+const BandSelectPopup = ({ bands, onSelect }: { bands: MainSidebarProps['bands']; onSelect: () => void }) => {
   const { bandId } = useParams()
   const { pathname } = useLocation()
   const isSelected = (bandId: MainSidebarProps['bands'][number]['id']) => pathname.includes(bandId)
@@ -169,6 +174,7 @@ const BandSelectPopup = ({ bands }: { bands: MainSidebarProps['bands'] }) => {
           <RemixLink
             key={band.id}
             to={`/${band.id}`}
+            onClick={onSelect}
             className={`rounded hover:bg-slate-200 ${isSelected(band.id) ? 'bg-slate-100' : ''}`}
           >
             <BandOption isCollapsed={false} band={band} memberRole={band.members[0].role}>
