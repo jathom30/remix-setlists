@@ -119,7 +119,7 @@ export default function EditMember() {
                 <p className="text-danger text-sm">
                   You are the only admin. Make at least one other member an Admin before removing yourself.
                 </p>
-                <p className="text-sm">Instead, if you would rather delete this band, you can do so <RemixLink className="underline text-blue-500" to={`/${bandId}/band/delete`}>here</RemixLink>.</p>
+                <p className="text-sm">If you would rather delete this band, you can do so <RemixLink className="underline text-blue-500" to={`/${bandId}/band/delete`}>here</RemixLink>.</p>
               </>
             )}
 

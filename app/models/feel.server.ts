@@ -35,3 +35,10 @@ export async function deleteFeel(feelId: Feel['id']) {
     where: { id: feelId }
   })
 }
+
+export async function updateFeel(feelId: Feel['id'], feel: Partial<Feel>) {
+  return prisma.feel.update({
+    where: { id: feelId },
+    data: feel
+  })
+}

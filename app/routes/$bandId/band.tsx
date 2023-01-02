@@ -7,7 +7,7 @@ import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { getUsersById } from "~/models/user.server";
 import { RoleEnum } from "~/utils/enums";
-import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPencil, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useMemberRole } from "~/utils";
 import { getFeels } from "~/models/feel.server";
 import pluralize from "pluralize";
@@ -113,7 +113,10 @@ export default function BandSettingsPage() {
               ) : null}
               {feels.map(feel => (
                 <FlexHeader key={feel.id}>
-                  <FeelTag feel={feel} />
+                  <FlexList direction="row" gap={2}>
+                    <Link to={`feel/${feel.id}/edit`} kind="text" isRounded><FontAwesomeIcon icon={faPencil} /></Link>
+                    <FeelTag feel={feel} />
+                  </FlexList>
                   <FlexList direction="row" items="center">
                     <Label>Found in {pluralize('song', feel.songs.length, true)}</Label>
                     {!isSub ? <Link to={`feel/${feel.id}/delete`} kind="danger" icon={faTrash} isCollapsing isRounded>Delete</Link> : null}
