@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useParams } from "@remix-run/react"
-import { Breadcrumbs, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components"
+import { Breadcrumbs, MaxHeightContainer, MaxWidth, RouteHeader, RouteHeaderBackLink } from "~/components"
 
 
 const getHeader = (pathname: string) => {
@@ -32,7 +32,9 @@ export default function NewSetlist() {
         />
       }
     >
-      <Outlet />
+      <MaxWidth>
+        <Outlet />
+      </MaxWidth>
     </MaxHeightContainer>
   )
 }

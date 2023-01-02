@@ -3,7 +3,7 @@ import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/server-ru
 import { redirect } from "@remix-run/server-runtime";
 import { useActionData, useFetcher, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { SaveButtons, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongForm, ErrorContainer, CatchContainer, Breadcrumbs } from "~/components";
+import { SaveButtons, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongForm, ErrorContainer, CatchContainer, Breadcrumbs, MaxWidth } from "~/components";
 import { requireNonSubMember } from "~/session.server";
 import { getFeels } from '~/models/feel.server';
 import { getFields } from '~/utils/form';
@@ -82,14 +82,16 @@ export default function NewSong() {
           <SaveButtons saveLabel="Create song" cancelTo={`/${bandId}/songs`} />
         }
       >
-        <SongForm
-          feels={feels}
-          song={{
-            position: 'other',
-            rank: 'no_preference'
-          }}
-          errors={actionData?.errors}
-        />
+        <MaxWidth>
+          <SongForm
+            feels={feels}
+            song={{
+              position: 'other',
+              rank: 'no_preference'
+            }}
+            errors={actionData?.errors}
+          />
+        </MaxWidth>
       </MaxHeightContainer>
     </fetcher.Form>
   )

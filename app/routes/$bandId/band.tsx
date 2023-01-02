@@ -2,7 +2,7 @@ import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@rem
 import { json } from "@remix-run/node"
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Avatar, Badge, CatchContainer, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, Title } from "~/components";
+import { Avatar, Badge, CatchContainer, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, RouteHeader, RouteHeaderBackLink, Title } from "~/components";
 import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { getUsersById } from "~/models/user.server";
@@ -65,84 +65,86 @@ export default function BandSettingsPage() {
         </MobileModal>
       }
     >
-      <FlexList pad={4}>
-        <FlexHeader>
-          <h1 className="text-3xl font-bold">{band.name}</h1>
-          <Avatar bandName={band.name || ''} icon={band.icon} size="lg" />
-        </FlexHeader>
-        <FlexHeader>
-          <FlexList gap={0}>
-            <Label>Created on</Label>
-            <span className="text-sm">{new Date(band.createdAt || '').toDateString()}</span>
-          </FlexList>
-          <FlexList gap={0}>
-            <Label>Last updated</Label>
-            <span className="text-sm">{new Date(band.updatedAt || '').toDateString()}</span>
-          </FlexList>
-        </FlexHeader>
-
-        <FlexList gap={2}>
-          <Label>Members</Label>
-          <ItemBox>
-            <FlexList>
-              {members.map(member => (
-                <FlexHeader key={member.id}>
-                  <FlexList direction="row">
-                    <span className="font-bold">{member.name}</span>
-                    <Badge>{member.role}</Badge>
-                  </FlexList>
-                  {!isSub ? <Link to={member.id} kind="secondary"><FontAwesomeIcon icon={faEdit} /></Link> : null}
-                </FlexHeader>
-              ))}
-              {isAdmin ? (
-                <Link to="newMember">Add new member</Link>
-              ) : null}
-            </FlexList>
-          </ItemBox>
-        </FlexList>
-
-        <FlexList gap={2}>
+      <MaxWidth>
+        <FlexList pad={4}>
           <FlexHeader>
-            <Label>Feels</Label>
-            {!isSub ? <Link to="feel/new" isRounded><FontAwesomeIcon icon={faPlus} /></Link> : null}
+            <h1 className="text-3xl font-bold">{band.name}</h1>
+            <Avatar bandName={band.name || ''} icon={band.icon} size="lg" />
           </FlexHeader>
-          <ItemBox>
-            <FlexList>
-              {feels.length === 0 ? (
-                <Label>No feels created yet</Label>
-              ) : null}
-              {feels.map(feel => (
-                <FlexHeader key={feel.id}>
-                  <FlexList direction="row" gap={2}>
-                    {!isSub ? <Link to={`feel/${feel.id}/edit`} kind="text" isRounded><FontAwesomeIcon icon={faPencil} /></Link> : null}
-                    <FeelTag feel={feel} />
-                  </FlexList>
-                  <FlexList direction="row" items="center">
-                    <Label>Found in {pluralize('song', feel.songs.length, true)}</Label>
-                    {!isSub ? <Link to={`feel/${feel.id}/delete`} kind="danger" icon={faTrash} isCollapsing isRounded>Delete</Link> : null}
-                  </FlexList>
-                </FlexHeader>
-              ))}
-
+          <FlexHeader>
+            <FlexList gap={0}>
+              <Label>Created on</Label>
+              <span className="text-sm">{new Date(band.createdAt || '').toDateString()}</span>
             </FlexList>
-          </ItemBox>
-        </FlexList>
+            <FlexList gap={0}>
+              <Label>Last updated</Label>
+              <span className="text-sm">{new Date(band.updatedAt || '').toDateString()}</span>
+            </FlexList>
+          </FlexHeader>
 
-        {isAdmin ? (
           <FlexList gap={2}>
-            <Label>Danger Zone</Label>
-            <ItemBox isDanger>
+            <Label>Members</Label>
+            <ItemBox>
               <FlexList>
-                <FlexList>
-                  <span className="font-bold">Delete this band</span>
-                  <p className="text-sm text-text-subdued">Deleting this band will perminantly remove all setlists and songs</p>
-                </FlexList>
-                <Link to="delete" kind="danger" icon={faTrash}>Delete</Link>
+                {members.map(member => (
+                  <FlexHeader key={member.id}>
+                    <FlexList direction="row">
+                      <span className="font-bold">{member.name}</span>
+                      <Badge>{member.role}</Badge>
+                    </FlexList>
+                    {!isSub ? <Link to={member.id} kind="secondary"><FontAwesomeIcon icon={faEdit} /></Link> : null}
+                  </FlexHeader>
+                ))}
+                {isAdmin ? (
+                  <Link to="newMember">Add new member</Link>
+                ) : null}
               </FlexList>
             </ItemBox>
           </FlexList>
-        ) : null}
-      </FlexList>
+
+          <FlexList gap={2}>
+            <FlexHeader>
+              <Label>Feels</Label>
+              {!isSub ? <Link to="feel/new" isRounded><FontAwesomeIcon icon={faPlus} /></Link> : null}
+            </FlexHeader>
+            <ItemBox>
+              <FlexList>
+                {feels.length === 0 ? (
+                  <Label>No feels created yet</Label>
+                ) : null}
+                {feels.map(feel => (
+                  <FlexHeader key={feel.id}>
+                    <FlexList direction="row" gap={2}>
+                      {!isSub ? <Link to={`feel/${feel.id}/edit`} kind="text" isRounded><FontAwesomeIcon icon={faPencil} /></Link> : null}
+                      <FeelTag feel={feel} />
+                    </FlexList>
+                    <FlexList direction="row" items="center">
+                      <Label>Found in {pluralize('song', feel.songs.length, true)}</Label>
+                      {!isSub ? <Link to={`feel/${feel.id}/delete`} kind="danger" icon={faTrash} isCollapsing isRounded>Delete</Link> : null}
+                    </FlexList>
+                  </FlexHeader>
+                ))}
+
+              </FlexList>
+            </ItemBox>
+          </FlexList>
+
+          {isAdmin ? (
+            <FlexList gap={2}>
+              <Label>Danger Zone</Label>
+              <ItemBox isDanger>
+                <FlexList>
+                  <FlexList>
+                    <span className="font-bold">Delete this band</span>
+                    <p className="text-sm text-text-subdued">Deleting this band will perminantly remove all setlists and songs</p>
+                  </FlexList>
+                  <Link to="delete" kind="danger" icon={faTrash}>Delete</Link>
+                </FlexList>
+              </ItemBox>
+            </FlexList>
+          ) : null}
+        </FlexList>
+      </MaxWidth>
     </MaxHeightContainer>
   )
 }

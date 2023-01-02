@@ -25,7 +25,7 @@ export async function action({ request, params }: ActionArgs) {
   const songIds = (await formData).getAll('songs').map(songId => songId.toString())
 
   const setlist = await createSetlist(bandId, songIds)
-  return redirect(`/${bandId}/setlists/${setlist.id}/rename`)
+  return redirect(`/${bandId}/setlist/${setlist.id}/rename`)
 }
 
 export default function ManualSetlistCreation() {

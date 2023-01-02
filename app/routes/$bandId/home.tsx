@@ -1,7 +1,7 @@
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/node"
 import invariant from "tiny-invariant";
-import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, SetlistLink, ErrorContainer, MobileModal, Title, Link, ItemBox } from "~/components"
+import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, SetlistLink, ErrorContainer, MobileModal, Title, Link, ItemBox, MaxWidth } from "~/components"
 import { Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams } from "@remix-run/react";
 import { getRecentSetlists } from "~/models/setlist.server";
 import { getRecentSongs } from "~/models/song.server";
@@ -71,67 +71,69 @@ export default function BandIndex() {
         </>
       }
     >
-      <div className="h-full">
-        <FlexList gap={0}>
-          <div className="border-b border-slate-300 w-full">
-            <Collapsible
-              header={
-                <CollapsibleHeader isOpen={showSetlists !== showHideEnums.hide} onClick={() => handleShow('showSetlists', showSetlists)}>
-                  <FlexList gap={0}>
-                    <span className="text-sm font-bold">Setlists</span>
-                    <span className="uppercase text-text-subdued text-sm">Most recent</span>
-                  </FlexList>
-                </CollapsibleHeader>
-              }
-              isOpen={showSetlists !== showHideEnums.hide}
-            >
-              {!setlists.length ? (
-                <div className="p-4">
-                  <ItemBox>
-                    <FlexList>
-                      <FontAwesomeIcon icon={faBoxOpen} size="3x" />
-                      <p className="text-center">Looks like this band doesn't have any setlists yet...</p>
-                      <Link to={`/${bandId}/setlist/new`} kind="secondary">Create your first setlist</Link>
+      <MaxWidth>
+        <div className="h-full">
+          <FlexList gap={0}>
+            <div className="border-b border-slate-300 w-full">
+              <Collapsible
+                header={
+                  <CollapsibleHeader isOpen={showSetlists !== showHideEnums.hide} onClick={() => handleShow('showSetlists', showSetlists)}>
+                    <FlexList gap={0}>
+                      <span className="text-sm font-bold">Setlists</span>
+                      <span className="uppercase text-text-subdued text-sm">Most recent</span>
                     </FlexList>
-                  </ItemBox>
-                </div>
-              ) : null}
-              {setlists.map(setlist => (
-                <SetlistLink key={setlist.id} setlist={setlist} />
-              ))}
-            </Collapsible>
-          </div>
+                  </CollapsibleHeader>
+                }
+                isOpen={showSetlists !== showHideEnums.hide}
+              >
+                {!setlists.length ? (
+                  <div className="p-4">
+                    <ItemBox>
+                      <FlexList>
+                        <FontAwesomeIcon icon={faBoxOpen} size="3x" />
+                        <p className="text-center">Looks like this band doesn't have any setlists yet...</p>
+                        <Link to={`/${bandId}/setlist/new`} kind="secondary">Create your first setlist</Link>
+                      </FlexList>
+                    </ItemBox>
+                  </div>
+                ) : null}
+                {setlists.map(setlist => (
+                  <SetlistLink key={setlist.id} setlist={setlist} />
+                ))}
+              </Collapsible>
+            </div>
 
-          <div className="border-b border-slate-300 w-full">
-            <Collapsible
-              header={
-                <CollapsibleHeader isOpen={showSongs !== showHideEnums.hide} onClick={() => handleShow('showSongs', showSongs)}>
-                  <FlexList gap={0} items="start">
-                    <span className="text-sm font-bold">Songs</span>
-                    <span className="uppercase text-text-subdued text-sm">Most recent</span>
-                  </FlexList>
-                </CollapsibleHeader>
-              }
-              isOpen={showSongs !== showHideEnums.hide}
-            >
-              {!songs.length ? (
-                <div className="p-4">
-                  <ItemBox>
-                    <FlexList>
-                      <FontAwesomeIcon icon={faMusic} size="3x" />
-                      <p className="text-center">Looks like this band doesn't have any songs yet...</p>
-                      <Link to={`/${bandId}/song/new`} kind="secondary">Create your first song</Link>
+            <div className="border-b border-slate-300 w-full">
+              <Collapsible
+                header={
+                  <CollapsibleHeader isOpen={showSongs !== showHideEnums.hide} onClick={() => handleShow('showSongs', showSongs)}>
+                    <FlexList gap={0} items="start">
+                      <span className="text-sm font-bold">Songs</span>
+                      <span className="uppercase text-text-subdued text-sm">Most recent</span>
                     </FlexList>
-                  </ItemBox>
-                </div>
-              ) : null}
-              {songs.map(song => (
-                <SongLink key={song.id} song={song} />
-              ))}
-            </Collapsible>
-          </div>
-        </FlexList>
-      </div>
+                  </CollapsibleHeader>
+                }
+                isOpen={showSongs !== showHideEnums.hide}
+              >
+                {!songs.length ? (
+                  <div className="p-4">
+                    <ItemBox>
+                      <FlexList>
+                        <FontAwesomeIcon icon={faMusic} size="3x" />
+                        <p className="text-center">Looks like this band doesn't have any songs yet...</p>
+                        <Link to={`/${bandId}/song/new`} kind="secondary">Create your first song</Link>
+                      </FlexList>
+                    </ItemBox>
+                  </div>
+                ) : null}
+                {songs.map(song => (
+                  <SongLink key={song.id} song={song} />
+                ))}
+              </Collapsible>
+            </div>
+          </FlexList>
+        </div>
+      </MaxWidth>
     </MaxHeightContainer>
   )
 }

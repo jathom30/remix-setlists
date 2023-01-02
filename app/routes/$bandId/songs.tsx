@@ -4,7 +4,7 @@ import invariant from "tiny-invariant";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
-import { CatchContainer, CreateNewButton, ErrorContainer, FlexList, Input, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, SongLink, Title } from "~/components";
+import { CatchContainer, CreateNewButton, ErrorContainer, FlexList, Input, Link, MaxHeightContainer, MaxWidth, MobileModal, RouteHeader, RouteHeaderBackLink, SongLink, Title } from "~/components";
 import { faBoxOpen, faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
@@ -123,23 +123,25 @@ export default function SongsList() {
         </>
       }
     >
-      <FlexList height="full">
-        {hasSongs ? (
-          <div className="flex flex-col sm:gap-2 sm:p-2">
-            {songs.map(song => (
-              <div key={song.id} className="sm:rounded sm:overflow-hidden sm:shadow">
-                <SongLink song={song} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <FlexList pad={4}>
-            <FontAwesomeIcon icon={faBoxOpen} size="3x" />
-            <p className="text-center">Looks like this band doesn't have any songs yet.</p>
-            <Link to={`/${bandId}/song/new`} kind="primary">Create your first song</Link>
-          </FlexList>
-        )}
-      </FlexList>
+      <MaxWidth>
+        <FlexList height="full">
+          {hasSongs ? (
+            <div className="flex flex-col sm:gap-2 sm:p-2">
+              {songs.map(song => (
+                <div key={song.id} className="sm:rounded sm:overflow-hidden sm:shadow">
+                  <SongLink song={song} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <FlexList pad={4}>
+              <FontAwesomeIcon icon={faBoxOpen} size="3x" />
+              <p className="text-center">Looks like this band doesn't have any songs yet.</p>
+              <Link to={`/${bandId}/song/new`} kind="primary">Create your first song</Link>
+            </FlexList>
+          )}
+        </FlexList>
+      </MaxWidth>
     </MaxHeightContainer>
   )
 }

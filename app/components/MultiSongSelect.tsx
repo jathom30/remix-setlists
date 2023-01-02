@@ -46,7 +46,7 @@ export const MulitSongSelect = ({ songs, label }: { songs: SerializeFrom<Song[]>
         footer={
           <SaveButtons
             saveLabel={label}
-            cancelTo={`/${bandId}/setlists/edit/${setlistId}`}
+            cancelTo={`/${bandId}/setlist/edit/${setlistId}`}
           />
         }
       >

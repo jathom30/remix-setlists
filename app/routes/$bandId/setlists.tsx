@@ -2,7 +2,7 @@ import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { CreateNewButton, FlexList, Input, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, SetlistLink, Title } from "~/components";
+import { CreateNewButton, FlexList, Input, Link, MaxHeightContainer, MaxWidth, MobileModal, RouteHeader, RouteHeaderBackLink, SetlistLink, Title } from "~/components";
 import { getSetlists } from "~/models/setlist.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
@@ -80,7 +80,7 @@ export default function SetlistsRoute() {
           <RouteHeader
             mobileChildren={<RouteHeaderBackLink label="Setlists" to={`/${bandId}/home`} />}
             desktopChildren={<Title>Setlists</Title>}
-            desktopAction={<Link to="new" kind="primary">New setlist</Link>}
+            desktopAction={!isSub ? <Link to={`/${bandId}/setlist/new`} kind="primary">New setlist</Link> : null}
           />
           <div className="border-b border-slate-300 w-full">
             <FlexList pad={4} gap={4}>
@@ -111,23 +111,25 @@ export default function SetlistsRoute() {
         </>
       }
     >
-      <FlexList height="full">
-        {hasSetlists ? (
-          <div className="flex flex-col sm:gap-2 sm:p-2">
-            {setlists.map(setlist => (
-              <div key={setlist.id} className="sm:rounded sm:overflow-hidden sm:shadow">
-                <SetlistLink setlist={setlist} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <FlexList pad={4}>
-            <FontAwesomeIcon icon={faBoxOpen} size="3x" />
-            <p className="text-center">Looks like this band doesn't have any setlists yet.</p>
-            <Link to="new" kind="primary">Create your first setlist</Link>
-          </FlexList>
-        )}
-      </FlexList>
+      <MaxWidth>
+        <FlexList height="full">
+          {hasSetlists ? (
+            <div className="flex flex-col sm:gap-2 sm:p-2">
+              {setlists.map(setlist => (
+                <div key={setlist.id} className="sm:rounded sm:overflow-hidden sm:shadow">
+                  <SetlistLink setlist={setlist} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <FlexList pad={4}>
+              <FontAwesomeIcon icon={faBoxOpen} size="3x" />
+              <p className="text-center">Looks like this band doesn't have any setlists yet.</p>
+              <Link to={`/${bandId}/setlist/new`} kind="primary">Create your first setlist</Link>
+            </FlexList>
+          )}
+        </FlexList>
+      </MaxWidth>
     </MaxHeightContainer>
   )
 }
