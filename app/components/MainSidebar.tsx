@@ -1,7 +1,7 @@
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { faCheck, faListOl, faMusic, faPlus, faSignOut, faSort, faUser, faUsers } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import type { BandIcon, Setlist, Song, SongsInSets } from "@prisma/client"
+import type { BandIcon } from "@prisma/client"
 import { Popover } from 'react-tiny-popover'
 import type { SerializeFrom } from "@remix-run/server-runtime"
 import { AnimatePresence, motion } from "framer-motion"
@@ -25,16 +25,6 @@ type MainSidebarProps = {
     icon: BandIcon | null;
   }> | null;
   memberRole: string;
-  songs: SerializeFrom<Song>[]
-  setlists: SerializeFrom<(Setlist & {
-    sets: {
-      songs: (SongsInSets & {
-        song: {
-          length: number;
-        } | null;
-      })[];
-    }[];
-  })[]>;
   bands: SerializeFrom<{
     name: string;
     icon: BandIcon | null;
@@ -45,7 +35,7 @@ type MainSidebarProps = {
   }>[]
 }
 
-export const MainSidebar = ({ band, memberRole, songs, setlists, bands }: MainSidebarProps) => {
+export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
   const user = useUser()
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [isUserOpen, setIsUserOpen] = useState(false)

@@ -31,19 +31,22 @@ export default function UserRoute() {
             <RouteHeaderBackLink label="User" to={`/${bandId}/home`} />
           }
           desktopChildren={<Title>User settings</Title>}
+          action={
+            <Form action="/logout" method="post">
+              <Button isCollapsing type="submit" icon={faSignOut} kind="invert">Sign out</Button>
+            </Form>
+          }
+          desktopAction={
+            <Form action="/logout" method="post">
+              <Button type="submit" icon={faSignOut} kind="secondary">Sign out</Button>
+            </Form>
+          }
         />
       }
       footer={
-        <>
-          <Form action="/logout" method="post">
-            <FlexList pad={4}>
-              <Button type="submit" icon={faSignOut} kind="secondary">Sign out</Button>
-            </FlexList>
-          </Form>
-          <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
-            <Outlet />
-          </MobileModal>
-        </>
+        <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
+          <Outlet />
+        </MobileModal>
       }
     >
       <FlexList pad={4}>
