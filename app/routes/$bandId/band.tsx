@@ -7,10 +7,11 @@ import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { getUsersById } from "~/models/user.server";
 import { RoleEnum } from "~/utils/enums";
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useMemberRole } from "~/utils";
 import { getFeels } from "~/models/feel.server";
 import pluralize from "pluralize";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -38,6 +39,7 @@ export default function BandSettingsPage() {
   const { band, members, feels } = useLoaderData<typeof loader>()
   const memberRole = useMemberRole()
   const isAdmin = memberRole === RoleEnum.ADMIN
+  const isSub = memberRole === RoleEnum.SUB
   const { bandId } = useParams()
   const { pathname } = useLocation()
   const navigate = useNavigate()
@@ -82,15 +84,14 @@ export default function BandSettingsPage() {
         <FlexList gap={2}>
           <Label>Members</Label>
           <ItemBox>
-            <FlexList gap={2}>
+            <FlexList>
               {members.map(member => (
                 <FlexHeader key={member.id}>
-                  {isAdmin ? (
-                    <Link to={member.id} icon={faEdit} kind="secondary">{member.name}</Link>
-                  ) : (
+                  <FlexList direction="row">
                     <span className="font-bold">{member.name}</span>
-                  )}
-                  <Badge>{member.role}</Badge>
+                    <Badge>{member.role}</Badge>
+                  </FlexList>
+                  {!isSub ? <Link to={member.id} kind="secondary"><FontAwesomeIcon icon={faEdit} /></Link> : null}
                 </FlexHeader>
               ))}
               {isAdmin ? (
@@ -101,7 +102,10 @@ export default function BandSettingsPage() {
         </FlexList>
 
         <FlexList gap={2}>
-          <Label>Feels</Label>
+          <FlexHeader>
+            <Label>Feels</Label>
+            {!isSub ? <Link to="feel/new" isRounded><FontAwesomeIcon icon={faPlus} /></Link> : null}
+          </FlexHeader>
           <ItemBox>
             <FlexList>
               {feels.length === 0 ? (
@@ -112,7 +116,7 @@ export default function BandSettingsPage() {
                   <FeelTag feel={feel} />
                   <FlexList direction="row" items="center">
                     <Label>Found in {pluralize('song', feel.songs.length, true)}</Label>
-                    <Link to={`feel/${feel.id}/delete`} kind="danger" icon={faTrash} isCollapsing isRounded>Delete</Link>
+                    {!isSub ? <Link to={`feel/${feel.id}/delete`} kind="danger" icon={faTrash} isCollapsing isRounded>Delete</Link> : null}
                   </FlexList>
                 </FlexHeader>
               ))}

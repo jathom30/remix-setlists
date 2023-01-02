@@ -51,7 +51,7 @@ export default function RemoveSelfFromBand() {
         <p className="text-danger text-sm">
           You are the only admin. Make at least one other member an Admin before removing yourself.
         </p>
-        <p>If you would to, instead, delete this band, you can do so <Link className="underline text-blue-500" to={`/${bandId}/band/delete`}>here</Link>.</p>
+        <p className="text-sm">Instead, if you would rather delete this band, you can do so <Link className="underline text-blue-500" to={`/${bandId}/band/delete`}>here</Link>.</p>
         <Button isDisabled>Remove</Button>
       </FlexList>
     )

@@ -1,13 +1,15 @@
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/node"
 import invariant from "tiny-invariant";
-import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, SetlistLink, ErrorContainer, MobileModal, Title, Link } from "~/components"
-import { Outlet, useLoaderData, useLocation, useNavigate, useSearchParams } from "@remix-run/react";
+import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, SetlistLink, ErrorContainer, MobileModal, Title, Link, ItemBox } from "~/components"
+import { Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams } from "@remix-run/react";
 import { getRecentSetlists } from "~/models/setlist.server";
 import { getRecentSongs } from "~/models/song.server";
 import { getBandHome } from "~/models/band.server";
 import { RoleEnum, showHideEnums } from "~/utils/enums";
 import { useMemberRole } from "~/utils";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBoxOpen, faMusic } from "@fortawesome/free-solid-svg-icons";
 
 export async function loader({ request, params }: LoaderArgs) {
   const { bandId } = params
@@ -30,6 +32,7 @@ export default function BandIndex() {
   const isSub = memberRole === RoleEnum.SUB
   const { pathname } = useLocation()
   const navigate = useNavigate()
+  const { bandId } = useParams()
   const [params, setParams] = useSearchParams()
   const showSongs = params.get('showSongs')
   const showSetlists = params.get('showSetlists')
@@ -55,7 +58,6 @@ export default function BandIndex() {
             </RouteHeaderBackLink>
           }
           action={<Badge invert size="sm">{memberRole}</Badge>}
-          // todo only non sub can see
           desktopAction={isSub ? null : <Link to="new" kind="primary">New</Link>}
           desktopChildren={<Title>Home</Title>}
         />
@@ -83,6 +85,17 @@ export default function BandIndex() {
               }
               isOpen={showSetlists !== showHideEnums.hide}
             >
+              {!setlists.length ? (
+                <div className="p-4">
+                  <ItemBox>
+                    <FlexList>
+                      <FontAwesomeIcon icon={faBoxOpen} size="3x" />
+                      <p className="text-center">Looks like this band doesn't have any setlists yet...</p>
+                      <Link to={`/${bandId}/setlist/new`} kind="secondary">Create your first setlist</Link>
+                    </FlexList>
+                  </ItemBox>
+                </div>
+              ) : null}
               {setlists.map(setlist => (
                 <SetlistLink key={setlist.id} setlist={setlist} />
               ))}
@@ -101,6 +114,17 @@ export default function BandIndex() {
               }
               isOpen={showSongs !== showHideEnums.hide}
             >
+              {!songs.length ? (
+                <div className="p-4">
+                  <ItemBox>
+                    <FlexList>
+                      <FontAwesomeIcon icon={faMusic} size="3x" />
+                      <p className="text-center">Looks like this band doesn't have any songs yet...</p>
+                      <Link to={`/${bandId}/song/new`} kind="secondary">Create your first song</Link>
+                    </FlexList>
+                  </ItemBox>
+                </div>
+              ) : null}
               {songs.map(song => (
                 <SongLink key={song.id} song={song} />
               ))}
