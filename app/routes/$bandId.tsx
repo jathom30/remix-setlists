@@ -1,12 +1,9 @@
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
-import { FlexList, MainSidebar, MaxHeightContainer } from "~/components"
+import { FlexList, MainSidebar, MaxHeightContainer, MainFooterLink } from "~/components"
 import { requireUserId } from "~/session.server"
-import { Link as RemixLink, Outlet, useLoaderData, useLocation } from "@remix-run/react"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faHouse, faList, faMusic, faUsers } from "@fortawesome/free-solid-svg-icons"
-import type { IconDefinition } from "@fortawesome/free-solid-svg-icons"
-import { faUser } from "@fortawesome/free-regular-svg-icons"
+import { Outlet, useLoaderData } from "@remix-run/react"
+import { faHouse, faList, faMusic, faUsers, faUser } from "@fortawesome/free-solid-svg-icons"
 import { getMemberRole } from "~/models/usersInBands.server";
 import invariant from "tiny-invariant";
 import { getBandHome, getBands } from "~/models/band.server";
@@ -59,7 +56,7 @@ export default function BandRoute() {
         <div className="bg-slate-400 sm:hidden">
           <FlexList pad={0} direction="row" items="center" justify="between">
             {routes.map(route => (
-              <RouteIcon key={route.label} icon={route.icon} label={route.label} to={route.to} />
+              <MainFooterLink key={route.label} icon={route.icon} label={route.label} to={route.to} />
             ))}
           </FlexList>
         </div>
@@ -79,20 +76,5 @@ export default function BandRoute() {
         </div>
       </div>
     </MaxHeightContainer>
-  )
-}
-
-const RouteIcon = ({ icon, label, to }: { icon: IconDefinition; label: string, to: string }) => {
-  const { pathname } = useLocation()
-
-  const isActive = pathname.includes(label.toLowerCase())
-
-  return (
-    <RemixLink className={`p-2 ${isActive ? 'text-white' : ''}`} to={to}>
-      <FlexList items="center" gap={0}>
-        <FontAwesomeIcon icon={icon} />
-        <span>{label}</span>
-      </FlexList>
-    </RemixLink>
   )
 }

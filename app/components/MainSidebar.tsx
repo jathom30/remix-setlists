@@ -121,7 +121,9 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
                         <>
                           <div className="flex flex-col items-baseline">
                             <TextOverflow>{user.name}</TextOverflow>
-                            <span className="text-sm text-slate-400">{user.email}</span>
+                            <TextOverflow>
+                              <span className="text-sm text-slate-400">{user.email}</span>
+                            </TextOverflow>
                           </div>
                         </>
                       ) : null}
