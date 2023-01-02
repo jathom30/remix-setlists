@@ -1,7 +1,7 @@
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
-import { ErrorMessage, Field, FlexList, Input, SaveButtons } from "~/components";
+import { CatchContainer, ErrorContainer, ErrorMessage, Field, FlexList, Input, SaveButtons } from "~/components";
 import { getFeel, updateFeel } from "~/models/feel.server";
 import { requireNonSubMember } from "~/session.server";
 import invariant from "tiny-invariant";
@@ -50,4 +50,12 @@ export default function EditFeel() {
       <SaveButtons saveLabel="Update feel" cancelTo=".." />
     </Form>
   )
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ErrorContainer error={error} />
+}
+
+export function CatchBoundary() {
+  return <CatchContainer />
 }

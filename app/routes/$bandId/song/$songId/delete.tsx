@@ -3,14 +3,15 @@ import { json } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Form, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { ConfirmDelete } from "~/components";
+import { CatchContainer, ConfirmDelete, ErrorContainer } from "~/components";
 import { deleteSong, getSong } from "~/models/song.server";
-import { requireUserId } from "~/session.server";
+import { requireNonSubMember } from "~/session.server";
 
 export async function loader({ request, params }: LoaderArgs) {
-  await requireUserId(request)
-  const { songId } = params
+  const { songId, bandId } = params
   invariant(songId, 'songId not found')
+  invariant(bandId, 'bandId not found')
+  await requireNonSubMember(request, bandId)
 
   const song = await getSong(songId, true)
   if (!song) {
@@ -20,10 +21,10 @@ export async function loader({ request, params }: LoaderArgs) {
 }
 
 export async function action({ request, params }: ActionArgs) {
-  await requireUserId(request)
   const { songId, bandId } = params
   invariant(songId, 'songId not found')
   invariant(bandId, 'bandId not found')
+  await requireNonSubMember(request, bandId)
 
   await deleteSong(songId)
   return redirect(`/${bandId}/songs`)
@@ -42,4 +43,11 @@ export default function DeleteSong() {
       />
     </Form>
   )
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ErrorContainer error={error} />
+}
+export function CatchBoundary() {
+  return <CatchContainer />
 }

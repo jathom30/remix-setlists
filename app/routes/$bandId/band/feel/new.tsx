@@ -1,10 +1,16 @@
 import { Form, useActionData } from "@remix-run/react";
-import type { ActionArgs } from "@remix-run/server-runtime";
+import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { ErrorMessage, Field, FlexList, Input, SaveButtons } from "~/components";
+import { CatchContainer, ErrorContainer, ErrorMessage, Field, FlexList, Input, SaveButtons } from "~/components";
 import { requireNonSubMember } from "~/session.server";
 import { createFeel } from "~/models/feel.server";
+
+export async function loader({ request, params }: LoaderArgs) {
+  const { bandId } = params
+  invariant(bandId, 'bandId not found')
+  await requireNonSubMember(request, bandId)
+}
 
 export async function action({ request, params }: ActionArgs) {
   const { bandId } = params
@@ -41,4 +47,12 @@ export default function NewFeel() {
       <SaveButtons saveLabel="Create feel" cancelTo=".." />
     </Form>
   )
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ErrorContainer error={error} />
+}
+
+export function CatchBoundary() {
+  return <CatchContainer />
 }
