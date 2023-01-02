@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { Form, Link, useTransition } from "@remix-run/react";
 import { deleteToken } from "~/models/token.server";
+import { decrypt } from "~/utils/encryption.server";
 
 export async function loader({ request }: LoaderArgs) {
   const url = new URL(request.url)
@@ -24,7 +25,7 @@ export async function loader({ request }: LoaderArgs) {
   }
 
   // check if token matches and is still valid
-  const isMatchingToken = await compareToken(token, id)
+  const isMatchingToken = await compareToken(decrypt(token), id)
   if (!isMatchingToken) throw new Response('Token does not match', { status: 403 })
 
   // if token is valid and matches user =>  verify user

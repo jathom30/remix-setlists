@@ -1,7 +1,7 @@
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/node"
 import invariant from "tiny-invariant";
-import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, SetlistLink, ErrorContainer, MobileModal, Title } from "~/components"
+import { FlexList, Collapsible, CollapsibleHeader, SongLink, MaxHeightContainer, Avatar, Badge, RouteHeader, RouteHeaderBackLink, CreateNewButton, SetlistLink, ErrorContainer, MobileModal, Title, Link } from "~/components"
 import { Outlet, useLoaderData, useLocation, useNavigate, useSearchParams } from "@remix-run/react";
 import { getRecentSetlists } from "~/models/setlist.server";
 import { getRecentSongs } from "~/models/song.server";
@@ -55,6 +55,8 @@ export default function BandIndex() {
             </RouteHeaderBackLink>
           }
           action={<Badge invert size="sm">{memberRole}</Badge>}
+          // todo only non sub can see
+          desktopAction={isSub ? null : <Link to="new" kind="primary">New</Link>}
           desktopChildren={<Title>Home</Title>}
         />
       }

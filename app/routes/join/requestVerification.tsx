@@ -7,12 +7,15 @@ import { Button, ErrorMessage, Field, FlexList, Input, ItemBox, Link } from "~/c
 import { validateEmail } from "~/utils";
 import { generateTokenLink, getUserByEmail } from "~/models/user.server";
 import { verifyAccount } from "~/email/verify";
+import { getDomainUrl } from "~/utils/assorted";
+import { getUser } from "~/session.server";
 
 export async function loader({ request }: LoaderArgs) {
   const urlSearchParams = (new URL(request.url)).searchParams
   const email = urlSearchParams.get('email')
+  const user = await getUser(request)
 
-  return json({ email })
+  return json({ email, user })
 }
 
 export async function action({ request }: ActionArgs) {
@@ -36,15 +39,18 @@ export async function action({ request }: ActionArgs) {
     })
   }
 
+  const domainUrl = getDomainUrl(request)
   // send email
-  const magicLink = await generateTokenLink(email, 'join/verify');
+  const magicLink = await generateTokenLink(email, 'join/verify', domainUrl);
   verifyAccount(email, magicLink)
   return redirect('/join/verificationSent')
 }
 
 export default function RequestVerification() {
-  const { email } = useLoaderData<typeof loader>()
+  const { email, user } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
+
+  const displayEmail = user?.email || email || ''
   return (
     <FlexList pad={4}>
       <FontAwesomeIcon icon={faEnvelope} size="5x" />
@@ -54,7 +60,7 @@ export default function RequestVerification() {
         <Form method="put">
           <FlexList>
             <Field name="email" label="Email">
-              <Input name="email" type="email" placeholder="Account email" defaultValue={email || ''} />
+              <Input name="email" type="email" placeholder="Account email" defaultValue={displayEmail} />
               {actionData?.errors.email ? <ErrorMessage message={actionData?.errors.email} /> : null}
             </Field>
 

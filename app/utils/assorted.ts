@@ -51,3 +51,16 @@ export const getPasswordError = (tests: ReturnType<typeof passwordStrength>['tes
   if (!tests.includesSpecialCharacters) return 'Password must include at least 1 special character'
   if (!tests.includesLetters) return 'Password must include at least 1 letter'
 }
+
+/**
+ * @returns domain URL (without a ending slash, like: https://kentcdodds.com)
+ */
+export function getDomainUrl(request: Request) {
+  const host =
+    request.headers.get('X-Forwarded-Host') ?? request.headers.get('host')
+  if (!host) {
+    throw new Error('Could not determine domain URL.')
+  }
+  const protocol = host.includes('localhost') ? 'http' : 'https'
+  return `${protocol}://${host}`
+}

@@ -4,9 +4,8 @@ import { json, redirect } from "@remix-run/node";
 import { Field, FlexList, Input, SaveButtons } from "~/components";
 import { requireUser } from "~/session.server";
 import { validateEmail } from "~/utils";
-import { generateTokenLink, updateUser } from "~/models/user.server";
+import { updateUser } from "~/models/user.server";
 import invariant from "tiny-invariant";
-import { verifyAccount } from "~/email/verify";
 
 export async function loader({ request }: LoaderArgs) {
   const user = await requireUser(request)

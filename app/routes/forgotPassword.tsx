@@ -1,4 +1,3 @@
-import sgMail from '@sendgrid/mail'
 import { faChevronLeft, faEnvelope, faKey } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Form, useActionData } from "@remix-run/react"
@@ -9,6 +8,7 @@ import { validateEmail } from "~/utils"
 import invariant from 'tiny-invariant';
 import { generateTokenLink, getUserByEmail } from '~/models/user.server';
 import { passwordReset } from '~/email/password';
+import { getDomainUrl } from '~/utils/assorted';
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData()
@@ -30,8 +30,9 @@ export async function action({ request }: ActionArgs) {
     )
   }
 
+  const domainUrl = getDomainUrl(request)
   // generate token link and send email
-  const magicLink = await generateTokenLink(email, 'resetPassword')
+  const magicLink = await generateTokenLink(email, 'resetPassword', domainUrl)
   passwordReset(email, magicLink)
 
   return json({ errors: null, email })

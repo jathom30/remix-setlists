@@ -7,6 +7,7 @@ import { createUserSession, getUser } from "~/session.server";
 import { generateTokenLink, verifyLogin } from "~/models/user.server";
 import { safeRedirect, validateEmail } from "~/utils";
 import { verifyAccount } from "~/email/verify";
+import { getDomainUrl } from "~/utils/assorted";
 
 export async function loader({ request }: LoaderArgs) {
   const user = await getUser(request);
@@ -53,9 +54,8 @@ export async function action({ request }: ActionArgs) {
   }
 
   if (!user.verified) {
-    // return redirect(`/join/requestVerification?email=${email}`);
-    // send email
-    const magicLink = await generateTokenLink(email, 'join/verify');
+    const domainUrl = getDomainUrl(request)
+    const magicLink = await generateTokenLink(email, 'join/verify', domainUrl);
     verifyAccount(email, magicLink)
     return redirect('/join/verificationSent')
   }

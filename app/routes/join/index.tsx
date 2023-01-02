@@ -10,7 +10,7 @@ import { validateEmail } from "~/utils";
 import invariant from 'tiny-invariant';
 import { CatchContainer, ErrorContainer, FlexList, PasswordStrength } from '~/components';
 import { verifyAccount } from '~/email/verify';
-import { getPasswordError, passwordStrength } from "~/utils/assorted";
+import { getDomainUrl, getPasswordError, passwordStrength } from "~/utils/assorted";
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request);
@@ -77,8 +77,9 @@ export async function action({ request }: ActionArgs) {
   }
 
   await createUser(email, password, name);
+  const domainUrl = getDomainUrl(request)
   // send email
-  const magicLink = await generateTokenLink(email, 'join/verify');
+  const magicLink = await generateTokenLink(email, 'join/verify', domainUrl);
   verifyAccount(email, magicLink)
 
   return redirect('verificationSent')
