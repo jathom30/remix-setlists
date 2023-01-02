@@ -1,24 +1,23 @@
-import { faCaretLeft, faCaretRight, faCheck, faCog, faList, faMusic, faPlus, faSort, faUser } from "@fortawesome/free-solid-svg-icons"
+import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faListOl, faMusic, faPlus, faSignOut, faSort, faUser, faUsers } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import type { BandIcon, Setlist, Song, SongsInSets } from "@prisma/client"
+import type { BandIcon } from "@prisma/client"
 import { Popover } from 'react-tiny-popover'
 import type { SerializeFrom } from "@remix-run/server-runtime"
 import { AnimatePresence, motion } from "framer-motion"
 import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { useState } from "react"
 import { useUser } from "~/utils"
 import { Avatar } from "./Avatar"
 import { Badge } from "./Badge"
 import { Button } from "./Button"
-import { FlexHeader } from "./FlexHeader"
 import { FlexList } from "./FlexList"
-import { Label } from "./Label"
 import { Link } from "./Link"
 import { MaxHeightContainer } from "./MaxHeightContainer"
-import { SetlistLink } from "./SetlistLink"
-import { SongLink } from "./SongLink"
 import { TextOverflow } from "./TextOverflow"
-import { useLocation, Link as RemixLink, useParams } from "@remix-run/react"
+import { useLocation, Link as RemixLink, useParams, Form } from "@remix-run/react"
+import { ItemBox } from "./ItemBox"
 
 type MainSidebarProps = {
   band: SerializeFrom<{
@@ -26,16 +25,6 @@ type MainSidebarProps = {
     icon: BandIcon | null;
   }> | null;
   memberRole: string;
-  songs: SerializeFrom<Song>[]
-  setlists: SerializeFrom<(Setlist & {
-    sets: {
-      songs: (SongsInSets & {
-        song: {
-          length: number;
-        } | null;
-      })[];
-    }[];
-  })[]>;
   bands: SerializeFrom<{
     name: string;
     icon: BandIcon | null;
@@ -46,11 +35,22 @@ type MainSidebarProps = {
   }>[]
 }
 
-export const MainSidebar = ({ band, memberRole, songs, setlists, bands }: MainSidebarProps) => {
+export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
   const user = useUser()
   const [isPopupOpen, setIsPopupOpen] = useState(false)
+  const [isUserOpen, setIsUserOpen] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const state = isOpen ? 'open' : 'closed'
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    const handleIsOpen = () => setIsOpen(window.innerWidth > 900)
+    window.addEventListener('resize', handleIsOpen)
+    handleIsOpen()
+    return () => window.removeEventListener('resize', handleIsOpen)
+  }, [])
+
+  const isActive = pathname.includes('user')
 
   return (
     <AnimatePresence initial={false}>
@@ -72,7 +72,10 @@ export const MainSidebar = ({ band, memberRole, songs, setlists, bands }: MainSi
                 onClickOutside={() => setIsPopupOpen(false)}
                 content={<BandSelectPopup bands={bands} />}
               >
-                <button className="w-full hover:bg-slate-100" onClick={() => setIsPopupOpen(!isPopupOpen)}>
+                <button
+                  className="w-full hover:bg-slate-100"
+                  onClick={() => setIsPopupOpen(!isPopupOpen)}
+                >
                   <BandOption band={band} isCollapsed={!isOpen} memberRole={memberRole}>
                     <FontAwesomeIcon icon={faSort} />
                   </BandOption>
@@ -82,81 +85,76 @@ export const MainSidebar = ({ band, memberRole, songs, setlists, bands }: MainSi
           }
           footer={
             <>
-              <FlexList pad={4}>
-                <Button kind="secondary" onClick={() => setIsOpen(!isOpen)} icon={isOpen ? faCaretLeft : undefined}>
-                  {isOpen ? 'Collapse menu' : <FontAwesomeIcon icon={faCaretRight} />}
-                </Button>
-              </FlexList>
-              <div className="border-t p-4">
-                <Link to="user" kind="secondary" icon={isOpen ? faUser : undefined}>{isOpen ? user.name : <FontAwesomeIcon icon={faUser} />}</Link>
+              <div className="border-t">
+                <Popover
+                  isOpen={isUserOpen}
+                  positions={['right']}
+                  padding={8}
+                  onClickOutside={() => setIsUserOpen(false)}
+                  content={
+                    <ItemBox pad={2}>
+                      <FlexList gap={2}>
+                        <Link icon={faUser} onClick={() => setIsUserOpen(false)} kind="secondary" to="user">User settings</Link>
+                        <Form method="post" action="/logout">
+                          <FlexList>
+                            <Button type="submit" icon={faSignOut}>Sign out</Button>
+                          </FlexList>
+                        </Form>
+                        <span className="text-xs text-slate-400 text-right">v0.1.0</span>
+                      </FlexList>
+                    </ItemBox>
+                  }
+                >
+                  <div className="p-2">
+                    <button
+                      className={`${isOpen ? '' : 'justify-center'} ${isActive ? 'text-slate-600 bg-blue-100' : 'text-slate-500'} px-4 py-2 w-full rounded hover:bg-slate-200`}
+                      onClick={() => setIsUserOpen(!isUserOpen)}
+                    >
+                      <FlexList direction="row" items="center" justify={isOpen ? "start" : "center"}>
+                        <FontAwesomeIcon icon={faUser} />
+                        {isOpen ? (
+                          <>
+                            <div className="flex flex-col items-baseline">
+                              <TextOverflow>{user.name}</TextOverflow>
+                              <span className="text-sm text-slate-400">{user.email}</span>
+                            </div>
+                          </>
+                        ) : null}
+                      </FlexList>
+                    </button>
+                  </div>
+                </Popover>
               </div>
             </>
           }
         >
           <div className="flex flex-col h-full p-4 gap-4 justify-between">
-            <FlexList>
-              <Link to="band" icon={isOpen ? faCog : undefined} kind="secondary">
-                {isOpen ? 'Band Settings' : <FontAwesomeIcon icon={faCog} />}
-              </Link>
-              {isOpen ? (
-                <FlexList gap={2}>
-                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .1 }}>
-                    <FlexHeader>
-                      <Label>Setlists</Label>
-                      <Link to="setlists/new" isRounded kind="text"><FontAwesomeIcon icon={faPlus} /></Link>
-                    </FlexHeader>
-                  </motion.div>
-                  <FlexList gap={0}>
-                    {setlists.length ? (
-                      setlists.map(setlist => (
-                        <div key={setlist.id} className="rounded overflow-hidden">
-                          <SetlistLink setlist={setlist} />
-                        </div>
-                      ))
-                    ) : (
-                      <span>No recent setlists</span>
-                    )}
-                  </FlexList>
-                  <Link className="grow" to="setlists">All setlists</Link>
-                </FlexList>
-              ) : (
-                <Link to="setlists">
-                  <FontAwesomeIcon icon={faList} />
-                </Link>
-              )}
-              {isOpen ? (
-                <FlexList gap={2}>
-                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .1 }}>
-                    <FlexHeader>
-                      <Label>Songs</Label>
-                      <Link to="songs/new" isRounded kind="text"><FontAwesomeIcon icon={faPlus} /></Link>
-                    </FlexHeader>
-                  </motion.div>
-                  <FlexList gap={0}>
-                    {songs.length ? (
-                      songs.map(song => (
-                        <div key={song.id} className="rounded overflow-hidden">
-                          <SongLink song={song} />
-                        </div>
-                      ))
-                    ) : (
-                      <span>No recent songs</span>
-                    )}
-                  </FlexList>
-                  <Link className="grow" to="songs">All songs</Link>
-                </FlexList>
-              ) : (
-                <Link to="songs">
-                  <FontAwesomeIcon icon={faMusic} />
-                </Link>
-              )}
-
+            <FlexList gap={2}>
+              <SideBarLink to="setlists" isOpen={isOpen} label="Setlists" icon={faListOl} />
+              <SideBarLink to="songs" isOpen={isOpen} label="Songs" icon={faMusic} />
             </FlexList>
-
+            <FlexList>
+              <SideBarLink to="band" isOpen={isOpen} label="Band settings" icon={faUsers} />
+            </FlexList>
           </div>
         </MaxHeightContainer>
       </motion.div>
     </AnimatePresence>
+  )
+}
+
+const SideBarLink = ({ to, isOpen, label, icon }: { to: string; isOpen: boolean; label: string; icon: IconDefinition }) => {
+  const { pathname } = useLocation()
+  // ex: setlists => setlist
+  const singularTo = to[to.length - 1] === 's' ? to.substring(0, to.length - 1) : to
+  const isActive = pathname.includes(singularTo)
+  return (
+    <RemixLink className={`${isActive ? 'text-slate-600 bg-blue-100' : 'text-slate-500'} px-4 py-2 flex items-center ${isOpen ? '' : 'justify-center'} rounded hover:bg-slate-200`} to={to}>
+      <FlexList direction="row" items="center">
+        <FontAwesomeIcon icon={icon} />
+        {isOpen ? <span className='text-slate-700'>{label}</span> : null}
+      </FlexList>
+    </RemixLink>
   )
 }
 

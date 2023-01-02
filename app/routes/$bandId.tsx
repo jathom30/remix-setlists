@@ -10,18 +10,16 @@ import { faUser } from "@fortawesome/free-regular-svg-icons"
 import { getMemberRole } from "~/models/usersInBands.server";
 import invariant from "tiny-invariant";
 import { getBandHome, getBands } from "~/models/band.server";
-import { getRecentSetlists } from "~/models/setlist.server";
-import { getRecentSongs } from "~/models/song.server";
 
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request)
   const { bandId } = params
   invariant(bandId, 'bandId not found')
-  const [band, setlists, songs, memberRole, bands] = await Promise.all([
-    getBandHome(bandId), getRecentSetlists(bandId), getRecentSongs(bandId), getMemberRole(bandId, userId), getBands(userId)
+  const [band, memberRole, bands] = await Promise.all([
+    getBandHome(bandId), getMemberRole(bandId, userId), getBands(userId)
   ])
   // used in useMemberRole hook in child routes
-  return json({ band, setlists, songs, memberRole, bands })
+  return json({ band, memberRole, bands })
 }
 
 const routes = [
@@ -53,7 +51,7 @@ const routes = [
 ]
 
 export default function BandRoute() {
-  const { memberRole, setlists, songs, band, bands } = useLoaderData<typeof loader>()
+  const { memberRole, band, bands } = useLoaderData<typeof loader>()
 
   return (
     <MaxHeightContainer
@@ -70,7 +68,7 @@ export default function BandRoute() {
     >
       <div className="h-full sm:flex">
         <div className="hidden sm:block sm:h-full">
-          <MainSidebar band={band} memberRole={memberRole} songs={songs} setlists={setlists} bands={bands} />
+          <MainSidebar band={band} memberRole={memberRole} bands={bands} />
         </div>
 
         <div className="h-full sm:hidden">
