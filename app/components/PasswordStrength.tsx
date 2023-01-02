@@ -14,7 +14,7 @@ export const PasswordStrength = ({ tests, strength }: { tests: ReturnType<typeof
     if (!tests.includesNumbers) return 'Password must include at least 1 number'
     if (!tests.includesSpecialCharacters) return 'Password must include at least 1 special character'
     if (!tests.includesLetters) return 'Password must include at least 1 letter'
-    return 'This is a masterclass is password creation'
+    return 'This is a masterclass in password creation'
   }
 
   const color = () => {
