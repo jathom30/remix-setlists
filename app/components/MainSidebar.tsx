@@ -174,6 +174,7 @@ const SideBarLink = ({ to, isOpen, label, icon }: { to: string; isOpen: boolean;
 const BandSelectPopup = ({ bands, onSelect }: { bands: MainSidebarProps['bands']; onSelect: () => void }) => {
   const { bandId } = useParams()
   const { pathname } = useLocation()
+  const redirectPath = pathname.split('/').filter(path => path !== bandId && path.length)[0]
   const isSelected = (bandId: MainSidebarProps['bands'][number]['id']) => pathname.includes(bandId)
   return (
     <div className="bg-white rounded shadow-md">
@@ -181,7 +182,7 @@ const BandSelectPopup = ({ bands, onSelect }: { bands: MainSidebarProps['bands']
         {bands.map(band => (
           <RemixLink
             key={band.id}
-            to={`/${band.id}`}
+            to={`/${band.id}/${redirectPath}`}
             onClick={onSelect}
             className={`rounded hover:bg-slate-200 ${isSelected(band.id) ? 'bg-slate-100' : ''}`}
           >
