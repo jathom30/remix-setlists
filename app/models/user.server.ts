@@ -74,8 +74,7 @@ export async function verifyLogin(
   }
 
   if (userWithPassword.locked) {
-    await updateUser(userWithPassword.id, { locked: false })
-    await deleteLoginAttempt(userWithPassword.id)
+    throw new Response('Account is locked', { status: 401 })
   }
 
   const { password: _password, ...userWithoutPassword } = userWithPassword;
