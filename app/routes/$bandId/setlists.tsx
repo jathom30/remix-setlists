@@ -2,7 +2,7 @@ import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { CreateNewButton, FlexList, Input, Link, MaxHeightContainer, MaxWidth, MobileModal, RouteHeader, RouteHeaderBackLink, SetlistLink, Title } from "~/components";
+import { CreateNewButton, FlexList, Input, Link, MaxHeightContainer, MaxWidth, MobileModal, RouteHeader, RouteHeaderBackLink, SetlistLink, TextOverflow, Title } from "~/components";
 import { getSetlists } from "~/models/setlist.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
@@ -78,7 +78,7 @@ export default function SetlistsRoute() {
       header={
         <>
           <RouteHeader
-            mobileChildren={<RouteHeaderBackLink label="Setlists" to={`/${bandId}/home`} />}
+            mobileChildren={<TextOverflow className="text-lg font-bold text-white">Setlists</TextOverflow>}
             desktopChildren={<Title>Setlists</Title>}
             desktopAction={!isSub ? <Link to={`/${bandId}/setlist/new`} kind="primary">New setlist</Link> : null}
           />

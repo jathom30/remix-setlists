@@ -2,7 +2,7 @@ import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@rem
 import { json } from "@remix-run/node"
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Avatar, Badge, CatchContainer, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, RouteHeader, RouteHeaderBackLink, Title } from "~/components";
+import { Avatar, Badge, CatchContainer, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, RouteHeader, RouteHeaderBackLink, TextOverflow, Title } from "~/components";
 import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { getUsersById } from "~/models/user.server";
@@ -52,7 +52,7 @@ export default function BandSettingsPage() {
       header={
         <RouteHeader
           mobileChildren={
-            <RouteHeaderBackLink label="Band" to={`/${bandId}/home`} />
+            <TextOverflow className="text-lg font-bold text-white">Band settings</TextOverflow>
           }
           action={isAdmin ? <Link to="edit" kind="invert">Edit</Link> : null}
           desktopChildren={<Title>Band Settings</Title>}

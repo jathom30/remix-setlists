@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, Link as RemixLink } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/server-runtime";
-import { Badge, Button, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, Title } from "~/components";
+import { Badge, Button, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, TextOverflow, Title } from "~/components";
 import { getUserWithBands } from "~/models/user.server";
 
 export async function loader({ request }: LoaderArgs) {
@@ -28,7 +28,7 @@ export default function UserRoute() {
       header={
         <RouteHeader
           mobileChildren={
-            <RouteHeaderBackLink label="User" to={`/${bandId}/home`} />
+            <TextOverflow className="text-lg font-bold text-white">User</TextOverflow>
           }
           desktopChildren={<Title>User settings</Title>}
           action={
