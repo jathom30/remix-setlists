@@ -16,6 +16,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   verified Boolean @default(false)
+  locked   Boolean @default(false)
 
   password Password?
   bands    UsersInBands[]
@@ -31,6 +32,12 @@ model Password {
 model Token {
   hash      String
   userId    String   @unique
+  createdAt DateTime @default(now())
+}
+
+model LoginAttempts {
+  userId    String   @unique
+  attempts  Int
   createdAt DateTime @default(now())
 }
 

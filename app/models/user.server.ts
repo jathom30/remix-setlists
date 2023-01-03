@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import { encrypt } from "~/utils/encryption.server";
+import { deleteLoginAttempt, incrementLoginAttempt } from "./loginAttempts";
 import { createToken, deleteToken, getToken } from "./token.server";
 
 export type { User } from "@prisma/client";
@@ -67,9 +68,12 @@ export async function verifyLogin(
   );
 
   if (!isValid) {
+    // increment login attempt
+    await incrementLoginAttempt(userWithPassword.id)
     return null;
   }
 
+  await deleteLoginAttempt(userWithPassword.id)
   const { password: _password, ...userWithoutPassword } = userWithPassword;
 
   return userWithoutPassword;
@@ -93,6 +97,7 @@ export async function updateUser(userId: User['id'], user: Partial<User>) {
 
 export async function updateUserPassword(userId: User['id'], password: string) {
   const hash = await bcrypt.hash(password, 10);
+  await deleteLoginAttempt(userId)
   return prisma.password.update({
     where: { userId },
     data: {

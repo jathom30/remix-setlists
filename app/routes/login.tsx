@@ -1,13 +1,15 @@
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import { Form, Link, useActionData, useCatch, useSearchParams } from "@remix-run/react";
 import * as React from "react";
-
 import { createUserSession, getUser } from "~/session.server";
 import { generateTokenLink, verifyLogin } from "~/models/user.server";
 import { safeRedirect, validateEmail } from "~/utils";
 import { verifyAccount } from "~/email/verify";
 import { getDomainUrl } from "~/utils/assorted";
+import { CatchContainer, ErrorContainer, FlexList, MaxWidth, Link as CustomLink, ItemBox } from "~/components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserLock } from "@fortawesome/free-solid-svg-icons";
 
 export async function loader({ request }: LoaderArgs) {
   const user = await getUser(request);
@@ -195,4 +197,33 @@ export default function LoginPage() {
       </div>
     </div>
   );
+}
+
+export function CatchBoundary() {
+  const caught = useCatch()
+  if (caught.status === 401) {
+    return (
+      <div className="h-full">
+        <MaxWidth>
+          <FlexList pad={4} items="center">
+            <FontAwesomeIcon icon={faUserLock} size="5x" />
+            <ItemBox>
+              <FlexList>
+                <h1 className="font-bold text-xl text-danger">Your account has been locked</h1>
+                <p>You have exceeded the maximum number of attempts. Your account will remain locked until you reset your password.</p>
+                <CustomLink to="/forgotPassword" kind="secondary">Reset password</CustomLink>
+              </FlexList>
+            </ItemBox>
+          </FlexList>
+        </MaxWidth>
+      </div>
+    )
+  }
+  return <CatchContainer />
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <ErrorContainer error={error} />
+  )
 }

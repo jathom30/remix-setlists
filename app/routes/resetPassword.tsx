@@ -9,6 +9,7 @@ import invariant from "tiny-invariant";
 import { deleteToken } from "~/models/token.server";
 import { useState } from "react";
 import { getPasswordError, passwordStrength } from "~/utils/assorted";
+import { decrypt } from "~/utils/encryption.server";
 
 export async function loader({ request }: LoaderArgs) {
   const url = new URL(request.url)
@@ -23,7 +24,7 @@ export async function loader({ request }: LoaderArgs) {
     return redirect('/join')
   }
 
-  const isMatchingToken = await compareToken(token, id)
+  const isMatchingToken = await compareToken(decrypt(token), id)
 
   if (!isMatchingToken) {
     throw new Response('token does not match', { status: 404 })
