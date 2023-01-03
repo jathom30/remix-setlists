@@ -1,9 +1,9 @@
 import { faPenToSquare, faSignOut, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json } from "@remix-run/node"
-import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, Link as RemixLink } from "@remix-run/react";
+import { Form, Outlet, useLoaderData, useLocation, useNavigate, Link as RemixLink } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/server-runtime";
-import { Badge, Button, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, RouteHeaderBackLink, TextOverflow, Title } from "~/components";
+import { Badge, Button, Divider, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, Navbar, Title } from "~/components";
 import { getUserWithBands } from "~/models/user.server";
 
 export async function loader({ request }: LoaderArgs) {
@@ -19,29 +19,20 @@ const subRoutes = ['details', 'password', 'delete', 'remove']
 
 export default function UserRoute() {
   const { user } = useLoaderData<typeof loader>()
-  const { bandId } = useParams()
   const { pathname } = useLocation()
   const navigate = useNavigate()
   return (
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader
-          mobileChildren={
-            <TextOverflow className="text-lg font-bold text-white">User</TextOverflow>
-          }
-          desktopChildren={<Title>User settings</Title>}
-          action={
+        <Navbar>
+          <FlexHeader>
+            <Title>User</Title>
             <Form action="/logout" method="post">
-              <Button isCollapsing type="submit" icon={faSignOut} kind="invert">Sign out</Button>
+              <Button isCollapsing type="submit" icon={faSignOut}>Sign out</Button>
             </Form>
-          }
-          desktopAction={
-            <Form action="/logout" method="post">
-              <Button type="submit" icon={faSignOut} kind="secondary">Sign out</Button>
-            </Form>
-          }
-        />
+          </FlexHeader>
+        </Navbar>
       }
       footer={
         <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
@@ -69,6 +60,8 @@ export default function UserRoute() {
           </ItemBox>
         </FlexList>
 
+        <Divider />
+
         <FlexList gap={2}>
           <FlexHeader>
             <Label>Security</Label>
@@ -82,12 +75,14 @@ export default function UserRoute() {
           </ItemBox>
         </FlexList>
 
+        <Divider />
+
         <FlexList gap={2}>
           <Label>Associated bands</Label>
-          <ItemBox pad={2}>
-            <FlexList gap={0}>
+          <ItemBox>
+            <FlexList gap={2}>
               {user.bands.map(band => (
-                <RemixLink className="p-2 rounded hover:bg-slate-100" to={`remove/${band.bandId}`} key={band.bandId}>
+                <RemixLink className="btn" to={`remove/${band.bandId}`} key={band.bandId}>
                   <FlexHeader>
                     <FlexList direction="row" items="center">
                       <FontAwesomeIcon icon={faTrash} />
@@ -101,13 +96,15 @@ export default function UserRoute() {
           </ItemBox>
         </FlexList>
 
+        <Divider />
+
         <FlexList gap={2}>
-          <Label>Danger zone</Label>
-          <ItemBox isDanger>
+          <Label isDanger>Danger zone</Label>
+          <ItemBox>
             <FlexList>
               <span className="font-bold">Delete your account</span>
               <p className="text-sm text-text-subdued">Deleting this account is a perminant action and cannot be undone.</p>
-              <Link to="delete" kind="danger">Delete account</Link>
+              <Link to="delete" kind="error">Delete account</Link>
             </FlexList>
           </ItemBox>
         </FlexList>

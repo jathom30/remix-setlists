@@ -1,11 +1,11 @@
-import { faChevronLeft, faGripVertical, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faGripVertical, faPlus, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
 import type { ShouldReloadFunction } from "@remix-run/react";
-import { NavLink, Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams, Link as RemixLink } from "@remix-run/react";
+import { Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MobileModal, RouteHeader, SongDisplay, TextOverflow } from "~/components";
+import { Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MobileModal, Navbar, SaveButtons, SongDisplay } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { CSS } from "@dnd-kit/utilities";
@@ -198,26 +198,20 @@ export default function EditSetlist() {
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader
-          action={<Link to="saveChanges" isSaving={isLoading} icon={faSave}>Save</Link>}
-          desktopAction={<Link to="saveChanges" icon={faSave}>Save</Link>}
-          mobileChildren={
-            <RemixLink to="confirmCancel" className="text-white w-full flex gap-2 items-center">
-              <FontAwesomeIcon icon={faChevronLeft} />
-              <TextOverflow className="text-lg font-bold">{`Editing ${setlist.name}`}</TextOverflow>
-            </RemixLink>
-          }
-          desktopChildren={<Breadcrumbs breadcrumbs={[
-            { label: 'Setlists', to: `/${bandId}/setlists` },
-            { label: setlist.name, to: `/${bandId}/setlist/${setlist.id}` },
-            { label: 'Edit', to: '.' },
-          ]} />}
-        />
+        <Navbar>
+          <FlexHeader>
+            <Breadcrumbs breadcrumbs={[
+              { label: 'Setlists', to: `/${bandId}/setlists` },
+              { label: setlist.name, to: `/${bandId}/setlist/${setlist.id}` },
+              { label: 'Edit', to: '.' },
+            ]} />
+          </FlexHeader>
+        </Navbar>
       }
       footer={
         <>
           <FlexList pad={4}>
-            <Link to="createSet">Create new set</Link>
+            <Link to="saveChanges" kind="primary" isSaving={isLoading} icon={faSave}>Save</Link>
           </FlexList>
           <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
             <Outlet />
@@ -243,18 +237,23 @@ export default function EditSetlist() {
                     <Link to={`${setId}/addSongs`} icon={faPlus} isRounded isCollapsing>Add songs</Link>
                   </FlexHeader>
                 </div>
-                {sets[setId].map(song => {
-                  if (!song.song) { return null }
-                  return (
-                    <SortableItem id={song.songId} key={song.songId} song={song} />
-                  )
-                })}
+                <FlexList gap={2} pad={2}>
+                  {sets[setId].map(song => {
+                    if (!song.song) { return null }
+                    return (
+                      <SortableItem id={song.songId} key={song.songId} song={song} />
+                    )
+                  })}
+                </FlexList>
               </DroppableArea>
             </SortableContext>
           ))}
           <SongOverlay isActive={!!activeId} song={getSong(activeId || '')} />
         </DndContext>
       </fetcher.Form>
+      <FlexList pad={4}>
+        <Link to="createSet">Create new set</Link>
+      </FlexList>
     </MaxHeightContainer>
   )
 }
@@ -263,7 +262,7 @@ const SongOverlay = ({ isActive, song }: { isActive: boolean, song?: SetSong }) 
   return (
     <DragOverlay>
       {(isActive && song) ? (
-        <DraggedSong isOverLay song={song} />
+        <DraggedSong song={song} />
       ) : null}
     </DragOverlay>
   )
@@ -273,7 +272,7 @@ const DroppableArea = ({ id, children }: { id: string; children: ReactNode }) =>
   const { setNodeRef } = useDroppable({ id })
 
   return (
-    <div className="border" ref={setNodeRef}>{children}</div>
+    <div ref={setNodeRef}>{children}</div>
   )
 }
 
@@ -301,20 +300,19 @@ const SortableItem = ({ id, song }: { id: string; song: SetSong }) => {
   )
 }
 
-const DraggedSong = ({ isOverLay = false, isDragging = false, song, listeners }: { isOverLay?: boolean; isDragging?: boolean; song: SetSong; listeners?: SyntheticListenerMap }) => {
+const DraggedSong = ({ isDragging = false, song, listeners }: { isDragging?: boolean; song: SetSong; listeners?: SyntheticListenerMap }) => {
   return (
-    <div className={`relative pl-4 ${isOverLay ? 'bg-white' : ''} ${isDragging ? 'opacity-5' : ''}`}>
-      <FlexList gap={0} direction="row" items="center">
-        <div className={`cursor-grab p-2 rounded ${isDragging ? 'bg-slate-200' : ''} hover:bg-slate-200`} {...listeners}>
+    <div className={`relative overflow-hidden rounded bg-base-200 ${isDragging ? 'bg-base-300' : ''}`}>
+      <FlexList pad={2} direction="row" items="center">
+        <div className={`btn btn-circle btn-sm cursor-grab hover:bg-base-200`} {...listeners}>
           <FontAwesomeIcon icon={faGripVertical} />
         </div>
-        <div className="flex items-center justify-between w-full pr-4">
-          {song.song ? <SongDisplay song={song.song} /> : null}
-          <NavLink to={`${song.setId}/removeSong/${song.songId}`}>
-            <FontAwesomeIcon icon={faTrash} />
-          </NavLink>
-        </div>
+        {song.song ? <SongDisplay song={song.song} /> : null}
+        <Link kind="error" size="sm" isRounded to={`${song.setId}/removeSong/${song.songId}`}>
+          <FontAwesomeIcon icon={faTrash} />
+        </Link>
       </FlexList>
+      {isDragging ? <div className="absolute inset-0 bg-base-300" /> : null}
     </div>
   )
 }

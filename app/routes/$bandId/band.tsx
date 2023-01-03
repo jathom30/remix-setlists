@@ -1,13 +1,13 @@
-import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
+import { Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
 import { json } from "@remix-run/node"
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Avatar, Badge, CatchContainer, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, RouteHeader, RouteHeaderBackLink, TextOverflow, Title } from "~/components";
+import { Avatar, Badge, CatchContainer, Divider, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, Title } from "~/components";
 import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { getUsersById } from "~/models/user.server";
 import { RoleEnum } from "~/utils/enums";
-import { faEdit, faPencil, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useMemberRole } from "~/utils";
 import { getFeels } from "~/models/feel.server";
 import pluralize from "pluralize";
@@ -40,7 +40,6 @@ export default function BandSettingsPage() {
   const memberRole = useMemberRole()
   const isAdmin = memberRole === RoleEnum.ADMIN
   const isSub = memberRole === RoleEnum.SUB
-  const { bandId } = useParams()
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
@@ -50,14 +49,14 @@ export default function BandSettingsPage() {
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader
-          mobileChildren={
-            <TextOverflow className="text-lg font-bold text-white">Band settings</TextOverflow>
-          }
-          action={isAdmin ? <Link to="edit" kind="invert">Edit</Link> : null}
-          desktopChildren={<Title>Band Settings</Title>}
-          desktopAction={isAdmin ? <Link to="edit" kind="secondary">Edit</Link> : null}
-        />
+        <Navbar>
+          <FlexHeader>
+            <Title>Band settings</Title>
+            {isAdmin ? (
+              <Link to="edit">Edit</Link>
+            ) : null}
+          </FlexHeader>
+        </Navbar>
       }
       footer={
         <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
@@ -71,16 +70,20 @@ export default function BandSettingsPage() {
             <h1 className="text-3xl font-bold">{band.name}</h1>
             <Avatar bandName={band.name || ''} icon={band.icon} size="lg" />
           </FlexHeader>
-          <FlexHeader>
-            <FlexList gap={0}>
-              <Label>Created on</Label>
-              <span className="text-sm">{new Date(band.createdAt || '').toDateString()}</span>
-            </FlexList>
-            <FlexList gap={0}>
-              <Label>Last updated</Label>
-              <span className="text-sm">{new Date(band.updatedAt || '').toDateString()}</span>
-            </FlexList>
-          </FlexHeader>
+          <ItemBox>
+            <FlexHeader>
+              <FlexList gap={0}>
+                <Label>Created on</Label>
+                <span className="text-sm">{new Date(band.createdAt || '').toDateString()}</span>
+              </FlexList>
+              <FlexList gap={0}>
+                <Label>Last updated</Label>
+                <span className="text-sm">{new Date(band.updatedAt || '').toDateString()}</span>
+              </FlexList>
+            </FlexHeader>
+          </ItemBox>
+
+          <Divider />
 
           <FlexList gap={2}>
             <Label>Members</Label>
@@ -92,21 +95,20 @@ export default function BandSettingsPage() {
                       <span className="font-bold">{member.name}</span>
                       <Badge>{member.role}</Badge>
                     </FlexList>
-                    {!isSub ? <Link to={member.id} kind="secondary"><FontAwesomeIcon icon={faEdit} /></Link> : null}
+                    {!isSub ? <Link to={member.id}><FontAwesomeIcon icon={faEdit} /></Link> : null}
                   </FlexHeader>
                 ))}
                 {isAdmin ? (
-                  <Link to="newMember">Add new member</Link>
+                  <Link to="newMember" kind="accent">Add new member</Link>
                 ) : null}
               </FlexList>
             </ItemBox>
           </FlexList>
 
+          <Divider />
+
           <FlexList gap={2}>
-            <FlexHeader>
-              <Label>Feels</Label>
-              {!isSub ? <Link to="feel/new" isRounded><FontAwesomeIcon icon={faPlus} /></Link> : null}
-            </FlexHeader>
+            <Label>Feels</Label>
             <ItemBox>
               <FlexList>
                 {feels.length === 0 ? (
@@ -114,31 +116,33 @@ export default function BandSettingsPage() {
                 ) : null}
                 {feels.map(feel => (
                   <FlexHeader key={feel.id}>
-                    <FlexList direction="row" gap={2}>
-                      {!isSub ? <Link to={`feel/${feel.id}/edit`} kind="text" isRounded><FontAwesomeIcon icon={faPencil} /></Link> : null}
+                    <FlexList direction="row" items="center" gap={2}>
+                      {!isSub ? <Link to={`feel/${feel.id}/edit`} kind="ghost" isRounded><FontAwesomeIcon icon={faPencil} /></Link> : null}
                       <FeelTag feel={feel} />
                     </FlexList>
                     <FlexList direction="row" items="center">
                       <Label>Found in {pluralize('song', feel.songs.length, true)}</Label>
-                      {!isSub ? <Link to={`feel/${feel.id}/delete`} kind="danger" icon={faTrash} isCollapsing isRounded>Delete</Link> : null}
+                      {!isSub ? <Link to={`feel/${feel.id}/delete`} kind="error" icon={faTrash} isCollapsing isRounded>Delete</Link> : null}
                     </FlexList>
                   </FlexHeader>
                 ))}
-
+                {!isSub ? <Link to="feel/new" kind="accent">Add new feel</Link> : null}
               </FlexList>
             </ItemBox>
           </FlexList>
 
+          <Divider />
+
           {isAdmin ? (
             <FlexList gap={2}>
-              <Label>Danger Zone</Label>
-              <ItemBox isDanger>
+              <Label isDanger>Danger Zone</Label>
+              <ItemBox>
                 <FlexList>
                   <FlexList>
                     <span className="font-bold">Delete this band</span>
                     <p className="text-sm text-text-subdued">Deleting this band will perminantly remove all setlists and songs</p>
                   </FlexList>
-                  <Link to="delete" kind="danger" icon={faTrash}>Delete</Link>
+                  <Link to="delete" kind="error" icon={faTrash}>Delete</Link>
                 </FlexList>
               </ItemBox>
             </FlexList>

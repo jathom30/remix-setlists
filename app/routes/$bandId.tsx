@@ -53,7 +53,7 @@ export default function BandRoute() {
   return (
     <MaxHeightContainer
       footer={
-        <div className="bg-slate-400 sm:hidden">
+        <div className="bg-neutral text-neutral-content sm:hidden">
           <FlexList pad={0} direction="row" items="center" justify="between">
             {routes.map(route => (
               <MainFooterLink key={route.label} icon={route.icon} label={route.label} to={route.to} />

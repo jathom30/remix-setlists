@@ -3,12 +3,11 @@ import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@rem
 import { json } from '@remix-run/node'
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Breadcrumbs, CatchContainer, ErrorContainer, FeelTag, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, RouteHeader, RouteHeaderBackLink, TempoIcons } from "~/components";
+import { Breadcrumbs, CatchContainer, Divider, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, RouteHeader, RouteHeaderBackLink, TempoIcons, Title } from "~/components";
 import { getSong } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import pluralize from 'pluralize'
 import { RoleEnum, setlistAutoGenImportanceEnums } from "~/utils/enums";
-import { useState } from "react";
 import { useMemberRole } from "~/utils";
 
 export async function loader({ request, params }: LoaderArgs) {
@@ -28,28 +27,24 @@ export default function SongDetails() {
   const { song } = useLoaderData<typeof loader>()
   const memberRole = useMemberRole()
   const isSub = memberRole === RoleEnum.SUB
-  const { pathname, state } = useLocation()
+  const { pathname } = useLocation()
   const { bandId } = useParams()
-  const [to] = useState<string>(state as string)
   const navigate = useNavigate()
 
   return (
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader
-          mobileChildren={<RouteHeaderBackLink label={song.name} to={to} />}
-          desktopChildren={<Breadcrumbs breadcrumbs={[
-            { label: 'Songs', to: `/${bandId}/songs` },
-            { label: song.name, to: '.' },
-          ]} />}
-          action={
-            !isSub ? <Link to="edit" kind="invert" icon={faPenToSquare} isRounded isCollapsing>Edit song</Link> : null
-          }
-          desktopAction={
-            !isSub ? <Link to="edit" icon={faPenToSquare} isRounded isCollapsing>Edit song</Link> : null
-          }
-        />
+        <Navbar>
+          <FlexHeader>
+            <Breadcrumbs breadcrumbs={[
+              { label: 'Songs', to: `/${bandId}/songs` },
+              { label: song.name, to: '.' },
+            ]}
+            />
+            {!isSub ? <Link to="edit" icon={faPenToSquare} isRounded isCollapsing>Edit song</Link> : null}
+          </FlexHeader>
+        </Navbar>
       }
       footer={
         <MobileModal open={['edit', 'delete'].some(path => pathname.includes(path))} onClose={() => navigate('.')}>
@@ -104,20 +99,24 @@ export default function SongDetails() {
             </ItemBox>
           </FlexList>
 
-          {
-            song.note ? (
+          <Divider />
+
+          <FlexList gap={2}>
+            <Label>Notes</Label>
+            <ItemBox>
               <FlexList gap={2}>
-                <Label>Notes</Label>
-                <ItemBox>
-                  <FlexList gap={2}>
-                    {song.note.split('\n').map((section, i) => (
-                      <p key={i}>{section}</p>
-                    ))}
-                  </FlexList>
-                </ItemBox>
+                {!song.note ? (
+                  <span className="text-sm">N/A</span>
+                ) : (
+                  song.note?.split('\n').map((section, i) => (
+                    <p key={i}>{section}</p>
+                  ))
+                )}
               </FlexList>
-            ) : null
-          }
+            </ItemBox>
+          </FlexList>
+
+          <Divider />
 
           <FlexList gap={2}>
             <Label>Settings</Label>
@@ -129,16 +128,18 @@ export default function SongDetails() {
             </ItemBox>
           </FlexList>
 
+          <Divider />
+
           {!isSub ? (
             <FlexList gap={2}>
-              <Label>Danger zone</Label>
-              <ItemBox isDanger>
+              <Label isDanger>Danger zone</Label>
+              <ItemBox>
                 <FlexList>
-                  <FlexList gap={0}>
-                    <span>Delete this song</span>
+                  <FlexList>
+                    <span className="font-bold">Delete this song</span>
                     <p className="text-sm text-text-subdued">Once you delete this song, it will be removed from this band and any setlists it was used in.</p>
                   </FlexList>
-                  <Link to="delete" kind="danger" type="submit" icon={faTrash}>Delete</Link>
+                  <Link to="delete" kind="error" type="submit" icon={faTrash}>Delete</Link>
                 </FlexList>
               </ItemBox>
             </FlexList>

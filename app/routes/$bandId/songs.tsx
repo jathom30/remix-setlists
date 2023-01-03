@@ -3,9 +3,9 @@ import { json } from "@remix-run/node"
 import invariant from "tiny-invariant";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
-import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
-import { CatchContainer, CreateNewButton, ErrorContainer, FlexList, Input, Link, MaxHeightContainer, MaxWidth, MobileModal, RouteHeader, RouteHeaderBackLink, SongLink, TextOverflow, Title } from "~/components";
-import { faBoxOpen, faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
+import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams } from "@remix-run/react";
+import { CatchContainer, CreateNewButton, ErrorContainer, FlexHeader, FlexList, Input, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SongLink, Title } from "~/components";
+import { faBoxOpen, faFilter, faMagnifyingGlass, faSort } from "@fortawesome/free-solid-svg-icons";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -44,7 +44,6 @@ const subRoutes = ['sortBy', 'filters']
 
 export default function SongsList() {
   const { songs } = useLoaderData<typeof loader>()
-  const submit = useSubmit()
   const memberRole = useMemberRole()
   const isSub = memberRole === RoleEnum.SUB
   const [params] = useSearchParams()
@@ -82,34 +81,16 @@ export default function SongsList() {
     <MaxHeightContainer
       fullHeight
       header={
-        <>
-          <RouteHeader
-            mobileChildren={
-              <TextOverflow className="text-lg font-bold text-white">Songs</TextOverflow>
-            }
-            desktopChildren={<Title>Songs</Title>}
-            desktopAction={!isSub ? <Link to={`/${bandId}/song/new`} kind="primary">New song</Link> : null}
-          />
-          <div className="border-b border-slate-300 w-full">
-            <FlexList pad={4} gap={4}>
-              <Form method="get" onChange={e => submit(e.currentTarget)}>
-                <Input name="query" placeholder="Search..." defaultValue={query || ''} />
-              </Form>
-              <FlexList direction="row" items="center" justify="end" gap={2}>
-                <Link to={{ pathname: 'sortBy', search: params.toString() }} kind="secondary" icon={faSort}>
-                  <FlexList direction="row" gap={2}>
-                    <span>Sort by:</span>
-                    <span>{sortByLabel()}</span>
-                  </FlexList>
-                </Link>
-                <div className="relative">
-                  <Link to={{ pathname: 'filters', search: params.toString() }} kind="secondary" icon={faFilter}>Filters</Link>
-                  {hasParams ? <div className="w-2 h-2 top-1 right-1 bg-red-600 rounded-full absolute" /> : null}
-                </div>
-              </FlexList>
-            </FlexList>
-          </div>
-        </>
+        <Navbar>
+          <FlexHeader>
+            <Title>Songs</Title>
+            {!isSub ? (
+              <div className="hidden sm:block">
+                <Link to={`/${bandId}/song/new`} kind="primary">New song</Link>
+              </div>
+            ) : null}
+          </FlexHeader>
+        </Navbar>
       }
       footer={
         <>
@@ -124,23 +105,49 @@ export default function SongsList() {
       }
     >
       <MaxWidth>
-        <FlexList height="full">
-          {hasSongs ? (
-            <div className="flex flex-col sm:gap-2 sm:p-2">
-              {songs.map(song => (
-                <div key={song.id} className="sm:rounded sm:overflow-hidden sm:shadow">
-                  <SongLink song={song} />
+        <MaxHeightContainer
+          fullHeight
+          header={
+            <FlexList pad={4} gap={4}>
+              <Form method="get">
+                <div className="input-group">
+                  <Input name="query" placeholder="Search..." defaultValue={query || ''} />
+                  <button type="submit" className="btn btn-square">
+                    <FontAwesomeIcon icon={faMagnifyingGlass} />
+                  </button>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <FlexList pad={4}>
-              <FontAwesomeIcon icon={faBoxOpen} size="3x" />
-              <p className="text-center">Looks like this band doesn't have any songs yet.</p>
-              <Link to={`/${bandId}/song/new`} kind="primary">Create your first song</Link>
+              </Form>
+              <FlexList direction="row" items="center" justify="end" gap={2}>
+                <Link to={{ pathname: 'sortBy', search: params.toString() }} kind="secondary" icon={faSort}>
+                  <FlexList direction="row" gap={2}>
+                    <span>Sort by:</span>
+                    <span>{sortByLabel()}</span>
+                  </FlexList>
+                </Link>
+                <div className="indicator">
+                  {hasParams ? <div className="indicator-item badge badge-secondary" /> : null}
+                  <Link to={{ pathname: 'filters', search: params.toString() }} kind="secondary" icon={faFilter}>Filters</Link>
+                </div>
+              </FlexList>
             </FlexList>
-          )}
-        </FlexList>
+          }
+        >
+          <FlexList height="full">
+            {hasSongs ? (
+              <FlexList pad={4} gap={2}>
+                {songs.map(song => (
+                  <SongLink key={song.id} song={song} />
+                ))}
+              </FlexList>
+            ) : (
+              <FlexList pad={4}>
+                <FontAwesomeIcon icon={faBoxOpen} size="3x" />
+                <p className="text-center">Looks like this band doesn't have any songs yet.</p>
+                <Link to={`/${bandId}/song/new`} kind="primary">Create your first song</Link>
+              </FlexList>
+            )}
+          </FlexList>
+        </MaxHeightContainer>
       </MaxWidth>
     </MaxHeightContainer>
   )

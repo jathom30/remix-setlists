@@ -2,7 +2,7 @@ import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { CreateNewButton, FlexList, Input, Link, MaxHeightContainer, MaxWidth, MobileModal, RouteHeader, RouteHeaderBackLink, SetlistLink, TextOverflow, Title } from "~/components";
+import { CreateNewButton, FlexHeader, FlexList, Input, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SetlistLink, Title } from "~/components";
 import { getSetlists } from "~/models/setlist.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
@@ -76,28 +76,16 @@ export default function SetlistsRoute() {
     <MaxHeightContainer
       fullHeight
       header={
-        <>
-          <RouteHeader
-            mobileChildren={<TextOverflow className="text-lg font-bold text-white">Setlists</TextOverflow>}
-            desktopChildren={<Title>Setlists</Title>}
-            desktopAction={!isSub ? <Link to={`/${bandId}/setlist/new`} kind="primary">New setlist</Link> : null}
-          />
-          <div className="border-b border-slate-300 w-full">
-            <FlexList pad={4} gap={4}>
-              <Form method="get" onChange={e => submit(e.currentTarget)}>
-                <Input name="query" placeholder="Search..." defaultValue={query || ''} />
-              </Form>
-              <FlexList direction="row" items="center" justify="end" gap={2}>
-                <Link to={{ pathname: 'sortBy', search: params.toString() }} kind="secondary" icon={faSort}>
-                  <FlexList direction="row" gap={2}>
-                    <span>Sort by:</span>
-                    <span>{sortByLabel()}</span>
-                  </FlexList>
-                </Link>
-              </FlexList>
-            </FlexList>
-          </div>
-        </>
+        <Navbar>
+          <FlexHeader>
+            <Title>Setlists</Title>
+            {!isSub ? (
+              <div className="hidden sm:block">
+                <Link to={`/${bandId}/setlist/new`} kind="primary">New setlist</Link>
+              </div>
+            ) : null}
+          </FlexHeader>
+        </Navbar>
       }
       footer={
         <>
@@ -112,23 +100,40 @@ export default function SetlistsRoute() {
       }
     >
       <MaxWidth>
-        <FlexList height="full">
-          {hasSetlists ? (
-            <div className="flex flex-col sm:gap-2 sm:p-2">
-              {setlists.map(setlist => (
-                <div key={setlist.id} className="sm:rounded sm:overflow-hidden sm:shadow">
-                  <SetlistLink setlist={setlist} />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <FlexList pad={4}>
-              <FontAwesomeIcon icon={faBoxOpen} size="3x" />
-              <p className="text-center">Looks like this band doesn't have any setlists yet.</p>
-              <Link to={`/${bandId}/setlist/new`} kind="primary">Create your first setlist</Link>
+        <MaxHeightContainer
+          fullHeight
+          header={
+            <FlexList pad={4} gap={4}>
+              <Form method="get" onChange={e => submit(e.currentTarget)}>
+                <Input name="query" placeholder="Search..." defaultValue={query || ''} />
+              </Form>
+              <FlexList direction="row" items="center" justify="end" gap={2}>
+                <Link to={{ pathname: 'sortBy', search: params.toString() }} kind="secondary" icon={faSort}>
+                  <FlexList direction="row" gap={2}>
+                    <span>Sort by:</span>
+                    <span>{sortByLabel()}</span>
+                  </FlexList>
+                </Link>
+              </FlexList>
             </FlexList>
-          )}
-        </FlexList>
+          }
+        >
+          <FlexList height="full">
+            {hasSetlists ? (
+              <FlexList pad={4} gap={2}>
+                {setlists.map(setlist => (
+                  <SetlistLink key={setlist.id} setlist={setlist} />
+                ))}
+              </FlexList>
+            ) : (
+              <FlexList pad={4}>
+                <FontAwesomeIcon icon={faBoxOpen} size="3x" />
+                <p className="text-center">Looks like this band doesn't have any setlists yet.</p>
+                <Link to={`/${bandId}/setlist/new`} kind="primary">Create your first setlist</Link>
+              </FlexList>
+            )}
+          </FlexList>
+        </MaxHeightContainer>
       </MaxWidth>
     </MaxHeightContainer>
   )

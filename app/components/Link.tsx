@@ -1,22 +1,20 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link as RemixLink } from "@remix-run/react";
 import type { RemixLinkProps } from "@remix-run/react/dist/components";
-import { additionalStyles, defaultButtonStyles } from "~/styleUtils";
+import { buttonKind, buttonSize } from "~/utils/buttonStyles";
 import type { ButtonProps } from "./Button";
-import { Loader } from "./Loader";
 
 export function Link(props: ButtonProps & RemixLinkProps) {
-  const { to, prefetch, children, icon, isSaving, isCollapsing, isDisabled = false, kind = 'default', isRounded, className, ...rest } = props
+  const { to, prefetch, children, icon, isSaving, size, isCollapsing, isDisabled = false, kind, isRounded, className, ...rest } = props
 
   return (
     <RemixLink
       {...rest}
       to={to}
       prefetch={prefetch}
-      className={`${defaultButtonStyles} ${additionalStyles({ isDisabled, kind })} ${isRounded ? 'rounded-full' : ''} ${className}`}
+      className={`btn ${buttonKind(kind)} ${buttonSize(size)} ${icon ? 'gap-2' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isSaving ? 'loading' : ''} ${isRounded ? 'btn-circle' : ''}`}
     >
       {icon && !isSaving ? <FontAwesomeIcon icon={icon} /> : null}
-      {isSaving ? <Loader /> : null}
       <div className={`${isCollapsing ? 'hidden md:block' : ''}`}>{children}</div>
     </RemixLink>
   )

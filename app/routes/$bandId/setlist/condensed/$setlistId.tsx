@@ -1,7 +1,7 @@
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
-import { Breadcrumbs, CatchContainer, ErrorContainer, FlexList, Label, MaxHeightContainer, RouteHeader, RouteHeaderBackLink } from "~/components";
+import { Breadcrumbs, CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, Label, MaxHeightContainer, Navbar } from "~/components";
 import { getCondensedSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { useLoaderData, useParams } from "@remix-run/react";
@@ -33,9 +33,8 @@ export default function CondensedSetlist() {
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader
-          mobileChildren={<RouteHeaderBackLink label="Condensed" />}
-          desktopChildren={
+        <Navbar>
+          <FlexHeader>
             <Breadcrumbs
               breadcrumbs={[
                 { label: 'Setlists', to: `/${bandId}/setlists` },
@@ -43,18 +42,19 @@ export default function CondensedSetlist() {
                 { label: 'Condensed', to: '.' },
               ]}
             />
-          }
-        />
+          </FlexHeader>
+        </Navbar>
       }
     >
       <FlexList pad={4} gap={0}>
         {setlist.sets.map((set, i) => (
-          <div key={set.id} className="border-b border-slate-300 pb-2">
+          <div key={set.id}>
             <Label>Set {i + 1} - {pluralize('minues', getSetLength(set), true)}</Label>
             <FlexList gap={0}>
               {set.songs.map(song => (
                 <span key={song.songId}>{song.song?.name}</span>
               ))}
+              <Divider />
             </FlexList>
           </div>
         ))}

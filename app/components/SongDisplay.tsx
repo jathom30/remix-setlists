@@ -8,7 +8,7 @@ export const SongDisplay = ({ song }: { song: SerializeFrom<Song> }) => {
   const songKey = song.keyLetter ? `${song.keyLetter} ${song.isMinor ? 'Minor' : 'Major'}` : '--'
   return (
     <div className="w-full">
-      <FlexList pad={{ x: 4, y: 2 }} gap={0}>
+      <FlexList gap={0}>
         <TextOverflow className="font-bold">{song.name}</TextOverflow>
         <FlexList direction="row" justify="between" gap={2} wrap>
           <FlexList direction="row" gap={2} items="center">
