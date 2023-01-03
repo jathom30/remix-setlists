@@ -6,7 +6,7 @@ import { Button, CatchContainer, ErrorContainer, ErrorMessage, FlexList, Input }
 import { deleteBand, getBandName } from "~/models/band.server";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import type { ChangeEvent } from "react";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { getFields } from "~/utils/form";
 import { requireAdminMember } from "~/session.server";
 

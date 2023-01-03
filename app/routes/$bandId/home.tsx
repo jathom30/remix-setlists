@@ -1,6 +1,6 @@
 import type { LoaderArgs } from "@remix-run/server-runtime"
 import { json } from "@remix-run/node"
-import { MaxHeightContainer, FlexList, Avatar, Badge, Link, MobileModal, RouteHeader, RouteHeaderBackLink, Title, CreateNewButton, TextOverflow } from "~/components"
+import { MaxHeightContainer, FlexList, Avatar, Badge, Link, MobileModal, RouteHeader, Title, CreateNewButton, TextOverflow } from "~/components"
 import { getBands } from "~/models/band.server"
 import { requireUserId } from "~/session.server"
 import { useLoaderData, NavLink, useLocation, useNavigate, Outlet, useParams } from "@remix-run/react"
