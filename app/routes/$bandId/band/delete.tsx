@@ -36,7 +36,7 @@ export async function action({ request, params }: ActionArgs) {
   }
 
   await deleteBand(bandId)
-  return redirect('/bandSelect')
+  return redirect('/home')
 }
 
 export default function DeleteBand() {

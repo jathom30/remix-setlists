@@ -1,11 +1,11 @@
-import type { LoaderArgs } from "@remix-run/server-runtime"
-import { json } from "@remix-run/node"
-import { MaxHeightContainer, FlexList, Avatar, Badge, Link, MobileModal, RouteHeader, RouteHeaderBackLink, Title, CreateNewButton, TextOverflow } from "~/components"
-import { getBands } from "~/models/band.server"
-import { requireUserId } from "~/session.server"
-import { useLoaderData, NavLink, useLocation, useNavigate, Outlet, useParams } from "@remix-run/react"
-import { faBoxOpen } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faBoxOpen, faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { LoaderArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { Form, NavLink, Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
+import { Avatar, Badge, Button, CreateNewButton, FlexList, Link, MaxHeightContainer, MobileModal, RouteHeader, Title } from "~/components";
+import { getBands } from "~/models/band.server";
+import { requireUserId } from "~/session.server";
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await requireUserId(request)
@@ -19,7 +19,7 @@ export async function loader({ request }: LoaderArgs) {
 
 const subRoutes = ['new', 'existing', 'menu', 'user']
 
-export default function Select() {
+export default function Home() {
   const { bands } = useLoaderData<typeof loader>()
   const { pathname } = useLocation()
   const navigate = useNavigate()
@@ -32,13 +32,17 @@ export default function Select() {
       fullHeight
       header={
         <RouteHeader
-          mobileChildren={
-            <TextOverflow className="text-lg font-bold text-white">Band Select</TextOverflow>
+          mobileChildren={<Title>Welcome</Title>}
+          desktopChildren={<Title>Welcome</Title>}
+          action={
+            <Form action="/logout" method="post">
+              <Button isCollapsing type="submit" icon={faSignOut} kind="invert">Sign out</Button>
+            </Form>
           }
-          desktopChildren={<Title>Bands</Title>}
           desktopAction={<Link to="menu" kind="primary">Add band</Link>}
         />
       }
+
       footer={
         <>
           <CreateNewButton to="menu" />

@@ -20,7 +20,7 @@ export async function action({ request }: ActionArgs) {
   }
 
   const band = await updateBandByCode(fields.bandCode, userId)
-  return redirect(`/${band.id}/home`)
+  return redirect(`/${band.id}/setlists`)
 }
 
 export default function ExisitingBand() {
@@ -35,7 +35,7 @@ export default function ExisitingBand() {
       </FlexList>
       <SaveButtons
         saveLabel="Add me to this band"
-        cancelTo="/bandSelect"
+        cancelTo=".."
       />
     </Form>
   )

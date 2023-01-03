@@ -38,7 +38,7 @@ export async function action({ request, params }: ActionArgs) {
   if (bandId !== removeId) {
     return redirect(`/${bandId}/user`)
   }
-  return redirect(`/bandSelect`)
+  return redirect(`/home`)
 }
 
 export default function RemoveSelfFromBand() {
