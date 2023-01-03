@@ -14,7 +14,7 @@ import { faUserLock } from "@fortawesome/free-solid-svg-icons";
 export async function loader({ request }: LoaderArgs) {
   const user = await getUser(request);
 
-  if (user?.verified) return redirect("/bandSelect");
+  if (user?.verified) return redirect("/home");
   return json({});
 }
 
@@ -22,7 +22,7 @@ export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/bandSelect");
+  const redirectTo = safeRedirect(formData.get("redirectTo"), "/home");
   const remember = formData.get("remember");
 
   if (!validateEmail(email)) {
@@ -78,7 +78,7 @@ export const meta: MetaFunction = () => {
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/bandSelect";
+  const redirectTo = searchParams.get("redirectTo") || "/home";
   const actionData = useActionData<typeof action>();
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);

@@ -120,7 +120,7 @@ export async function createUserSession({
 
 export async function logout(request: Request) {
   const session = await getSession(request);
-  return redirect("/bandSelect", {
+  return redirect("/home", {
     headers: {
       "Set-Cookie": await sessionStorage.destroySession(session),
     },

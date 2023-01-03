@@ -1,4 +1,4 @@
-import { faHome, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { faCheck, faListOl, faMusic, faPlus, faSignOut, faSort, faUser, faUsers } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import type { BandIcon } from "@prisma/client"
@@ -142,7 +142,6 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
         >
           <div className="flex flex-col h-full p-2 gap-4 justify-between">
             <FlexList gap={2}>
-              <SideBarLink to="home" isOpen={isOpen} label="Home" icon={faHome} />
               <SideBarLink to="setlists" isOpen={isOpen} label="Setlists" icon={faListOl} />
               <SideBarLink to="songs" isOpen={isOpen} label="Songs" icon={faMusic} />
             </FlexList>

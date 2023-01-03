@@ -84,15 +84,6 @@ export async function deleteSetlist(setlistId: Setlist['id']) {
   })
 }
 
-export async function getRecentSetlists(bandId: Band['id']) {
-  return prisma.setlist.findMany({
-    where: { bandId },
-    orderBy: { updatedAt: 'desc' },
-    include: { sets: { select: { songs: { include: { song: { select: { length: true } } } } } } },
-    take: 5,
-  })
-}
-
 export async function createSetlistAuto(bandId: Band['id'], settings: SetlistSettings) {
   const { filters, setCount, setLength } = settings
   const { noBallads, noCovers, onlyCovers } = filters

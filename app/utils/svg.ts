@@ -1,5 +1,5 @@
 import type { Feel, Song } from "@prisma/client"
-import { SerializeFrom } from "@remix-run/server-runtime"
+import type { SerializeFrom } from "@remix-run/node"
 
 const getY = (tempo: number) => {
   // scale is based on 13 high svg

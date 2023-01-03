@@ -88,7 +88,7 @@ export default function SongsList() {
               <RouteHeaderBackLink label="Songs" to={`/${bandId}/home`} />
             }
             desktopChildren={<Title>Songs</Title>}
-            desktopAction={<Link to={`/${bandId}/song/new`} kind="primary">New song</Link>}
+            desktopAction={!isSub ? <Link to={`/${bandId}/song/new`} kind="primary">New song</Link> : null}
           />
           <div className="border-b border-slate-300 w-full">
             <FlexList pad={4} gap={4}>

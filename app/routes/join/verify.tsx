@@ -39,7 +39,7 @@ export async function action({ request }: ActionArgs) {
   const urlSearchParams = url.searchParams
   const token = urlSearchParams.get('token')
   const id = urlSearchParams.get('id')
-  const redirectTo = safeRedirect(urlSearchParams.get("redirectTo"), "/bandSelect");
+  const redirectTo = safeRedirect(urlSearchParams.get("redirectTo"), "/home");
   invariant(id, 'User id not found')
   invariant(token, 'Token not found')
   const user = await getUserById(id)
