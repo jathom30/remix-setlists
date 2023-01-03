@@ -73,8 +73,11 @@ export async function verifyLogin(
     return null;
   }
 
-  await updateUser(userWithPassword.id, { locked: false })
-  await deleteLoginAttempt(userWithPassword.id)
+  if (userWithPassword.locked) {
+    await updateUser(userWithPassword.id, { locked: false })
+    await deleteLoginAttempt(userWithPassword.id)
+  }
+
   const { password: _password, ...userWithoutPassword } = userWithPassword;
 
   return userWithoutPassword;

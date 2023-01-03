@@ -4,7 +4,7 @@ import { Form, useActionData, useLoaderData, Link as RemixLink, useTransition } 
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
 import { Button, ErrorMessage, Field, FlexList, Input, ItemBox, Link, PasswordStrength } from "~/components";
-import { compareToken, getUserById, updateUserPassword } from "~/models/user.server";
+import { compareToken, getUserById, updateUser, updateUserPassword } from "~/models/user.server";
 import invariant from "tiny-invariant";
 import { deleteToken } from "~/models/token.server";
 import { useState } from "react";
@@ -67,6 +67,7 @@ export async function action({ request }: ActionArgs) {
 
   await updateUserPassword(user.id, password)
   await deleteToken(user.id)
+  await updateUser(user.id, { locked: false })
   return redirect('/login')
 }
 
