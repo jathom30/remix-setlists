@@ -114,11 +114,3 @@ export async function getSongsNotInSetlist(bandId: Band['id'], setlistId: Setlis
     }
   })
 }
-
-export async function getRecentSongs(bandId: Band['id']) {
-  return prisma.song.findMany({
-    where: { bandId },
-    orderBy: { updatedAt: 'desc' },
-    take: 5,
-  })
-}
