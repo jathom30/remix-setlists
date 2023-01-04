@@ -32,7 +32,7 @@ export const links: LinksFunction = () => {
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
   title: "Setlists App",
-  viewport: "width=device-width,initial-scale=1",
+  viewport: "width=device-width,initial-scale=1, viewport-fit=cover",
 });
 
 export async function loader({ request }: LoaderArgs) {
@@ -47,7 +47,7 @@ export default function App() {
     // 👆 false parameter is required for react project
   }, [])
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full bg-base-200">
       <head>
         <Meta />
         <Links />

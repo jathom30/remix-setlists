@@ -42,7 +42,7 @@ export default function SongDetails() {
               { label: song.name, to: '.' },
             ]}
             />
-            {!isSub ? <Link to="edit" icon={faPenToSquare} isRounded isCollapsing>Edit song</Link> : null}
+            {!isSub ? <Link to="edit" icon={faPenToSquare} isCollapsing>Edit song</Link> : null}
           </FlexHeader>
         </Navbar>
       }

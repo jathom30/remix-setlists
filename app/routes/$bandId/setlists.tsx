@@ -1,13 +1,13 @@
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
-import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
+import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { CreateNewButton, FlexHeader, FlexList, Input, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SetlistLink, Title } from "~/components";
 import { getSetlists } from "~/models/setlist.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBoxOpen, faSort } from "@fortawesome/free-solid-svg-icons";
+import { faBoxOpen, faMagnifyingGlass, faSort } from "@fortawesome/free-solid-svg-icons";
 import { getSortFromParam } from "~/utils/params";
 import { capitalizeFirstLetter } from "~/utils/assorted";
 import { requireUserId } from "~/session.server";
@@ -44,7 +44,6 @@ export default function SetlistsRoute() {
   const [params] = useSearchParams()
   const { bandId } = useParams()
   const query = params.get('query')
-  const submit = useSubmit()
   const { pathname, search } = useLocation()
   const navigate = useNavigate()
 
@@ -104,8 +103,13 @@ export default function SetlistsRoute() {
           fullHeight
           header={
             <FlexList pad={4} gap={4}>
-              <Form method="get" onChange={e => submit(e.currentTarget)}>
-                <Input name="query" placeholder="Search..." defaultValue={query || ''} />
+              <Form method="get">
+                <div className="input-group">
+                  <Input name="query" placeholder="Search..." defaultValue={query || ''} />
+                  <button type="submit" className="btn btn-square">
+                    <FontAwesomeIcon icon={faMagnifyingGlass} />
+                  </button>
+                </div>
               </Form>
               <FlexList direction="row" items="center" justify="end" gap={2}>
                 <Link to={{ pathname: 'sortBy', search: params.toString() }} kind="secondary" icon={faSort}>

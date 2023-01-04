@@ -122,7 +122,9 @@ export default function BandSettingsPage() {
                     </FlexList>
                     <FlexList direction="row" items="center">
                       <Label>Found in {pluralize('song', feel.songs.length, true)}</Label>
-                      {!isSub ? <Link to={`feel/${feel.id}/delete`} kind="error" icon={faTrash} isCollapsing isRounded>Delete</Link> : null}
+                      {!isSub ? <Link to={`feel/${feel.id}/delete`} kind="error" isRounded>
+                        <FontAwesomeIcon icon={faTrash} />
+                      </Link> : null}
                     </FlexList>
                   </FlexHeader>
                 ))}

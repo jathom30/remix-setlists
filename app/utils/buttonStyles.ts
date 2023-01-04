@@ -1,4 +1,4 @@
-import type { ButtonKind, ButtonProps } from "~/components";
+import type { BadgeKind, ButtonKind, ButtonProps } from "~/components";
 
 export const buttonKind = (kind?: ButtonKind) => {
   switch (kind) {
@@ -41,6 +41,31 @@ export const buttonSize = (size?: ButtonProps['size']) => {
       return 'btn-md'
     case 'lg':
       return 'btn-lg'
+    default:
+      return ''
+  }
+}
+
+export const badgeKind = (kind?: BadgeKind) => {
+  switch (kind) {
+    case 'accent':
+      return 'badge-accent'
+    case 'error':
+      return 'badge-error'
+    case 'ghost':
+      return 'badge-ghost'
+    case 'info':
+      return 'badge-info'
+    case 'outline':
+      return 'badge-outline'
+    case 'primary':
+      return 'badge-primary'
+    case 'secondary':
+      return 'badge-secondary'
+    case 'success':
+      return 'badge-success'
+    case 'warning':
+      return 'badge-warning'
     default:
       return ''
   }
