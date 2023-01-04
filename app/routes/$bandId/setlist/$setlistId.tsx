@@ -4,7 +4,7 @@ import invariant from "tiny-invariant";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
-import { Breadcrumbs, CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, RouteHeader, RouteHeaderBackLink, SongLink } from "~/components";
+import { Breadcrumbs, CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, RouteHeader, RouteHeaderBackLink, SongLink, Title } from "~/components";
 import { faDatabase, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import { getSetLength } from "~/utils/setlists";
 import pluralize from "pluralize";
@@ -37,11 +37,14 @@ export default function Setlist() {
       header={
         <Navbar>
           <FlexHeader>
-            <Breadcrumbs breadcrumbs={[
-              { label: 'Setlists', to: `/${bandId}/setlists` },
-              { label: setlist.name, to: '.' },
-            ]}
-            />
+            <div>
+              <Title>{setlist.name}</Title>
+              <Breadcrumbs breadcrumbs={[
+                { label: 'Setlists', to: `/${bandId}/setlists` },
+                { label: setlist.name, to: '.' },
+              ]}
+              />
+            </div>
             <Link to="menu" icon={faEllipsisV} kind="ghost" isCollapsing>Menu</Link>
           </FlexHeader>
         </Navbar>

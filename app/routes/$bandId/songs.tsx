@@ -126,7 +126,7 @@ export default function SongsList() {
                 </Link>
                 <div className="indicator">
                   {hasParams ? <div className="indicator-item badge badge-secondary" /> : null}
-                  <Link to={{ pathname: 'filters', search: params.toString() }} kind="secondary" isOutline icon={faFilter}>Filters</Link>
+                  <Link to={{ pathname: 'filters', search: params.toString() }} kind="secondary" isCollapsing isOutline icon={faFilter}>Filters</Link>
                 </div>
               </FlexList>
             </FlexList>

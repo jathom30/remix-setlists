@@ -37,12 +37,15 @@ export default function SongDetails() {
       header={
         <Navbar>
           <FlexHeader>
-            <Breadcrumbs breadcrumbs={[
-              { label: 'Songs', to: `/${bandId}/songs` },
-              { label: song.name, to: '.' },
-            ]}
-            />
-            {!isSub ? <Link to="edit" icon={faPenToSquare} isCollapsing>Edit song</Link> : null}
+            <div>
+              <Title>{song.name}</Title>
+              <Breadcrumbs breadcrumbs={[
+                { label: 'Songs', to: `/${bandId}/songs` },
+                { label: song.name, to: '.' },
+              ]}
+              />
+            </div>
+            {!isSub ? <Link to="edit" icon={faPenToSquare} kind="ghost" isCollapsing>Edit song</Link> : null}
           </FlexHeader>
         </Navbar>
       }

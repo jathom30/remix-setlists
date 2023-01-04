@@ -77,7 +77,7 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
                 }
               >
                 <button
-                  className="btn btn-block h-auto p-4"
+                  className="btn btn-block btn-outline h-auto p-2"
                   onClick={() => setIsPopupOpen(!isPopupOpen)}
                 >
                   <BandOption band={band} isCollapsed={!isOpen} memberRole={memberRole}>
@@ -94,20 +94,21 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
               padding={8}
               onClickOutside={() => setIsUserOpen(false)}
               content={
-                <ul className="menu bg-base-100 p-2 rounded shadow-xl">
+                <ul className="menu bg-base-100 p-2 rounded shadow-xl mb-4">
                   <div className="flex flex-col items-baseline p-2">
                     <TextOverflow>{user.name}</TextOverflow>
                     <TextOverflow>
                       <span className="text-sm text-slate-400">{user.email}</span>
                     </TextOverflow>
                   </div>
-                  <Divider />
+                  {/* <Divider /> */}
                   <li>
                     <RemixLink onClick={() => setIsUserOpen(false)} to="user">
                       <FontAwesomeIcon icon={faUser} />
                       User settings
                     </RemixLink>
                   </li>
+                  <Divider />
                   <Form method="post" action="/logout" className="p-0">
                     <FlexList>
                       <Button type="submit" icon={faSignOut}>Sign out</Button>
@@ -119,7 +120,7 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
             >
               <div className="p-2">
                 <button
-                  className={`btn btn-block h-auto p-4 ${isActive ? 'active' : ''}`}
+                  className={`btn btn-block btn-outline h-auto p-4 ${isActive ? 'active' : ''}`}
                   onClick={() => setIsUserOpen(!isUserOpen)}
                 >
                   <div className="w-full">
@@ -201,7 +202,7 @@ const BandSelectPopup = ({ bands, onSelect }: { bands: MainSidebarProps['bands']
       </li>
       <Divider />
       <li>
-        <Link kind="secondary" to={`/${bandId}/home/newBand`} icon={faPlus}>New band</Link>
+        <Link isOutline to={`/${bandId}/home/newBand`} icon={faPlus}>New band</Link>
       </li>
     </ul>
   )
@@ -217,7 +218,7 @@ const BandOption = ({ band, memberRole, isCollapsed = false, children }: { band:
             <>
               <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: .1 }} className="flex flex-col">
                 <TextOverflow className="font-bold text-lg">{band?.name}</TextOverflow>
-                <Badge kind="outline" size="md">{memberRole}</Badge>
+                <Badge size="md">{memberRole}</Badge>
               </motion.div>
             </>
           ) : null}

@@ -5,7 +5,7 @@ import { json } from '@remix-run/node'
 import type { ShouldReloadFunction } from "@remix-run/react";
 import { Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MobileModal, Navbar, SaveButtons, SongDisplay } from "~/components";
+import { Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MobileModal, Navbar, SaveButtons, SongDisplay, Title } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { CSS } from "@dnd-kit/utilities";
@@ -200,11 +200,14 @@ export default function EditSetlist() {
       header={
         <Navbar>
           <FlexHeader>
-            <Breadcrumbs breadcrumbs={[
-              { label: 'Setlists', to: `/${bandId}/setlists` },
-              { label: setlist.name, to: `/${bandId}/setlist/${setlist.id}` },
-              { label: 'Edit', to: '.' },
-            ]} />
+            <div>
+              <Title>Editing {setlist.name}</Title>
+              <Breadcrumbs breadcrumbs={[
+                { label: 'Setlists', to: `/${bandId}/setlists` },
+                { label: setlist.name, to: `/${bandId}/setlist/${setlist.id}` },
+                { label: 'Edit', to: '.' },
+              ]} />
+            </div>
           </FlexHeader>
         </Navbar>
       }
