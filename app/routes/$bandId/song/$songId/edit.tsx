@@ -62,6 +62,8 @@ export async function action({ request, params }: ActionArgs) {
     return acc
   }, [])
 
+  console.log({ field: fields.isCover, form: formData.get('isCover') })
+
   await updateSong(songId, fields, validFeels)
   return redirect(`/${bandId}/song/${songId}`)
 }

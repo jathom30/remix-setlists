@@ -100,7 +100,7 @@ export const SongForm = ({ song, feels, errors }: {
 
       <FlexList direction="row">
         <Field name='isCover' label="Cover">
-          <Checkbox name="isCover" label="Is a cover" />
+          <Checkbox name="isCover" label="Is a cover" defaultChecked={song?.isCover} />
         </Field>
       </FlexList>
 

@@ -57,7 +57,7 @@ export default function DeleteBand() {
         <p className="text-xs text-text-subdued">To delete, type this band's name below.</p>
         <Input onChange={handleChange} name="bandName" placeholder={bandName} />
         {actionData?.errors.bandName ? (<ErrorMessage message="Band name must match" />) : null}
-        <Button kind="danger" type="submit" isDisabled={isDisabled}>Delete</Button>
+        <Button kind="error" type="submit" isDisabled={isDisabled}>Delete</Button>
       </FlexList>
     </Form>
   )

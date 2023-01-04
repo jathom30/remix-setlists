@@ -106,8 +106,8 @@ export default function EditMember() {
 
 
       <FlexList gap={2}>
-        <Label>Danger Zone</Label>
-        <ItemBox isDanger>
+        <Label isDanger>Danger Zone</Label>
+        <ItemBox>
           <FlexList gap={2}>
             <span className="font-bold">Remove this member</span>
             {canRemoveMember ? (
@@ -123,7 +123,7 @@ export default function EditMember() {
               </>
             )}
 
-            <Link isDisabled={!canRemoveMember} to="delete" icon={faTrash} kind="danger">Remove</Link>
+            <Link isDisabled={!canRemoveMember} to="delete" icon={faTrash} kind="error">Remove</Link>
           </FlexList>
         </ItemBox>
       </FlexList>

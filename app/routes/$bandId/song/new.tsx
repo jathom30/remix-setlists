@@ -80,7 +80,7 @@ export default function NewSong() {
           </Navbar>
         }
         footer={
-          <SaveButtons saveLabel="Create song" cancelTo=".." />
+          <SaveButtons saveLabel="Create song" cancelTo={`/${bandId}/songs`} />
         }
       >
         <MaxWidth>
