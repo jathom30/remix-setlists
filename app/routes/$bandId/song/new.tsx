@@ -3,7 +3,7 @@ import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/server-ru
 import { redirect } from "@remix-run/server-runtime";
 import { useActionData, useFetcher, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { SaveButtons, MaxHeightContainer, RouteHeader, RouteHeaderBackLink, SongForm, ErrorContainer, CatchContainer, Breadcrumbs, MaxWidth } from "~/components";
+import { SaveButtons, MaxHeightContainer, SongForm, ErrorContainer, CatchContainer, Breadcrumbs, MaxWidth, Navbar, FlexHeader } from "~/components";
 import { requireNonSubMember } from "~/session.server";
 import { getFeels } from '~/models/feel.server';
 import { getFields } from '~/utils/form';
@@ -70,16 +70,17 @@ export default function NewSong() {
       <MaxHeightContainer
         fullHeight
         header={
-          <RouteHeader
-            mobileChildren={<RouteHeaderBackLink label='New song' />}
-            desktopChildren={<Breadcrumbs breadcrumbs={[
-              { label: 'Songs', to: `/${bandId}/songs` },
-              { label: 'New', to: '.' },
-            ]} />}
-          />
+          <Navbar>
+            <FlexHeader>
+              <Breadcrumbs breadcrumbs={[
+                { label: 'Songs', to: `/${bandId}/songs` },
+                { label: 'New', to: '.' },
+              ]} />
+            </FlexHeader>
+          </Navbar>
         }
         footer={
-          <SaveButtons saveLabel="Create song" cancelTo={`/${bandId}/songs`} />
+          <SaveButtons saveLabel="Create song" cancelTo=".." />
         }
       >
         <MaxWidth>

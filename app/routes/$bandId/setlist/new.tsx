@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useParams } from "@remix-run/react"
-import { Breadcrumbs, MaxHeightContainer, MaxWidth, RouteHeader, RouteHeaderBackLink } from "~/components"
+import { Breadcrumbs, FlexHeader, MaxHeightContainer, MaxWidth, Navbar } from "~/components"
 
 
 const getHeader = (pathname: string) => {
@@ -16,20 +16,20 @@ export default function NewSetlist() {
   const { bandId } = useParams()
   const { pathname } = useLocation()
 
-  const label = getHeader(pathname)
   const isNewBase = getHeader(pathname) === 'New'
   return (
     <MaxHeightContainer
       fullHeight
       header={
-        <RouteHeader
-          mobileChildren={<RouteHeaderBackLink label={label} />}
-          desktopChildren={<Breadcrumbs breadcrumbs={[
-            { label: 'Setlists', to: `/${bandId}/setlists` },
-            { label: 'New', to: isNewBase ? '.' : `/${bandId}/setlist/new` },
-            ...(!isNewBase ? [{ label: getHeader(pathname), to: '.' }] : [])
-          ]} />}
-        />
+        <Navbar>
+          <FlexHeader>
+            <Breadcrumbs breadcrumbs={[
+              { label: 'Setlists', to: `/${bandId}/setlists` },
+              { label: 'New', to: isNewBase ? '.' : `/${bandId}/setlist/new` },
+              ...(!isNewBase ? [{ label: getHeader(pathname), to: '.' }] : [])
+            ]} />
+          </FlexHeader>
+        </Navbar>
       }
     >
       <MaxWidth>

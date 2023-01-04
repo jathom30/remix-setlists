@@ -60,7 +60,7 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
           open: { width: '100%' },
           closed: { width: 80 },
         }}
-        className="h-full bg-base-300 w-full max-w-xs flex shadow-md z-10 overflow-hidden"
+        className="h-full bg-base-100 w-full max-w-xs flex shadow-lg z-10 overflow-hidden"
       >
         <MaxHeightContainer
           header={

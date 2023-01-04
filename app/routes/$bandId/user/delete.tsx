@@ -69,7 +69,7 @@ export default function DeleteUser() {
         <p className="text-xs text-text-subdued">To delete, type your email below.</p>
         <Input onChange={handleChange} name="email" placeholder={userEmail} type="email" />
         {actionData?.errors.email ? (<ErrorMessage message="user email must match" />) : null}
-        <Button kind="danger" type="submit" isSaving={transition.state !== 'idle'} isDisabled={isDisabled}>Delete</Button>
+        <Button kind="error" type="submit" isSaving={transition.state !== 'idle'} isDisabled={isDisabled}>Delete</Button>
       </FlexList>
     </Form>
   )

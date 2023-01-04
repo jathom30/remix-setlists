@@ -31,6 +31,7 @@ export async function action({ request, params }: ActionArgs) {
 export default function ManualSetlistCreation() {
   const { songs } = useLoaderData<typeof loader>()
   return (
+
     <MulitSongSelect songs={songs} label="Create setlist" />
   )
 }

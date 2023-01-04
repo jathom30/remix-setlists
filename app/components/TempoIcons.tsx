@@ -22,7 +22,7 @@ export const TempoIcons = ({ tempo }: { tempo: number }) => {
   return (
     <FlexList direction="row" gap={0}>
       {Array.from({ length: 5 }, (_, i) => (
-        <FontAwesomeIcon icon={faBolt} size="xs" key={i} className={i < tempo ? color() : 'text-base-100'} color={i < tempo ? 'black' : 'lightgrey'} />
+        <FontAwesomeIcon icon={faBolt} size="xs" key={i} className={i < tempo ? color() : 'text-base-300'} color={i < tempo ? 'black' : 'lightgrey'} />
       ))}
     </FlexList>
   )

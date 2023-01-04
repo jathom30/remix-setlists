@@ -118,7 +118,7 @@ export default function SongsList() {
                 </div>
               </Form>
               <FlexList direction="row" items="center" justify="end" gap={2}>
-                <Link to={{ pathname: 'sortBy', search: params.toString() }} kind="secondary" icon={faSort}>
+                <Link to={{ pathname: 'sortBy', search: params.toString() }} isOutline icon={faSort}>
                   <FlexList direction="row" gap={2}>
                     <span>Sort by:</span>
                     <span>{sortByLabel()}</span>
@@ -126,7 +126,7 @@ export default function SongsList() {
                 </Link>
                 <div className="indicator">
                   {hasParams ? <div className="indicator-item badge badge-secondary" /> : null}
-                  <Link to={{ pathname: 'filters', search: params.toString() }} kind="secondary" icon={faFilter}>Filters</Link>
+                  <Link to={{ pathname: 'filters', search: params.toString() }} kind="secondary" isOutline icon={faFilter}>Filters</Link>
                 </div>
               </FlexList>
             </FlexList>

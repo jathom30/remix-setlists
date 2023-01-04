@@ -17,6 +17,8 @@ export async function loader({ request }: LoaderArgs) {
 
 const subRoutes = ['details', 'password', 'delete', 'remove']
 
+const themes = ["light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee", "winter"]
+
 export default function UserRoute() {
   const { user } = useLoaderData<typeof loader>()
   const { pathname } = useLocation()
@@ -29,7 +31,7 @@ export default function UserRoute() {
           <FlexHeader>
             <Title>User</Title>
             <Form action="/logout" method="post">
-              <Button isCollapsing type="submit" icon={faSignOut}>Sign out</Button>
+              <Button isCollapsing kind="ghost" type="submit" icon={faSignOut}>Sign out</Button>
             </Form>
           </FlexHeader>
         </Navbar>
@@ -42,9 +44,18 @@ export default function UserRoute() {
     >
       <FlexList pad={4}>
         <FlexList gap={2}>
+          <Label>Theme</Label>
+          <select data-choose-theme>
+            {themes.map(theme => (
+              <option key={theme} value={theme}>{theme}</option>
+
+            ))}
+          </select>
+        </FlexList>
+        <FlexList gap={2}>
           <FlexHeader>
             <Label>User Details</Label>
-            <Link to="details"><FontAwesomeIcon icon={faPenToSquare} /></Link>
+            <Link kind="ghost" to="details"><FontAwesomeIcon icon={faPenToSquare} /></Link>
           </FlexHeader>
           <ItemBox>
             <FlexList>
@@ -65,7 +76,7 @@ export default function UserRoute() {
         <FlexList gap={2}>
           <FlexHeader>
             <Label>Security</Label>
-            <Link to="password"><FontAwesomeIcon icon={faPenToSquare} /></Link>
+            <Link to="password" kind="ghost"><FontAwesomeIcon icon={faPenToSquare} /></Link>
           </FlexHeader>
           <ItemBox>
             <FlexList gap={0}>
@@ -82,7 +93,7 @@ export default function UserRoute() {
           <ItemBox>
             <FlexList gap={2}>
               {user.bands.map(band => (
-                <RemixLink className="btn" to={`remove/${band.bandId}`} key={band.bandId}>
+                <RemixLink className="btn btn-ghost" to={`remove/${band.bandId}`} key={band.bandId}>
                   <FlexHeader>
                     <FlexList direction="row" items="center">
                       <FontAwesomeIcon icon={faTrash} />

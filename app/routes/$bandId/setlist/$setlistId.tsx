@@ -42,7 +42,7 @@ export default function Setlist() {
               { label: setlist.name, to: '.' },
             ]}
             />
-            <Link to="menu" icon={faEllipsisV} isRounded isCollapsing>Menu</Link>
+            <Link to="menu" icon={faEllipsisV} kind="ghost" isCollapsing>Menu</Link>
           </FlexHeader>
         </Navbar>
       }
@@ -58,7 +58,7 @@ export default function Setlist() {
             <FlexList pad={4}>
               <FlexHeader>
                 <Label>Set {i + 1} - {pluralize('minute', getSetLength(set.songs), true)}</Label>
-                <Link to={`data/${set.id}`} isCollapsing isRounded icon={faDatabase}>Data metrics</Link>
+                <Link to={`data/${set.id}`} isCollapsing isOutline icon={faDatabase}>Data metrics</Link>
               </FlexHeader>
               <FlexList gap={2}>
                 {set.songs.map(song => {

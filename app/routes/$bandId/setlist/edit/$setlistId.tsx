@@ -234,7 +234,7 @@ export default function EditSetlist() {
                 <div className="p-4 pb-0">
                   <FlexHeader>
                     <Label>Set {i + 1} - {getSetLength(sets[setId])} minutes</Label>
-                    <Link to={`${setId}/addSongs`} icon={faPlus} isRounded isCollapsing>Add songs</Link>
+                    <Link to={`${setId}/addSongs`} icon={faPlus} isOutline isCollapsing>Add songs</Link>
                   </FlexHeader>
                 </div>
                 <FlexList gap={2} pad={2}>
@@ -302,9 +302,9 @@ const SortableItem = ({ id, song }: { id: string; song: SetSong }) => {
 
 const DraggedSong = ({ isDragging = false, song, listeners }: { isDragging?: boolean; song: SetSong; listeners?: SyntheticListenerMap }) => {
   return (
-    <div className={`relative overflow-hidden rounded bg-base-200 ${isDragging ? 'bg-base-300' : ''}`}>
+    <div className={`relative overflow-hidden rounded bg-base-100 ${isDragging ? 'bg-base-300' : ''}`}>
       <FlexList pad={2} direction="row" items="center">
-        <div className={`btn btn-circle btn-sm cursor-grab hover:bg-base-200`} {...listeners}>
+        <div className={`btn btn-circle btn-sm cursor-grab`} {...listeners} tabIndex={-1}>
           <FontAwesomeIcon icon={faGripVertical} />
         </div>
         {song.song ? <SongDisplay song={song.song} /> : null}

@@ -53,7 +53,7 @@ export default function BandSettingsPage() {
           <FlexHeader>
             <Title>Band settings</Title>
             {isAdmin ? (
-              <Link to="edit">Edit</Link>
+              <Link to="edit" icon={faPencil} isCollapsing kind="ghost">Edit</Link>
             ) : null}
           </FlexHeader>
         </Navbar>
@@ -95,11 +95,11 @@ export default function BandSettingsPage() {
                       <span className="font-bold">{member.name}</span>
                       <Badge>{member.role}</Badge>
                     </FlexList>
-                    {!isSub ? <Link to={member.id}><FontAwesomeIcon icon={faEdit} /></Link> : null}
+                    {!isSub ? <Link to={member.id} kind="ghost"><FontAwesomeIcon icon={faEdit} /></Link> : null}
                   </FlexHeader>
                 ))}
                 {isAdmin ? (
-                  <Link to="newMember" kind="accent">Add new member</Link>
+                  <Link to="newMember" kind="outline">Add new member</Link>
                 ) : null}
               </FlexList>
             </ItemBox>
@@ -128,7 +128,7 @@ export default function BandSettingsPage() {
                     </FlexList>
                   </FlexHeader>
                 ))}
-                {!isSub ? <Link to="feel/new" kind="accent">Add new feel</Link> : null}
+                {!isSub ? <Link to="feel/new" kind="outline">Add new feel</Link> : null}
               </FlexList>
             </ItemBox>
           </FlexList>

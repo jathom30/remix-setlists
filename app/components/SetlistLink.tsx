@@ -1,6 +1,7 @@
 import type { Setlist, Song } from "@prisma/client"
 import type { SerializeFrom } from "@remix-run/node"
 import { Link, useLocation, useParams } from "@remix-run/react"
+import { hoverAndFocusContainerStyles } from "~/styleUtils"
 import { FlexHeader } from "./FlexHeader"
 import { FlexList } from "./FlexList"
 import { Label } from "./Label"
@@ -20,19 +21,18 @@ export const SetlistLink = ({ setlist }: { setlist: SerializeFrom<Setlist & { se
       to={`/${bandId}/setlist/${setlist.id}`}
       prefetch="intent"
       state={pathname}
+      className={hoverAndFocusContainerStyles}
     >
-      <div className="bg-neutral p-2 rounded hover:bg-neutral-focus">
-        <FlexList gap={0}>
-          <FlexHeader>
-            <span className="font-bold">{setlist.name}</span>
-            <Label>Last updated:</Label>
-          </FlexHeader>
-          <FlexHeader>
-            <span className="text-xs">{setCount[setlist.sets.length]} {getDisplaySetLength} minute set(s)</span>
-            <span className="text-xs whitespace-nowrap">{new Date(setlist.updatedAt).toDateString()}</span>
-          </FlexHeader>
-        </FlexList>
-      </div>
+      <FlexList gap={0}>
+        <FlexHeader>
+          <span className="font-bold">{setlist.name}</span>
+          <Label>Last updated:</Label>
+        </FlexHeader>
+        <FlexHeader>
+          <span className="text-xs">{setCount[setlist.sets.length]} {getDisplaySetLength} minute set(s)</span>
+          <span className="text-xs whitespace-nowrap">{new Date(setlist.updatedAt).toDateString()}</span>
+        </FlexHeader>
+      </FlexList>
     </Link>
   )
 }

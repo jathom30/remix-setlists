@@ -112,7 +112,7 @@ export default function SetlistsRoute() {
                 </div>
               </Form>
               <FlexList direction="row" items="center" justify="end" gap={2}>
-                <Link to={{ pathname: 'sortBy', search: params.toString() }} kind="secondary" icon={faSort}>
+                <Link to={{ pathname: 'sortBy', search: params.toString() }} isOutline icon={faSort}>
                   <FlexList direction="row" gap={2}>
                     <span>Sort by:</span>
                     <span>{sortByLabel()}</span>

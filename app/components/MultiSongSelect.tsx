@@ -9,6 +9,7 @@ import { SongDisplay } from "./SongDisplay"
 import { FlexHeader } from "./FlexHeader"
 import { MaxHeightContainer } from "./MaxHeightContainer"
 import { faPlus } from "@fortawesome/free-solid-svg-icons"
+import { hoverAndFocusContainerStyles } from "~/styleUtils"
 
 export const MulitSongSelect = ({ songs, label }: { songs: SerializeFrom<Song[]>; label?: string }) => {
 
@@ -37,7 +38,7 @@ export const MulitSongSelect = ({ songs, label }: { songs: SerializeFrom<Song[]>
             <FlexList gap={2}>
               <FlexHeader>
                 {label ? <span>{label}</span> : null}
-                <Link to={`/${bandId}/songs/new`} kind="secondary" icon={faPlus} isCollapsing isRounded>New song</Link>
+                <Link to={`/${bandId}/song/new`} kind="secondary" icon={faPlus} isCollapsing>New song</Link>
               </FlexHeader>
               <Input name="query" placeholder="Search..." defaultValue={searchParam || ''} onChange={e => setParams({ query: e.target.value })} />
             </FlexList>
@@ -50,14 +51,18 @@ export const MulitSongSelect = ({ songs, label }: { songs: SerializeFrom<Song[]>
           />
         }
       >
-        {songs.map(song => (
-          <label key={song.id} htmlFor={song.id} className="hover:bg-slate-200">
-            <FlexList direction="row" gap={0}>
-              <input id={song.id} value={song.id} type="checkbox" name="songs" className="ml-4" />
-              <SongDisplay song={song} />
-            </FlexList>
-          </label>
-        ))}
+        <FlexList pad={4} gap={2}>
+          {songs.map(song => (
+            <label key={song.id} htmlFor={song.id}>
+              <div className={hoverAndFocusContainerStyles}>
+                <FlexList direction="row" gap={4} items="center">
+                  <input id={song.id} value={song.id} type="checkbox" name="songs" className="checkbox checkbox-sm" />
+                  <SongDisplay song={song} />
+                </FlexList>
+              </div>
+            </label>
+          ))}
+        </FlexList>
       </MaxHeightContainer>
     </Form>
   )

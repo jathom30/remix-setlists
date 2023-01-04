@@ -103,9 +103,9 @@ export default function SongsFilters() {
         header={
           <div className="border-b border-slate-300 bg-white">
             <FlexList pad={2} direction="row" justify="between" items="center">
-              <Link kind="text" to={{ pathname: `/${bandId}/songs`, search }}><FontAwesomeIcon icon={faChevronLeft} /></Link>
+              <Link kind="ghost" to={{ pathname: `/${bandId}/songs`, search }}><FontAwesomeIcon icon={faChevronLeft} /></Link>
               <span className="font-bold">Filters</span>
-              <Button name="intent" value="reset" type="button" kind="text" onClick={e => submit(e.currentTarget)}>Reset</Button>
+              <Button name="intent" value="reset" type="button" isOutline onClick={e => submit(e.currentTarget)}>Reset</Button>
             </FlexList>
           </div>
         }
@@ -117,7 +117,7 @@ export default function SongsFilters() {
       >
         <FlexList gap={0}>
           <FilterOption label="Tempo">
-            <FlexList gap={2}>
+            <FlexList gap={0}>
               {Array.from({ length: 5 }, (_, i) => (
                 <Checkbox
                   key={i}
@@ -156,7 +156,7 @@ export default function SongsFilters() {
             </FlexList>
           </FilterOption>
           <FilterOption label="Positions">
-            <FlexList gap={2}>
+            <FlexList gap={0}>
               {positions.map(position => (
                 <Checkbox
                   key={position}
