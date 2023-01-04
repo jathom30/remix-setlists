@@ -1,9 +1,4 @@
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { Fragment } from "react"
-import { Link } from "react-router-dom"
-import { FlexList } from "./FlexList"
-import { Title } from "./Title"
+import { Link } from "@remix-run/react"
 
 type Breadcrumb = {
   label: string;
@@ -11,20 +6,17 @@ type Breadcrumb = {
 }
 
 export const Breadcrumbs = ({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) => {
-  const links = breadcrumbs.slice(0, -1)
-  const current = breadcrumbs[breadcrumbs.length - 1]
-
   return (
-    <FlexList direction="row" items="center" gap={2} wrap>
-      {links.map(link => (
-        <Fragment key={link.label}>
-          <Link to={link.to} className="text-slate-400 hover:text-text">
-            <Title>{link.label}</Title>
-          </Link>
-          <FontAwesomeIcon className="text-slate-400" icon={faChevronRight} />
-        </Fragment>
-      ))}
-      <Title>{current.label}</Title>
-    </FlexList>
+    <div className="breadcrumbs pt-0">
+      <ul>
+        {breadcrumbs.map(link => (
+          <li key={link.label}>
+            <Link to={link.to}>
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }

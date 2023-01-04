@@ -6,7 +6,10 @@ export const CreateNewButton = ({ to }: { to: string }) => {
   return (
     <div className="sticky sm:hidden">
       <div className="absolute bottom-4 right-4">
-        <Link to={to} className="flex items-center justify-center rounded-full w-16 bg-success text-white aspect-square">
+        <Link
+          to={to}
+          className="btn btn-circle btn-lg btn-primary"
+        >
           <FontAwesomeIcon size="2x" icon={faPlus} />
         </Link>
       </div>

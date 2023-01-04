@@ -10,6 +10,7 @@ export async function loader({ request, params }: LoaderArgs) {
   const { bandId } = params
   invariant(bandId, 'bandId not found')
   await requireNonSubMember(request, bandId)
+  return null
 }
 
 export async function action({ request, params }: ActionArgs) {

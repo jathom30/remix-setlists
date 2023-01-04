@@ -43,7 +43,7 @@ export const Drawer = ({ children, open, onClose }: {
               opacity: 0,
             }}
             transition={{ ease: 'easeInOut' }}
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t overflow-auto"
+            className="absolute bottom-0 left-0 right-0 bg-base-100 rounded-t overflow-auto"
             style={{ height: 'min-content', maxHeight: '70vh' }}
           >
             {children}

@@ -1,8 +1,8 @@
-type LabelProps = { required?: boolean; children?: React.ReactNode }
+type LabelProps = { required?: boolean; children?: React.ReactNode; isDanger?: boolean }
 
-export const Label = ({ required, children }: LabelProps) => {
+export const Label = ({ required, children, isDanger = false }: LabelProps) => {
   return (
-    <span className="text-xs font-bold text-text-subdued">
+    <span className={`text-sm font-bold ${isDanger ? 'text-warning' : ''}`}>
       {children}
       {required && (
         <>

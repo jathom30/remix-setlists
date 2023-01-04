@@ -2,12 +2,14 @@ import React from "react"
 
 type ItemBoxProps = {
   children: React.ReactNode
-  pad?: number
-  isDanger?: boolean
 }
 
-export const ItemBox = ({ children, pad = 4, isDanger = false }: ItemBoxProps) => {
+export const ItemBox = ({ children }: ItemBoxProps) => {
   return (
-    <div className={`p-${pad} rounded shadow bg-component-background ${isDanger ? 'border border-danger' : ''} w-full`}>{children}</div>
+    <div className={`card card-compact shadow-lg bg-base-100 w-full`}>
+      <div className="card-body">
+        {children}
+      </div>
+    </div>
   )
 }

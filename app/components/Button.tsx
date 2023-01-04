@@ -1,10 +1,9 @@
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react"
-import { additionalStyles, defaultButtonStyles } from "~/styleUtils";
-import { Loader } from "./Loader";
+import { buttonKind, buttonSize } from "~/utils/buttonStyles";
 
-export type ButtonKind = 'default' | 'primary' | 'danger' | 'text' | 'secondary' | 'invert'
+export type ButtonKind = 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'warning' | 'error' | 'ghost' | 'link' | 'outline' | 'active' | 'disabled'
 
 export type ButtonProps = {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
@@ -17,15 +16,17 @@ export type ButtonProps = {
   value?: string
   children?: React.ReactNode
   tabIndex?: number
+  isOutline?: boolean
   isCollapsing?: boolean
   isSaving?: boolean
+  size?: 'xs' | 'sm' | 'md' | 'lg'
 }
 
-export function Button({ isSaving = false, isCollapsing = false, onClick, tabIndex, icon, name, value, isDisabled = false, isRounded = false, type = 'button', kind = 'default', children }: ButtonProps) {
+export function Button({ isSaving = false, isCollapsing = false, isOutline = false, onClick, size, tabIndex, icon, name, value, isDisabled = false, isRounded = false, type = 'button', kind, children }: ButtonProps) {
   return (
     <button
       name={name}
-      className={`${defaultButtonStyles} ${additionalStyles({ isDisabled, kind })} ${isRounded ? 'rounded-full' : ''}`}
+      className={`btn ${buttonKind(kind)} ${icon ? 'gap-2' : ''} ${buttonSize(size)} ${isOutline ? 'btn-outline' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isRounded ? 'btn-circle' : ''} ${isSaving ? 'loading' : ''}`}
       onClick={onClick}
       disabled={isDisabled || isSaving}
       type={type}
@@ -33,7 +34,6 @@ export function Button({ isSaving = false, isCollapsing = false, onClick, tabInd
       tabIndex={tabIndex}
     >
       {(icon && !isSaving) ? <FontAwesomeIcon icon={icon} /> : null}
-      {isSaving ? <Loader /> : null}
       <div className={isCollapsing ? 'hidden md:block' : ''}>{children}</div>
     </button>
   )

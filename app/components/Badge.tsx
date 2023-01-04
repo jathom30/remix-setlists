@@ -1,27 +1,14 @@
 import type { ReactNode } from "react"
+import { badgeKind } from "~/utils/buttonStyles";
 
-export const Badge = ({ children, size = 'md', invert = false }: {
+export type BadgeKind = 'outline' | 'primary' | 'secondary' | 'accent' | 'ghost' | 'info' | 'success' | 'warning' | 'error'
+
+export const Badge = ({ children, size = 'md', kind }: {
   children: ReactNode;
-  size?: 'sm' | 'md' | 'lg';
-  invert?: boolean;
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  kind?: BadgeKind
 }) => {
-  const getSize = () => {
-    switch (size) {
-      case 'sm':
-        return 'text-xs'
-      case 'md':
-        return 'text-sm'
-      case 'lg':
-        return 'text-md'
-      default:
-        return 'text-sm'
-    }
-  }
-
-  const color = invert ? 'white' : 'slate-400'
-  const borderColor = invert ? 'border-white' : `border-slate-400`
-
   return (
-    <span className={`px-3 w-max whitespace-nowrap rounded border ${borderColor} text-${color} ${getSize()}`}>{children}</span>
+    <span className={`badge ${badgeKind(kind)} ${size ? `badge-${size}` : ''}`}>{children}</span>
   )
 }

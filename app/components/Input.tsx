@@ -15,7 +15,7 @@ export const Input = ({ name, type = 'text', placeholder, defaultValue, onChange
   return (
     <input
       type={type}
-      className={inputStyles}
+      className="input input-bordered w-full max-w-sx"
       name={name}
       placeholder={placeholder}
       defaultValue={defaultValue}

@@ -62,6 +62,8 @@ export async function action({ request, params }: ActionArgs) {
     return acc
   }, [])
 
+  console.log({ field: fields.isCover, form: formData.get('isCover') })
+
   await updateSong(songId, fields, validFeels)
   return redirect(`/${bandId}/song/${songId}`)
 }
@@ -78,12 +80,12 @@ export default function EditSong() {
       <MaxHeightContainer
         fullHeight
         header={
-          <div className="hidden sm:block sm:bg-white sm:p-4 sm:border-b sm:border-slate-300">
+          <div className="bg-base-100 p-4">
             <h3 className="font-bold">Edit {song.name}</h3>
           </div>
         }
         footer={
-          <SaveButtons isSaving={fetcher.state !== 'idle'} saveLabel="Save" cancelTo={`/${bandId}/songs/${songId}`} />
+          <SaveButtons isSaving={fetcher.state !== 'idle'} saveLabel="Save" cancelTo=".." />
         }
       >
         <SongForm
