@@ -3,7 +3,7 @@ import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/server-ru
 import { redirect } from "@remix-run/server-runtime";
 import { useActionData, useFetcher, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { SaveButtons, MaxHeightContainer, SongForm, ErrorContainer, CatchContainer, Breadcrumbs, MaxWidth, Navbar, FlexHeader } from "~/components";
+import { SaveButtons, MaxHeightContainer, SongForm, ErrorContainer, CatchContainer, Breadcrumbs, MaxWidth, Navbar, FlexHeader, Title } from "~/components";
 import { requireNonSubMember } from "~/session.server";
 import { getFeels } from '~/models/feel.server';
 import { getFields } from '~/utils/form';
@@ -72,10 +72,13 @@ export default function NewSong() {
         header={
           <Navbar>
             <FlexHeader>
-              <Breadcrumbs breadcrumbs={[
-                { label: 'Songs', to: `/${bandId}/songs` },
-                { label: 'New', to: '.' },
-              ]} />
+              <div>
+                <Title>New song</Title>
+                <Breadcrumbs breadcrumbs={[
+                  { label: 'Songs', to: `/${bandId}/songs` },
+                  { label: 'New', to: '.' },
+                ]} />
+              </div>
             </FlexHeader>
           </Navbar>
         }

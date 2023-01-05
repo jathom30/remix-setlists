@@ -1,15 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 
 export const Modal = ({ children, open, onClose }: { children: React.ReactNode; open: boolean; onClose: () => void }) => {
-  const [isWindow, setIsWindow] = useState(false)
-
-  useEffect(() => {
-    setIsWindow(true)
-  }, [])
-
-  const content = (
+  return (
     <AnimatePresence>
       {open ? (
         <div
@@ -55,12 +47,4 @@ export const Modal = ({ children, open, onClose }: { children: React.ReactNode; 
     </AnimatePresence>
   )
 
-  if (isWindow) {
-    return createPortal(
-      content,
-      document.body
-    );
-  } else {
-    return null;
-  }
 }
