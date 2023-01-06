@@ -115,7 +115,7 @@ export default function SongsFilters() {
           </FilterOption>
         </FlexList>
       </MaxHeightContainer>
-      <input hidden type="hidden" name="redirectTo" value={`/${bandId}/songs`} />
+      <input hidden type="hidden" name="redirectTo" value={`/${bandId}/setlist/new/manual`} />
     </fetcher.Form>
   )
 }

@@ -102,7 +102,7 @@ export default function ManualSetlistCreation() {
         </MobileModal>
       }
     >
-      <Form method="put">
+      <Form method="put" className="h-full">
         <MaxHeightContainer
           fullHeight
           footer={
