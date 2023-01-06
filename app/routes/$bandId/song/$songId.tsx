@@ -16,7 +16,7 @@ export async function loader({ request, params }: LoaderArgs) {
   invariant(songId, 'songId not found')
   invariant(bandId, 'bandId not found')
 
-  const song = await getSong(songId)
+  const song = await getSong(songId, bandId)
   if (!song) {
     throw new Response('Song not found', { status: 404 })
   }

@@ -37,6 +37,7 @@ async function seed() {
         },
       },
       name: 'Rachel',
+      verified: true,
       bands: {
         // created band above, here created connection between band and user
         create: [

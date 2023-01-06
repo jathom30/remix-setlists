@@ -31,11 +31,16 @@ export async function getSongs(bandId: Band['id'], params?: SongParams) {
   })
 }
 
-export async function getSong(songId: Song['id'], includeSets?: boolean) {
-  return prisma.song.findUnique({
-    where: { id: songId },
-    include: { feels: true, sets: includeSets }
+export async function getSong(songId: Song['id'], bandId: Song['bandId'], includeSets?: boolean) {
+  if (!bandId) { return }
+  const song = await prisma.band.findUnique({
+    where: { id: bandId },
+    select: {
+      song: { where: { id: songId }, include: { feels: true, sets: includeSets } }
+    }
   })
+  if (!song) { return }
+  return song?.song[0]
 }
 
 export async function getSongName(songId: Song['id']) {
