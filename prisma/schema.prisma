@@ -83,7 +83,7 @@ model BandIcon {
 
 model Setlist {
   id           String  @id @default(cuid())
-  editedFromId String? @unique
+  editedFromId String?
   name         String
 
   createdAt DateTime @default(now())

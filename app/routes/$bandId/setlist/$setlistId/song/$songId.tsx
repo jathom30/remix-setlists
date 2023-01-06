@@ -1,12 +1,12 @@
-import invariant from "tiny-invariant";
-import { json } from '@remix-run/node'
-import type { LoaderArgs } from "@remix-run/server-runtime";
-import { getSong } from "~/models/song.server";
-import { requireNonSubMember } from "~/session.server";
-import { getFeels } from "~/models/feel.server";
 import { useLoaderData, useParams } from "@remix-run/react";
-import { SongEdit } from "~/routes/resource/songEdit";
+import type { LoaderArgs } from "@remix-run/server-runtime";
+import { json } from "@remix-run/server-runtime"
+import invariant from "tiny-invariant"
 import { CatchContainer, ErrorContainer } from "~/components";
+import { getFeels } from "~/models/feel.server"
+import { getSong } from "~/models/song.server"
+import { SongEdit } from "~/routes/resource/songEdit";
+import { requireNonSubMember } from "~/session.server"
 
 export async function loader({ request, params }: LoaderArgs) {
   const { songId, bandId } = params
@@ -24,9 +24,9 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export default function EditSong() {
   const { song, feels } = useLoaderData<typeof loader>()
-  const { bandId } = useParams()
+  const { bandId, setlistId } = useParams()
 
-  return <SongEdit song={song} feels={feels} redirectTo={`/${bandId}/song/${song.id}`} />
+  return <SongEdit song={song} feels={feels} redirectTo={`/${bandId}/setlist/${setlistId}`} />
 }
 
 export function CatchBoundary() {

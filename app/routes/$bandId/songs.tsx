@@ -4,13 +4,12 @@ import invariant from "tiny-invariant";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams } from "@remix-run/react";
-import { CatchContainer, CreateNewButton, ErrorContainer, FlexHeader, FlexList, Input, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SongLink, Title } from "~/components";
-import { faBoxOpen, faFilter, faMagnifyingGlass, faSort } from "@fortawesome/free-solid-svg-icons";
+import { CatchContainer, CreateNewButton, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SearchInput, SongLink, Title } from "~/components";
+import { faBoxOpen, faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { getSortFromParam } from "~/utils/params";
-import { capitalizeFirstLetter } from "~/utils/assorted";
+import { sortByLabel } from "~/utils/params";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -55,27 +54,7 @@ export default function SongsList() {
 
   const hasSongs = songs.length
 
-  const sortByLabel = () => {
-    const sortObject = getSortFromParam(params.get('sort') ?? undefined)
-    const [entry] = Object.entries(sortObject)
-    // probably not the best solution, but removes At from createdAt and updatedAt keys
-    const sort = capitalizeFirstLetter(entry[0]).replace('At', '')
-    const direction = () => {
-      switch (sort.toLowerCase()) {
-        case 'name':
-          return entry[1] === 'asc' ? 'A-Z' : 'Z-A'
-        case 'tempo':
-          return entry[1] === 'asc' ? 'slow-fast' : 'fast-slow'
-        case 'updated':
-          return entry[1] === 'asc' ? 'oldest first' : 'newest first'
-        case 'created':
-          return entry[1] === 'asc' ? 'oldest first' : 'newest first'
-        default:
-          return ''
-      }
-    }
-    return `${sort} ${direction()}`
-  }
+  const sortBy = sortByLabel(params)
 
   return (
     <MaxHeightContainer
@@ -110,18 +89,13 @@ export default function SongsList() {
           header={
             <FlexList pad={4} gap={4}>
               <Form method="get">
-                <div className="input-group">
-                  <Input name="query" placeholder="Search..." defaultValue={query || ''} />
-                  <button type="submit" className="btn btn-square">
-                    <FontAwesomeIcon icon={faMagnifyingGlass} />
-                  </button>
-                </div>
+                <SearchInput defaultValue={query} />
               </Form>
               <FlexList direction="row" items="center" justify="end" gap={2}>
                 <Link to={{ pathname: 'sortBy', search: params.toString() }} isOutline icon={faSort}>
                   <FlexList direction="row" gap={2}>
                     <span>Sort by:</span>
-                    <span>{sortByLabel()}</span>
+                    <span>{sortBy}</span>
                   </FlexList>
                 </Link>
                 <div className="indicator">

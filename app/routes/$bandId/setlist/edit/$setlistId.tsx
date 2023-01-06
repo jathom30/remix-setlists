@@ -5,7 +5,7 @@ import { json } from '@remix-run/node'
 import type { ShouldReloadFunction } from "@remix-run/react";
 import { Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MobileModal, Navbar, SaveButtons, SongDisplay, Title } from "~/components";
+import { Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SaveButtons, SongDisplay, Title } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { CSS } from "@dnd-kit/utilities";
@@ -61,7 +61,7 @@ export async function action({ request, params }: ActionArgs) {
   return null
 }
 
-const subRoutes = ['addSongs', 'removeSong', 'createSet', 'saveChanges', 'confirmCancel']
+const subRoutes = ['addSongs', 'newSong', 'removeSong', 'createSet', 'createSong', 'saveChanges', 'confirmCancel']
 
 // this feels like some hacky shit
 export const unstable_shouldReload: ShouldReloadFunction = ({ prevUrl }) => {
@@ -213,16 +213,18 @@ export default function EditSetlist() {
       }
       footer={
         <>
-          <FlexList pad={4}>
-            <Link to="saveChanges" kind="primary" isSaving={isLoading} icon={faSave}>Save</Link>
-          </FlexList>
+          <MaxWidth>
+            <FlexList pad={4}>
+              <Link to="saveChanges" kind="primary" isSaving={isLoading} icon={faSave}>Save</Link>
+            </FlexList>
+          </MaxWidth>
           <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
             <Outlet />
           </MobileModal>
         </>
       }
     >
-      <fetcher.Form method="put">
+      <MaxWidth>
         <DndContext
           id={setlist.id}
           sensors={sensors}
@@ -253,10 +255,10 @@ export default function EditSetlist() {
           ))}
           <SongOverlay isActive={!!activeId} song={getSong(activeId || '')} />
         </DndContext>
-      </fetcher.Form>
-      <FlexList pad={4}>
-        <Link to="createSet">Create new set</Link>
-      </FlexList>
+        <FlexList pad={4}>
+          <Link to="createSet">Create new set</Link>
+        </FlexList>
+      </MaxWidth>
     </MaxHeightContainer>
   )
 }

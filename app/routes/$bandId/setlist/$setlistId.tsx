@@ -23,7 +23,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ setlist })
 }
 
-const subRoutes = ['rename', 'edit', 'condensed', 'data', 'delete', 'menu']
+const subRoutes = ['rename', 'edit', 'condensed', 'data', 'delete', 'menu', 'song']
 
 export default function Setlist() {
   const { setlist } = useLoaderData<typeof loader>()
@@ -67,10 +67,9 @@ export default function Setlist() {
                 {set.songs.map(song => {
                   if (!song.song) { return null }
                   return (
-                    <SongLink key={song.songId} song={song.song} />
+                    <SongLink key={song.songId} song={song.song} to={`song/${song.songId}`} />
                   )
                 })}
-                <Divider />
               </FlexList>
             </FlexList>
           </div>

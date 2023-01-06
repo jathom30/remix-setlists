@@ -20,9 +20,9 @@ export const MobileModal = ({ children, open, onClose }: { children: React.React
 
   if (isMobile) {
     return <Drawer open={open} onClose={onClose}>{children}</Drawer>
+  } else {
+    return (
+      <Modal open={open} onClose={onClose}>{children}</Modal>
+    )
   }
-
-  return (
-    <Modal open={open} onClose={onClose}>{children}</Modal>
-  )
 }

@@ -21,7 +21,7 @@ export default function SongsSortBy() {
             return val === (sort ?? 'name:asc')
           }}
         />
-        <input hidden type="hidden" name="redirectTo" value={`/${bandId}/songs`} />
+        <input hidden type="hidden" name="redirectTo" value={`/${bandId}/setlist/new/manual`} />
       </FlexList>
     </fetcher.Form>
   )

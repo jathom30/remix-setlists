@@ -31,15 +31,15 @@ export default function SetlistMenu() {
     <FlexList pad={4} gap={2}>
       {!isSub ? (
         <>
-          <Link to={`/${bandId}/setlist/${setlistId}/rename`}>Rename setlist</Link>
+          <Link to={`/${bandId}/setlist/${setlistId}/rename`} isOutline>Rename setlist</Link>
           <Form method="post">
             <FlexList>
-              <Button isSaving={isLoadingSaveRoute} type="submit">Edit setlist</Button>
+              <Button isSaving={isLoadingSaveRoute} type="submit" isOutline>Edit setlist</Button>
             </FlexList>
           </Form>
         </>
       ) : null}
-      <Link to={`/${bandId}/setlist/condensed/${setlistId}`}>Condensed view</Link>
+      <Link to={`/${bandId}/setlist/condensed/${setlistId}`} isOutline>Condensed view</Link>
       {!isSub ? (
         <Link to={`/${bandId}/setlist/${setlistId}/delete`} kind="error">Delete setlist</Link>
       ) : null}

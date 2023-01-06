@@ -4,11 +4,11 @@ import { Link, useLocation } from "@remix-run/react"
 import { hoverAndFocusContainerStyles } from "~/styleUtils"
 import { SongDisplay } from "./SongDisplay"
 
-export const SongLink = ({ song }: { song: SerializeFrom<Song> }) => {
+export const SongLink = ({ song, to }: { song: SerializeFrom<Song>; to?: string }) => {
   const { pathname } = useLocation()
   return (
     <Link
-      to={`/${song.bandId}/song/${song.id}`}
+      to={to ?? `/${song.bandId}/song/${song.id}`}
       state={pathname}
       prefetch="intent"
       className={hoverAndFocusContainerStyles}
