@@ -50,7 +50,7 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
     return () => window.removeEventListener('resize', handleIsOpen)
   }, [])
 
-  const isActive = pathname.includes('user')
+  const isActive = pathname.split('/')[2].includes('user')
 
   return (
     <AnimatePresence initial={false}>
@@ -168,7 +168,7 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
 const SideBarLink = ({ to, isOpen, label, icon }: { to: string; isOpen: boolean; label: string; icon: IconDefinition }) => {
   const { pathname } = useLocation()
   const singularTo = to[to.length - 1] === 's' ? to.substring(0, to.length - 1) : to
-  const isActive = pathname.includes(singularTo)
+  const isActive = pathname.split('/')[2].includes(singularTo)
   return (
     <RemixLink className={isActive ? 'active' : ''} to={to}>
       <FlexList direction="row" items="center">

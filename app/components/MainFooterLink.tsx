@@ -7,7 +7,7 @@ export const MainFooterLink = ({ icon, label, to }: { icon: IconDefinition; labe
   const { pathname } = useLocation()
 
   const singularTo = label[label.length - 1] === 's' ? label.substring(0, label.length - 1) : label
-  const isActive = pathname.includes(singularTo.toLowerCase())
+  const isActive = pathname.split('/')[2].includes(singularTo.toLowerCase())
 
   return (
     <Link className={`p-2 ${isActive ? 'text-accent' : 'text-base-content'}`} to={to}>
