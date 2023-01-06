@@ -70,7 +70,6 @@ export default function Setlist() {
                     <SongLink key={song.songId} song={song.song} to={`song/${song.songId}`} />
                   )
                 })}
-                <Divider />
               </FlexList>
             </FlexList>
           </div>
