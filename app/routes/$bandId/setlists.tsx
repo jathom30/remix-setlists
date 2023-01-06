@@ -133,7 +133,7 @@ export default function SetlistsRoute() {
               <FlexList pad={4}>
                 <FontAwesomeIcon icon={faBoxOpen} size="3x" />
                 <p className="text-center">Looks like this band doesn't have any setlists yet.</p>
-                <Link to={`/${bandId}/setlist/new`} kind="primary">Create your first setlist</Link>
+                {!isSub ? <Link to={`/${bandId}/setlist/new`} kind="primary">Create your first setlist</Link> : null}
               </FlexList>
             )}
           </FlexList>

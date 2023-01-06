@@ -117,7 +117,7 @@ export default function SongsList() {
               <FlexList pad={4}>
                 <FontAwesomeIcon icon={faBoxOpen} size="3x" />
                 <p className="text-center">Looks like this band doesn't have any songs yet.</p>
-                <Link to={`/${bandId}/song/new`} kind="primary">Create your first song</Link>
+                {!isSub ? <Link to={`/${bandId}/song/new`} kind="primary">Create your first song</Link> : null}
               </FlexList>
             )}
           </FlexList>

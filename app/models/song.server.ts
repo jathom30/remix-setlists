@@ -1,5 +1,7 @@
 import type { Band, Feel, Setlist, Song } from "@prisma/client";
+import { SerializeFrom } from "@remix-run/server-runtime";
 import { prisma } from "~/db.server";
+import { getFields } from "~/utils/form";
 import { getSortFromParam } from "~/utils/params";
 
 type SongParams = {
@@ -113,4 +115,36 @@ export async function getSongsNotInSetlist(bandId: Band['id'], setlistId: Setlis
       },
     }
   })
+}
+
+export const handleSongFormData = (formData: FormData) => {
+  const { fields, errors } = getFields<SerializeFrom<Song & { feels: Feel['id'][] }>>(formData, [
+    { name: 'name', type: 'string', isRequired: true },
+    { name: 'length', type: 'number', isRequired: true },
+    { name: 'keyLetter', type: 'string', isRequired: false },
+    { name: 'isMinor', type: 'boolean', isRequired: false },
+    { name: 'tempo', type: 'number', isRequired: true },
+    { name: 'position', type: 'string', isRequired: true },
+    { name: 'rank', type: 'string', isRequired: true },
+    { name: 'note', type: 'string', isRequired: false },
+  ])
+  const feels = formData.getAll('feels')
+  const isCover = formData.get('isCover')
+
+  const errorsWithFeels = { ...errors, ...(!Array.isArray(feels) ? { feels: 'Invalid feels' } : {}) }
+
+  if (Object.keys(errorsWithFeels).length) {
+    return { errors: errorsWithFeels, formFields: null, validFeels: null }
+  }
+
+  const validFeels = feels.reduce((acc: string[], feelId) => {
+    if (feelId.toString().length) {
+      return [
+        ...acc, feelId.toString()
+      ]
+    }
+    return acc
+  }, [])
+
+  return { errors: null, formFields: { ...fields, isCover: !!isCover }, validFeels }
 }

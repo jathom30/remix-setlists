@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { Checkbox } from "./Checkbox";
 import { FeelSelect } from "~/routes/$bandId/resources/FeelSelect";
 import { getTempoColor } from "./TempoIcons";
+import type { handleSongFormData } from "~/models/song.server";
 
 const getRangeColor = (tempo: number) => {
   switch (tempo) {
@@ -36,7 +37,7 @@ const getRangeColor = (tempo: number) => {
 
 export const SongForm = ({ song, feels, errors }: {
   song?: Partial<SerializeFrom<Song & { feels: Feel[] }>>; feels: SerializeFrom<Feel>[];
-  errors?: Record<keyof SerializeFrom<Song>, string>;
+  errors?: SerializeFrom<ReturnType<typeof handleSongFormData>['errors']>;
 }) => {
   const [isWindow, setIsWindow] = useState(false)
   const [tempoColorClass, setTempoColorClass] = useState(getRangeColor(song?.tempo || 3))
@@ -68,16 +69,14 @@ export const SongForm = ({ song, feels, errors }: {
         <Label>Key</Label>
         <div className="grid grid-cols-2 gap-4">
           <Select
-            isClearable
             instanceId="keyLetter"
-            defaultValue={song?.keyLetter ? { value: song?.keyLetter, label: song?.keyLetter } : undefined}
+            defaultValue={{ value: song?.keyLetter ?? "C", label: song?.keyLetter ?? "C" }}
             name="keyLetter"
             options={keyLetters.map(letter => ({ value: letter, label: letter }))}
           />
           <Select
-            isClearable
             instanceId="isMinor"
-            defaultValue={song?.keyLetter ? { label: song?.isMinor ? 'Minor' : 'Major', value: song?.isMinor } : undefined}
+            defaultValue={{ label: song?.isMinor ? 'Minor' : 'Major', value: song?.isMinor }}
             name="isMinor"
             options={majorMinorOptions}
           />
@@ -100,7 +99,7 @@ export const SongForm = ({ song, feels, errors }: {
 
       <FlexList direction="row">
         <Field name='isCover' label="Cover">
-          <Checkbox name="isCover" label="Is a cover" defaultChecked={song?.isCover} />
+          <Checkbox name="isCover" label="Is a cover" value="isCover" defaultChecked={song?.isCover} />
         </Field>
       </FlexList>
 
