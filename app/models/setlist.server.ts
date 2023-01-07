@@ -116,8 +116,8 @@ export async function createSetlistAuto(bandId: Band['id'], settings: SetlistSet
   const sortedByPosition = sortSetsByPosition(setsByLength)
 
   // create sets in db
-  Object.values(sortedByPosition).forEach(async songs => {
-    await createSet(setlist.id, songs.map(song => song.id))
+  Object.values(sortedByPosition).forEach(async (songs, i) => {
+    await createSet(setlist.id, songs.map(song => song.id), i)
   })
 
   return setlist.id

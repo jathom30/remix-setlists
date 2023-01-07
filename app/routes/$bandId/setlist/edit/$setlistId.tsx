@@ -5,24 +5,23 @@ import { json } from '@remix-run/node'
 import type { ShouldReloadFunction } from "@remix-run/react";
 import { Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { Breadcrumbs, CatchContainer, DroppableContainer, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SaveButtons, SongDisplay, Title } from "~/components";
+import { Breadcrumbs, CatchContainer, DroppableContainer, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SongDisplay, Title } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { CSS } from "@dnd-kit/utilities";
 import type { Song } from "@prisma/client";
-import { UniqueIdentifier, DragEndEvent, DragOverEvent, DragStartEvent, CollisionDetection, MeasuringStrategy } from "@dnd-kit/core";
+import type { UniqueIdentifier, DragEndEvent, DragOverEvent, DragStartEvent, CollisionDetection } from "@dnd-kit/core";
+import { MeasuringStrategy } from "@dnd-kit/core";
 import { closestCenter, pointerWithin, rectIntersection, getFirstCollision, MouseSensor, TouchSensor } from "@dnd-kit/core";
-import { DndContext, KeyboardSensor, useSensor, useSensors, DragOverlay, useDroppable } from "@dnd-kit/core";
+import { DndContext, KeyboardSensor, useSensor, useSensors, DragOverlay } from "@dnd-kit/core";
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
-import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef } from "react";
 import { useSpinDelay } from 'spin-delay';
 import { useState } from "react";
-import { moveBetweenContainers } from "~/utils/sets";
 import { updateSet } from "~/models/set.server";
 import { coordinateGetter } from "~/utils/dnd";
-import { unstable_batchedUpdates } from "react-dom";
+import { getSetLength } from "~/utils/setlists";
 
 type SetSong = SerializeFrom<{
   songId: string;
@@ -51,13 +50,26 @@ export async function action({ request, params }: ActionArgs) {
   await requireNonSubMember(request, bandId)
   const formData = await request.formData()
 
+  const intent = formData.get('intent')?.toString()
+
   const entries = Object.fromEntries(formData.entries())
 
-  Object.keys(entries).forEach(async (key, i) => {
-    const songIds = entries[key].toString().split(',')
-    // TODO pass in positionIsSetlist instead of using index from forEach
-    await updateSet(key, songIds, i)
-  })
+  if (intent === 'songs') {
+    Object.keys(entries).forEach(async (key, i) => {
+      const songIds = entries[key].toString().split(',')
+      await updateSet({ setId: key, songIds })
+    })
+    return null
+  }
+
+  if (intent === 'sets') {
+    const sets = formData.get('sets')?.toString().split(',')
+    if (!sets) return null
+    sets.forEach(async (setId, i) => {
+      await updateSet({ setId, positionInSetlist: i })
+    })
+    return null
+  }
 
   return null
 }
@@ -93,6 +105,11 @@ export default function EditSetlist() {
     }
   }, {} as Items)
 
+  const getLengthOfSet = (setId: UniqueIdentifier) => {
+    const set = setlist.sets.find(set => set.id === setId)
+    if (!set) return
+    return getSetLength(set.songs)
+  }
 
   const isLoading = useSpinDelay(fetcher.state !== 'idle')
 
@@ -101,7 +118,8 @@ export default function EditSetlist() {
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null)
   const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
-  const isSortingContainer = activeId ? containers.includes(activeId) : false;
+  const isSortingContainer = activeId && containers.includes(activeId);
+  const isSongContainer = activeId && !containers.includes(activeId);
 
   /**
    * Custom collision detection strategy optimized for multiple containers
@@ -191,18 +209,6 @@ export default function EditSetlist() {
     return Object.keys(items).find((key) => items[key].includes(id));
   };
 
-  const getIndex = (id: UniqueIdentifier) => {
-    const container = findContainer(id);
-
-    if (!container) {
-      return -1;
-    }
-
-    const index = items[container].indexOf(id);
-
-    return index;
-  };
-
   const onDragCancel = () => {
     if (clonedItems) {
       // Reset items to their original state in case items have been
@@ -224,40 +230,6 @@ export default function EditSetlist() {
     setActiveId(active.id);
     setClonedItems(items);
   }
-
-  // function handleDragOver({ active, over }: DragOverEvent) {
-  //   const overId = over?.id;
-
-  //   if (!overId) {
-  //     return;
-  //   }
-
-  //   const activeContainer = active.data.current?.sortable.containerId;
-  //   const overContainer = over.data.current?.sortable.containerId;
-
-  //   if (!overContainer) {
-  //     return;
-  //   }
-
-  //   // figure out if a set or song is dragging
-  //   if (activeContainer !== overContainer) {
-  //     setItems((items) => {
-  //       const activeIndex = active.data.current?.sortable.index;
-  //       const overIndex = over.data.current?.sortable.index || 0;
-  //       const draggedSong = getSong(active.id)
-
-  //       if (!draggedSong) return items
-  //       return moveBetweenContainers(
-  //         { ...items },
-  //         activeContainer,
-  //         activeIndex,
-  //         overContainer,
-  //         overIndex,
-  //         draggedSong
-  //       );
-  //     });
-  //   }
-  // }
 
   const handleDragOver = ({ active, over }: DragOverEvent) => {
     const overId = over?.id;
@@ -317,61 +289,12 @@ export default function EditSetlist() {
     }
   }
 
-  // const handleDragEnd = ({ active, over }: DragEndEvent) => {
-  //   if (!over) {
-  //     return;
-  //   }
+  // function getNextContainerId() {
+  //   const containerIds = Object.keys(items);
+  //   const lastContainerId = containerIds[containerIds.length - 1];
 
-  //   if (active.id !== over.id) {
-  //     const activeContainer = active.data.current?.sortable.containerId;
-  //     const overContainer = over.data.current?.sortable.containerId || over.id;
-  //     const activeIndex = active.data.current?.sortable.index;
-  //     const overIndex = over.data.current?.sortable.index || 0;
-
-  //     setItems((prevSets) => {
-  //       let newItems: Record<string, SetSong[]>;
-  //       if (activeContainer === overContainer) {
-  //         newItems = {
-  //           ...prevSets,
-  //           [overContainer]: arrayMove(
-  //             prevSets[overContainer],
-  //             activeIndex,
-  //             overIndex
-  //           )
-  //         };
-  //       } else {
-  //         const draggedSong = getSong(active.id)
-
-  //         if (!draggedSong) return prevSets
-  //         newItems = moveBetweenContainers(
-  //           prevSets,
-  //           activeContainer,
-  //           activeIndex,
-  //           overContainer,
-  //           overIndex,
-  //           draggedSong
-  //         );
-  //       }
-
-  //       const setsSongIds = Object.keys(newItems).reduce((acc, setId) => {
-  //         return {
-  //           ...acc,
-  //           [setId]: newItems[setId].map(song => song.songId)
-  //         }
-  //       }, {})
-  //       fetcher.submit(setsSongIds, { method: 'put' })
-  //       return newItems;
-  //     });
-  //   }
-  //   setActiveId(null)
-  // };
-
-  function getNextContainerId() {
-    const containerIds = Object.keys(items);
-    const lastContainerId = containerIds[containerIds.length - 1];
-
-    return String.fromCharCode(lastContainerId.charCodeAt(0) + 1);
-  }
+  //   return String.fromCharCode(lastContainerId.charCodeAt(0) + 1);
+  // }
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id in items && over?.id) {
@@ -379,7 +302,11 @@ export default function EditSetlist() {
         const activeIndex = containers.indexOf(active.id);
         const overIndex = containers.indexOf(over.id);
 
-        return arrayMove(containers, activeIndex, overIndex);
+        const newContainers = arrayMove(containers, activeIndex, overIndex);
+
+        const formData = { sets: newContainers.join(','), intent: 'sets' }
+        fetcher.submit(formData, { method: 'put' })
+        return newContainers
       });
     }
 
@@ -397,34 +324,6 @@ export default function EditSetlist() {
       return;
     }
 
-    if (overId === TRASH_ID) {
-      setItems((items) => ({
-        ...items,
-        [activeContainer]: items[activeContainer].filter(
-          (id) => id !== activeId
-        ),
-      }));
-      setActiveId(null);
-      return;
-    }
-
-    if (overId === PLACEHOLDER_ID) {
-      const newContainerId = getNextContainerId();
-
-      unstable_batchedUpdates(() => {
-        setContainers((containers) => [...containers, newContainerId]);
-        setItems((items) => ({
-          ...items,
-          [activeContainer]: items[activeContainer].filter(
-            (id) => id !== activeId
-          ),
-          [newContainerId]: [active.id],
-        }));
-        setActiveId(null);
-      });
-      return;
-    }
-
     const overContainer = findContainer(overId);
 
     if (overContainer) {
@@ -432,17 +331,29 @@ export default function EditSetlist() {
       const overIndex = items[overContainer].indexOf(overId);
 
       if (activeIndex !== overIndex) {
-        setItems((items) => ({
-          ...items,
-          [overContainer]: arrayMove(
-            items[overContainer],
-            activeIndex,
-            overIndex
-          ),
-        }));
+        setItems((items) => {
+          const newItems = {
+            ...items,
+            [overContainer]: arrayMove(
+              items[overContainer],
+              activeIndex,
+              overIndex
+            ),
+          }
+
+          const formData = {
+            ...newItems as {},
+            intent: 'songs'
+          }
+
+
+          fetcher.submit(formData, { method: 'put' })
+          return newItems
+        });
       }
     }
 
+    setIsOpenSets(true)
     setActiveId(null);
   }
 
@@ -498,27 +409,46 @@ export default function EditSetlist() {
           onDragCancel={onDragCancel}
         >
           <SortableContext id={setlist.id} items={[...containers, PLACEHOLDER_ID]} strategy={verticalListSortingStrategy}>
-            {containers.map(containerId => (
+            {containers.map((containerId, i) => (
               <DroppableContainer
                 key={containerId}
                 id={containerId}
+                index={i}
                 items={items[containerId]}
-              // onRemove={() => handleRemove(containerId)}
+                onPointerDown={() => setIsOpenSets(false)}
+                onPointerUp={() => setIsOpenSets(true)}
+                isOpen={isOpenSets}
+                length={getLengthOfSet(containerId) || 0}
               >
-                <SortableContext items={items[containerId]} strategy={verticalListSortingStrategy}>
-                  {items[containerId].map(itemId => (
-                    <SortableSong
-                      key={itemId}
-                      id={itemId}
-                      song={getSong(itemId)}
-                    />
-                  ))}
-                </SortableContext>
+                <FlexList gap={2} pad={4}>
+                  <SortableContext items={items[containerId]} strategy={verticalListSortingStrategy}>
+                    {items[containerId].map(itemId => (
+                      <SortableSong
+                        key={itemId}
+                        id={itemId}
+                        song={getSong(itemId)}
+                      />
+                    ))}
+                  </SortableContext>
+                </FlexList>
               </DroppableContainer>
             ))}
           </SortableContext>
-          {/* TODO Setoverlay */}
-          {activeId ? <SongOverlay song={getSong(activeId || '')} /> : null}
+          <DragOverlay>
+            {isSortingContainer ? (
+              <SetOverlay
+                length={getLengthOfSet(activeId) || 0}
+                index={containers.indexOf(activeId)}
+                id={activeId}
+                items={[]}
+                onPointerDown={() => setIsOpenSets(false)}
+                onPointerUp={() => setIsOpenSets(true)}
+              />
+            ) : null}
+            {isSongContainer ? (
+              <SongOverlay song={getSong(activeId || '')} />
+            ) : null}
+          </DragOverlay>
         </DndContext>
         <FlexList pad={4}>
           <Link to="createSet">Create new set</Link>
@@ -531,20 +461,23 @@ export default function EditSetlist() {
 const SongOverlay = ({ song }: { song?: SetSong }) => {
   if (!song) { return null }
   return (
-    <DragOverlay>
-      <DraggedSong song={song} />
-    </DragOverlay>
+    <DraggedSong song={song} />
   )
 }
 
-// const DroppableArea = ({ id, children }: { id: string; children: ReactNode }) => {
-//   const { setNodeRef } = useDroppable({ id })
-
-//   return (
-//     <div ref={setNodeRef}>{children}</div>
-//   )
-// }
-
+const SetOverlay = ({ length, index, id, items, onPointerDown, onPointerUp }: { length: number; index: number; id: UniqueIdentifier; items: UniqueIdentifier[], onPointerDown: () => void, onPointerUp: () => void }) => {
+  return (
+    <DroppableContainer
+      id={id}
+      index={index}
+      items={items}
+      onPointerDown={onPointerDown}
+      onPointerUp={onPointerUp}
+      isOpen={false}
+      length={length}
+    />
+  )
+}
 
 const SortableSong = ({ id, song }: { id: UniqueIdentifier; song?: SetSong }) => {
   const {
@@ -594,39 +527,3 @@ export function ErrorBoundary({ error }: { error: Error }) {
 export function CatchBoundary() {
   return <CatchContainer />
 }
-
-
-{/* <DroppableArea id={setlist.id}>
-              <FlexList pad={4}>
-                {Object.keys(items).map((setId, i) => (
-                  <Collapsible
-                    key={setId}
-                    isOpen={isOpenSets}
-                    header={
-                      <div className="pb-4">
-                        <FlexHeader>
-                          <SortableSet id={setId}>
-                            <FlexHeader>
-                              <Label>Set {i + 1} - [GET SETLENGTH] minutes</Label>
-                              <Link to={`${setId}/addSongs`} icon={faPlus} isOutline isCollapsing>Add songs</Link>
-                            </FlexHeader>
-                          </SortableSet>
-                        </FlexHeader>
-                      </div>
-                    }
-                  >
-                    <SortableContext id={setId} items={items[setId]} strategy={verticalListSortingStrategy}>
-                      <DroppableArea id={setId}>
-                        <FlexList gap={2}>
-                          {items[setId].map(id => {
-                            const song = getSong(id)
-                            if (!song) return null
-                            return <SortableSong id={id} key={id} song={song} />
-                          })}
-                        </FlexList>
-                      </DroppableArea>
-                    </SortableContext>
-                  </Collapsible>
-                ))}
-              </FlexList>
-            </DroppableArea> */}

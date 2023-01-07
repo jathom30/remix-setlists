@@ -2,9 +2,16 @@ import type { UniqueIdentifier } from "@dnd-kit/core";
 import type { AnimateLayoutChanges } from "@dnd-kit/sortable";
 import { defaultAnimateLayoutChanges, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { faGripVertical } from "@fortawesome/free-solid-svg-icons";
+import { faGripVertical, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { LargeNumberLike } from "crypto";
+import pluralize from "pluralize";
 import type { ReactNode } from "react";
+import { Collapsible } from "../Collapsible";
+import { FlexHeader } from "../FlexHeader";
+import { FlexList } from "../FlexList";
+import { Label } from "../Label";
+import { Link } from "../Link";
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -12,21 +19,29 @@ const animateLayoutChanges: AnimateLayoutChanges = (args) =>
 export function DroppableContainer({
   children,
   id,
+  index,
   items,
+  onPointerDown,
+  onPointerUp,
+  isOpen,
+  length
 }: {
-  children: ReactNode
+  children?: ReactNode
   id: UniqueIdentifier;
+  index: number;
   items: UniqueIdentifier[];
+  onPointerDown: () => void
+  onPointerUp: () => void
+  isOpen: boolean
+  length: number
 }) {
   const {
-    active,
     attributes,
     isDragging,
     listeners,
-    over,
     setNodeRef,
-    transition,
     transform,
+    transition,
   } = useSortable({
     id,
     data: {
@@ -35,10 +50,6 @@ export function DroppableContainer({
     },
     animateLayoutChanges,
   });
-  const isOverContainer = over
-    ? (id === over.id && active?.data.current?.type !== 'container') ||
-    items.includes(over.id)
-    : false;
 
   const itemStyle = {
     transform: CSS.Transform.toString(transform),
@@ -50,18 +61,28 @@ export function DroppableContainer({
     <div
       ref={setNodeRef}
       style={itemStyle}
-    // hover={isOverContainer}
-    // handleProps={{
-    //   ...attributes,
-    //   ...listeners,
-    // }}
-    // columns={columns}
-    // {...props}
+      className="relative bg-base-200"
+      {...attributes}
     >
-      <div {...listeners}>
-        <FontAwesomeIcon icon={faGripVertical} />
-      </div>
-      {children}
+      <Collapsible isOpen={isOpen} header={
+        <FlexHeader pad={4}>
+          <FlexList direction="row" items="center">
+            <div
+              className="btn btn-accent btn-sm cursor-grab"
+              {...listeners}
+              onPointerDown={onPointerDown}
+              onPointerUp={onPointerUp}
+            >
+              <FontAwesomeIcon icon={faGripVertical} />
+            </div>
+            <Label>Set {index + 1} - {pluralize('minute', length, true)}</Label>
+          </FlexList>
+          <Link to={`${id}/addSongs`} icon={faPlus} isOutline isCollapsing>Add songs</Link>
+        </FlexHeader>
+      }>
+        {children}
+      </Collapsible>
+      {isDragging ? <div className="absolute inset-0 bg-base-300" /> : null}
     </div>
   );
 }
