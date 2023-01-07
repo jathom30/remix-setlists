@@ -59,11 +59,12 @@ export async function addSongsToSet(setId: Set['id'], songIds: Song['id'][]) {
   })
 }
 
-export async function createSet(setlistId: Setlist['id'], songIds: Song['id'][]) {
+export async function createSet(setlistId: Setlist['id'], songIds: Song['id'][], positionInSetlist: Set['positionInSetlist']) {
 
   return prisma.set.create({
     data: {
       setlistId,
+      positionInSetlist,
       songs: {
         create: songIds.map((songId, index) => ({
           songId,
@@ -74,7 +75,7 @@ export async function createSet(setlistId: Setlist['id'], songIds: Song['id'][])
   })
 }
 
-export async function updateSet(setId: Set['id'], songIds: Song['id'][]) {
+export async function updateSet(setId: Set['id'], songIds: Song['id'][], positionInSetlist: Set['positionInSetlist']) {
   return prisma.set.update({
     where: { id: setId },
     data: {
@@ -84,7 +85,8 @@ export async function updateSet(setId: Set['id'], songIds: Song['id'][]) {
           songId,
           positionInSet: index,
         })),
-      }
+      },
+      positionInSetlist,
     }
   })
 }

@@ -37,7 +37,6 @@ export default function Setlist() {
   const [isOpen, setIsOpen] = useState(setKeyDefaults)
 
   const handleOpenSet = (setId: string) => {
-    console.log(setId, isOpen)
     setIsOpen(prevOpen => {
       return {
         ...prevOpen,
