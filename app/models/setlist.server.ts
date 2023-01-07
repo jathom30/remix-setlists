@@ -45,8 +45,9 @@ export async function getSetlist(setlistId: Setlist['id']) {
     where: { id: setlistId },
     include: {
       sets: {
-        include: { songs: { include: { song: true }, orderBy: { positionInSet: 'asc' } } }
-      }
+        include: { songs: { include: { song: true }, orderBy: { positionInSet: 'asc' } } },
+        orderBy: { positionInSetlist: 'asc' }
+      },
     }
   })
 }
