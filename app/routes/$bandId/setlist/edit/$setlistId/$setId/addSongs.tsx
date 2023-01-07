@@ -56,12 +56,12 @@ export default function AddSongsToSet() {
   }
 
   return (
-    <MaxHeightContainer
-      header={
-        <div className="bg-base-100 shadow-lg p-4">
+    <FlexList>
+      <div className="bg-base-100 shadow-lg p-4 relative">
+        <div className="sticky top-0">
           <FlexList gap={2}>
             <FlexHeader>
-              <Title>New set</Title>
+              <Title>add songs to set</Title>
               {hasAvailableSongs ? <Link isOutline to="../createSong" icon={faPlus}>Create song</Link> : null}
             </FlexHeader>
             <Form method="get">
@@ -69,8 +69,7 @@ export default function AddSongsToSet() {
             </Form>
           </FlexList>
         </div>
-      }
-    >
+      </div>
       <MaxHeightContainer
         fullHeight
         footer={
@@ -84,6 +83,6 @@ export default function AddSongsToSet() {
           <MulitSongSelect songs={songs} />
         </Form>
       </MaxHeightContainer>
-    </MaxHeightContainer>
+    </FlexList>
   )
 }

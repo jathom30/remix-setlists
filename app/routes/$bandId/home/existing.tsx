@@ -2,7 +2,7 @@ import { Form, useActionData } from "@remix-run/react";
 import { json } from '@remix-run/node'
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
-import { ErrorContainer, ErrorMessage, FlexList, Input, Label, SaveButtons } from "~/components";
+import { CatchContainer, ErrorContainer, ErrorMessage, FlexList, Input, Label, SaveButtons } from "~/components";
 import { requireUserId } from "~/session.server";
 import { getFields } from "~/utils/form";
 import { updateBandByCode } from "~/models/band.server";
@@ -45,4 +45,8 @@ export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <ErrorContainer error={error} />
   )
+}
+
+export function CatchBoundary() {
+  return <CatchContainer />
 }

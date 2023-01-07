@@ -65,7 +65,7 @@ export default function Home() {
       ) :
         <div className="grid sm:grid-cols-2 gap-2 sm:gap-4 p-4">
           {bands.map(band => (
-            <NavLink to={`/${band.id}/setlists`} key={band.id} className={`rounded ${bandId === band.id ? 'bg-base-200' : ''} hover:bg-base-300`}>
+            <NavLink to={`/${band.id}/setlists`} key={band.id} className={`rounded ${bandId === band.id ? 'bg-base-100' : ''} hover:bg-base-300`}>
               <FlexList direction="row" pad={4} items="center">
                 <Avatar size="lg" icon={band.icon} bandName={band.name} />
                 <FlexList gap={0}>

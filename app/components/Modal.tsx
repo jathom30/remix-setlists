@@ -14,7 +14,7 @@ export const Modal = ({ children, open, onClose }: { children: React.ReactNode; 
     {open ? (
       <div
         key="drawer"
-        className="fixed inset-0"
+        className="fixed inset-0 z-10"
       >
         <motion.div
           role="presentation"

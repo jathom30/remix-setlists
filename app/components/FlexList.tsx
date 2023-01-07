@@ -13,7 +13,7 @@ export const FlexList = ({
   children,
   gap = 4,
   pad,
-  items = 'start',
+  items,
   direction = 'col',
   justify = 'start',
   height,
@@ -27,8 +27,25 @@ export const FlexList = ({
     return `px-${pad.x} py-${pad.y} pt-${pad.t} pb-${pad.b} pl-${pad.l} pr-${pad.r}`
   }
   return (
-    <div className={`${createPadding()} flex flex-${direction} gap-${gap} items-${items} justify-${justify} ${height ? `h-${height}` : ''} ${wrap ? 'flex-wrap' : ''}`}>
+    <div className={`${createPadding()} flex flex-${direction} gap-${gap} ${getItems(items)} justify-${justify} ${height ? `h-${height}` : ''} ${wrap ? 'flex-wrap' : ''}`}>
       {children}
     </div>
   )
+}
+
+const getItems = (items: FlexListProps['items']) => {
+  switch (items) {
+    case 'baseline':
+      return 'items-baseline'
+    case 'stretch':
+      return 'items-stretch'
+    case 'start':
+      return 'items-start'
+    case 'end':
+      return 'items-end'
+    case 'center':
+      return 'items-center'
+    default:
+      return ''
+  }
 }

@@ -3,7 +3,7 @@ import { json } from "@remix-run/node"
 import { MaxHeightContainer, FlexList, Avatar, Badge, Link, MobileModal, Title, CreateNewButton, Navbar, FlexHeader } from "~/components"
 import { getBands } from "~/models/band.server"
 import { requireUserId } from "~/session.server"
-import { useLoaderData, NavLink, useLocation, useNavigate, Outlet, useParams } from "@remix-run/react"
+import { useLoaderData, Link as RemixLink, useLocation, useNavigate, Outlet, useParams } from "@remix-run/react"
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
@@ -57,19 +57,19 @@ export default function Select() {
           <Link to="existing">Add with code</Link>
         </FlexList>
       ) :
-        <div className="grid sm:grid-cols-2 gap-2 sm:gap-4 p-4">
+        <div className="grid sm:grid-cols-2 gap-4 p-4">
           {bands.map(band => (
-            <NavLink to={`/${band.id}/setlists`} key={band.id} className={`rounded ${bandId === band.id ? 'bg-base-200' : ''} hover:bg-base-300`}>
-              <FlexList direction="row" pad={4} items="center">
+            <RemixLink to={`/${band.id}/setlists`} key={band.id} className={`btn btn-block btn-outline h-auto p-2 ${bandId === band.id ? 'outline outline-primary outline-2 outline-offset-2' : ''}`}>
+              <div className="w-full flex items-center gap-4">
                 <Avatar size="lg" icon={band.icon} bandName={band.name} />
-                <FlexList gap={0}>
+                <FlexList items="start" gap={0}>
                   <h2 className="text-2xl">{band.name}</h2>
                   <div>
                     <Badge>{band.members[0].role}</Badge>
                   </div>
                 </FlexList>
-              </FlexList>
-            </NavLink>
+              </div>
+            </RemixLink>
           ))}
         </div>
       }
