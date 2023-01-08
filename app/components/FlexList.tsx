@@ -15,7 +15,7 @@ export const FlexList = ({
   pad,
   items,
   direction = 'col',
-  justify = 'start',
+  justify,
   height,
   wrap = false,
 }: FlexListProps) => {

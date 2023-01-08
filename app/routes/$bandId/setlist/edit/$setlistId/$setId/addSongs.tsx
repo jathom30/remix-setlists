@@ -70,19 +70,19 @@ export default function AddSongsToSet() {
           </FlexList>
         </div>
       </div>
-      <MaxHeightContainer
-        fullHeight
-        footer={
-          <SaveButtons
-            saveLabel="Add songs to set"
-            cancelTo=".."
-          />
-        }
-      >
-        <Form method="put" className="h-full">
+      <Form method="put" className="h-full">
+        <MaxHeightContainer
+          fullHeight
+          footer={
+            <SaveButtons
+              saveLabel="Add songs to set"
+              cancelTo=".."
+            />
+          }
+        >
           <MulitSongSelect songs={songs} />
-        </Form>
-      </MaxHeightContainer>
+        </MaxHeightContainer>
+      </Form>
     </FlexList>
   )
 }

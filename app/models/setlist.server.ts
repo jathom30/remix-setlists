@@ -45,8 +45,9 @@ export async function getSetlist(setlistId: Setlist['id']) {
     where: { id: setlistId },
     include: {
       sets: {
-        include: { songs: { include: { song: true }, orderBy: { positionInSet: 'asc' } } }
-      }
+        include: { songs: { include: { song: true }, orderBy: { positionInSet: 'asc' } } },
+        orderBy: { positionInSetlist: 'asc' }
+      },
     }
   })
 }
@@ -115,8 +116,8 @@ export async function createSetlistAuto(bandId: Band['id'], settings: SetlistSet
   const sortedByPosition = sortSetsByPosition(setsByLength)
 
   // create sets in db
-  Object.values(sortedByPosition).forEach(async songs => {
-    await createSet(setlist.id, songs.map(song => song.id))
+  Object.values(sortedByPosition).forEach(async (songs, i) => {
+    await createSet(setlist.id, songs.map(song => song.id), i)
   })
 
   return setlist.id
