@@ -2,7 +2,7 @@ import { json } from '@remix-run/node'
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import { useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { MaxHeightContainer, ErrorContainer, CatchContainer, Breadcrumbs, Navbar, FlexHeader, Title } from "~/components";
+import { MaxHeightContainer, ErrorContainer, CatchContainer, Breadcrumbs, Navbar, FlexHeader, Title, AvatarTitle, FlexList } from "~/components";
 import { requireNonSubMember } from "~/session.server";
 import { getFeels } from '~/models/feel.server';
 import { SongNew } from '~/routes/resource/songNew';
@@ -25,13 +25,13 @@ export default function NewSong() {
       header={
         <Navbar>
           <FlexHeader>
-            <div>
-              <Title>New song</Title>
+            <FlexList gap={2}>
+              <AvatarTitle title="New" />
               <Breadcrumbs breadcrumbs={[
                 { label: 'Songs', to: `/${bandId}/songs` },
                 { label: 'New', to: '.' },
               ]} />
-            </div>
+            </FlexList>
           </FlexHeader>
         </Navbar>
       }

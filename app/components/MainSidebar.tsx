@@ -77,7 +77,7 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
                 }
               >
                 <button
-                  className="btn btn-block btn-outline h-auto p-2"
+                  className="btn btn-block btn-outline h-auto p-2 hover:btn-accent"
                   onClick={() => setIsPopupOpen(!isPopupOpen)}
                 >
                   <BandOption band={band} isCollapsed={!isOpen} memberRole={memberRole}>

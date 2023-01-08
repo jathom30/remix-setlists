@@ -1,4 +1,4 @@
-type FlexListProps = {
+export type FlexListProps = {
   children: React.ReactNode;
   gap?: number
   pad?: number | Partial<Record<'x' | 'y' | 'l' | 'r' | 't' | 'b', number>>
@@ -33,7 +33,7 @@ export const FlexList = ({
   )
 }
 
-const getItems = (items: FlexListProps['items']) => {
+export const getItems = (items: FlexListProps['items']) => {
   switch (items) {
     case 'baseline':
       return 'items-baseline'

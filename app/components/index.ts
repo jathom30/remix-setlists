@@ -1,5 +1,6 @@
 export * from './dnd'
 export * from './Avatar'
+export * from './AvatarTitle'
 export * from './Badge'
 export * from './Breadcrumbs'
 export * from './Button'

@@ -7,7 +7,7 @@ type Breadcrumb = {
 
 export const Breadcrumbs = ({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) => {
   return (
-    <div className="breadcrumbs pt-0">
+    <div className="breadcrumbs p-0">
       <ul>
         {breadcrumbs.map(link => (
           <li key={link.label}>

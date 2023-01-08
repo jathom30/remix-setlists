@@ -1,4 +1,7 @@
-export const FlexHeader = ({ children, pad }: { children: React.ReactNode; pad?: number | Partial<Record<'x' | 'y' | 'l' | 'r' | 't' | 'b', number>> }) => {
+import type { FlexListProps } from "./FlexList";
+import { getItems } from "./FlexList";
+
+export const FlexHeader = ({ children, pad, items = 'center' }: { children: React.ReactNode; pad?: FlexListProps['pad']; items?: FlexListProps['items'] }) => {
   const createPadding = () => {
     if (!pad) { return null }
     if (typeof pad === 'number') {
@@ -7,6 +10,6 @@ export const FlexHeader = ({ children, pad }: { children: React.ReactNode; pad?:
     return `px-${pad.x} py-${pad.y} pt-${pad.t} pb-${pad.b} pl-${pad.l} pr-${pad.r}`
   }
   return (
-    <div className={`flex items-center justify-between gap-2 w-full ${createPadding()}`}>{children}</div>
+    <div className={`flex ${getItems(items)} justify-between gap-2 w-full ${createPadding()}`}>{children}</div>
   )
 }

@@ -1,4 +1,6 @@
+import type { BandIcon } from "@prisma/client";
 import { useMatches } from "@remix-run/react";
+import { SerializeFrom } from "@remix-run/server-runtime";
 import { useMemo } from "react";
 
 import type { User } from "~/models/user.server";
@@ -81,4 +83,15 @@ export function useUser(): User {
 
 export function validateEmail(email: unknown): email is string {
   return typeof email === "string" && email.length > 3 && email.includes("@");
+}
+
+const isBand = (data: any): data is { band: { icon: SerializeFrom<BandIcon>; name: string } } => {
+  return data?.band?.icon as BandIcon !== undefined
+}
+
+export function useBandIcon() {
+  const data = useMatchesData('routes/$bandId')
+  if (!data) { return }
+  if (!isBand(data)) { return }
+  return { icon: data.band.icon, bandName: data.band.name }
 }

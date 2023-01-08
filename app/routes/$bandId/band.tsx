@@ -2,7 +2,7 @@ import { Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/reac
 import { json } from "@remix-run/node"
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Avatar, Badge, CatchContainer, Divider, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, Title } from "~/components";
+import { Avatar, AvatarTitle, Badge, CatchContainer, Divider, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar } from "~/components";
 import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { getUsersById } from "~/models/user.server";
@@ -51,7 +51,7 @@ export default function BandSettingsPage() {
       header={
         <Navbar>
           <FlexHeader>
-            <Title>Band settings</Title>
+            <AvatarTitle title="Band" />
             {isAdmin ? (
               <Link to="edit" icon={faPencil} isCollapsing kind="ghost">Edit</Link>
             ) : null}
