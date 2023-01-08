@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useParams } from "@remix-run/react"
-import { Breadcrumbs, FlexHeader, MaxHeightContainer, MaxWidth, Navbar, Title } from "~/components"
+import { AvatarTitle, Breadcrumbs, FlexHeader, FlexList, MaxHeightContainer, MaxWidth, Navbar } from "~/components"
 
 
 const getHeader = (pathname: string) => {
@@ -23,14 +23,14 @@ export default function NewSetlist() {
       header={
         <Navbar>
           <FlexHeader>
-            <div>
-              <Title>New setlist</Title>
+            <FlexList gap={2}>
+              <AvatarTitle title="New setlist" />
               <Breadcrumbs breadcrumbs={[
                 { label: 'Setlists', to: `/${bandId}/setlists` },
                 { label: 'New', to: isNewBase ? '.' : `/${bandId}/setlist/new` },
                 ...(!isNewBase ? [{ label: getHeader(pathname), to: '.' }] : [])
               ]} />
-            </div>
+            </FlexList>
           </FlexHeader>
         </Navbar>
       }

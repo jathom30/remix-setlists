@@ -4,7 +4,7 @@ import invariant from "tiny-invariant";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams } from "@remix-run/react";
-import { CatchContainer, CreateNewButton, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SearchInput, SongLink, Title } from "~/components";
+import { AvatarTitle, CatchContainer, CreateNewButton, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SearchInput, SongLink } from "~/components";
 import { faBoxOpen, faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
@@ -62,7 +62,7 @@ export default function SongsList() {
       header={
         <Navbar>
           <FlexHeader>
-            <Title>Songs</Title>
+            <AvatarTitle title="Songs" />
             {!isSub ? (
               <div className="hidden sm:block">
                 <Link to={`/${bandId}/song/new`} kind="primary">New song</Link>

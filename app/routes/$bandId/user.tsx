@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, Link as RemixLink } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/server-runtime";
-import { Badge, Button, Divider, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, Navbar, Title } from "~/components";
+import { AvatarTitle, Badge, Button, Divider, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MobileModal, Navbar } from "~/components";
 import { getUserWithBands } from "~/models/user.server";
 
 export async function loader({ request }: LoaderArgs) {
@@ -30,7 +30,7 @@ export default function UserRoute() {
       header={
         <Navbar>
           <FlexHeader>
-            <Title>User</Title>
+            <AvatarTitle title="User" />
             <Form action="/logout" method="post">
               <Button isCollapsing kind="ghost" type="submit" icon={faSignOut}>Sign out</Button>
             </Form>

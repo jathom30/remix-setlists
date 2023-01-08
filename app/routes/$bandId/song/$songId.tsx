@@ -3,7 +3,7 @@ import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@rem
 import { json } from '@remix-run/node'
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Breadcrumbs, CatchContainer, Divider, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, RouteHeader, RouteHeaderBackLink, TempoIcons, Title } from "~/components";
+import { AvatarTitle, Breadcrumbs, CatchContainer, Divider, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, TempoIcons } from "~/components";
 import { getSong } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import pluralize from 'pluralize'
@@ -36,15 +36,15 @@ export default function SongDetails() {
       fullHeight
       header={
         <Navbar>
-          <FlexHeader>
-            <div>
-              <Title>{song.name}</Title>
+          <FlexHeader items="baseline">
+            <FlexList gap={2}>
+              <AvatarTitle title={song.name} />
               <Breadcrumbs breadcrumbs={[
                 { label: 'Songs', to: `/${bandId}/songs` },
                 { label: song.name, to: '.' },
               ]}
               />
-            </div>
+            </FlexList>
             {!isSub ? <Link to="edit" icon={faPenToSquare} kind="ghost" isCollapsing>Edit song</Link> : null}
           </FlexHeader>
         </Navbar>

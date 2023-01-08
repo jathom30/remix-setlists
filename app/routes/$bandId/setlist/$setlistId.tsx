@@ -1,14 +1,13 @@
-import type { LoaderArgs, SerializeFrom } from "@remix-run/server-runtime";
+import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
-import { Breadcrumbs, Button, CatchContainer, Collapsible, CollapsibleHeader, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SongLink, Title } from "~/components";
+import { AvatarTitle, Breadcrumbs, Button, CatchContainer, Collapsible, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SongLink } from "~/components";
 import { faCompress, faDatabase, faEllipsisV, faExpand } from "@fortawesome/free-solid-svg-icons";
 import { getSetLength } from "~/utils/setlists";
 import pluralize from "pluralize";
-import { Set, Song } from "@prisma/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
@@ -51,14 +50,14 @@ export default function Setlist() {
       header={
         <Navbar>
           <FlexHeader>
-            <div>
-              <Title>{setlist.name}</Title>
+            <FlexList gap={2}>
+              <AvatarTitle title={setlist.name} />
               <Breadcrumbs breadcrumbs={[
                 { label: 'Setlists', to: `/${bandId}/setlists` },
                 { label: setlist.name, to: '.' },
               ]}
               />
-            </div>
+            </FlexList>
             <Link to="menu" icon={faEllipsisV} kind="ghost" isCollapsing>Menu</Link>
           </FlexHeader>
         </Navbar>
