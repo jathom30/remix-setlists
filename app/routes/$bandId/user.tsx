@@ -17,7 +17,7 @@ export async function loader({ request }: LoaderArgs) {
 
 const subRoutes = ['details', 'password', 'delete', 'remove']
 
-const themes = ["light", "dark"]
+const themes = ["winter", "night"]
 // const themes = ["light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee", "winter"]
 
 export default function UserRoute() {
