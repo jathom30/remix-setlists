@@ -1,7 +1,7 @@
 import type { FlexListProps } from "./FlexList";
 import { getItems } from "./FlexList";
 
-export const FlexHeader = ({ children, pad, items = 'center' }: { children: React.ReactNode; pad?: number | Partial<Record<'x' | 'y' | 'l' | 'r' | 't' | 'b', number>>; items?: FlexListProps['items'] }) => {
+export const FlexHeader = ({ children, pad, items = 'center' }: { children: React.ReactNode; pad?: FlexListProps['pad']; items?: FlexListProps['items'] }) => {
   const createPadding = () => {
     if (!pad) { return null }
     if (typeof pad === 'number') {
