@@ -1,10 +1,13 @@
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import { HexColorPicker } from "react-colorful"
 import { json, redirect } from "@remix-run/node";
 import { CatchContainer, ErrorContainer, ErrorMessage, Field, FlexList, Input, SaveButtons } from "~/components";
 import { getFeel, updateFeel } from "~/models/feel.server";
 import { requireNonSubMember } from "~/session.server";
 import invariant from "tiny-invariant";
+import { useState } from "react";
+import { contrastColor } from "~/utils/assorted";
 
 export async function loader({ request, params }: LoaderArgs) {
   const { bandId, feelId } = params
@@ -25,19 +28,27 @@ export async function action({ request, params }: ActionArgs) {
   await requireNonSubMember(request, bandId)
   const formData = await request.formData()
   const name = formData.get('name')
+  const color = formData.get('color')
 
   if (typeof name !== 'string' || name.length < 3) {
     return json({
-      errors: { name: 'Name must be at least 3 characters long' }
+      errors: { name: 'Name must be at least 3 characters long', color: null }
     })
   }
-  await updateFeel(feelId, { label: name })
+  if (typeof color !== 'string') {
+    return json({
+      errors: { name: null, color: 'Color must be a string' }
+    })
+  }
+  await updateFeel(feelId, { label: name, color })
   return redirect(`/${bandId}/band`)
 }
 
 export default function EditFeel() {
   const { feel } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
+  const [color, setColor] = useState(feel.color || '');
+
   return (
     <Form method="put">
       <FlexList pad={4}>
@@ -46,7 +57,21 @@ export default function EditFeel() {
           <Input name="name" defaultValue={feel.label} placeholder={feel.label} />
           {actionData?.errors.name ? <ErrorMessage message={actionData.errors.name} /> : null}
         </Field>
+        <div className="flex gap-4">
+          <div className="flex-grow">
+            <HexColorPicker color={color} onChange={setColor} />
+          </div>
+          <div className="w-full h-30 flex flex-col gap-1">
+            <div className="font-bold h-full flex items-center justify-center rounded-t-lg" style={{ backgroundColor: feel.color || '', color: contrastColor(feel.color || '') }}>
+              <span>Original  color</span>
+            </div>
+            <div className="font-bold h-full flex items-center justify-center rounded-b-lg" style={{ backgroundColor: color, color: contrastColor(color) }}>
+              <span>New color</span>
+            </div>
+          </div>
+        </div>
       </FlexList>
+      <input hidden type="hidden" name="color" value={color} />
       <SaveButtons saveLabel="Update feel" cancelTo=".." />
     </Form>
   )
