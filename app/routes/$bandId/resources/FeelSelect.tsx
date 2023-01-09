@@ -19,26 +19,31 @@ export async function action({ request, params }: ActionArgs) {
 
   if (newFeel && typeof newFeel === 'string') {
     return json({
+      error: null,
       newFeel: await createFeel(newFeel, bandId)
     })
   }
-  return json({ error: 'Could not create feel' })
+  return json({ error: 'Could not create feel', newFeel: null })
 }
 
 export const FeelSelect = ({ feels, defaultFeels }: { feels: SerializeFrom<Feel>[]; defaultFeels?: SerializeFrom<Feel>[] }) => {
-  const fetcher = useFetcher()
+  const fetcher = useFetcher<typeof action>()
+  const newFeel = fetcher.data?.newFeel
 
   const { bandId } = useParams()
   const [selectedFeels, setSelectedFeels] = useState(defaultFeels || [])
 
   // ! this feels wrong. Seems like there should be a way to grab the data inside handleCreateFeel
   useEffect(() => {
-    const newFeel: SerializeFrom<Feel> | undefined = fetcher.data?.newFeel
-    const isUnique = selectedFeels.every(feel => feel.id !== newFeel?.id)
-    if (newFeel && isUnique) {
-      setSelectedFeels(prevFeels => [...prevFeels, newFeel])
-    }
-  }, [fetcher, selectedFeels])
+    if (!newFeel) { return }
+    // if newFeel is in prevFeels return
+    setSelectedFeels(prevFeels => {
+      if (prevFeels.some(feel => feel.id === newFeel.id)) {
+        return prevFeels
+      }
+      return [...prevFeels, newFeel]
+    })
+  }, [newFeel])
 
   const base100 = getColor('base-100')
   const base200 = getColor('base-200')
