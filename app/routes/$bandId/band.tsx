@@ -66,14 +66,16 @@ export default function BandSettingsPage() {
     >
       <MaxWidth>
         <FlexList pad={4}>
-          <FlexHeader>
-            <h1 className="text-3xl font-bold">{band.name}</h1>
-            <div className="indicator">
+          <FlexHeader pad={2}>
+            <h1 className="text-xl sm:text-2xl font-bold">{band.name}</h1>
+            <RemixLink className="indicator" to="avatar">
               <div className="indicator-item indicator-bottom">
-                <RemixLink className="btn btn-sm btn-circle" to="avatar"><FontAwesomeIcon icon={faCamera} /></RemixLink>
+                <div className="btn btn-sm btn-circle">
+                  <FontAwesomeIcon icon={faCamera} />
+                </div>
               </div>
               <Avatar bandName={band.name || ''} icon={band.icon} size="lg" />
-            </div>
+            </RemixLink>
           </FlexHeader>
           <ItemBox>
             <FlexHeader>

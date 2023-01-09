@@ -18,7 +18,7 @@ export default function AvatarBase() {
       <Avatar bandName={data?.bandName || ''} icon={data?.icon} size="xl" />
       <FlexList direction="row">
         <Link icon={faPencil} to="edit">Change</Link>
-        <Link kind="error" icon={faTrash} to="delete">Remove</Link>
+        {data?.icon.path ? <Link kind="error" icon={faTrash} to="delete">Remove</Link> : null}
       </FlexList>
     </FlexList>
   )

@@ -23,7 +23,6 @@ export async function uploadImage(data: AsyncIterable<Uint8Array>, bandId: strin
       (error, result) => {
         if (error) {
           reject(error);
-          return;
         }
         if (!result) { return }
         resolve(result);
