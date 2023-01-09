@@ -128,6 +128,11 @@ export async function createSetlistAuto(bandId: Band['id'], settings: SetlistSet
 export async function cloneSetlist(setlistId: Setlist['id']) {
   const originalSetlist = await getSetlist(setlistId)
   if (!originalSetlist) { return null }
+  // destroy any setlists that may have been cloned previously, but abandoned during editing
+  const oldSetlist = await prisma.setlist.findFirst({ where: { editedFromId: originalSetlist.id } })
+  if (oldSetlist) {
+    deleteSetlist(oldSetlist.id)
+  }
   return prisma.setlist.create({
     data: {
       name: originalSetlist.name,
