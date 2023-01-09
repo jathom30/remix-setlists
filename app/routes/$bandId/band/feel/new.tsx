@@ -5,6 +5,8 @@ import invariant from "tiny-invariant";
 import { CatchContainer, ErrorContainer, ErrorMessage, Field, FlexList, Input, SaveButtons } from "~/components";
 import { requireNonSubMember } from "~/session.server";
 import { createFeel } from "~/models/feel.server";
+import { HexColorPicker } from "react-colorful";
+import { useState } from "react";
 
 export async function loader({ request, params }: LoaderArgs) {
   const { bandId } = params
@@ -20,19 +22,27 @@ export async function action({ request, params }: ActionArgs) {
 
   const formData = await request.formData()
   const name = formData.get('name')
+  const color = formData.get('color')
 
   if (typeof name !== 'string' || name.length < 3) {
     return json({
       errors: { name: 'Feels must be at least 3 characters long' }
     })
   }
+  if (typeof color !== 'string') {
+    return json({
+      errors: { name: null, color: 'Color must be a string' }
+    })
+  }
 
-  await createFeel(name, bandId)
+  await createFeel(name, bandId, color)
   return redirect(`/${bandId}/band`)
 }
 
 export default function NewFeel() {
   const actionData = useActionData<typeof action>()
+  const [color, setColor] = useState('#000');
+
   return (
     <Form method="post">
       <FlexList pad={4}>
@@ -44,7 +54,11 @@ export default function NewFeel() {
           <Input name="name" placeholder="Feel name" />
           {actionData?.errors.name ? <ErrorMessage message={actionData.errors.name} /> : null}
         </Field>
+        <FlexList items="center">
+          <HexColorPicker color={color} onChange={setColor} />
+        </FlexList>
       </FlexList>
+      <input hidden type="hidden" name="color" value={color} />
       <SaveButtons saveLabel="Create feel" cancelTo=".." />
     </Form>
   )

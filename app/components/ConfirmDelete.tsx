@@ -11,7 +11,7 @@ export const ConfirmDelete = ({ label, deleteLabel = 'Delete', message, cancelTo
   return (
     <FlexList pad={4}>
       <h3 className="font-bold">{label}</h3>
-      <p className="text-xs text-text-subdued sm:text-sm">{message}</p>
+      <p>{message}</p>
       <div className="flex flex-col gap-2 sm:flex-row-reverse">
         <Button type="submit" kind="error" icon={faTrash} isSaving={isSubmitting}>{isSubmitting ? 'Deleting...' : deleteLabel}</Button>
         <Link to={cancelTo}>Cancel</Link>

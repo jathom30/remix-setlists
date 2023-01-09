@@ -3,8 +3,8 @@ import type { SerializeFrom } from '@remix-run/node'
 import type { ReactNode } from "react";
 import { contrastColor } from "~/utils/assorted"
 
-export const FeelTag = ({ feel, children }: { feel: SerializeFrom<Feel>; children?: ReactNode }) => {
+export const FeelTag = ({ feel, children }: { feel: Pick<SerializeFrom<Feel>, 'color' | 'label'>; children?: ReactNode }) => {
   return (
-    <span className="badge badge-lg" style={{ backgroundColor: feel.color || '', color: contrastColor(feel.color || '') }}>{feel.label} {children}</span>
+    <span className="badge badge-lg outline-none" style={{ backgroundColor: feel.color || '', color: contrastColor(feel.color || '') }}>{feel.label} {children}</span>
   )
 }

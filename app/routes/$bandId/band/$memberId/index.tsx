@@ -91,13 +91,13 @@ export default function EditMember() {
           ]}
         >
           <FlexList>
-            <p className="text-text-subdued text-sm">{roleExplanitoryText[roleTab || 'NOT_FOUND']}</p>
+            <p className="text-sm">{roleExplanitoryText[roleTab || 'NOT_FOUND']}</p>
             <Form method="put">
               <FlexList>
-                <Button type="submit" isDisabled={roleTab === memberRole || !canRemoveAsAdmin} name="role" value={roleTab as unknown as string} kind="secondary">{roleTab === memberRole ? 'Current role' : `Set role as ${roleTab}`}</Button>
                 {(!canRemoveAsAdmin && roleTab !== RoleEnum.ADMIN) ? (
-                  <p className="text-sm text-text-subdued">You are the only <strong>admin</strong> on this band. Make at least one other member an Admin before updating your role.</p>
+                  <p className="text-sm text-error">You are the only <strong>admin</strong> on this band. Make at least one other member an Admin before updating your role.</p>
                 ) : null}
+                <Button type="submit" isDisabled={roleTab === memberRole || !canRemoveAsAdmin} name="role" value={roleTab as unknown as string} kind="secondary">{roleTab === memberRole ? 'Current role' : `Set role as ${roleTab}`}</Button>
               </FlexList>
             </Form>
           </FlexList>
@@ -111,7 +111,7 @@ export default function EditMember() {
           <FlexList gap={2}>
             <span className="font-bold">Remove this member</span>
             {canRemoveMember ? (
-              <p className="text-text-subdued text-sm">
+              <p className="text-sm">
                 Removing this member will remove their access to this band's songs and setlists.
               </p>
             ) : (
@@ -119,7 +119,7 @@ export default function EditMember() {
                 <p className="text-danger text-sm">
                   You are the only admin. Make at least one other member an Admin before removing yourself.
                 </p>
-                <p className="text-sm">If you would rather delete this band, you can do so <RemixLink className="underline text-blue-500" to={`/${bandId}/band/delete`}>here</RemixLink>.</p>
+                <p className="text-sm text-error">If you would rather delete this band, you can do so <RemixLink className="underline font-bold" to={`/${bandId}/band/delete`}>here</RemixLink>.</p>
               </>
             )}
 

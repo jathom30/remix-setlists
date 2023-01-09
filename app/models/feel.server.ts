@@ -15,7 +15,7 @@ export async function getFeel(feelId: Feel['id']) {
   })
 }
 
-export async function createFeel(label: Feel['label'], bandId: Feel['bandId']) {
+export async function createFeel(label: Feel['label'], bandId: Feel['bandId'], color?: Feel['color']) {
   // https://css-tricks.com/snippets/javascript/random-hex-color/
   const randomColor = (): string => {
     const hex = `#${Math.floor(Math.random() * 16777215).toString(16)}`
@@ -26,7 +26,7 @@ export async function createFeel(label: Feel['label'], bandId: Feel['bandId']) {
   };
 
   return prisma.feel.create({
-    data: { label, bandId, color: randomColor() }
+    data: { label, bandId, color: color ?? randomColor() }
   })
 }
 
