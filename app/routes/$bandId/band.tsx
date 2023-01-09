@@ -1,4 +1,4 @@
-import { Outlet, useLoaderData, useLocation, useNavigate } from "@remix-run/react";
+import { Outlet, useLoaderData, useLocation, useNavigate, Link as RemixLink } from "@remix-run/react";
 import { json } from "@remix-run/node"
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
@@ -7,7 +7,7 @@ import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { getUsersById } from "~/models/user.server";
 import { RoleEnum } from "~/utils/enums";
-import { faEdit, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCamera, faEdit, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useMemberRole } from "~/utils";
 import { getFeels } from "~/models/feel.server";
 import pluralize from "pluralize";
@@ -44,7 +44,7 @@ export default function BandSettingsPage() {
   const navigate = useNavigate()
 
   // sub routes can include member id if user is updating member's role
-  const subRoutes = ['newMember', 'edit', 'updateMember', 'removeSelf', 'delete', ...members.map(m => m.id), 'feel']
+  const subRoutes = ['newMember', 'avatar', 'edit', 'updateMember', 'removeSelf', 'delete', ...members.map(m => m.id), 'feel']
   return (
     <MaxHeightContainer
       fullHeight
@@ -66,9 +66,16 @@ export default function BandSettingsPage() {
     >
       <MaxWidth>
         <FlexList pad={4}>
-          <FlexHeader>
-            <h1 className="text-3xl font-bold">{band.name}</h1>
-            <Avatar bandName={band.name || ''} icon={band.icon} size="lg" />
+          <FlexHeader pad={2}>
+            <h1 className="text-xl sm:text-2xl font-bold">{band.name}</h1>
+            <RemixLink className="indicator" to="avatar">
+              <div className="indicator-item indicator-bottom">
+                <div className="btn btn-sm btn-circle">
+                  <FontAwesomeIcon icon={faCamera} />
+                </div>
+              </div>
+              <Avatar bandName={band.name || ''} icon={band.icon} size="lg" />
+            </RemixLink>
           </FlexHeader>
           <ItemBox>
             <FlexHeader>

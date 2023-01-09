@@ -63,7 +63,7 @@ export default function Select() {
               <div className="w-full flex items-center gap-4">
                 <Avatar size="lg" icon={band.icon} bandName={band.name} />
                 <FlexList items="start" gap={0}>
-                  <h2 className="text-2xl">{band.name}</h2>
+                  <h2 className="text-2xl text-left">{band.name}</h2>
                   <div>
                     <Badge>{band.members[0].role}</Badge>
                   </div>

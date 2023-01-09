@@ -1,7 +1,7 @@
 import type { BandIcon } from "@prisma/client"
 import type { SerializeFrom } from "@remix-run/node"
 
-export const Avatar = ({ icon, bandName, size = 'md' }: { icon?: SerializeFrom<BandIcon> | null; bandName: string; size?: 'sm' | 'md' | 'lg' }) => {
+export const Avatar = ({ icon, bandName, size = 'md' }: { icon?: SerializeFrom<BandIcon> | null; bandName: string; size?: 'sm' | 'md' | 'lg' | 'xl' }) => {
   const getSize = () => {
     switch (size) {
       case 'sm':
@@ -19,6 +19,11 @@ export const Avatar = ({ icon, bandName, size = 'md' }: { icon?: SerializeFrom<B
           width: 'w-20',
           text: 'text-3xl'
         }
+      case 'xl':
+        return {
+          width: 'w-48',
+          text: 'text-5xl'
+        }
       default:
         return {
           width: 'w-12',
@@ -34,7 +39,7 @@ export const Avatar = ({ icon, bandName, size = 'md' }: { icon?: SerializeFrom<B
           <img src={icon?.path} alt={`${bandName} icon`} />
         ) : (
           <div
-            className={`h-full aspect-square flex items-center justify-center bg-primary ${getSize().text} rounded-md font-bold`}
+            className={`h-full aspect-square flex items-center justify-center bg-primary ${getSize().text} rounded font-bold`}
             style={{ backgroundColor: icon?.backgroundColor || undefined, color: icon?.textColor || undefined }}
           >
             <span>{bandName[0].toUpperCase()}</span>

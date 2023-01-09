@@ -86,18 +86,10 @@ export async function createBand(band: Pick<Band, 'name'>, userId: User['id']) {
   })
 }
 
-export async function updateBand(bandId: Band['id'], band: { name: Band['name'], backgroundColor: BandIcon['backgroundColor'] }) {
+export async function updateBand(bandId: Band['id'], band: Partial<Band>) {
   return prisma.band.update({
     where: { id: bandId },
-    data: {
-      name: band.name,
-      icon: {
-        update: {
-          backgroundColor: band.backgroundColor,
-          textColor: contrastColor(band.backgroundColor || '')
-        }
-      }
-    }
+    data: band
   })
 }
 

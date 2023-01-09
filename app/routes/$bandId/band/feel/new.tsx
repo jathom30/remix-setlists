@@ -58,7 +58,7 @@ export default function NewFeel() {
           <HexColorPicker color={color} onChange={setColor} />
         </FlexList>
       </FlexList>
-      <input hidden type="hidden" name="color" value={color} />
+      <input hidden type="hidden" name="color" defaultValue={color} />
       <SaveButtons saveLabel="Create feel" cancelTo=".." />
     </Form>
   )
