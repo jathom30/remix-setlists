@@ -12,7 +12,7 @@ type CollapsibleProps = {
 export const Collapsible = ({ children, header, isOpen = true }: CollapsibleProps) => {
   return (
     <div
-      className="w-full border-b border-b-slate-200"
+      className="w-full border-b border-base-content"
     >
       {header}
       <AnimatePresence initial={false}>
@@ -33,7 +33,7 @@ export const Collapsible = ({ children, header, isOpen = true }: CollapsibleProp
 
 export const CollapsibleHeader = ({ children, onClick, isOpen }: { children: ReactNode; onClick: (e: MouseEvent<HTMLButtonElement>) => void; isOpen: boolean; }) => {
   return (
-    <div className="flex  hover:bg-slate-200 w-full">
+    <div className="flex  hover:bg-base-300 w-full">
       <button className="flex items-center justify-between gap-2 p-2 w-full text-left" onClick={onClick} type="button">
         {children}
         <motion.div animate={isOpen ? { rotate: 90 } : {}}>

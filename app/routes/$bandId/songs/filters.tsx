@@ -8,10 +8,11 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import Select from "react-select";
 import invariant from "tiny-invariant";
-import { Button, Checkbox, Collapsible, CollapsibleHeader, FlexList, Label, Link, MaxHeightContainer, RadioGroup, TempoIcons } from "~/components";
+import { Button, Checkbox, Collapsible, CollapsibleHeader, FlexHeader, FlexList, Label, Link, MaxHeightContainer, Navbar, RadioGroup, TempoIcons } from "~/components";
 import { getFeels } from "~/models/feel.server";
 import { requireUserId } from "~/session.server";
 import { capitalizeFirstLetter } from "~/utils/assorted";
+import { getColor } from "~/utils/tailwindColors";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -42,20 +43,30 @@ export default function SongsFilters() {
     return allFeels
   }, [])
 
+  const base100 = getColor('base-100')
+  const base200 = getColor('base-200')
+  const base300 = getColor('base-300')
+  const baseContent = getColor('base-content')
+  const error = getColor('error')
+  const errorContent = getColor('error-content')
+  const border = getColor('base-content', .2)
+
   return (
     <fetcher.Form method="put" action={`/resource/songFilters?${params}`}>
       <MaxHeightContainer
         header={
-          <div className="border-b border-slate-300 bg-white">
-            <FlexList pad={2} direction="row" justify="between" items="center">
-              <Link kind="ghost" to={{ pathname: `/${bandId}/songs`, search }}><FontAwesomeIcon icon={faChevronLeft} /></Link>
-              <span className="font-bold">Filters</span>
+          <Navbar>
+            <FlexHeader>
+              <FlexList pad={2} direction="row" justify="between" items="center">
+                <Link kind="ghost" to={{ pathname: `/${bandId}/songs`, search }}><FontAwesomeIcon icon={faChevronLeft} /></Link>
+                <span className="font-bold">Filters</span>
+              </FlexList>
               <Button name="intent" value="reset" type="button" isOutline onClick={e => submit(e.currentTarget)}>Reset</Button>
-            </FlexList>
-          </div>
+            </FlexHeader>
+          </Navbar>
         }
         footer={
-          <div className="border-t bg-white p-4 flex flex-col">
+          <div className="bg-base-200 p-4 flex flex-col">
             <Button type="submit" kind="primary">Apply</Button>
           </div>
         }
@@ -82,6 +93,40 @@ export default function SongsFilters() {
               options={feels}
               getOptionValue={feel => feel.id}
               getOptionLabel={feel => feel.label}
+              styles={{
+                control: (baseStyles, { isFocused }) => ({
+                  ...baseStyles,
+                  backgroundColor: base100,
+                  text: baseContent,
+                  borderColor: border,
+                  ...(isFocused ? {
+                    outline: 2, outlineStyle: 'solid', outlineColor: border, outlineOffset: 2
+                  } : null),
+                  '&:hover': {
+                    borderColor: baseContent
+                  }
+                }),
+                group: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+                groupHeading: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+                loadingIndicator: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+                loadingMessage: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+                menuList: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+                menuPortal: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+                placeholder: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+                singleValue: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+                multiValue: (baseStyles) => ({ ...baseStyles, backgroundColor: base300 }),
+                multiValueLabel: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+                multiValueRemove: (baseStyles) => ({ ...baseStyles, color: baseContent, backgroundColor: base200, '&:hover': { background: error, color: errorContent } }),
+                input: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+                dropdownIndicator: (baseStyles) => ({ ...baseStyles, color: border }),
+                indicatorSeparator: (baseStyles) => ({ ...baseStyles, backgroundColor: border }),
+                noOptionsMessage: (baseStyles) => ({ ...baseStyles }),
+                menu: (baseStyles) => ({ ...baseStyles, backgroundColor: base100, color: baseContent }),
+                option: (baseStyles, state) => ({
+                  ...baseStyles, backgroundColor: base100, color: baseContent,
+                  '&:hover': { backgroundColor: base200 }
+                }),
+              }}
             />
           </FilterOption>
           <FilterOption label="Artist">

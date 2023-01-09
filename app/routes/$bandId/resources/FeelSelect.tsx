@@ -7,6 +7,7 @@ import CreatableSelect from "react-select/creatable";
 import type { Feel } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { useFetcher, useParams } from "@remix-run/react";
+import { getColor } from "~/utils/tailwindColors";
 
 export async function action({ request, params }: ActionArgs) {
   const { bandId } = params
@@ -39,6 +40,14 @@ export const FeelSelect = ({ feels, defaultFeels }: { feels: SerializeFrom<Feel>
     }
   }, [fetcher, selectedFeels])
 
+  const base100 = getColor('base-100')
+  const base200 = getColor('base-200')
+  const base300 = getColor('base-300')
+  const baseContent = getColor('base-content')
+  const error = getColor('error')
+  const errorContent = getColor('error-content')
+  const border = getColor('base-content', .2)
+
   const handleCreateFeel = (newFeel: string) => {
     fetcher.submit({ newFeel }, { method: 'post', action: `${bandId}/resources/FeelSelect` })
   }
@@ -53,7 +62,40 @@ export const FeelSelect = ({ feels, defaultFeels }: { feels: SerializeFrom<Feel>
       onCreateOption={handleCreateFeel}
       getOptionLabel={feel => feel.label}
       getOptionValue={feel => feel.id}
-      menuPortalTarget={document.body}
+      styles={{
+        control: (baseStyles, { isFocused }) => ({
+          ...baseStyles,
+          backgroundColor: base100,
+          text: baseContent,
+          borderColor: border,
+          ...(isFocused ? {
+            outline: 2, outlineStyle: 'solid', outlineColor: border, outlineOffset: 2
+          } : null),
+          '&:hover': {
+            borderColor: baseContent
+          }
+        }),
+        group: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+        groupHeading: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+        loadingIndicator: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+        loadingMessage: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+        menuList: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+        menuPortal: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+        placeholder: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+        singleValue: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+        multiValue: (baseStyles) => ({ ...baseStyles, backgroundColor: base300 }),
+        multiValueLabel: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+        multiValueRemove: (baseStyles) => ({ ...baseStyles, color: baseContent, backgroundColor: base200, '&:hover': { background: error, color: errorContent } }),
+        input: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+        dropdownIndicator: (baseStyles) => ({ ...baseStyles, color: border }),
+        indicatorSeparator: (baseStyles) => ({ ...baseStyles, backgroundColor: border }),
+        noOptionsMessage: (baseStyles) => ({ ...baseStyles }),
+        menu: (baseStyles) => ({ ...baseStyles, backgroundColor: base100, color: baseContent }),
+        option: (baseStyles, state) => ({
+          ...baseStyles, backgroundColor: base100, color: baseContent,
+          '&:hover': { backgroundColor: base200 }
+        }),
+      }}
     />
   )
 }

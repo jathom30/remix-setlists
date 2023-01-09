@@ -17,6 +17,7 @@ import { Checkbox } from "./Checkbox";
 import { FeelSelect } from "~/routes/$bandId/resources/FeelSelect";
 import { getTempoColor } from "./TempoIcons";
 import type { handleSongFormData } from "~/models/song.server";
+import { getColor } from "~/utils/tailwindColors";
 
 const getRangeColor = (tempo: number) => {
   switch (tempo) {
@@ -54,6 +55,11 @@ export const SongForm = ({ song, feels, errors }: {
     setTempoColorClass(getRangeColor(parseInt(value)))
   }
 
+  const base100 = getColor('base-100')
+  const base200 = getColor('base-200')
+  const baseContent = getColor('base-content')
+  const border = getColor('base-content', .2)
+
   return (
     <FlexList pad={4}>
       <Field name="name" label="Name" isRequired>
@@ -73,12 +79,80 @@ export const SongForm = ({ song, feels, errors }: {
             defaultValue={{ value: song?.keyLetter ?? "C", label: song?.keyLetter ?? "C" }}
             name="keyLetter"
             options={keyLetters.map(letter => ({ value: letter, label: letter }))}
+            styles={{
+              control: (baseStyles, { isFocused }) => ({
+                ...baseStyles,
+                backgroundColor: base100,
+                text: baseContent,
+                borderColor: border,
+                ...(isFocused ? {
+                  outline: 2, outlineStyle: 'solid', outlineColor: border, outlineOffset: 2
+                } : null),
+                '&:hover': {
+                  borderColor: baseContent
+                }
+              }),
+              group: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              groupHeading: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              loadingIndicator: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              loadingMessage: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              menuList: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              menuPortal: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              placeholder: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              singleValue: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              multiValue: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              multiValueLabel: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              multiValueRemove: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              input: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              dropdownIndicator: (baseStyles) => ({ ...baseStyles, color: border }),
+              indicatorSeparator: (baseStyles) => ({ ...baseStyles, backgroundColor: border }),
+              noOptionsMessage: (baseStyles) => ({ ...baseStyles }),
+              menu: (baseStyles) => ({ ...baseStyles, backgroundColor: base100, color: baseContent }),
+              option: (baseStyles, state) => ({
+                ...baseStyles, backgroundColor: base100, color: baseContent,
+                '&:hover': { backgroundColor: base200 }
+              }),
+            }}
           />
           <Select
             instanceId="isMinor"
             defaultValue={{ label: song?.isMinor ? 'Minor' : 'Major', value: song?.isMinor }}
             name="isMinor"
             options={majorMinorOptions}
+            styles={{
+              control: (baseStyles, { isFocused }) => ({
+                ...baseStyles,
+                backgroundColor: base100,
+                text: baseContent,
+                borderColor: border,
+                ...(isFocused ? {
+                  outline: 2, outlineStyle: 'solid', outlineColor: border, outlineOffset: 2
+                } : null),
+                '&:hover': {
+                  borderColor: baseContent
+                }
+              }),
+              group: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              groupHeading: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              loadingIndicator: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              loadingMessage: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              menuList: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              menuPortal: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              placeholder: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              singleValue: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              multiValue: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              multiValueLabel: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              multiValueRemove: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              input: (baseStyles) => ({ ...baseStyles, color: baseContent }),
+              dropdownIndicator: (baseStyles) => ({ ...baseStyles, color: border }),
+              indicatorSeparator: (baseStyles) => ({ ...baseStyles, backgroundColor: border }),
+              noOptionsMessage: (baseStyles) => ({ ...baseStyles }),
+              menu: (baseStyles) => ({ ...baseStyles, backgroundColor: base100, color: baseContent }),
+              option: (baseStyles, state) => ({
+                ...baseStyles, backgroundColor: base100, color: baseContent,
+                '&:hover': { backgroundColor: base200 }
+              }),
+            }}
           />
         </div>
       </FlexList>
