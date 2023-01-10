@@ -2,7 +2,7 @@ import { faSave } from "@fortawesome/free-solid-svg-icons"
 import { useTransition } from "@remix-run/react"
 import type { ReactNode } from "react"
 import { Button } from "./Button"
-import { Link } from "./Link"
+// import { Link } from "./Link"
 
 export const SaveButtons = ({ saveLabel, cancelTo, isSaving = false, isDisabled = false }: { saveLabel: ReactNode; cancelTo: string; isSaving?: boolean; isDisabled?: boolean }) => {
   const transition = useTransition()
@@ -10,7 +10,7 @@ export const SaveButtons = ({ saveLabel, cancelTo, isSaving = false, isDisabled 
   return (
     <div className="bg-base-100 shadow-2xl flex flex-col p-4 gap-2 w-full sm:flex-row-reverse xl:rounded-md">
       <Button isSaving={isSubmitting || isSaving} icon={faSave} kind="primary" type="submit" isDisabled={isDisabled || isSaving}>{isSubmitting ? 'Saving...' : saveLabel}</Button>
-      <Link to={cancelTo} type="submit">Cancel</Link>
+      {/* <Link to={cancelTo} type="submit">Cancel</Link> */}
     </div>
   )
 }
