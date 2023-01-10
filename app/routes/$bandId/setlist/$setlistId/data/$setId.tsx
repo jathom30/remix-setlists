@@ -16,9 +16,9 @@ export default function SetDataMetrics() {
   const { setMetrics } = useLoaderData<typeof loader>()
 
   const { feels, tempos, isCoverLength, isOriginalLength } = setMetrics
-  const uniqueFeels = Array.from(new Set(feels))
-  const feelSlices = uniqueFeels.map(feel => {
-    const feelCount = feels?.filter(f => f === feel)?.length || 0
+  const uniqueFeelIds = [...new Map(feels?.map(feel => [feel?.id, feel])).values()]
+  const feelSlices = uniqueFeelIds.map(feel => {
+    const feelCount = feels?.filter(f => f?.id === feel?.id)?.length || 0
     const totalFeels = feels?.length || 0
     return {
       percent: feelCount / totalFeels,

@@ -7,12 +7,13 @@ type CollapsibleProps = {
   children?: ReactNode
   header: ReactNode
   isOpen?: boolean
+  isBordered?: boolean;
 }
 
-export const Collapsible = ({ children, header, isOpen = true }: CollapsibleProps) => {
+export const Collapsible = ({ children, header, isBordered = false, isOpen = true }: CollapsibleProps) => {
   return (
     <div
-      className="w-full border-b border-base-content"
+      className={`w-full ${isBordered ? 'border-b border-base-content' : ''}`}
     >
       {header}
       <AnimatePresence initial={false}>

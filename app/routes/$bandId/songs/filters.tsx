@@ -170,6 +170,7 @@ const FilterOption = ({ label, children }: { label: string; children?: ReactNode
   return (
     <Collapsible
       isOpen={show}
+      isBordered
       header={
         <CollapsibleHeader isOpen={show} onClick={e => { e.preventDefault(); setShow(!show) }}>
           <Label>{label}</Label>

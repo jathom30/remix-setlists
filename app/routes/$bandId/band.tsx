@@ -125,14 +125,14 @@ export default function BandSettingsPage() {
                   <FlexHeader key={feel.id}>
                     <FlexList direction="row" items="center" gap={2}>
                       {!isSub ? <Link to={`feel/${feel.id}/edit`} kind="ghost" isRounded><FontAwesomeIcon icon={faPencil} /></Link> : null}
-                      <FeelTag feel={feel} />
+                      <FlexList gap={1}>
+                        <FeelTag feel={feel} />
+                        <span className="text-xs">Found in {pluralize('song', feel.songs.length, true)}</span>
+                      </FlexList>
                     </FlexList>
-                    <FlexList direction="row" items="center">
-                      <Label>Found in {pluralize('song', feel.songs.length, true)}</Label>
-                      {!isSub ? <Link to={`feel/${feel.id}/delete`} kind="error" isRounded>
-                        <FontAwesomeIcon icon={faTrash} />
-                      </Link> : null}
-                    </FlexList>
+                    {!isSub ? <Link to={`feel/${feel.id}/delete`} kind="error" isRounded>
+                      <FontAwesomeIcon icon={faTrash} />
+                    </Link> : null}
                   </FlexHeader>
                 ))}
                 {!isSub ? <Link to="feel/new" kind="outline">Add new feel</Link> : null}

@@ -13,14 +13,14 @@ export const PieChart = ({ slices }: { slices: { percent: number; feel: Serializ
           <path key={path.pathData} d={path.pathData} fill={path.feel?.color || 'white'} />
         ))}
       </svg>
-      <FlexList>
+      <div className="flex flex-col gap-2 flex-grow">
         {slices.map(slice => {
           if (!slice.feel) { return null }
           return (
-            <FeelTag feel={slice.feel} key={slice.feel.id}>{Math.round(slice.percent * 100)}%</FeelTag>
+            <FeelTag fullWidth feel={slice.feel} key={slice.feel.id}>{Math.round(slice.percent * 100)}%</FeelTag>
           )
         })}
-      </FlexList>
+      </div>
     </FlexList>
   )
 }
