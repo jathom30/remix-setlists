@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/server-runtime";
+import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
@@ -11,6 +11,10 @@ import { faBoxOpen, faMagnifyingGlass, faSort } from "@fortawesome/free-solid-sv
 import { getSortFromParam } from "~/utils/params";
 import { capitalizeFirstLetter } from "~/utils/assorted";
 import { requireUserId } from "~/session.server";
+
+export const meta: MetaFunction = () => ({
+  title: "Setlists",
+});
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)

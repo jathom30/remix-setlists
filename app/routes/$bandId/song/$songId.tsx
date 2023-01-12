@@ -1,7 +1,7 @@
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import { json } from '@remix-run/node'
-import type { LoaderArgs } from "@remix-run/server-runtime";
+import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
 import { AvatarTitle, Breadcrumbs, CatchContainer, Divider, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, TempoIcons } from "~/components";
 import { getSong } from "~/models/song.server";
@@ -22,6 +22,16 @@ export async function loader({ request, params }: LoaderArgs) {
   }
   return json({ song })
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
+  if (!data) {
+    return {
+      title: "Songs",
+    }
+  }
+  const { song: { name } } = data
+  return { title: name }
+};
 
 export default function SongDetails() {
   const { song } = useLoaderData<typeof loader>()

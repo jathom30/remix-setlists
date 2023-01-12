@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/server-runtime";
+import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { AvatarTitle, Breadcrumbs, CatchContainer, Divider, ErrorContainer, FlexList, Label, MaxHeightContainer, Navbar } from "~/components";
@@ -19,6 +19,16 @@ export async function loader({ request, params }: LoaderArgs) {
   }
   return json({ setlist })
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
+  if (!data) {
+    return {
+      title: "Songs",
+    }
+  }
+  const { setlist: { name } } = data
+  return { title: name }
+};
 
 export default function CondensedSetlist() {
   const { setlist } = useLoaderData<typeof loader>()

@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/server-runtime";
+import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
 import invariant from "tiny-invariant";
 import { getSongs } from "~/models/song.server";
@@ -10,6 +10,10 @@ import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sortByLabel } from "~/utils/params";
+
+export const meta: MetaFunction = () => ({
+  title: "Songs",
+});
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)

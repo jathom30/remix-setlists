@@ -2,9 +2,14 @@ import { faPenToSquare, faSignOut, faTrash } from "@fortawesome/free-solid-svg-i
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, Link as RemixLink } from "@remix-run/react";
-import type { LoaderArgs } from "@remix-run/server-runtime";
-import { AvatarTitle, Badge, Button, Divider, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar } from "~/components";
+import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
+import { AvatarTitle, Badge, Button, CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar } from "~/components";
 import { getUserWithBands } from "~/models/user.server";
+import { capitalizeFirstLetter } from "~/utils/assorted";
+
+export const meta: MetaFunction = () => ({
+  title: "User settings",
+});
 
 export async function loader({ request }: LoaderArgs) {
   const user = await getUserWithBands(request)
@@ -17,8 +22,7 @@ export async function loader({ request }: LoaderArgs) {
 
 const subRoutes = ['details', 'password', 'delete', 'remove']
 
-const themes = ["light", "dark"]
-// const themes = ["light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee", "winter"]
+const themes = ["cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee", "winter"].sort()
 
 export default function UserRoute() {
   const { user } = useLoaderData<typeof loader>()
@@ -47,9 +51,12 @@ export default function UserRoute() {
         <FlexList pad={4}>
           <FlexList gap={2}>
             <Label>Theme</Label>
-            <select data-choose-theme>
+            <select name="theme" className="select select-bordered w-full" data-choose-theme>
+              <option value="">Default</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
               {themes.map(theme => (
-                <option key={theme} value={theme}>{theme}</option>
+                <option key={theme} value={theme}>{capitalizeFirstLetter(theme)}</option>
 
               ))}
             </select>
@@ -125,4 +132,11 @@ export default function UserRoute() {
       </MaxWidth>
     </MaxHeightContainer>
   )
+}
+
+export function CatchBoundary() {
+  return <CatchContainer />
+}
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ErrorContainer error={error} />
 }
