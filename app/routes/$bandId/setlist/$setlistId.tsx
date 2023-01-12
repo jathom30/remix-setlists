@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/server-runtime";
+import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { getSetlist } from "~/models/setlist.server";
@@ -24,6 +24,16 @@ export async function loader({ request, params }: LoaderArgs) {
   }
   return json({ setlist })
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
+  if (!data) {
+    return {
+      title: "Songs",
+    }
+  }
+  const { setlist: { name } } = data
+  return { title: name }
+};
 
 const subRoutes = ['rename', 'edit', 'condensed', 'data', 'delete', 'menu', 'song']
 

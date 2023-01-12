@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/server-runtime"
+import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime"
 import { json } from "@remix-run/node"
 import { MaxHeightContainer, FlexList, Avatar, Badge, Link, MobileModal, Title, CreateNewButton, Navbar, FlexHeader } from "~/components"
 import { getBands } from "~/models/band.server"
@@ -6,6 +6,10 @@ import { requireUserId } from "~/session.server"
 import { useLoaderData, Link as RemixLink, useLocation, useNavigate, Outlet, useParams } from "@remix-run/react"
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+
+export const meta: MetaFunction = () => ({
+  title: "Band select",
+});
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await requireUserId(request)

@@ -17,6 +17,7 @@ model User {
 
   verified Boolean @default(false)
   locked   Boolean @default(false)
+  theme    String?
 
   password Password?
   bands    UsersInBands[]

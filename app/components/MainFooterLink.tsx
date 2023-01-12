@@ -10,7 +10,7 @@ export const MainFooterLink = ({ icon, label, to }: { icon: IconDefinition; labe
   const isActive = pathname.split('/')[2].includes(singularTo.toLowerCase())
 
   return (
-    <Link className={`p-2 ${isActive ? 'text-accent' : 'text-base-content'}`} to={to}>
+    <Link className={`p-2 ${isActive ? 'text-secondary' : 'text-base-content'}`} to={to}>
       <FlexList items="center" gap={0}>
         <FontAwesomeIcon icon={icon} />
         <span>{label}</span>

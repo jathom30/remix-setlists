@@ -31,7 +31,7 @@ export const links: LinksFunction = () => {
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "Setlists App",
+  title: "Setlists",
   viewport: "width=device-width,initial-scale=1, viewport-fit=cover",
 });
 
@@ -45,11 +45,12 @@ export default function App() {
   useEffect(() => {
     themeChange(false)
     // 👆 false parameter is required for react project
-  }, [])
+  })
   return (
     <html lang="en" className="h-full bg-base-200">
       <head>
         <Meta />
+        <link rel="manifest" href="/resources/manifest.webmanifest" />
         <Links />
       </head>
       <body className="h-full">
