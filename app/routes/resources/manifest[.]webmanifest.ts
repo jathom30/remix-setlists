@@ -3,25 +3,21 @@ import type { LoaderFunction } from "@remix-run/node";
 
 export let loader: LoaderFunction = () => {
   // https://github.com/ShafSpecs/remix-pwa#going-deeper
-  // ^ for info on loading a user's color preferences
   return json(
     {
       short_name: "Setlists",
       name: "Setlists",
       start_url: "/",
+      backgroundColor: '#000000',
       display: "standalone",
-      // background color is the background before the site loads
-      // background_color: backgroundColor,
-      // theme color is the color of UI elements from the web browser
-      // theme_color: backgroundColor,
       shortcuts: [
         {
           name: "Homepage",
           url: "/",
           icons: [
             {
-              src: "/icons/android-icon-96x96.png",
-              sizes: "96x96",
+              src: "/icons/android-chrome-192x192.png",
+              sizes: "192x192",
               type: "image/png",
               purpose: "any monochrome",
             },
@@ -30,40 +26,46 @@ export let loader: LoaderFunction = () => {
       ],
       icons: [
         {
-          src: "/icons/android-icon-36x36.png",
-          sizes: "36x36",
-          type: "image/png",
-          density: "0.75",
-        },
-        {
-          src: "/icons/android-icon-48x48.png",
-          sizes: "48x48",
-          type: "image/png",
-          density: "1.0",
-        },
-        {
-          src: "/icons/android-icon-72x72.png",
-          sizes: "72x72",
-          type: "image/png",
-          density: "1.5",
-        },
-        {
-          src: "/icons/android-icon-96x96.png",
-          sizes: "96x96",
-          type: "image/png",
-          density: "2.0",
-        },
-        {
-          src: "/icons/android-icon-144x144.png",
-          sizes: "144x144",
-          type: "image/png",
-          density: "3.0",
-        },
-        {
-          src: "/icons/android-icon-192x192.png",
+          src: "/icons/android-chrome-192x192.png",
           sizes: "192x192",
           type: "image/png",
-          density: "4.0",
+          density: "2",
+        },
+        {
+          src: "/icons/android-chrome-384x384.png",
+          sizes: "384x384",
+          type: "image/png",
+          density: "4",
+        },
+        {
+          src: "/icons/apple-touch-icon.png",
+          sizes: "180x180",
+          type: "image/png",
+        },
+        {
+          src: "/icons/favicon-16x16.png",
+          sizes: "16x16",
+          type: "image/png",
+        },
+        {
+          src: "/icons/favicon-32x32.png",
+          sizes: "32x32",
+          type: "image/png",
+        },
+        {
+          src: "/icons/favicon.ico",
+          sizes: "48x48",
+          type: "image/ico",
+        },
+        {
+          src: "/icons/mstile-150x150.png",
+          sizes: "150x150",
+          type: "image/png",
+        },
+        {
+          src: "/icons/safari-pinned-tab.svg",
+          color: '#000000',
+          type: "image/svg",
         },
       ],
     },

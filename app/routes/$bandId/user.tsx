@@ -22,7 +22,7 @@ export async function loader({ request }: LoaderArgs) {
 
 const subRoutes = ['details', 'password', 'delete', 'remove']
 
-const themes = ["light", "dark", "cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee", "winter"].sort()
+const themes = ["cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee", "winter"].sort()
 
 export default function UserRoute() {
   const { user } = useLoaderData<typeof loader>()
@@ -53,6 +53,8 @@ export default function UserRoute() {
             <Label>Theme</Label>
             <select name="theme" className="select select-bordered w-full" data-choose-theme>
               <option value="">Default</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
               {themes.map(theme => (
                 <option key={theme} value={theme}>{capitalizeFirstLetter(theme)}</option>
 

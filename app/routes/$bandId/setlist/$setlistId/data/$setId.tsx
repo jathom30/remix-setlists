@@ -1,9 +1,11 @@
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node";
-import { FlexList, Label, MaxHeightContainer, PieChart, RatioBar, TempoWave } from "~/components";
+import { FlexHeader, FlexList, Label, Link, MaxHeightContainer, Navbar, PieChart, RatioBar, TempoWave } from "~/components";
 import invariant from "tiny-invariant";
 import { getSetMetrics } from "~/models/set.server";
 import { useLoaderData } from "@remix-run/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 export async function loader({ params }: LoaderArgs) {
   const { setId } = params
@@ -30,7 +32,12 @@ export default function SetDataMetrics() {
     <MaxHeightContainer
       fullHeight
       header={
-        <h3 className="p-4 pb-0 font-bold bg-white">Data metrics</h3>
+        <Navbar>
+          <FlexHeader>
+            <h3 className="font-bold">Data metrics</h3>
+            <Link isRounded kind="ghost" to=".."><FontAwesomeIcon icon={faTimes} /></Link>
+          </FlexHeader>
+        </Navbar>
       }
     >
       <FlexList pad={4}>

@@ -42,7 +42,7 @@ export const Avatar = ({ icon, bandName, size = 'md' }: { icon?: SerializeFrom<B
             className={`h-full aspect-square flex items-center justify-center bg-primary ${getSize().text} rounded font-bold`}
             style={{ backgroundColor: icon?.backgroundColor || undefined, color: icon?.textColor || undefined }}
           >
-            <span>{bandName[0].toUpperCase()}</span>
+            <span>{bandName?.[0]?.toUpperCase()}</span>
           </div>
         )}
       </div>
