@@ -191,8 +191,8 @@ export const SongForm = ({ song, feels, errors }: {
       </FlexList>
 
       <FlexList gap={2}>
-        <Label>Notes</Label>
-        <textarea placeholder="Add a note..." className="textarea textarea-bordered" name="note" id="note" rows={5} defaultValue={song?.note || ''} />
+        <Label>Notes/Lyrics</Label>
+        <textarea placeholder="Add a note or some lyrics..." className="textarea textarea-bordered" name="note" id="note" rows={5} defaultValue={song?.note || ''} />
       </FlexList>
 
       <FlexList gap={2}>
