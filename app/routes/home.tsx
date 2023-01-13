@@ -34,14 +34,16 @@ export default function Home() {
         <Navbar>
           <FlexHeader>
             <Title>Welcome</Title>
-            <div className="hidden sm:block">
-              <Link to="menu" kind="primary">Add band</Link>
-            </div>
-            <div className="sm:hidden">
-              <Form action="/logout" method="post">
-                <Button isCollapsing type="submit" icon={faSignOut}>Sign out</Button>
-              </Form>
-            </div>
+            <FlexList direction="row">
+              <div className="hidden sm:block">
+                <Link to="menu" kind="primary">Add band</Link>
+              </div>
+              <div>
+                <Form action="/logout" method="post">
+                  <Button isCollapsing type="submit" icon={faSignOut}>Sign out</Button>
+                </Form>
+              </div>
+            </FlexList>
           </FlexHeader>
         </Navbar>
       }
