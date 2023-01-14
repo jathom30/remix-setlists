@@ -103,6 +103,9 @@ jobs:
         with:
           useLockFile: false
 
+      - name: Push Database
+        run: npx prisma db push
+
       - name: 🛠 Setup Database
         run: npx prisma migrate reset --force
 
