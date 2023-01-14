@@ -1,6 +1,9 @@
 import { defineConfig } from "cypress";
 
 export default defineConfig({
+  env: {
+    MAGIC_LINK_SECRET: '_my_super_secret_'
+  },
   e2e: {
     setupNodeEvents: (on, config) => {
       const isDev = config.watchForFileChanges;
