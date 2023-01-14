@@ -65,7 +65,7 @@ export default function RequestVerification() {
             </Field>
 
             <Button kind="primary" type="submit">Send email</Button>
-            <Link to="/login" kind="text" icon={faChevronLeft}>Back to log in</Link>
+            <Link to="/login" kind="ghost" icon={faChevronLeft}>Back to log in</Link>
           </FlexList>
         </Form>
       </ItemBox>

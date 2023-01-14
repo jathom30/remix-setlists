@@ -99,7 +99,7 @@ export default function ResetPassword() {
                 {actionData?.errors?.verifyPassword ? <ErrorMessage message="Passwords must match" /> : null}
               </Field>
               <Button kind="primary" type="submit" isDisabled={!isValid} isSaving={isLoading}>Reset password</Button>
-              <Link to="/login" kind="text" icon={faChevronLeft}>Back to log in</Link>
+              <Link to="/login" kind="ghost" icon={faChevronLeft}>Back to log in</Link>
             </FlexList>
           </Form>
         </ItemBox>

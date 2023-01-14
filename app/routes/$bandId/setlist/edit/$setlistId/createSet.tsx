@@ -6,7 +6,6 @@ import { FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MulitSongSele
 import { getSongsNotInSetlist } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
 import { createSet } from "~/models/set.server";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 export async function loader({ request, params }: LoaderArgs) {
@@ -36,7 +35,8 @@ export async function action({ request, params }: ActionArgs) {
   const formData = await request.formData()
   const songIds = formData.getAll('songs').map(songId => songId.toString())
 
-  await createSet(setlistId, songIds)
+  // TODO -> get proper position in setlist
+  await createSet(setlistId, songIds, 1)
   return redirect(`/${bandId}/setlist/edit/${setlistId}`)
 }
 
