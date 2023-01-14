@@ -44,6 +44,7 @@ export default function Landing() {
         <FlexList pad={4}>
           <h1 className="text-5xl font-bold">Welcome to <span className="text-primary">Setlists</span></h1>
           <p className="text-xl">A place for bands and their mates.</p>
+          <Link to="join" kind="primary">Create an account</Link>
           <Divider />
           <ItemBox>
             <h2 className="text-2xl font-bold">Why Setlists?</h2>
@@ -64,7 +65,7 @@ export default function Landing() {
           <Divider />
           <ItemBox>
             <h2 className="text-2xl font-bold">Interested?</h2>
-            <Link to="join" kind="primary">Sign up today</Link>
+            <Link to="join" kind="primary">Create your account today</Link>
           </ItemBox>
         </FlexList>
       </MaxWidth>
