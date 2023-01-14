@@ -1,5 +1,5 @@
 import type { Band, Feel, Setlist, Song } from "@prisma/client";
-import { SerializeFrom } from "@remix-run/server-runtime";
+import type { SerializeFrom } from "@remix-run/server-runtime";
 import { prisma } from "~/db.server";
 import { getFields } from "~/utils/form";
 import { getSortFromParam } from "~/utils/params";

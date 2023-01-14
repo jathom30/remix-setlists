@@ -1,4 +1,4 @@
-import type { Band, BandIcon, User } from "@prisma/client";
+import type { Band, User } from "@prisma/client";
 import { prisma } from "~/db.server";
 import { contrastColor, generateRandomHex } from "~/utils/assorted";
 

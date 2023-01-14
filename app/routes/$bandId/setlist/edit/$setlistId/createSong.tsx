@@ -17,7 +17,7 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export default function NewSong() {
   const { feels } = useLoaderData<typeof loader>()
-  const { bandId, setlistId, setId } = useParams()
+  const { bandId, setlistId } = useParams()
   return (
     <SongNew
       header={

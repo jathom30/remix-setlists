@@ -4,7 +4,6 @@ import { defaultAnimateLayoutChanges, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { faGripVertical, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { LargeNumberLike } from "crypto";
 import pluralize from "pluralize";
 import type { ReactNode } from "react";
 import { Collapsible } from "../Collapsible";
