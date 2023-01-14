@@ -44,7 +44,7 @@ export const Drawer = ({ children, open, onClose }: {
             }}
             transition={{ ease: 'easeInOut' }}
             className="absolute bottom-0 left-0 right-0 bg-base-100 rounded-t overflow-auto"
-            style={{ height: 'min-content', maxHeight: '70vh' }}
+            style={{ maxHeight: '70vh' }}
           >
             {children}
           </motion.div>

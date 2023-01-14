@@ -46,7 +46,7 @@ export const Modal = ({ children, open, onClose }: { children: React.ReactNode; 
           }}
           transition={{ ease: 'easeInOut' }}
           className="absolute top-8 inset-x-4 bg-base-100 rounded overflow-auto max-w-xl m-auto"
-          style={{ height: 'min-content', maxHeight: '90vh' }}
+          style={{ maxHeight: '90vh' }}
         >
           {children}
         </motion.div>

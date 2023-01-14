@@ -73,11 +73,13 @@ export default function BandSettingsPage() {
           <FlexHeader pad={2}>
             <h1 className="text-xl sm:text-2xl font-bold">{band.name}</h1>
             <RemixLink className="indicator" to="avatar">
-              <div className="indicator-item indicator-bottom">
-                <div className="btn btn-sm btn-circle">
-                  <FontAwesomeIcon icon={faCamera} />
+              {isSub ? (
+                <div className="indicator-item indicator-bottom">
+                  <div className="btn btn-sm btn-circle">
+                    <FontAwesomeIcon icon={faCamera} />
+                  </div>
                 </div>
-              </div>
+              ) : null}
               <Avatar bandName={band.name || ''} icon={band.icon} size="lg" />
             </RemixLink>
           </FlexHeader>
