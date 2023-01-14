@@ -11,7 +11,6 @@ import { getUserById } from "~/models/user.server";
 import { useState } from "react";
 import { updateBandMemberRole } from "~/models/usersInBands.server";
 import { getFields } from "~/utils/form";
-import { useMemberRole } from "~/utils";
 
 export async function loader({ request, params }: LoaderArgs) {
   const userId = await requireUserId(request)
@@ -59,15 +58,15 @@ export async function action({ request, params }: ActionArgs) {
     return json({ errors }, { status: 400 })
   }
 
+  console.log({ bandId, memberId, fields })
   await updateBandMemberRole(bandId, memberId, fields.role)
   return null
 }
 
 export default function EditMember() {
   const { member, canRemoveMember, canRemoveAsAdmin } = useLoaderData<typeof loader>()
-  const memberRole = useMemberRole()
   const { bandId } = useParams()
-  const [roleTab, setRoleTab] = useState(memberRole)
+  const [roleTab, setRoleTab] = useState(member.role)
 
   return (
     <FlexList pad={4}>
@@ -78,7 +77,7 @@ export default function EditMember() {
 
       <FlexList gap={0}>
         <Label>Access Level</Label>
-        <span className="font-bold">{memberRole}</span>
+        <span className="font-bold">{member.role}</span>
       </FlexList>
 
       <FlexList gap={2}>
@@ -97,7 +96,7 @@ export default function EditMember() {
                 {(!canRemoveAsAdmin && roleTab !== RoleEnum.ADMIN) ? (
                   <p className="text-sm text-error">You are the only <strong>admin</strong> on this band. Make at least one other member an Admin before updating your role.</p>
                 ) : null}
-                <Button type="submit" isDisabled={roleTab === memberRole || !canRemoveAsAdmin} name="role" value={roleTab as unknown as string} kind="secondary">{roleTab === memberRole ? 'Current role' : `Set role as ${roleTab}`}</Button>
+                <Button type="submit" isDisabled={roleTab === member.role || !canRemoveAsAdmin} name="role" value={roleTab as unknown as string} kind="secondary">{roleTab === member.role ? 'Current role' : `Set role as ${roleTab}`}</Button>
               </FlexList>
             </Form>
           </FlexList>
