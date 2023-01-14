@@ -30,7 +30,7 @@ export async function getUserByEmail(email: User["email"]) {
 export async function createUser(email: User["email"], password: string, name: string) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  return prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       email,
       password: {
@@ -41,6 +41,9 @@ export async function createUser(email: User["email"], password: string, name: s
       name
     },
   });
+
+  console.log("IN HERE CREATING A USER", user)
+  return user
 }
 
 export async function deleteUserByEmail(email: User["email"]) {
@@ -110,6 +113,7 @@ export async function updateUserPassword(userId: User['id'], password: string) {
 }
 
 export async function generateTokenLink(email: User['email'], pathname: string, domainUrl: string) {
+  console.log("GENERATING LINK TOKEN")
   const user = await getUserByEmail(email)
   if (!user) { throw new Error("User does not exist") }
   // if token exists for user, delete it
