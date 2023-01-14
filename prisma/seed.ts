@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { contrastColor, generateRandomHex } from "~/utils/assorted";
+import { contrastColor } from "~/utils/assorted";
 
 const prisma = new PrismaClient();
 
@@ -14,7 +14,7 @@ async function seed() {
 
   const hashedPassword = await bcrypt.hash("racheliscool", 10);
 
-  const bandIconBackgroundColor = `#${generateRandomHex()}`
+  const bandIconBackgroundColor = `#000000`
   const band = await prisma.band.create({
     data: {
       name: 'Starter Band',
