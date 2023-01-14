@@ -106,7 +106,7 @@ export default function BandSettingsPage() {
                       <span className="font-bold">{member.name}</span>
                       <Badge>{member.role}</Badge>
                     </FlexList>
-                    {!isSub ? <Link to={member.id} kind="ghost"><FontAwesomeIcon icon={faEdit} /></Link> : null}
+                    {isAdmin ? <Link to={member.id} kind="ghost"><FontAwesomeIcon icon={faEdit} /></Link> : null}
                   </FlexHeader>
                 ))}
                 {isAdmin ? (
