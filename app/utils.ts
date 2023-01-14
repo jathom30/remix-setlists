@@ -1,6 +1,6 @@
 import type { BandIcon } from "@prisma/client";
 import { useMatches } from "@remix-run/react";
-import { SerializeFrom } from "@remix-run/server-runtime";
+import type { SerializeFrom } from "@remix-run/server-runtime";
 import { useMemo } from "react";
 
 import type { User } from "~/models/user.server";
