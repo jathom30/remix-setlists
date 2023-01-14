@@ -1,6 +1,6 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { Divider, FlexHeader, FlexList, Header, Label, Link, MaxHeightContainer, MaxWidth, Navbar, Title } from "~/components";
+import { Divider, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, Navbar, Title } from "~/components";
 import { getUserId } from "~/session.server";
 
 export async function loader({ request }: LoaderArgs) {
@@ -11,6 +11,10 @@ export async function loader({ request }: LoaderArgs) {
   }
   return null
 }
+
+export const meta: MetaFunction = () => ({
+  title: "Welcome!",
+});
 
 export default function Landing() {
   return (
