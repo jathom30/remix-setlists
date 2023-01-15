@@ -202,7 +202,7 @@ const BandSelectPopup = ({ bands, onSelect }: { bands: MainSidebarProps['bands']
       </li>
       <Divider />
       <li>
-        <Link isOutline to={`/${bandId}/home/menu`} icon={faPlus}>New band</Link>
+        <Link isOutline to={`/${bandId}/home/menu`} onClick={onSelect} icon={faPlus}>New band</Link>
       </li>
     </ul>
   )
