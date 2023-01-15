@@ -43,7 +43,7 @@ export async function action({ request, params }: ActionArgs) {
 
   const setlistId = await createSetlistAuto(bandId, settings)
 
-  return redirect(`/${bandId}/setlists/${setlistId}/rename`)
+  return redirect(`/${bandId}/setlist/${setlistId}/rename`)
 }
 
 export default function AutoSetlistCreation() {

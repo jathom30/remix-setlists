@@ -59,7 +59,7 @@ export default function Setlist() {
       fullHeight
       header={
         <Navbar>
-          <FlexHeader>
+          <FlexHeader items="start">
             <FlexList gap={2}>
               <AvatarTitle title={setlist.name} />
               <Breadcrumbs breadcrumbs={[
