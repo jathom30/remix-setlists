@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 
 export const Modal = ({ children, open, onClose }: { children: React.ReactNode; open: boolean; onClose: () => void }) => {
   const [isWindow, setIsWindow] = useState(false)
@@ -10,7 +9,7 @@ export const Modal = ({ children, open, onClose }: { children: React.ReactNode; 
   }, [])
 
   if (!isWindow) return null
-  return createPortal(<AnimatePresence>
+  return <AnimatePresence mode="wait">
     {open ? (
       <div
         key="drawer"
@@ -52,5 +51,5 @@ export const Modal = ({ children, open, onClose }: { children: React.ReactNode; 
         </motion.div>
       </div>
     ) : null}
-  </AnimatePresence>, document.body)
+  </AnimatePresence>
 }

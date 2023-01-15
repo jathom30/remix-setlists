@@ -26,7 +26,7 @@ export function Button({ isSaving = false, isCollapsing = false, isOutline = fal
   return (
     <button
       name={name}
-      className={`btn ${buttonKind(kind)} ${icon ? 'gap-2' : ''} ${buttonSize(size)} ${isOutline ? 'btn-outline' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isRounded ? 'btn-circle' : ''} ${isSaving ? 'loading' : ''}`}
+      className={`btn ${buttonKind(kind)} ${icon ? 'gap-2' : ''} ${buttonSize(size)} ${isOutline ? 'btn-outline' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isRounded ? 'btn-circle' : ''} ${isSaving ? 'loading' : ''} flex-nowrap`}
       onClick={onClick}
       disabled={isDisabled || isSaving}
       type={type}

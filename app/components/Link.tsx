@@ -12,7 +12,7 @@ export function Link(props: ButtonProps & RemixLinkProps) {
       {...rest}
       to={to}
       prefetch={prefetch}
-      className={`btn ${buttonKind(kind)} ${buttonSize(size)} ${isOutline ? 'btn-outline' : ''} ${icon ? 'gap-2' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isSaving ? 'loading' : ''} ${isRounded ? 'btn-circle' : ''}`}
+      className={`btn ${buttonKind(kind)} ${buttonSize(size)} ${isOutline ? 'btn-outline' : ''} ${icon ? 'gap-2' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isSaving ? 'loading' : ''} ${isRounded ? 'btn-circle' : ''} flex-nowrap`}
     >
       {icon && !isSaving ? <FontAwesomeIcon icon={icon} /> : null}
       <div className={`${isCollapsing ? 'hidden md:block' : ''}`}>{children}</div>
