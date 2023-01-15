@@ -1,9 +1,10 @@
 import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime"
 import { json } from "@remix-run/node"
-import { MaxHeightContainer, FlexList, Avatar, Badge, Link, MobileModal, Title, CreateNewButton, Navbar, FlexHeader } from "~/components"
+import { MaxHeightContainer, FlexList, Avatar, Badge, Link, MobileModal, Title, CreateNewButton, Navbar, FlexHeader, Loader } from "~/components"
 import { getBands } from "~/models/band.server"
 import { requireUserId } from "~/session.server"
-import { useLoaderData, Link as RemixLink, useLocation, useNavigate, Outlet, useParams } from "@remix-run/react"
+import { useLoaderData, Link as RemixLink, useLocation, useNavigate, Outlet, useParams, useTransition } from "@remix-run/react"
+import { useSpinDelay } from "spin-delay"
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
@@ -27,6 +28,8 @@ export default function Select() {
   const { bands } = useLoaderData<typeof loader>()
   const { pathname } = useLocation()
   const navigate = useNavigate()
+  const transition = useTransition()
+  const isSubmitting = useSpinDelay(transition.state !== 'idle')
   const { bandId } = useParams()
 
   const hasNoBands = bands.length === 0
@@ -37,7 +40,10 @@ export default function Select() {
       header={
         <Navbar>
           <FlexHeader>
-            <Title>Band select</Title>
+            <FlexList direction="row" items="center">
+              <Title>Band select</Title>
+              {isSubmitting ? <Loader /> : null}
+            </FlexList>
             <div className="hidden sm:block">
               <Link to="menu" kind="primary">Add band</Link>
             </div>

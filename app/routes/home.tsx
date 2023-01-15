@@ -2,8 +2,9 @@ import { faBoxOpen, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Form, NavLink, Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
-import { Avatar, Badge, Button, CreateNewButton, FlexHeader, FlexList, Link, MaxHeightContainer, MobileModal, Navbar, Title } from "~/components";
+import { Form, NavLink, Outlet, useLoaderData, useLocation, useNavigate, useParams, useTransition } from "@remix-run/react";
+import { useSpinDelay } from "spin-delay";
+import { Avatar, Badge, Button, CreateNewButton, FlexHeader, FlexList, Link, Loader, MaxHeightContainer, MobileModal, Navbar, Title } from "~/components";
 import { getBands } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 
@@ -23,6 +24,8 @@ export default function Home() {
   const { bands } = useLoaderData<typeof loader>()
   const { pathname } = useLocation()
   const navigate = useNavigate()
+  const transition = useTransition()
+  const isSubmitting = useSpinDelay(transition.state !== 'idle')
   const { bandId } = useParams()
 
   const hasNoBands = bands.length === 0
@@ -33,7 +36,10 @@ export default function Home() {
       header={
         <Navbar>
           <FlexHeader>
-            <Title>Welcome</Title>
+            <FlexList direction="row" items="center">
+              <Title>Welcome</Title>
+              {isSubmitting ? <Loader /> : null}
+            </FlexList>
             <FlexList direction="row">
               <div className="hidden sm:block">
                 <Link to="menu" kind="primary">Add band</Link>

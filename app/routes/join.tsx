@@ -2,8 +2,10 @@ import { Outlet } from "@remix-run/react";
 
 export default function Join() {
   return (
-    <div className="max-w-lg mx-auto pt-8 min-h-screen">
-      <Outlet />
+    <div className="flex min-h-full flex-col justify-center">
+      <div className="mx-auto w-full max-w-md px-8">
+        <Outlet />
+      </div>
     </div>
   )
 }

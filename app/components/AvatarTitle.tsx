@@ -1,11 +1,15 @@
-import { Link, useParams } from "@remix-run/react"
+import { Link, useParams, useTransition } from "@remix-run/react"
 import type { ReactNode } from "react"
+import { useSpinDelay } from "spin-delay"
 import { useBandIcon } from "~/utils"
 import { Avatar } from "./Avatar"
 import { FlexList } from "./FlexList"
+import { Loader } from "./Loader"
 import { Title } from "./Title"
 
 export const AvatarTitle = ({ title }: { title: ReactNode }) => {
+  const transition = useTransition()
+  const isSubmitting = useSpinDelay(transition.state !== 'idle')
   const band = useBandIcon()
   const { bandId } = useParams()
   return (
@@ -16,6 +20,7 @@ export const AvatarTitle = ({ title }: { title: ReactNode }) => {
         </Link>
       ) : null}
       <Title>{title}</Title>
+      {isSubmitting ? <Loader /> : null}
     </FlexList>
   )
 }

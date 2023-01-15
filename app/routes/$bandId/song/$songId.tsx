@@ -110,7 +110,7 @@ export default function SongDetails() {
             <ItemBox>
               <FlexList gap={2}>
                 {!song.note ? (
-                  <span className="text-sm">N/A</span>
+                  <span>--</span>
                 ) : (
                   song.note?.split('\n').map((section, i) => (
                     <p key={i}>{section}</p>

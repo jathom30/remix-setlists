@@ -8,7 +8,7 @@ import { getUserId } from "~/session.server";
 import { createUser, generateTokenLink, getUserByEmail } from "~/models/user.server";
 import { validateEmail } from "~/utils";
 import invariant from 'tiny-invariant';
-import { CatchContainer, ErrorContainer, FlexList, PasswordStrength } from '~/components';
+import { Button, CatchContainer, ErrorContainer, FlexList, PasswordStrength } from '~/components';
 import { verifyAccount } from '~/email/verify';
 import { getDomainUrl, getPasswordError, passwordStrength } from "~/utils/assorted";
 
@@ -117,7 +117,7 @@ export default function Join() {
           <div>
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-neutral"
             >
               Name
             </label>
@@ -131,10 +131,10 @@ export default function Join() {
                 type="text"
                 aria-invalid={actionData?.errors?.name ? true : undefined}
                 aria-describedby="name-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+                className="input input-bordered w-full"
               />
               {actionData?.errors?.name && (
-                <div className="pt-1 text-red-700" id="email-error">
+                <div className="pt-1 text-error" id="email-error">
                   {actionData.errors.name}
                 </div>
               )}
@@ -144,7 +144,7 @@ export default function Join() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-neutral"
             >
               Email address
             </label>
@@ -158,10 +158,10 @@ export default function Join() {
                 autoComplete="email"
                 aria-invalid={actionData?.errors?.email ? true : undefined}
                 aria-describedby="email-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+                className="input input-bordered w-full"
               />
               {actionData?.errors?.email && (
-                <div className="pt-1 text-red-700" id="email-error">
+                <div className="pt-1 text-error" id="email-error">
                   {actionData.errors.email}
                 </div>
               )}
@@ -171,7 +171,7 @@ export default function Join() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-neutral"
             >
               Password
             </label>
@@ -185,13 +185,13 @@ export default function Join() {
                 autoComplete="new-password"
                 aria-invalid={actionData?.errors?.password ? true : undefined}
                 aria-describedby="password-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+                className="input input-bordered w-full"
               />
               <div className="pt-1">
                 <PasswordStrength tests={tests} strength={strength} />
               </div>
               {actionData?.errors?.password && (
-                <div className="pt-1 text-red-700" id="password-error">
+                <div className="pt-1 text-error" id="password-error">
                   {actionData.errors.password}
                 </div>
               )}
@@ -199,17 +199,14 @@ export default function Join() {
           </div>
 
           <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button
-            type="submit"
-            className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-          >
-            Create Account
-          </button>
+          <FlexList>
+            <Button type="submit" kind="primary">Create Account</Button>
+          </FlexList>
           <div className="flex items-center justify-center">
-            <div className="text-center text-sm text-gray-500">
+            <div className="text-center text-sm text-neutral">
               Already have an account?{" "}
               <Link
-                className="text-blue-500 underline"
+                className="link link-primary"
                 to={{
                   pathname: "/login",
                   search: searchParams.toString(),
