@@ -122,6 +122,7 @@ model Song {
   name      String
   length    Int
   isCover   Boolean @default(false)
+  author    String?
   note      String?
   keyLetter String?
   isMinor   Boolean @default(false)

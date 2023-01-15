@@ -14,15 +14,15 @@ export async function loader({ request, params }: LoaderArgs) {
   const { bandId, removeId } = params
   invariant(bandId, 'bandId not found')
   invariant(removeId, 'removeId not found')
-  const band = await getBand(bandId)
+  const band = await getBand(removeId)
 
   if (!band) {
     throw new Response('Band not found', { status: 404 })
   }
 
-  const isCurrentBand = bandId === removeId
+  // can remove member if user is not the only admin in the band.
   const canRemoveMember = band.members
-    .filter(member => isCurrentBand ? member.userId !== userId : true)
+    .filter(member => member.userId !== userId)
     .reduce((total, member) => total += member.role as unknown as RoleEnum === RoleEnum.ADMIN ? 1 : 0, 0) > 0
 
   return json({ canRemoveMember })
@@ -43,7 +43,7 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function RemoveSelfFromBand() {
   const { canRemoveMember } = useLoaderData<typeof loader>()
-  const { bandId } = useParams()
+  const { removeId } = useParams()
   if (!canRemoveMember) {
     return (
       <FlexList pad={4}>
@@ -51,7 +51,7 @@ export default function RemoveSelfFromBand() {
         <p className="text-danger text-sm">
           You are the only admin. Make at least one other member an Admin before removing yourself.
         </p>
-        <p className="text-sm">Instead, if you would rather delete this band, you can do so <Link className="underline text-blue-500" to={`/${bandId}/band/delete`}>here</Link>.</p>
+        <p className="text-sm">Instead, if you would rather delete this band, you can do so <Link className="underline text-error" to={`/${removeId}/band/delete`}>here</Link>.</p>
         <Button isDisabled>Remove</Button>
       </FlexList>
     )

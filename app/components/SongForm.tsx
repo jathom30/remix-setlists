@@ -18,6 +18,7 @@ import { FeelSelect } from "~/routes/$bandId/resources/FeelSelect";
 import { getTempoColor } from "./TempoIcons";
 import type { handleSongFormData } from "~/models/song.server";
 import { getColor } from "~/utils/tailwindColors";
+import { useMatchesData } from "~/utils";
 
 const getRangeColor = (tempo: number) => {
   switch (tempo) {
@@ -42,6 +43,9 @@ export const SongForm = ({ song, feels, errors }: {
 }) => {
   const [isWindow, setIsWindow] = useState(false)
   const [tempoColorClass, setTempoColorClass] = useState(getRangeColor(song?.tempo || 3))
+  // const [disableSongwriterField, setDisableSongwriterField] = useState(song?.isCover)
+  const [isCover, setIsCover] = useState<'cover' | 'original' | 'untouched'>('untouched')
+  const { band } = useMatchesData('routes/$bandId') as { band: { name: string } }
 
   // Select's portal needs window in this component. Without this check, page crashes on reload
   useEffect(() => {
@@ -171,10 +175,12 @@ export const SongForm = ({ song, feels, errors }: {
         <FeelSelect feels={feels} defaultFeels={song?.feels} />
       </Field>
 
-      <FlexList direction="row">
-        <Field name='isCover' label="Cover">
-          <Checkbox name="isCover" label="Is a cover" value="isCover" defaultChecked={song?.isCover} />
+      <FlexList gap={0}>
+        <Field name="author" label="Songwriter(s)">
+          <Input name="author" placeholder="Songwriters..." isDisabled={isCover === 'original'} defaultValue={song?.author || isCover === 'original' ? band.name : ''} />
         </Field>
+        <Checkbox name="isOriginal" onChange={e => setIsCover(e.target.checked ? 'original' : 'cover')} label="Original piece" defaultChecked={!!song?.isCover} />
+        <input type="hidden" hidden name="isCover" value={isCover} />
       </FlexList>
 
       <FlexList gap={2}>

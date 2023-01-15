@@ -75,7 +75,7 @@ export default function SongDetails() {
                 <span>{song.name}</span>
 
                 <Label align="right">Artist</Label>
-                <span>{song.isCover ? 'Cover' : 'Original'}</span>
+                <span>{song.author || '--'}</span>
 
                 <Label align="right">Key</Label>
                 {song.keyLetter ? <span>{song.keyLetter} {song.isMinor ? 'Minor' : 'Major'}</span> : <span>--</span>}

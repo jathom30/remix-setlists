@@ -4,7 +4,7 @@ import { redirect } from "@remix-run/node";
 import { createBand } from "~/models/band.server"
 import { requireUserId } from "~/session.server"
 import { Form, useActionData } from "@remix-run/react";
-import { ErrorMessage, FlexList, Input, SaveButtons } from "~/components";
+import { CatchContainer, ErrorContainer, ErrorMessage, FlexList, Input, SaveButtons } from "~/components";
 
 export async function action({ request }: ActionArgs) {
   const userId = await requireUserId(request)
@@ -34,4 +34,11 @@ export default function NewBand() {
       <SaveButtons saveLabel="Create" cancelTo=".." />
     </Form>
   )
+}
+
+export function CatchBoundary() {
+  return <CatchContainer />
+}
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ErrorContainer error={error} />
 }

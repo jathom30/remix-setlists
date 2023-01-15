@@ -133,6 +133,7 @@ export const handleSongFormData = (formData: FormData) => {
     { name: 'position', type: 'string', isRequired: true },
     { name: 'rank', type: 'string', isRequired: true },
     { name: 'note', type: 'string', isRequired: false },
+    { name: 'author', type: 'string', isRequired: false }
   ])
   const feels = formData.getAll('feels')
   const isCover = formData.get('isCover')
@@ -152,5 +153,10 @@ export const handleSongFormData = (formData: FormData) => {
     return acc
   }, [])
 
-  return { errors: null, formFields: { ...fields, isCover: !!isCover }, validFeels }
+  console.log(isCover)
+
+  const songIsCover = isCover === 'cover' || !!fields.author
+  const author = isCover === 'original' ? 'Original' : isCover === 'cover' ? fields.author : isCover === 'untouched' ? fields.author ? fields.author : null : null
+
+  return { errors: null, formFields: { ...fields, isCover: songIsCover, author }, validFeels }
 }
