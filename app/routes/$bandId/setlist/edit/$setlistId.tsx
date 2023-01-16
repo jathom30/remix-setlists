@@ -52,23 +52,25 @@ export async function action({ request, params }: ActionArgs) {
 
   const intent = formData.get('intent')?.toString()
 
-  const entries = Object.fromEntries(formData.entries())
 
   if (intent === 'songs') {
-    Object.keys(entries).forEach(async (key, i) => {
+    const entries = Object.fromEntries(formData.entries())
+    // remove intent from entries before hitting DB
+    const setIds = Object.keys(entries).filter(entryKey => entryKey !== 'intent')
+    const updatedSets = await Promise.all(setIds.map(async (key) => {
       const songIds = entries[key].toString().split(',')
       await updateSet({ setId: key, songIds })
-    })
-    return null
+    }))
+    return updatedSets
   }
 
   if (intent === 'sets') {
     const sets = formData.get('sets')?.toString().split(',')
     if (!sets) return null
-    sets.forEach(async (setId, i) => {
-      await updateSet({ setId, positionInSetlist: i })
-    })
-    return null
+    const updatedSets = await Promise.all(sets.map(async (setId, i) => {
+      return await updateSet({ setId, positionInSetlist: i })
+    }))
+    return updatedSets
   }
 
   return null
@@ -340,13 +342,7 @@ export default function EditSetlist() {
               overIndex
             ),
           }
-
-          const formData = {
-            ...newItems as {},
-            intent: 'songs'
-          }
-
-
+          const formData = { ...newItems, intent: 'songs' }
           fetcher.submit(formData, { method: 'put' })
           return newItems
         });

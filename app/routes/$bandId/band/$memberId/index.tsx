@@ -58,7 +58,6 @@ export async function action({ request, params }: ActionArgs) {
     return json({ errors }, { status: 400 })
   }
 
-  console.log({ bandId, memberId, fields })
   await updateBandMemberRole(bandId, memberId, fields.role)
   return null
 }
