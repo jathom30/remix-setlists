@@ -1,4 +1,4 @@
-import { faGripVertical, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faGripVertical, faPlusCircle, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
@@ -418,13 +418,20 @@ export default function EditSetlist() {
               >
                 <FlexList gap={2} pad={4}>
                   <SortableContext items={items[containerId]} strategy={verticalListSortingStrategy}>
-                    {items[containerId].map(itemId => (
+                    {items[containerId]?.map(itemId => (
                       <SortableSong
                         key={itemId}
                         id={itemId}
                         song={getSong(itemId)}
                       />
                     ))}
+                    {items[containerId].length === 0 ? (
+                      <div className="bg-base-300 rounded">
+                        <FlexList pad={4} direction="row" items="center" justify="center">
+                          <span>This empty set will be deleted upon save</span>
+                        </FlexList>
+                      </div>
+                    ) : null}
                   </SortableContext>
                 </FlexList>
               </DroppableContainer>

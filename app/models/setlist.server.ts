@@ -156,14 +156,23 @@ export async function overwriteSetlist(clonedSetlistId: string) {
   const clonedSetlist = await getSetlist(clonedSetlistId)
   if (!clonedSetlist?.editedFromId) { return }
   const originalSetlist = await getSetlist(clonedSetlist.editedFromId)
+  if (!originalSetlist) return
   // delete sets from OG setlist
   await prisma.set.deleteMany({ where: { setlistId: originalSetlist?.id } })
-  // replace with sets from cloned setlist
-  await prisma.set.updateMany({
-    where: { setlistId: clonedSetlist.id }, data: {
-      setlistId: originalSetlist?.id
+  // if set has no songs, delete and update position
+  await Promise.all(clonedSetlist.sets.map(async (set, i) => {
+    if (set.songs.length) {
+      // replace with sets from cloned setlist
+      return await prisma.set.update({
+        where: { id: set.id },
+        data: {
+          setlistId: originalSetlist.id,
+          positionInSetlist: i
+        }
+      })
     }
-  })
+    return null
+  }))
   // delete cloned setlist
   await deleteSetlist(clonedSetlistId)
   return originalSetlist?.id
