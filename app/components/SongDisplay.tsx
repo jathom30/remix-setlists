@@ -11,9 +11,9 @@ export const SongDisplay = ({ song }: { song: SerializeFrom<Song> }) => {
       <FlexList gap={0}>
         <TextOverflow className="font-bold">{song.name}</TextOverflow>
         <FlexList direction="row" justify="between" gap={2} wrap>
-          <FlexList direction="row" gap={2} items="center">
+          <FlexList direction="row" gap={1} items="center">
             <span className="text-xs text-text-subdued whitespace-nowrap">
-              {songKey} | {song.isCover ? 'Cover' : 'Original'} |
+              {song.author || '--'} | {songKey} |
             </span>
             <TempoIcons tempo={song.tempo} />
           </FlexList>

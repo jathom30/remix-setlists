@@ -43,9 +43,10 @@ export const SongForm = ({ song, feels, errors }: {
 }) => {
   const [isWindow, setIsWindow] = useState(false)
   const [tempoColorClass, setTempoColorClass] = useState(getRangeColor(song?.tempo || 3))
-  // const [disableSongwriterField, setDisableSongwriterField] = useState(song?.isCover)
-  const [isCover, setIsCover] = useState<'cover' | 'original' | 'untouched'>('untouched')
+  // const [authorField, setAuthorField] = useState<'cover' | 'original' | 'untouched'>('untouched')
+  const [author, setAuthor] = useState(song?.author)
   const { band } = useMatchesData('routes/$bandId') as { band: { name: string } }
+  const [isAuthorDisabled, setIsAuthorDisabled] = useState(song?.author === band.name)
 
   // Select's portal needs window in this component. Without this check, page crashes on reload
   useEffect(() => {
@@ -57,6 +58,13 @@ export const SongForm = ({ song, feels, errors }: {
   const handleTempoChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
     setTempoColorClass(getRangeColor(parseInt(value)))
+  }
+  const handleOriginalPieceChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { checked } = e.target
+    setIsAuthorDisabled(checked)
+    if (checked) {
+      setAuthor(band.name)
+    }
   }
 
   const base100 = getColor('base-100')
@@ -176,11 +184,17 @@ export const SongForm = ({ song, feels, errors }: {
       </Field>
 
       <FlexList gap={0}>
-        <Field name="author" label="Songwriter(s)">
-          <Input name="author" placeholder="Songwriters..." isDisabled={isCover === 'original'} defaultValue={song?.author || isCover === 'original' ? band.name : ''} />
+        <Field name="visAuthor" label="Artist(s)">
+          <Input
+            name="visAuthor"
+            placeholder="Artist name(s)..."
+            isDisabled={isAuthorDisabled}
+            onChange={e => setAuthor(e.target.value)}
+            value={author || ''}
+          />
         </Field>
-        <Checkbox name="isOriginal" onChange={e => setIsCover(e.target.checked ? 'original' : 'cover')} label="Original piece" defaultChecked={!!song?.isCover} />
-        <input type="hidden" hidden name="isCover" value={isCover} />
+        <Checkbox name="isOriginal" onChange={handleOriginalPieceChange} label="Original piece" defaultChecked={isAuthorDisabled} />
+        <input type="hidden" hidden name="author" value={author || undefined} />
       </FlexList>
 
       <FlexList gap={2}>
