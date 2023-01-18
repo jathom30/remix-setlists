@@ -98,7 +98,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-neutral"
+              className="block text-sm font-medium"
             >
               Email address
             </label>
@@ -126,7 +126,7 @@ export default function LoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-neutral"
+              className="block text-sm font-medium"
             >
               Password
             </label>
@@ -165,7 +165,7 @@ export default function LoginPage() {
               />
               <label
                 htmlFor="remember"
-                className="ml-2 block text-sm text-neutral"
+                className="ml-2 block text-sm"
               >
                 Remember me
               </label>
@@ -180,7 +180,7 @@ export default function LoginPage() {
               Forgot password
             </Link>
           </div>
-          <div className="text-center text-sm text-neutral">
+          <div className="text-center text-sm">
             Don't have an account?{" "}
             <Link
               className="link link-primary"

@@ -117,7 +117,7 @@ export default function Join() {
           <div>
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-neutral"
+              className="block text-sm font-medium"
             >
               Name
             </label>
@@ -144,7 +144,7 @@ export default function Join() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-neutral"
+              className="block text-sm font-medium"
             >
               Email address
             </label>
@@ -171,7 +171,7 @@ export default function Join() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-neutral"
+              className="block text-sm font-medium"
             >
               Password
             </label>
@@ -203,7 +203,7 @@ export default function Join() {
             <Button type="submit" kind="primary">Create Account</Button>
           </FlexList>
           <div className="flex items-center justify-center">
-            <div className="text-center text-sm text-neutral">
+            <div className="text-center text-sm">
               Already have an account?{" "}
               <Link
                 className="link link-primary"
