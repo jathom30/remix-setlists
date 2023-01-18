@@ -18,9 +18,8 @@ export const meta: MetaFunction = () => ({
 
 export default function Landing() {
   return (
-    <MaxHeightContainer
-      fullHeight
-      header={
+    <div className="mt-16 pb-16">
+      <div className="fixed top-0 inset-x-0 z-10">
         <Navbar>
           <FlexHeader>
             <Title>Setlists</Title>
@@ -30,21 +29,15 @@ export default function Landing() {
             </FlexList>
           </FlexHeader>
         </Navbar>
-      }
-      footer={
-        <Navbar>
-          <FlexHeader>
-            <span>2023 ©</span>
-            <a href="mailto:support@setlists.pro">Contact us</a>
-          </FlexHeader>
-        </Navbar>
-      }
-    >
+      </div>
+
       <MaxWidth>
         <FlexList pad={4}>
-          <h1 className="text-5xl font-bold">Welcome to <span className="text-primary">Setlists</span></h1>
-          <p className="text-xl">A place for bands and their mates.</p>
-          <Link to="join" kind="primary">Create your account</Link>
+          <div className="py-12 flex flex-col gap-4">
+            <h1 className="text-5xl font-bold">Welcome to <span className="text-primary">Setlists</span></h1>
+            <p className="text-xl">A place for bands and their mates.</p>
+            <Link to="join" kind="primary">Create your account</Link>
+          </div>
           <Divider />
           <ItemBox>
             <h2 className="text-2xl font-bold">Why Setlists?</h2>
@@ -69,6 +62,14 @@ export default function Landing() {
           </ItemBox>
         </FlexList>
       </MaxWidth>
-    </MaxHeightContainer>
+      <div className="fixed bottom-0 inset-x-0 z-10">
+        <Navbar>
+          <FlexHeader>
+            <span>2023 © JATHOM</span>
+            <a href="mailto:support@setlists.pro">Contact us</a>
+          </FlexHeader>
+        </Navbar>
+      </div>
+    </div>
   )
 }

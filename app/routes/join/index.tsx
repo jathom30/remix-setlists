@@ -187,7 +187,7 @@ export default function Join() {
                 aria-describedby="password-error"
                 className="input input-bordered w-full"
               />
-              <div className="pt-1">
+              <div className="pt-2">
                 <PasswordStrength tests={tests} strength={strength} />
               </div>
               {actionData?.errors?.password && (
