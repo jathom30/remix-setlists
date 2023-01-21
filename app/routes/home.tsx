@@ -2,7 +2,7 @@ import { faBoxOpen, faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Form, NavLink, Outlet, useLoaderData, useLocation, useNavigate, useParams, useNavigation } from "@remix-run/react";
+import { Form, NavLink, Outlet, useLoaderData, useLocation, useNavigate, useParams, useTransition } from "@remix-run/react";
 import { useSpinDelay } from "spin-delay";
 import { Avatar, Badge, Button, CreateNewButton, FlexHeader, FlexList, Link, Loader, MaxHeightContainer, MobileModal, Navbar, Title } from "~/components";
 import { getBands } from "~/models/band.server";
@@ -24,8 +24,8 @@ export default function Home() {
   const { bands } = useLoaderData<typeof loader>()
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const navigation = useNavigation()
-  const isSubmitting = useSpinDelay(navigation.state !== 'idle')
+  const transition = useTransition()
+  const isSubmitting = useSpinDelay(transition.state !== 'idle')
   const { bandId } = useParams()
 
   const hasNoBands = bands.length === 0

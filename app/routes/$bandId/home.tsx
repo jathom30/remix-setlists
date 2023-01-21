@@ -3,7 +3,7 @@ import { json } from "@remix-run/node"
 import { MaxHeightContainer, FlexList, Avatar, Badge, Link, MobileModal, Title, CreateNewButton, Navbar, FlexHeader, Loader } from "~/components"
 import { getBands } from "~/models/band.server"
 import { requireUserId } from "~/session.server"
-import { useLoaderData, Link as RemixLink, useLocation, useNavigate, Outlet, useParams, useNavigation } from "@remix-run/react"
+import { useLoaderData, Link as RemixLink, useLocation, useNavigate, Outlet, useParams, useTransition } from "@remix-run/react"
 import { useSpinDelay } from "spin-delay"
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -28,8 +28,8 @@ export default function Select() {
   const { bands } = useLoaderData<typeof loader>()
   const { pathname } = useLocation()
   const navigate = useNavigate()
-  const navigation = useNavigation()
-  const isSubmitting = useSpinDelay(navigation.state !== 'idle')
+  const transition = useTransition()
+  const isSubmitting = useSpinDelay(transition.state !== 'idle')
   const { bandId } = useParams()
 
   const hasNoBands = bands.length === 0

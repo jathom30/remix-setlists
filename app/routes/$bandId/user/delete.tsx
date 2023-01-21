@@ -1,4 +1,4 @@
-import { Form, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
+import { Form, useActionData, useLoaderData, useTransition } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
 import type { ChangeEvent } from "react";
@@ -10,7 +10,6 @@ import { deleteUserByEmail } from "~/models/user.server";
 import { getUserBands } from "~/models/usersInBands.server";
 import { deleteBand, getBand } from "~/models/band.server";
 import { RoleEnum } from "~/utils/enums";
-import useSpinDelay from "spin-delay";
 
 export async function loader({ request }: LoaderArgs) {
   const user = await requireUser(request)
@@ -56,8 +55,7 @@ export default function DeleteUser() {
   const { userEmail } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
   const [isDisabled, setIsDisabled] = useState(true)
-  const navigation = useNavigation()
-  const isSubmitting = useSpinDelay(navigation.state !== 'idle')
+  const transition = useTransition()
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setIsDisabled(e.target.value !== userEmail)
@@ -71,7 +69,7 @@ export default function DeleteUser() {
         <p className="text-xs text-text-subdued">To delete, type your email below.</p>
         <Input onChange={handleChange} name="email" placeholder={userEmail} type="email" />
         {actionData?.errors.email ? (<ErrorMessage message="user email must match" />) : null}
-        <Button kind="error" type="submit" isSaving={isSubmitting} isDisabled={isDisabled}>Delete</Button>
+        <Button kind="error" type="submit" isSaving={transition.state !== 'idle'} isDisabled={isDisabled}>Delete</Button>
       </FlexList>
     </Form>
   )

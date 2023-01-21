@@ -1,8 +1,7 @@
 import { faSave } from "@fortawesome/free-solid-svg-icons";
-import { Form, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
+import { Form, useActionData, useLoaderData, useTransition } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
-import useSpinDelay from "spin-delay";
 import invariant from "tiny-invariant";
 import { Button, ErrorMessage, Field, FlexList, Input } from "~/components";
 import { getBand, updateBand } from "~/models/band.server";
@@ -45,8 +44,7 @@ export async function action({ request, params }: ActionArgs) {
 export default function EditBandName() {
   const { bandName } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
-  const navigation = useNavigation()
-  const isSubmitting = useSpinDelay(navigation.state !== 'idle')
+  const transition = useTransition()
   return (
     <Form method="put">
       <FlexList pad={4}>
@@ -54,7 +52,7 @@ export default function EditBandName() {
           <Input name="name" defaultValue={bandName} placeholder={bandName} />
           {actionData?.error.name ? <ErrorMessage message={actionData.error.name} /> : null}
         </Field>
-        <Button type="submit" kind="primary" icon={faSave} isSaving={isSubmitting}>Save</Button>
+        <Button type="submit" kind="primary" icon={faSave} isSaving={transition.state !== 'idle'}>Save</Button>
       </FlexList>
     </Form>
   )
