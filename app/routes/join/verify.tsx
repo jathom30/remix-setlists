@@ -7,9 +7,10 @@ import { safeRedirect } from "~/utils";
 import { Button, FlexList, ItemBox } from "~/components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
-import { Form, Link, useTransition } from "@remix-run/react";
+import { Form, Link, useNavigation } from "@remix-run/react";
 import { deleteToken } from "~/models/token.server";
 import { decrypt } from "~/utils/encryption.server";
+import useSpinDelay from "spin-delay";
 
 export async function loader({ request }: LoaderArgs) {
   const url = new URL(request.url)
@@ -60,7 +61,8 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function Verifying() {
-  const transition = useTransition()
+  const navigation = useNavigation()
+  const isSubmitting = useSpinDelay(navigation.state !== 'idle')
   return (
     <Form method="put">
       <FlexList pad={4}>
@@ -69,7 +71,7 @@ export default function Verifying() {
         <ItemBox>
           <FlexList>
             <p>Your account has been verified. You are one click away from create setlists with your band(s).</p>
-            <Button type="submit" kind="primary" isSaving={transition.state !== 'idle'}>Log in</Button>
+            <Button type="submit" kind="primary" isSaving={isSubmitting}>Log in</Button>
           </FlexList>
         </ItemBox>
       </FlexList>

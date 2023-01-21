@@ -1,8 +1,9 @@
 import { faSave } from "@fortawesome/free-solid-svg-icons";
-import { Form, Outlet, useLocation, useNavigate, useTransition } from "@remix-run/react";
+import { Form, Outlet, useLocation, useNavigate, useNavigation } from "@remix-run/react";
 import type { ActionArgs, UploadHandler } from "@remix-run/server-runtime";
 import { unstable_composeUploadHandlers, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
+import useSpinDelay from "spin-delay";
 import invariant from "tiny-invariant";
 import { Button, CatchContainer, ErrorContainer, FlexList, MaxHeightContainer, Tabs } from "~/components";
 import { updateBandIcon } from "~/models/bandIcon.server";
@@ -56,7 +57,8 @@ export async function action({ request, params }: ActionArgs) {
 }
 
 export default function EditBandAvatar() {
-  const transition = useTransition()
+  const navigation = useNavigation()
+  const isSubmitting = useSpinDelay(navigation.state !== 'idle')
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
@@ -72,7 +74,7 @@ export default function EditBandAvatar() {
       } footer={
         <div className="bg-base-100">
           <FlexList pad={4}>
-            <Button type="submit" kind="primary" icon={faSave} isSaving={transition.state !== 'idle'}>Save</Button>
+            <Button type="submit" kind="primary" icon={faSave} isSaving={isSubmitting}>Save</Button>
           </FlexList>
         </div>
       }>

@@ -1,6 +1,6 @@
 import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { Divider, FlexHeader, FlexList, ItemBox, Link, MaxHeightContainer, MaxWidth, Navbar, Title } from "~/components";
+import { Divider, FlexHeader, FlexList, ItemBox, Link, MaxWidth, Navbar, Title } from "~/components";
 import { getUserId } from "~/session.server";
 
 export async function loader({ request }: LoaderArgs) {
