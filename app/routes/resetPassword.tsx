@@ -1,6 +1,6 @@
 import { faChevronLeft, faCircleXmark, faKey } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Form, useActionData, useLoaderData, Link as RemixLink, useTransition } from "@remix-run/react";
+import { Form, useActionData, useLoaderData, Link as RemixLink, useNavigation } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
 import { Button, ErrorMessage, Field, FlexList, Input, ItemBox, Link, PasswordStrength } from "~/components";
@@ -10,6 +10,7 @@ import { deleteToken } from "~/models/token.server";
 import { useState } from "react";
 import { getPasswordError, passwordStrength } from "~/utils/assorted";
 import { decrypt } from "~/utils/encryption.server";
+import useSpinDelay from "spin-delay";
 
 export async function loader({ request }: LoaderArgs) {
   const url = new URL(request.url)
@@ -74,12 +75,12 @@ export async function action({ request }: ActionArgs) {
 export default function ResetPassword() {
   const { email } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
-  const transition = useTransition()
+  const navigation = useNavigation()
+  const isSubmitting = useSpinDelay(navigation.state !== 'idle')
   const [password, setPassword] = useState('')
   const { tests, strength } = passwordStrength(password)
 
   const isValid = Object.values(tests).every(test => test)
-  const isLoading = transition.state !== 'idle'
 
   return (
     <div className="max-w-lg m-auto mt-8">
@@ -98,7 +99,7 @@ export default function ResetPassword() {
                 <Input name="verifyPassword" type="password" placeholder="Verify password" />
                 {actionData?.errors?.verifyPassword ? <ErrorMessage message="Passwords must match" /> : null}
               </Field>
-              <Button kind="primary" type="submit" isDisabled={!isValid} isSaving={isLoading}>Reset password</Button>
+              <Button kind="primary" type="submit" isDisabled={!isValid} isSaving={isSubmitting}>Reset password</Button>
               <Link to="/login" kind="ghost" icon={faChevronLeft}>Back to log in</Link>
             </FlexList>
           </Form>
