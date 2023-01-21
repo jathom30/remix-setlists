@@ -1,5 +1,5 @@
 import { faPlus, faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { Form, useSubmit, useTransition } from "@remix-run/react";
+import { Form, useSubmit, useNavigation } from "@remix-run/react";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
@@ -7,6 +7,7 @@ import { Button, FlexHeader, FlexList, Link } from "~/components";
 import { requireNonSubMember } from "~/session.server";
 import { getSetlist, overwriteSetlist, updateSetlist } from "~/models/setlist.server";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import useSpinDelay from "spin-delay";
 
 export async function action({ request, params }: ActionArgs) {
   const { bandId, setlistId } = params
@@ -38,8 +39,10 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function SaveChanges() {
   const submit = useSubmit()
-  const transition = useTransition()
-  const isSaving = transition.state !== 'idle'
+  const navigation = useNavigation()
+  const intent = navigation.formData?.get('intent')
+  const isSaving = useSpinDelay(navigation.state !== 'idle' && intent === 'overwrite')
+  const isCloning = useSpinDelay(navigation.state !== 'idle' && intent === 'new')
 
   return (
     <Form method="put">
@@ -50,7 +53,7 @@ export default function SaveChanges() {
         </FlexHeader>
         <p className="text-slate-500">You can either save these changes to the exisiting setlist or create a new setlist based off these changes and keep the original setlist uneffected.</p>
         <Button name="intent" value="overwrite" kind="primary" type="submit" isSaving={isSaving} icon={faSave}>Save</Button>
-        <Button name="intent" value="new" isSaving={isSaving} icon={faPlus} onClick={e => submit(e.currentTarget)}>Save as new</Button>
+        <Button name="intent" value="new" isSaving={isCloning} icon={faPlus} onClick={e => submit(e.currentTarget)}>Save as new</Button>
       </FlexList>
     </Form>
   )
