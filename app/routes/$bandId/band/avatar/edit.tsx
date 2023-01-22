@@ -3,7 +3,7 @@ import { Form, Outlet, useLocation, useNavigate, useNavigation } from "@remix-ru
 import type { ActionArgs, UploadHandler } from "@remix-run/server-runtime";
 import { unstable_composeUploadHandlers, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
-import useSpinDelay from "spin-delay";
+import { useSpinDelay } from "spin-delay";
 import invariant from "tiny-invariant";
 import { Button, CatchContainer, ErrorContainer, FlexList, MaxHeightContainer, Tabs } from "~/components";
 import { updateBandIcon } from "~/models/bandIcon.server";

@@ -7,7 +7,7 @@ import { cloneSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
-import useSpinDelay from "spin-delay";
+import { useSpinDelay } from "spin-delay";
 
 export async function action({ request, params }: ActionArgs) {
   const { setlistId, bandId } = params

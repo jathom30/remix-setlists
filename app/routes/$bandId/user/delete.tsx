@@ -10,7 +10,7 @@ import { deleteUserByEmail } from "~/models/user.server";
 import { getUserBands } from "~/models/usersInBands.server";
 import { deleteBand, getBand } from "~/models/band.server";
 import { RoleEnum } from "~/utils/enums";
-import useSpinDelay from "spin-delay";
+import { useSpinDelay } from "spin-delay";
 
 export async function loader({ request }: LoaderArgs) {
   const user = await requireUser(request)
