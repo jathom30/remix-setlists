@@ -1,12 +1,14 @@
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react"
+import { useButton } from "@react-aria/button";
+import { FocusRing } from "@react-aria/focus";
+import React, { useRef } from "react"
 import { buttonKind, buttonSize } from "~/utils/buttonStyles";
 
 export type ButtonKind = 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'warning' | 'error' | 'ghost' | 'link' | 'outline' | 'active' | 'disabled'
 
 export type ButtonProps = {
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  onClick?: () => void
   icon?: IconDefinition;
   isDisabled?: boolean
   isRounded?: boolean
@@ -23,18 +25,25 @@ export type ButtonProps = {
 }
 
 export function Button({ isSaving = false, isCollapsing = false, isOutline = false, onClick, size, tabIndex, icon, name, value, isDisabled = false, isRounded = false, type = 'button', kind, children }: ButtonProps) {
+  const ref = useRef<HTMLButtonElement>(null)
+  let { buttonProps } = useButton({ onPress: onClick, isDisabled: isDisabled || isSaving, type }, ref);
+
   return (
-    <button
-      name={name}
-      className={`btn ${buttonKind(kind)} ${icon ? 'gap-2' : ''} ${buttonSize(size)} ${isOutline ? 'btn-outline' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isRounded ? 'btn-circle' : ''} ${isSaving ? 'loading' : ''} flex-nowrap`}
-      onClick={onClick}
-      disabled={isDisabled || isSaving}
-      type={type}
-      value={value}
-      tabIndex={tabIndex}
-    >
-      {(icon && !isSaving) ? <FontAwesomeIcon icon={icon} /> : null}
-      <div className={isCollapsing ? 'hidden md:block' : ''}>{children}</div>
-    </button>
+    <FocusRing focusRingClass="ring ring-offset-transparent">
+      <button
+        ref={ref}
+        name={name}
+        className={`btn ${buttonKind(kind)} ${icon ? 'gap-2' : ''} ${buttonSize(size)} ${isOutline ? 'btn-outline' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isRounded ? 'btn-circle' : ''} ${isSaving ? 'loading' : ''} touch-none select-none flex-nowrap focus-visible:outline-none`}
+        {...buttonProps}
+        value={value}
+        style={{
+          WebkitTapHighlightColor: 'transparent'
+        }}
+        tabIndex={tabIndex}
+      >
+        {(icon && !isSaving) ? <FontAwesomeIcon icon={icon} /> : null}
+        <div className={isCollapsing ? 'hidden md:block' : ''}>{children}</div>
+      </button>
+    </FocusRing>
   )
 }

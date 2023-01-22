@@ -1,6 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useButton } from "@react-aria/button";
 import { Link as RemixLink } from "@remix-run/react";
 import type { RemixLinkProps } from "@remix-run/react/dist/components";
+import { useRef } from "react";
 import { buttonKind, buttonSize } from "~/utils/buttonStyles";
 import type { ButtonProps } from "./Button";
 
@@ -12,7 +14,7 @@ export function Link(props: ButtonProps & RemixLinkProps) {
       {...rest}
       to={to}
       prefetch={prefetch}
-      className={`btn ${buttonKind(kind)} ${buttonSize(size)} ${isOutline ? 'btn-outline' : ''} ${icon ? 'gap-2' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isSaving ? 'loading' : ''} ${isRounded ? 'btn-circle' : ''} flex-nowrap`}
+      className={`btn ${buttonKind(kind)} ${buttonSize(size)} ${isOutline ? 'btn-outline' : ''} ${icon ? 'gap-2' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isSaving ? 'loading' : ''} ${isRounded ? 'btn-circle' : ''} touch-none select-none flex-nowrap focus-visible:outline-none`}
     >
       {icon && !isSaving ? <FontAwesomeIcon icon={icon} /> : null}
       <div className={`${isCollapsing ? 'hidden md:block' : ''}`}>{children}</div>
