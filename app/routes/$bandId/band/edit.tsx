@@ -2,7 +2,7 @@ import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { Form, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
-import useSpinDelay from "spin-delay";
+import { useSpinDelay } from "spin-delay";
 import invariant from "tiny-invariant";
 import { Button, ErrorMessage, Field, FlexList, Input } from "~/components";
 import { getBand, updateBand } from "~/models/band.server";

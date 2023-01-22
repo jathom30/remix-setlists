@@ -1,6 +1,6 @@
 import { useNavigation } from "@remix-run/react"
 import type { ReactNode } from "react"
-import useSpinDelay from "spin-delay";
+import { useSpinDelay } from "spin-delay";
 import { Spinner } from "./Spinner"
 
 export const RouteHeader = ({ action, desktopAction, mobileChildren, desktopChildren }: { desktopAction?: ReactNode; mobileChildren?: ReactNode; desktopChildren?: ReactNode; action?: ReactNode }) => {
