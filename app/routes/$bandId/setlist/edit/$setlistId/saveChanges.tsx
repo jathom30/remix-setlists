@@ -7,7 +7,7 @@ import { Button, FlexHeader, FlexList, Link } from "~/components";
 import { requireNonSubMember } from "~/session.server";
 import { getSetlist, overwriteSetlist, updateSetlist } from "~/models/setlist.server";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import useSpinDelay from "spin-delay";
+import { useSpinDelay } from "spin-delay";
 
 export async function action({ request, params }: ActionArgs) {
   const { bandId, setlistId } = params

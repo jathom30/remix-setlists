@@ -10,7 +10,7 @@ import { faCheckCircle, faCircleXmark } from "@fortawesome/free-solid-svg-icons"
 import { Form, Link, useNavigation } from "@remix-run/react";
 import { deleteToken } from "~/models/token.server";
 import { decrypt } from "~/utils/encryption.server";
-import useSpinDelay from "spin-delay";
+import { useSpinDelay } from "spin-delay";
 
 export async function loader({ request }: LoaderArgs) {
   const url = new URL(request.url)

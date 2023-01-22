@@ -10,7 +10,7 @@ import { deleteToken } from "~/models/token.server";
 import { useState } from "react";
 import { getPasswordError, passwordStrength } from "~/utils/assorted";
 import { decrypt } from "~/utils/encryption.server";
-import useSpinDelay from "spin-delay";
+import { useSpinDelay } from "spin-delay";
 
 export async function loader({ request }: LoaderArgs) {
   const url = new URL(request.url)
