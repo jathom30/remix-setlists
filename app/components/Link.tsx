@@ -1,8 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useButton } from "@react-aria/button";
 import { Link as RemixLink } from "@remix-run/react";
 import type { RemixLinkProps } from "@remix-run/react/dist/components";
-import { useRef } from "react";
 import { buttonKind, buttonSize } from "~/utils/buttonStyles";
 import type { ButtonProps } from "./Button";
 
