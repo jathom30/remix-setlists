@@ -8,7 +8,7 @@ import { buttonKind, buttonSize } from "~/utils/buttonStyles";
 export type ButtonKind = 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'warning' | 'error' | 'ghost' | 'link' | 'outline' | 'active' | 'disabled'
 
 export type ButtonProps = {
-  onClick?: (e: MouseEvent) => void
+  onClick?: (e: MouseEvent<HTMLButtonElement>) => void
   icon?: IconDefinition;
   isDisabled?: boolean
   isRounded?: boolean
