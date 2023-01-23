@@ -52,7 +52,6 @@ export async function action({ request, params }: ActionArgs) {
 
   const intent = formData.get('intent')?.toString()
 
-
   if (intent === 'songs') {
     const entries = Object.fromEntries(formData.entries())
     // remove intent from entries before hitting DB
