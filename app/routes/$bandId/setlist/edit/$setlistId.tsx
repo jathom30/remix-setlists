@@ -2,7 +2,6 @@ import { faGripVertical, faSave, faTrash } from "@fortawesome/free-solid-svg-ico
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
-import { ShouldRevalidateFunction, useSubmit } from "@remix-run/react";
 import { Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { AvatarTitle, Breadcrumbs, CatchContainer, DroppableContainer, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SongDisplay } from "~/components";
@@ -19,7 +18,7 @@ import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import { useCallback, useEffect, useRef } from "react";
 import { useSpinDelay } from 'spin-delay';
 import { useState } from "react";
-import { updateSet } from "~/models/set.server";
+import { updateSetPosition, updateSetSongs } from "~/models/set.server";
 import { coordinateGetter } from "~/utils/dnd";
 import { getSetLength } from "~/utils/setlists";
 
@@ -58,8 +57,7 @@ export async function action({ request, params }: ActionArgs) {
     const setIds = Object.keys(entries).filter(entryKey => entryKey !== 'intent')
     const updatedSets = await Promise.all(setIds.map(async (key) => {
       const songIds = entries[key].toString().split(',')
-      console.log(songIds)
-      await updateSet({ setId: key, songIds })
+      return await updateSetSongs(key, songIds)
     }))
     return updatedSets
   }
@@ -68,7 +66,7 @@ export async function action({ request, params }: ActionArgs) {
     const sets = formData.get('sets')?.toString().split(',')
     if (!sets) return null
     const updatedSets = await Promise.all(sets.map(async (setId, i) => {
-      return await updateSet({ setId, positionInSetlist: i })
+      return await updateSetPosition(setId, i)
     }))
     return updatedSets
   }
@@ -81,12 +79,7 @@ const subRoutes = ['addSongs', 'newSong', 'removeSong', 'createSet', 'createSong
 // // this feels like some hacky shit
 // export const shouldRevalidate: ShouldRevalidateFunction = (params) => {
 //   console.log(params)
-//   // const shouldReload = params.formMethod === 'put'
-//   // if (shouldReload) {
-//   //   window.location.reload()
-//   // }
-//   // return params.defaultShouldRevalidate
-//   return false
+//   return params.defaultShouldRevalidate
 // }
 
 type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
@@ -338,9 +331,13 @@ export default function EditSetlist() {
             ),
           }
           const formData = { ...newItems, intent: 'songs' }
+          console.log(formData)
           fetcher.submit(formData, { method: 'put', replace: true })
           return newItems
         });
+      } else {
+        const formData = { ...items, intent: 'songs' }
+        fetcher.submit(formData, { method: 'put', replace: true })
       }
     }
 

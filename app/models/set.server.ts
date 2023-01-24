@@ -75,24 +75,30 @@ export async function createSet(setlistId: Setlist['id'], songIds: Song['id'][],
   })
 }
 
-export async function updateSet({ setId, songIds, positionInSetlist }: { setId: Set['id'], songIds?: Song['id'][], positionInSetlist?: Set['positionInSetlist'] }) {
+export async function updateSetPosition(setId: Set['id'], positionInSetlist: Set['positionInSetlist']) {
+  return prisma.set.update({ where: { id: setId }, data: { positionInSetlist } })
+}
+
+export async function updateSetSongs(setId: Set['id'], songIds?: Song['id'][]) {
   const cleanedSongIds = songIds?.reduce((acc, songId) => songId.length ? [...acc, songId] : acc, [] as string[])
-  console.log(cleanedSongIds)
+  const hasSongs = (cleanedSongIds?.length ?? 0) > 0
+  if (!hasSongs) {
+    return prisma.set.update({
+      where: { id: setId },
+      data: { songs: { deleteMany: {} } }
+    })
+  }
+
   return prisma.set.update({
     where: { id: setId },
     data: {
-      ...(cleanedSongIds?.length ? {
-        songs: {
-          deleteMany: {},
-          ...(cleanedSongIds.length ? {
-            create: cleanedSongIds.map((songId, index) => ({
-              songId,
-              positionInSet: index,
-            }))
-          } : null),
-        }
-      } : null),
-      ...(positionInSetlist ? { positionInSetlist } : null),
+      songs: {
+        deleteMany: {},
+        create: cleanedSongIds?.map((songId, index) => ({
+          songId,
+          positionInSet: index,
+        }))
+      },
     }
   })
 }
