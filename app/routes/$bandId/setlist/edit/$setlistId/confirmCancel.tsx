@@ -1,8 +1,8 @@
-import { Form, useSubmit } from "@remix-run/react";
+import { Form } from "@remix-run/react";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Button, FlexList } from "~/components";
+import { Button, FlexList, Link } from "~/components";
 import { deleteSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 
@@ -28,13 +28,12 @@ export async function action({ request, params }: ActionArgs) {
 }
 
 export default function ConfirmCancel() {
-  const submit = useSubmit()
   return (
     <Form method="put">
       <FlexList pad={4}>
         <h1 className="font-bold">Cancel changes?</h1>
-        <p className="text-slate-500">Are you sure you want to go back? You will lose all changes made to this setlist.</p>
-        <Button name="intent" value="cancel" onClick={e => submit(e.currentTarget)}>Continue editing</Button>
+        <p className="text-slate-500">You will lose all changes made to this setlist.</p>
+        <Link to="..">Continue editing</Link>
         <Button name="intent" value="submit" kind="primary" type="submit">Confirm cancel</Button>
       </FlexList>
     </Form>

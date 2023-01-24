@@ -42,10 +42,7 @@ export default function LoadingSetlist() {
   const submit = useSubmit()
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      submit({}, { method: 'put' })
-    }, 300)
-    return () => clearTimeout(timer)
+    submit({}, { method: 'put' })
   }, [submit])
 
   return (

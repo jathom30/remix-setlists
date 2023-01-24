@@ -1,10 +1,10 @@
-import { faGripVertical, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faGripVertical, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
 import { Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { AvatarTitle, Breadcrumbs, CatchContainer, DroppableContainer, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SongDisplay } from "~/components";
+import { AvatarTitle, Breadcrumbs, CatchContainer, DroppableContainer, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SaveButtons, SongDisplay } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { CSS } from "@dnd-kit/utilities";
@@ -16,7 +16,6 @@ import { DndContext, KeyboardSensor, useSensor, useSensors, DragOverlay } from "
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import { useCallback, useEffect, useRef } from "react";
-import { useSpinDelay } from 'spin-delay';
 import { useState } from "react";
 import { updateSetPosition, updateSetSongs } from "~/models/set.server";
 import { coordinateGetter } from "~/utils/dnd";
@@ -101,8 +100,6 @@ export default function EditSetlist() {
     if (!set) return
     return getSetLength(set.songs)
   }
-
-  const isLoading = useSpinDelay(fetcher.state !== 'idle')
 
   const [items, setItems] = useState(keySets)
   const [containers, setContainers] = useState(Object.keys(keySets) as UniqueIdentifier[])
@@ -363,9 +360,10 @@ export default function EditSetlist() {
       footer={
         <>
           <MaxWidth>
-            <FlexList pad={4}>
-              <Link to="saveChanges" kind="primary" isSaving={isLoading} icon={faSave}>Save</Link>
-            </FlexList>
+            <SaveButtons
+              saveLabel="Save"
+              cancelTo="confirmCancel"
+            />
           </MaxWidth>
           <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
             <Outlet />
