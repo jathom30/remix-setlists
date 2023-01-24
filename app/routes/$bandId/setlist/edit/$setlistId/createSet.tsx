@@ -35,9 +35,12 @@ export async function action({ request, params }: ActionArgs) {
   const formData = await request.formData()
   const songIds = formData.getAll('songs').map(songId => songId.toString())
 
-  // TODO -> get proper position in setlist
-  await createSet(setlistId, songIds, 1)
-  return redirect(`/${bandId}/setlist/edit/${setlistId}`)
+  const url = new URL(request.url)
+  const position = url.searchParams.get('position')?.toString() || '1'
+
+  await createSet(setlistId, songIds, parseInt(position))
+  // ? Redirects to an intermediate route that quickly redirects to edit view
+  return redirect(`/${bandId}/setlist/loadingSetlist?setlistId=${setlistId}`)
 }
 
 export default function CreateSet() {

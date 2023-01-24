@@ -1,11 +1,10 @@
-import { faGripVertical, faPlusCircle, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faGripVertical, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
-import type { ShouldReloadFunction } from "@remix-run/react";
 import { Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { AvatarTitle, Breadcrumbs, CatchContainer, DroppableContainer, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SongDisplay } from "~/components";
+import { AvatarTitle, Breadcrumbs, CatchContainer, DroppableContainer, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SaveButtons, SongDisplay } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { CSS } from "@dnd-kit/utilities";
@@ -17,9 +16,8 @@ import { DndContext, KeyboardSensor, useSensor, useSensors, DragOverlay } from "
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import { useCallback, useEffect, useRef } from "react";
-import { useSpinDelay } from 'spin-delay';
 import { useState } from "react";
-import { updateSet } from "~/models/set.server";
+import { updateSetPosition, updateSetSongs } from "~/models/set.server";
 import { coordinateGetter } from "~/utils/dnd";
 import { getSetLength } from "~/utils/setlists";
 
@@ -52,14 +50,13 @@ export async function action({ request, params }: ActionArgs) {
 
   const intent = formData.get('intent')?.toString()
 
-
   if (intent === 'songs') {
     const entries = Object.fromEntries(formData.entries())
     // remove intent from entries before hitting DB
     const setIds = Object.keys(entries).filter(entryKey => entryKey !== 'intent')
     const updatedSets = await Promise.all(setIds.map(async (key) => {
       const songIds = entries[key].toString().split(',')
-      await updateSet({ setId: key, songIds })
+      return await updateSetSongs(key, songIds)
     }))
     return updatedSets
   }
@@ -68,7 +65,7 @@ export async function action({ request, params }: ActionArgs) {
     const sets = formData.get('sets')?.toString().split(',')
     if (!sets) return null
     const updatedSets = await Promise.all(sets.map(async (setId, i) => {
-      return await updateSet({ setId, positionInSetlist: i })
+      return await updateSetPosition(setId, i)
     }))
     return updatedSets
   }
@@ -77,15 +74,6 @@ export async function action({ request, params }: ActionArgs) {
 }
 
 const subRoutes = ['addSongs', 'newSong', 'removeSong', 'createSet', 'createSong', 'saveChanges', 'confirmCancel']
-
-// this feels like some hacky shit
-export const unstable_shouldReload: ShouldReloadFunction = ({ prevUrl }) => {
-  const shouldReload = subRoutes.some(route => prevUrl.pathname.includes(route))
-  if (shouldReload) {
-    document.location.reload()
-  }
-  return true
-}
 
 type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
 export const TRASH_ID = 'void';
@@ -113,10 +101,8 @@ export default function EditSetlist() {
     return getSetLength(set.songs)
   }
 
-  const isLoading = useSpinDelay(fetcher.state !== 'idle')
-
   const [items, setItems] = useState(keySets)
-  const [containers, setContainers] = useState(Object.keys(items) as UniqueIdentifier[])
+  const [containers, setContainers] = useState(Object.keys(keySets) as UniqueIdentifier[])
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null)
   const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
@@ -291,13 +277,6 @@ export default function EditSetlist() {
     }
   }
 
-  // function getNextContainerId() {
-  //   const containerIds = Object.keys(items);
-  //   const lastContainerId = containerIds[containerIds.length - 1];
-
-  //   return String.fromCharCode(lastContainerId.charCodeAt(0) + 1);
-  // }
-
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id in items && over?.id) {
       setContainers((containers) => {
@@ -307,7 +286,7 @@ export default function EditSetlist() {
         const newContainers = arrayMove(containers, activeIndex, overIndex);
 
         const formData = { sets: newContainers.join(','), intent: 'sets' }
-        fetcher.submit(formData, { method: 'put' })
+        fetcher.submit(formData, { method: 'put', replace: true })
         return newContainers
       });
     }
@@ -343,9 +322,12 @@ export default function EditSetlist() {
             ),
           }
           const formData = { ...newItems, intent: 'songs' }
-          fetcher.submit(formData, { method: 'put' })
+          fetcher.submit(formData, { method: 'put', replace: true })
           return newItems
         });
+      } else {
+        const formData = { ...items, intent: 'songs' }
+        fetcher.submit(formData, { method: 'put', replace: true })
       }
     }
 
@@ -378,9 +360,10 @@ export default function EditSetlist() {
       footer={
         <>
           <MaxWidth>
-            <FlexList pad={4}>
-              <Link to="saveChanges" kind="primary" isSaving={isLoading} icon={faSave}>Save</Link>
-            </FlexList>
+            <SaveButtons
+              saveLabel="Save"
+              cancelTo="confirmCancel"
+            />
           </MaxWidth>
           <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
             <Outlet />
@@ -454,7 +437,7 @@ export default function EditSetlist() {
           </DragOverlay>
         </DndContext>
         <FlexList pad={4}>
-          <Link to="createSet">Create new set</Link>
+          <Link to={`createSet?position=${containers.length}`}>Create new set</Link>
         </FlexList>
       </MaxWidth>
     </MaxHeightContainer>

@@ -73,6 +73,19 @@ export async function getSetlistName(setlistId: Setlist['id']) {
 }
 
 export async function updateSetlist(setlistId: Setlist['id'], setlist: Partial<Setlist>) {
+  const currentSetlist = await getSetlist(setlistId)
+  if (!currentSetlist) { return }
+  await Promise.all(currentSetlist.sets.map(async (set, i) => {
+    // if set has no songs, delete and update position
+    if (set.songs.length === 0) {
+      return await prisma.set.delete({ where: { id: set.id } })
+    }
+    // replace with sets from cloned setlist
+    return await prisma.set.update({
+      where: { id: set.id },
+      data: { positionInSetlist: i }
+    })
+  }))
   return prisma.setlist.update({
     where: { id: setlistId },
     data: setlist
@@ -159,19 +172,19 @@ export async function overwriteSetlist(clonedSetlistId: string) {
   if (!originalSetlist) return
   // delete sets from OG setlist
   await prisma.set.deleteMany({ where: { setlistId: originalSetlist?.id } })
-  // if set has no songs, delete and update position
   await Promise.all(clonedSetlist.sets.map(async (set, i) => {
-    if (set.songs.length) {
-      // replace with sets from cloned setlist
-      return await prisma.set.update({
-        where: { id: set.id },
-        data: {
-          setlistId: originalSetlist.id,
-          positionInSetlist: i
-        }
-      })
+    // if set has no songs, delete and update position
+    if (set.songs.length === 0) {
+      return await prisma.set.delete({ where: { id: set.id } })
     }
-    return null
+    // replace with sets from cloned setlist
+    return await prisma.set.update({
+      where: { id: set.id },
+      data: {
+        setlistId: originalSetlist.id,
+        positionInSetlist: i
+      }
+    })
   }))
   // delete cloned setlist
   await deleteSetlist(clonedSetlistId)
