@@ -76,12 +76,6 @@ export async function action({ request, params }: ActionArgs) {
 
 const subRoutes = ['addSongs', 'newSong', 'removeSong', 'createSet', 'createSong', 'saveChanges', 'confirmCancel']
 
-// // this feels like some hacky shit
-// export const shouldRevalidate: ShouldRevalidateFunction = (params) => {
-//   console.log(params)
-//   return params.defaultShouldRevalidate
-// }
-
 type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
 export const TRASH_ID = 'void';
 const PLACEHOLDER_ID = 'placeholder';
@@ -331,7 +325,6 @@ export default function EditSetlist() {
             ),
           }
           const formData = { ...newItems, intent: 'songs' }
-          console.log(formData)
           fetcher.submit(formData, { method: 'put', replace: true })
           return newItems
         });
@@ -365,9 +358,6 @@ export default function EditSetlist() {
               ]} />
             </FlexList>
           </FlexHeader>
-          {/* <FlexList>
-            {containers.map(item => <span key={item}>{item}</span>)}
-          </FlexList> */}
         </Navbar>
       }
       footer={
@@ -449,7 +439,7 @@ export default function EditSetlist() {
           </DragOverlay>
         </DndContext>
         <FlexList pad={4}>
-          <Link to="createSet">Create new set</Link>
+          <Link to={`createSet?position=${containers.length}`}>Create new set</Link>
         </FlexList>
       </MaxWidth>
     </MaxHeightContainer>
