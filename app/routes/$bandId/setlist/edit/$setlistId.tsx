@@ -1,8 +1,8 @@
-import { faGripVertical, faPlusCircle, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faGripVertical, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
-import type { ShouldReloadFunction } from "@remix-run/react";
+import { ShouldRevalidateFunction, useSubmit } from "@remix-run/react";
 import { Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { AvatarTitle, Breadcrumbs, CatchContainer, DroppableContainer, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SongDisplay } from "~/components";
@@ -58,6 +58,7 @@ export async function action({ request, params }: ActionArgs) {
     const setIds = Object.keys(entries).filter(entryKey => entryKey !== 'intent')
     const updatedSets = await Promise.all(setIds.map(async (key) => {
       const songIds = entries[key].toString().split(',')
+      console.log(songIds)
       await updateSet({ setId: key, songIds })
     }))
     return updatedSets
@@ -77,14 +78,16 @@ export async function action({ request, params }: ActionArgs) {
 
 const subRoutes = ['addSongs', 'newSong', 'removeSong', 'createSet', 'createSong', 'saveChanges', 'confirmCancel']
 
-// this feels like some hacky shit
-export const unstable_shouldReload: ShouldReloadFunction = ({ prevUrl }) => {
-  const shouldReload = subRoutes.some(route => prevUrl.pathname.includes(route))
-  if (shouldReload) {
-    document.location.reload()
-  }
-  return true
-}
+// // this feels like some hacky shit
+// export const shouldRevalidate: ShouldRevalidateFunction = (params) => {
+//   console.log(params)
+//   // const shouldReload = params.formMethod === 'put'
+//   // if (shouldReload) {
+//   //   window.location.reload()
+//   // }
+//   // return params.defaultShouldRevalidate
+//   return false
+// }
 
 type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
 export const TRASH_ID = 'void';
@@ -115,7 +118,7 @@ export default function EditSetlist() {
   const isLoading = useSpinDelay(fetcher.state !== 'idle')
 
   const [items, setItems] = useState(keySets)
-  const [containers, setContainers] = useState(Object.keys(items) as UniqueIdentifier[])
+  const [containers, setContainers] = useState(Object.keys(keySets) as UniqueIdentifier[])
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null)
   const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
@@ -290,13 +293,6 @@ export default function EditSetlist() {
     }
   }
 
-  // function getNextContainerId() {
-  //   const containerIds = Object.keys(items);
-  //   const lastContainerId = containerIds[containerIds.length - 1];
-
-  //   return String.fromCharCode(lastContainerId.charCodeAt(0) + 1);
-  // }
-
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id in items && over?.id) {
       setContainers((containers) => {
@@ -306,7 +302,7 @@ export default function EditSetlist() {
         const newContainers = arrayMove(containers, activeIndex, overIndex);
 
         const formData = { sets: newContainers.join(','), intent: 'sets' }
-        fetcher.submit(formData, { method: 'put' })
+        fetcher.submit(formData, { method: 'put', replace: true })
         return newContainers
       });
     }
@@ -342,7 +338,7 @@ export default function EditSetlist() {
             ),
           }
           const formData = { ...newItems, intent: 'songs' }
-          fetcher.submit(formData, { method: 'put' })
+          fetcher.submit(formData, { method: 'put', replace: true })
           return newItems
         });
       }
@@ -372,6 +368,9 @@ export default function EditSetlist() {
               ]} />
             </FlexList>
           </FlexHeader>
+          {/* <FlexList>
+            {containers.map(item => <span key={item}>{item}</span>)}
+          </FlexList> */}
         </Navbar>
       }
       footer={

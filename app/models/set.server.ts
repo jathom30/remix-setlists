@@ -77,16 +77,19 @@ export async function createSet(setlistId: Setlist['id'], songIds: Song['id'][],
 
 export async function updateSet({ setId, songIds, positionInSetlist }: { setId: Set['id'], songIds?: Song['id'][], positionInSetlist?: Set['positionInSetlist'] }) {
   const cleanedSongIds = songIds?.reduce((acc, songId) => songId.length ? [...acc, songId] : acc, [] as string[])
+  console.log(cleanedSongIds)
   return prisma.set.update({
     where: { id: setId },
     data: {
       ...(cleanedSongIds?.length ? {
         songs: {
           deleteMany: {},
-          create: cleanedSongIds?.map((songId, index) => ({
-            songId,
-            positionInSet: index,
-          })),
+          ...(cleanedSongIds.length ? {
+            create: cleanedSongIds.map((songId, index) => ({
+              songId,
+              positionInSet: index,
+            }))
+          } : null),
         }
       } : null),
       ...(positionInSetlist ? { positionInSetlist } : null),
