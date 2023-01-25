@@ -89,10 +89,6 @@ export default function BandSettingsPage() {
                 <Label>Created on</Label>
                 <span className="text-sm">{new Date(band.createdAt || '').toDateString()}</span>
               </FlexList>
-              <FlexList gap={0}>
-                <Label>Last updated</Label>
-                <span className="text-sm">{new Date(band.updatedAt || '').toDateString()}</span>
-              </FlexList>
             </FlexHeader>
           </ItemBox>
 
