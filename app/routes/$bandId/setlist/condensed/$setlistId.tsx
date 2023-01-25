@@ -1,7 +1,7 @@
 import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
-import { AvatarTitle, Breadcrumbs, CatchContainer, Divider, ErrorContainer, FlexList, Label, MaxHeightContainer, Navbar } from "~/components";
+import { AvatarTitle, Breadcrumbs, CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, Label, MaxHeightContainer, MobileMenu, Navbar } from "~/components";
 import { getCondensedSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { useLoaderData, useParams } from "@remix-run/react";
@@ -43,9 +43,14 @@ export default function CondensedSetlist() {
     <MaxHeightContainer
       fullHeight
       header={
-        <Navbar>
-          <FlexList items="start" gap={2}>
-            <AvatarTitle title="Condensed" />
+        <>
+          <Navbar>
+            <FlexHeader>
+              <AvatarTitle title="Condensed" />
+              <MobileMenu />
+            </FlexHeader>
+          </Navbar>
+          <Navbar shrink>
             <Breadcrumbs
               breadcrumbs={[
                 { label: 'Setlists', to: `/${bandId}/setlists` },
@@ -53,8 +58,8 @@ export default function CondensedSetlist() {
                 { label: 'Condensed', to: '.' },
               ]}
             />
-          </FlexList>
-        </Navbar>
+          </Navbar>
+        </>
       }
     >
       <FlexList pad={4} gap={0}>

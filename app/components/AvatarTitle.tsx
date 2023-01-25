@@ -1,5 +1,5 @@
-import { Link, useParams, useNavigation } from "@remix-run/react"
-import type { ReactNode } from "react"
+import { Link, useNavigation } from "@remix-run/react"
+import type { ReactNode } from "react";
 import { useSpinDelay } from "spin-delay"
 import { useBandIcon } from "~/utils"
 import { Avatar } from "./Avatar"
@@ -11,14 +11,15 @@ export const AvatarTitle = ({ title }: { title: ReactNode }) => {
   const navigation = useNavigation()
   const isSubmitting = useSpinDelay(navigation.state !== 'idle')
   const band = useBandIcon()
-  const { bandId } = useParams()
   return (
-    <FlexList direction="row" items="center">
-      {band ? (
-        <Link to={`/${bandId}`} className="sm:hidden rounded-md hover:outline hover:outline-2 hover:outline-offset-2 hover:outline-accent">
-          <Avatar bandName={band?.bandName} icon={band?.icon} />
-        </Link>
-      ) : null}
+    <FlexList direction="row" items="center" gap={2}>
+      <div className="sm:hidden">
+        {band ? (
+          <Link to="/home">
+            <Avatar size="sm" bandName={band.bandName} icon={band.icon} />
+          </Link>
+        ) : null}
+      </div>
       <Title>{title}</Title>
       {isSubmitting ? <Loader /> : null}
     </FlexList>

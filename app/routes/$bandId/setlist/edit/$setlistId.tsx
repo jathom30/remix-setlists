@@ -4,7 +4,7 @@ import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
 import { Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { AvatarTitle, Breadcrumbs, CatchContainer, DroppableContainer, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SaveButtons, SongDisplay } from "~/components";
+import { AvatarTitle, Breadcrumbs, CatchContainer, DroppableContainer, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SaveButtons, SongDisplay } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { CSS } from "@dnd-kit/utilities";
@@ -344,18 +344,21 @@ export default function EditSetlist() {
     <MaxHeightContainer
       fullHeight
       header={
-        <Navbar>
-          <FlexHeader>
-            <FlexList gap={2}>
+        <>
+          <Navbar>
+            <FlexHeader>
               <AvatarTitle title={`Editing ${setlist.name}`} />
-              <Breadcrumbs breadcrumbs={[
-                { label: 'Setlists', to: `/${bandId}/setlists` },
-                { label: setlist.name, to: `/${bandId}/setlist/${setlist.id}` },
-                { label: 'Edit', to: '.' },
-              ]} />
-            </FlexList>
-          </FlexHeader>
-        </Navbar>
+              <MobileMenu />
+            </FlexHeader>
+          </Navbar>
+          <Navbar shrink>
+            <Breadcrumbs breadcrumbs={[
+              { label: 'Setlists', to: `/${bandId}/setlists` },
+              { label: setlist.name, to: `/${bandId}/setlist/${setlist.id}` },
+              { label: 'Edit', to: '.' },
+            ]} />
+          </Navbar>
+        </>
       }
       footer={
         <>

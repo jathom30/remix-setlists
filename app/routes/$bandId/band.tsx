@@ -2,7 +2,7 @@ import { Outlet, useLoaderData, useLocation, useNavigate, Link as RemixLink } fr
 import { json } from "@remix-run/node"
 import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { Avatar, AvatarTitle, Badge, CatchContainer, Divider, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar } from "~/components";
+import { Avatar, AvatarTitle, Badge, CatchContainer, Divider, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar } from "~/components";
 import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { getUsersById } from "~/models/user.server";
@@ -56,9 +56,7 @@ export default function BandSettingsPage() {
         <Navbar>
           <FlexHeader>
             <AvatarTitle title="Band" />
-            {isAdmin ? (
-              <Link to="edit" icon={faPencil} isCollapsing kind="ghost">Edit</Link>
-            ) : null}
+            <MobileMenu />
           </FlexHeader>
         </Navbar>
       }
@@ -71,7 +69,12 @@ export default function BandSettingsPage() {
       <MaxWidth>
         <FlexList pad={4}>
           <FlexHeader pad={2}>
-            <h1 className="text-xl sm:text-2xl font-bold">{band.name}</h1>
+            <FlexList direction="row" gap={2} items="center">
+              {isAdmin ? (
+                <Link to="edit" kind="ghost"><FontAwesomeIcon icon={faPencil} /></Link>
+              ) : null}
+              <h1 className="text-xl sm:text-2xl font-bold">{band.name}</h1>
+            </FlexList>
             <RemixLink className="indicator" to="avatar">
               {isAdmin ? (
                 <div className="indicator-item indicator-bottom">
