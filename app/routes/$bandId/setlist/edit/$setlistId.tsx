@@ -365,6 +365,7 @@ export default function EditSetlist() {
           <MaxWidth>
             <SaveButtons
               saveLabel="Save"
+              saveTo="saveChanges"
               cancelTo="confirmCancel"
             />
           </MaxWidth>

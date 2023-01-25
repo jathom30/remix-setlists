@@ -63,6 +63,9 @@ export default function Setlist() {
             <FlexHeader>
               <AvatarTitle title={setlist.name} />
               <MobileMenu />
+              <div className="hidden sm:block">
+                <Link to="menu" icon={faEllipsisV}>Menu</Link>
+              </div>
             </FlexHeader>
           </Navbar>
           <Navbar shrink>

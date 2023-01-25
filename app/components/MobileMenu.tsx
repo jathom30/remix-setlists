@@ -66,7 +66,7 @@ export const MobileMenu = () => {
   }
   return (
     <div className="sm:hidden">
-      <Button size="md" onClick={() => setShowMenu(true)}>
+      <Button size="md" kind="ghost" isRounded onClick={() => setShowMenu(true)}>
         <FontAwesomeIcon icon={faBars} />
       </Button>
       {createPortal(
