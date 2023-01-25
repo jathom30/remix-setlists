@@ -6,27 +6,27 @@ export const Avatar = ({ icon, bandName, size = 'md' }: { icon?: SerializeFrom<B
     switch (size) {
       case 'sm':
         return {
-          width: 'w-8',
+          width: 'w-8 h-8',
           text: 'text-md'
         }
       case 'md':
         return {
-          width: 'w-12',
+          width: 'w-12 h-12',
           text: 'text-xl'
         }
       case 'lg':
         return {
-          width: 'w-20',
+          width: 'w-20 h-20',
           text: 'text-3xl'
         }
       case 'xl':
         return {
-          width: 'w-48',
+          width: 'w-48 h-48',
           text: 'text-5xl'
         }
       default:
         return {
-          width: 'w-12',
+          width: 'w-12 h-12',
           text: 'text-xl'
         }
     }

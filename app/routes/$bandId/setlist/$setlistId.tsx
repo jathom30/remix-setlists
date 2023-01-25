@@ -4,7 +4,7 @@ import invariant from "tiny-invariant";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
-import { AvatarTitle, Breadcrumbs, Button, CatchContainer, Collapsible, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SongLink } from "~/components";
+import { AvatarTitle, Breadcrumbs, Button, CatchContainer, Collapsible, CreateNewButton, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SongLink } from "~/components";
 import { faCompress, faDatabase, faEllipsisV, faExpand } from "@fortawesome/free-solid-svg-icons";
 import { getSetLength } from "~/utils/setlists";
 import pluralize from "pluralize";
@@ -58,24 +58,31 @@ export default function Setlist() {
     <MaxHeightContainer
       fullHeight
       header={
-        <Navbar>
-          <FlexHeader items="start">
-            <FlexList gap={2}>
+        <>
+          <Navbar>
+            <FlexHeader>
               <AvatarTitle title={setlist.name} />
+              <MobileMenu />
+            </FlexHeader>
+          </Navbar>
+          <Navbar shrink>
+            <FlexHeader>
               <Breadcrumbs breadcrumbs={[
                 { label: 'Setlists', to: `/${bandId}/setlists` },
                 { label: setlist.name, to: '.' },
               ]}
               />
-            </FlexList>
-            <Link to="menu" icon={faEllipsisV} kind="ghost" isCollapsing>Menu</Link>
-          </FlexHeader>
-        </Navbar>
+            </FlexHeader>
+          </Navbar>
+        </>
       }
       footer={
-        <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
-          <Outlet />
-        </MobileModal>
+        <>
+          <CreateNewButton to="menu" icon={faEllipsisV} />
+          <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
+            <Outlet />
+          </MobileModal>
+        </>
       }
     >
       <MaxWidth>

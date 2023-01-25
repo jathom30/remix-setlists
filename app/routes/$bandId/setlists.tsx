@@ -2,7 +2,7 @@ import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { AvatarTitle, CreateNewButton, FlexHeader, FlexList, Input, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, SetlistLink } from "~/components";
+import { AvatarTitle, CreateNewButton, FlexHeader, FlexList, Input, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SetlistLink } from "~/components";
 import { getSetlists } from "~/models/setlist.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
@@ -82,7 +82,7 @@ export default function SetlistsRoute() {
         <Navbar>
           <FlexHeader>
             <AvatarTitle title="Setlists" />
-            {/* <Title>Setlists</Title> */}
+            <MobileMenu />
             {!isSub ? (
               <div className="hidden sm:block">
                 <Link to={`/${bandId}/setlist/new`} kind="primary">New setlist</Link>

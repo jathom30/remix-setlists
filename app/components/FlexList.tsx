@@ -6,6 +6,7 @@ export type FlexListProps = {
   justify?: 'start' | 'end' | 'center' | 'between' | 'around' | 'evenly'
   direction?: 'row' | 'row-reverse' | 'col' | 'col-reverse'
   height?: 'full'
+  width?: 'full'
   wrap?: boolean
 }
 
@@ -17,6 +18,7 @@ export const FlexList = ({
   direction = 'col',
   justify,
   height,
+  width,
   wrap = false,
 }: FlexListProps) => {
   const createPadding = () => {
@@ -27,7 +29,7 @@ export const FlexList = ({
     return `px-${pad.x} py-${pad.y} pt-${pad.t} pb-${pad.b} pl-${pad.l} pr-${pad.r}`
   }
   return (
-    <div className={`${createPadding()} flex flex-${direction} gap-${gap} ${getItems(items)} justify-${justify} ${height ? `h-${height}` : ''} ${wrap ? 'flex-wrap' : ''}`}>
+    <div className={`${createPadding()} flex flex-${direction} gap-${gap} ${getItems(items)} justify-${justify} ${height ? `h-${height}` : ''} ${width ? `w-${width}` : ''} ${wrap ? 'flex-wrap' : ''}`}>
       {children}
     </div>
   )

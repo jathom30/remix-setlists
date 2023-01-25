@@ -2,7 +2,7 @@ import { json } from '@remix-run/node'
 import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
 import { useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { MaxHeightContainer, ErrorContainer, CatchContainer, Breadcrumbs, Navbar, FlexHeader, AvatarTitle, FlexList } from "~/components";
+import { MaxHeightContainer, ErrorContainer, CatchContainer, Breadcrumbs, Navbar, FlexHeader, AvatarTitle, MobileMenu } from "~/components";
 import { requireNonSubMember } from "~/session.server";
 import { getFeels } from '~/models/feel.server';
 import { SongNew } from '~/routes/resource/songNew';
@@ -27,17 +27,20 @@ export default function NewSong() {
     <MaxHeightContainer
       fullHeight
       header={
-        <Navbar>
-          <FlexHeader>
-            <FlexList gap={2}>
+        <>
+          <Navbar>
+            <FlexHeader>
               <AvatarTitle title="New" />
-              <Breadcrumbs breadcrumbs={[
-                { label: 'Songs', to: `/${bandId}/songs` },
-                { label: 'New', to: '.' },
-              ]} />
-            </FlexList>
-          </FlexHeader>
-        </Navbar>
+              <MobileMenu />
+            </FlexHeader>
+          </Navbar>
+          <Navbar shrink>
+            <Breadcrumbs breadcrumbs={[
+              { label: 'Songs', to: `/${bandId}/songs` },
+              { label: 'New', to: '.' },
+            ]} />
+          </Navbar>
+        </>
       }
     >
       <SongNew feels={feels} cancelTo={`/${bandId}/songs`} />

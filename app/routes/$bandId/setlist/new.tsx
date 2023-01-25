@@ -1,6 +1,6 @@
 import { Outlet, useLocation, useParams } from "@remix-run/react"
 import type { MetaFunction } from "@remix-run/server-runtime";
-import { AvatarTitle, Breadcrumbs, FlexHeader, FlexList, MaxHeightContainer, MaxWidth, Navbar } from "~/components"
+import { AvatarTitle, Breadcrumbs, FlexHeader, MaxHeightContainer, MaxWidth, MobileMenu, Navbar } from "~/components"
 
 export const meta: MetaFunction = () => ({
   title: 'New setlist'
@@ -25,18 +25,21 @@ export default function NewSetlist() {
     <MaxHeightContainer
       fullHeight
       header={
-        <Navbar>
-          <FlexHeader>
-            <FlexList gap={2}>
+        <>
+          <Navbar>
+            <FlexHeader>
               <AvatarTitle title="New setlist" />
-              <Breadcrumbs breadcrumbs={[
-                { label: 'Setlists', to: `/${bandId}/setlists` },
-                { label: 'New', to: isNewBase ? '.' : `/${bandId}/setlist/new` },
-                ...(!isNewBase ? [{ label: getHeader(pathname), to: '.' }] : [])
-              ]} />
-            </FlexList>
-          </FlexHeader>
-        </Navbar>
+              <MobileMenu />
+            </FlexHeader>
+          </Navbar>
+          <Navbar shrink>
+            <Breadcrumbs breadcrumbs={[
+              { label: 'Setlists', to: `/${bandId}/setlists` },
+              { label: 'New', to: isNewBase ? '.' : `/${bandId}/setlist/new` },
+              ...(!isNewBase ? [{ label: getHeader(pathname), to: '.' }] : [])
+            ]} />
+          </Navbar>
+        </>
       }
     >
       <MaxWidth>

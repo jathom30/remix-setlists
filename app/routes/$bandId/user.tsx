@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, Link as RemixLink } from "@remix-run/react";
 import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
-import { AvatarTitle, Badge, Button, CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar } from "~/components";
+import { AvatarTitle, Badge, Button, CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar } from "~/components";
 import { getUserWithBands } from "~/models/user.server";
 import { capitalizeFirstLetter } from "~/utils/assorted";
 
@@ -35,9 +35,12 @@ export default function UserRoute() {
         <Navbar>
           <FlexHeader>
             <AvatarTitle title="User" />
-            <Form action="/logout" method="post">
-              <Button isCollapsing kind="ghost" type="submit" icon={faSignOut}>Sign out</Button>
-            </Form>
+            <MobileMenu />
+            <div className="hidden sm:block">
+              <Form action="/logout" method="post">
+                <Button isCollapsing kind="ghost" type="submit" icon={faSignOut}>Sign out</Button>
+              </Form>
+            </div>
           </FlexHeader>
         </Navbar>
       }
@@ -117,6 +120,17 @@ export default function UserRoute() {
           </FlexList>
 
           <Divider />
+
+          <div className="sm:hidden">
+            <FlexList>
+              <Form action="/logout" method="post">
+                <FlexList>
+                  <Button size="md" type="submit" icon={faSignOut}>Sign out</Button>
+                </FlexList>
+              </Form>
+              <Divider />
+            </FlexList>
+          </div>
 
           <FlexList gap={2}>
             <Label isDanger>Danger zone</Label>

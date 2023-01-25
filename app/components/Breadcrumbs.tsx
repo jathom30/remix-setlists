@@ -1,7 +1,8 @@
 import { Link } from "@remix-run/react"
+import type { ReactNode } from "react";
 
 type Breadcrumb = {
-  label: string;
+  label: ReactNode;
   to: string;
 }
 
@@ -10,7 +11,7 @@ export const Breadcrumbs = ({ breadcrumbs }: { breadcrumbs: Breadcrumb[] }) => {
     <div className="breadcrumbs p-0">
       <ul>
         {breadcrumbs.map(link => (
-          <li key={link.label}>
+          <li key={link.to}>
             <Link to={link.to}>
               {link.label}
             </Link>

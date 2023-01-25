@@ -1,9 +1,9 @@
-import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import { json } from '@remix-run/node'
 import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
-import { AvatarTitle, Breadcrumbs, CatchContainer, Divider, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileModal, Navbar, TempoIcons } from "~/components";
+import { AvatarTitle, Breadcrumbs, CatchContainer, CreateNewButton, Divider, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, TempoIcons } from "~/components";
 import { getSong } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import pluralize from 'pluralize'
@@ -45,24 +45,29 @@ export default function SongDetails() {
     <MaxHeightContainer
       fullHeight
       header={
-        <Navbar>
-          <FlexHeader items="baseline">
-            <FlexList gap={2}>
+        <>
+          <Navbar>
+            <FlexHeader items="baseline">
               <AvatarTitle title={song.name} />
-              <Breadcrumbs breadcrumbs={[
-                { label: 'Songs', to: `/${bandId}/songs` },
-                { label: song.name, to: '.' },
-              ]}
-              />
-            </FlexList>
-            {!isSub ? <Link to="edit" icon={faPenToSquare} kind="ghost" isCollapsing>Edit song</Link> : null}
-          </FlexHeader>
-        </Navbar>
+              <MobileMenu />
+            </FlexHeader>
+          </Navbar>
+          <Navbar shrink>
+            <Breadcrumbs breadcrumbs={[
+              { label: 'Songs', to: `/${bandId}/songs` },
+              { label: song.name, to: '.' },
+            ]}
+            />
+          </Navbar>
+        </>
       }
       footer={
-        <MobileModal open={['edit', 'delete'].some(path => pathname.includes(path))} onClose={() => navigate('.')}>
-          <Outlet />
-        </MobileModal>
+        <>
+          {!isSub ? <CreateNewButton to="edit" icon={faPencil} /> : null}
+          <MobileModal open={['edit', 'delete'].some(path => pathname.includes(path))} onClose={() => navigate('.')}>
+            <Outlet />
+          </MobileModal>
+        </>
       }
     >
       <MaxWidth>
