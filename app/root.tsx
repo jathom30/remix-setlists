@@ -55,6 +55,7 @@ export default function App() {
       </head>
       <body className="h-full">
         <Outlet />
+        <div id="modal-portal" />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

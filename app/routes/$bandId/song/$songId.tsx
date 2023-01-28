@@ -49,6 +49,9 @@ export default function SongDetails() {
           <Navbar>
             <FlexHeader items="baseline">
               <AvatarTitle title={song.name} />
+              <div className="hidden sm:block">
+                <Link kind="ghost" to="edit" icon={faPencil}>Edit</Link>
+              </div>
               <MobileMenu />
             </FlexHeader>
           </Navbar>

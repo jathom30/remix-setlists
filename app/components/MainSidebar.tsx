@@ -13,11 +13,14 @@ import { Avatar } from "./Avatar"
 import { Badge } from "./Badge"
 import { Button } from "./Button"
 import { FlexList } from "./FlexList"
-import { Link } from "./Link"
 import { MaxHeightContainer } from "./MaxHeightContainer"
 import { TextOverflow } from "./TextOverflow"
 import { useLocation, Link as RemixLink, useParams, Form } from "@remix-run/react"
 import { Divider } from "./Divider";
+import { Modal } from "./Modal";
+import { AddBand } from "./AddBand";
+import resolveConfig from "tailwindcss/resolveConfig";
+import tailwindConfig from "tailwind.config";
 
 type MainSidebarProps = {
   band: SerializeFrom<{
@@ -37,18 +40,22 @@ type MainSidebarProps = {
 
 export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
   const user = useUser()
+  const [showCreateMenu, setShowCreateMenu] = useState(false)
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [isUserOpen, setIsUserOpen] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const state = isOpen ? 'open' : 'closed'
   const { pathname } = useLocation()
+  const fullConfig = resolveConfig(tailwindConfig)
+  const screens = fullConfig.theme?.screens as Record<string, string> | undefined
+  const mediumBreakpoint = parseInt(screens?.md || '768px')
 
   useEffect(() => {
-    const handleIsOpen = () => setIsOpen(window.innerWidth > 900)
+    const handleIsOpen = () => setIsOpen(window.innerWidth > mediumBreakpoint)
     window.addEventListener('resize', handleIsOpen)
     handleIsOpen()
     return () => window.removeEventListener('resize', handleIsOpen)
-  }, [])
+  }, [mediumBreakpoint])
 
   const isActive = pathname.split('/')[2].includes('user')
 
@@ -72,7 +79,7 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
                 onClickOutside={() => setIsPopupOpen(false)}
                 content={
                   <div className="mt-2">
-                    <BandSelectPopup bands={bands} onSelect={() => setIsPopupOpen(false)} />
+                    <BandSelectPopup bands={bands} onSelect={() => setIsPopupOpen(false)} onShowNew={() => { setIsPopupOpen(false); setShowCreateMenu(true) }} />
                   </div>
                 }
               >
@@ -160,6 +167,9 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
             </ul>
           </div>
         </MaxHeightContainer>
+        <Modal open={showCreateMenu} onClose={() => setShowCreateMenu(false)} isPortal>
+          <AddBand onSubmit={() => setShowCreateMenu(false)} />
+        </Modal>
       </motion.div>
     </AnimatePresence>
   )
@@ -179,11 +189,12 @@ const SideBarLink = ({ to, isOpen, label, icon }: { to: string; isOpen: boolean;
   )
 }
 
-const BandSelectPopup = ({ bands, onSelect }: { bands: MainSidebarProps['bands']; onSelect: () => void }) => {
+const BandSelectPopup = ({ bands, onSelect, onShowNew }: { bands: MainSidebarProps['bands']; onSelect: () => void; onShowNew: () => void }) => {
   const { bandId } = useParams()
   const { pathname } = useLocation()
   const redirectPath = pathname.split('/').filter(path => path !== bandId && path.length)[0]
   const isSelected = (bandId: MainSidebarProps['bands'][number]['id']) => pathname.includes(bandId)
+
   return (
     <ul className="menu bg-base-100 p-2 rounded shadow-xl">
       <li>
@@ -202,7 +213,7 @@ const BandSelectPopup = ({ bands, onSelect }: { bands: MainSidebarProps['bands']
       </li>
       <Divider />
       <li>
-        <Link isOutline to={`/${bandId}/home/menu`} onClick={onSelect} icon={faPlus}>New band</Link>
+        <Button isOutline onClick={onShowNew} icon={faPlus}>New band</Button>
       </li>
     </ul>
   )

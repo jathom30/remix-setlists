@@ -30,7 +30,7 @@ export function Button({ isSaving = false, isCollapsing = false, isOutline = fal
     <FocusRing focusRingClass="ring ring-offset-transparent">
       <button
         name={name}
-        className={`btn ${buttonKind(kind)} ${icon ? 'gap-2' : ''} btn-sm md:btn-md ${buttonSize(size)} ${isOutline ? 'btn-outline' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isRounded ? 'btn-circle' : ''} ${isSaving ? 'loading' : ''} touch-none select-none flex-nowrap focus-visible:outline-none`}
+        className={`btn ${buttonKind(kind)} ${icon ? 'gap-2' : ''} btn-sm sm:btn-md ${buttonSize(size)} ${isOutline ? 'btn-outline' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isRounded ? 'btn-circle' : ''} ${isSaving ? 'loading' : ''} touch-none select-none flex-nowrap focus-visible:outline-none`}
         onClick={onClick}
         value={value}
         style={{

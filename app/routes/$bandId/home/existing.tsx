@@ -4,22 +4,22 @@ import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { CatchContainer, ErrorContainer, ErrorMessage, FlexList, Input, Label, SaveButtons } from "~/components";
 import { requireUserId } from "~/session.server";
-import { getFields } from "~/utils/form";
 import { updateBandByCode } from "~/models/band.server";
 
 export async function action({ request }: ActionArgs) {
   const userId = await requireUserId(request)
   const formData = await request.formData()
 
-  const { fields, errors } = getFields<{ bandCode: string }>(formData, [
-    { name: 'bandCode', type: 'string', isRequired: true }
-  ])
+  const bandCode = formData.get('bandCode')?.toString()
 
-  if (Object.keys(errors).length) {
-    return json({ errors }, { status: 400 })
+  if (!bandCode) {
+    return json({ error: 'Band code is required' })
   }
 
-  const band = await updateBandByCode(fields.bandCode, userId)
+  const band = await updateBandByCode(bandCode, userId)
+  if ('error' in band) {
+    return json({ error: band.error })
+  }
   return redirect(`/${band.id}/setlists`)
 }
 
@@ -31,7 +31,7 @@ export default function ExisitingBand() {
       <FlexList gap={0} pad={4}>
         <Label>Band Code</Label>
         <Input name="bandCode" placeholder="Enter your band code here..." />
-        {actionData?.errors?.bandCode ? <ErrorMessage message={actionData.errors.bandCode} /> : null}
+        {actionData?.error ? <ErrorMessage message={actionData.error} /> : null}
       </FlexList>
       <SaveButtons
         saveLabel="Add me to this band"

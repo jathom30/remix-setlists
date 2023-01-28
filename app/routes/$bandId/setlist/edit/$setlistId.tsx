@@ -289,6 +289,7 @@ export default function EditSetlist() {
         fetcher.submit(formData, { method: 'put', replace: true })
         return newContainers
       });
+      return
     }
 
     const activeContainer = findContainer(active.id);
