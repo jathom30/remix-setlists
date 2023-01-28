@@ -1,7 +1,7 @@
 import { faBarcode, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useFetcher } from "@remix-run/react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "./Button"
 import { ErrorMessage } from "./ErrorMessage"
 import { Field } from "./Field"
@@ -20,6 +20,16 @@ export const AddBand = ({ onSubmit }: { onSubmit: () => void }) => {
   const newError = newFetcher.data?.error
 
   const [addType, setAddType] = useState<'code' | 'new'>()
+
+  // Close modal when either form has been successfully submitted
+  useEffect(() => {
+    const codeSubmittedSuccessfully = codeFetcher.type === "actionRedirect"
+    const newSubmittedSuccessfully = newFetcher.type === "actionRedirect"
+
+    if (codeSubmittedSuccessfully || newSubmittedSuccessfully) {
+      onSubmit()
+    }
+  }, [codeFetcher, newFetcher, onSubmit]);
 
 
   return (
@@ -46,7 +56,6 @@ export const AddBand = ({ onSubmit }: { onSubmit: () => void }) => {
             </Field>
           </FlexList>
           <SaveButtons
-            onSave={onSubmit}
             saveLabel="Add me to this band"
             onCancel={() => setAddType(undefined)}
           />
@@ -60,7 +69,7 @@ export const AddBand = ({ onSubmit }: { onSubmit: () => void }) => {
               {newError ? <ErrorMessage message="Band name is required" /> : null}
             </Field>
           </FlexList>
-          <SaveButtons onSave={onSubmit} saveLabel="Create" onCancel={() => setAddType(undefined)} />
+          <SaveButtons saveLabel="Create" onCancel={() => setAddType(undefined)} />
         </newFetcher.Form>
       ) : null}
     </FlexList>
