@@ -39,6 +39,8 @@ export default function CondensedSetlist() {
       return acc += (song.song?.length || 0)
     }, 0)
   }
+
+  const sortedSets = setlist.sets.sort((a, b) => a.positionInSetlist - b.positionInSetlist)
   return (
     <MaxHeightContainer
       fullHeight
@@ -63,7 +65,7 @@ export default function CondensedSetlist() {
       }
     >
       <FlexList pad={4} gap={0}>
-        {setlist.sets.map((set, i) => (
+        {sortedSets.map((set, i) => (
           <div key={set.id}>
             <Label>Set {i + 1} - {pluralize('minues', getSetLength(set), true)}</Label>
             <FlexList gap={0}>
