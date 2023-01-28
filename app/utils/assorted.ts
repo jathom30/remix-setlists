@@ -1,21 +1,19 @@
 export const capitalizeFirstLetter = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
-export const generateRandomHex = () => Math.floor(Math.random() * 16777215).toString(16)
+export const generateRandomHex = () => "000000".replace(/0/g, function () { return (~~(Math.random() * 16)).toString(16); })
 
 export function contrastColor(hex: string) {
-  if (hex.indexOf('#') === 0) {
-    hex = hex.slice(1);
-  }
+  let cleanedHex = hex.indexOf('#') === 0 ? hex.slice(1) : hex
   // convert 3-digit hex to 6-digits.
-  if (hex.length === 3) {
-    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  if (cleanedHex.length === 3) {
+    cleanedHex = cleanedHex[0] + cleanedHex[0] + cleanedHex[1] + cleanedHex[1] + cleanedHex[2] + cleanedHex[2];
   }
-  if (hex.length !== 6) {
-    throw new Error('Invalid HEX color.');
+  if (cleanedHex.length !== 6) {
+    throw new Error("Invalid HEX color");
   }
-  var r = parseInt(hex.slice(0, 2), 16),
-    g = parseInt(hex.slice(2, 4), 16),
-    b = parseInt(hex.slice(4, 6), 16);
+  var r = parseInt(cleanedHex.slice(0, 2), 16),
+    g = parseInt(cleanedHex.slice(2, 4), 16),
+    b = parseInt(cleanedHex.slice(4, 6), 16);
   // https://stackoverflow.com/a/3943023/112731
   return (r * 0.299 + g * 0.587 + b * 0.114) > 186
     ? '#000000'

@@ -60,7 +60,6 @@ export const MobileMenu = () => {
 
   if (!menuContainer) {
     return (
-      // TODO skeleton UI
       <Loader />
     )
   }
