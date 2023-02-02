@@ -3,11 +3,12 @@ import { json, redirect } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { CatchContainer, ErrorContainer, FlexList, MaxHeightContainer, MobileModal, MulitSongSelect, Link, SaveButtons, Title, SearchInput } from "~/components";
 import { getSongs } from "~/models/song.server";
-import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams } from "@remix-run/react";
+import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
 import { createSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
 import { sortByLabel } from "~/utils/params";
+import { useState } from "react";
 
 export async function loader({ request, params }: LoaderArgs) {
   const { bandId } = params
@@ -55,9 +56,10 @@ export default function ManualSetlistCreation() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const { bandId } = useParams()
-  const [params] = useSearchParams()
-  const hasParams = [...params.keys()].filter(key => key !== 'query' && key !== 'sort').length > 0
-  const query = params.get('query')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [query, setQuery] = useState(searchParams.get('query'))
+  const submit = useSubmit()
+  const hasParams = [...searchParams.keys()].filter(key => key !== 'query' && key !== 'sort').length > 0
   const hasAvailableSongs = !query ? songs.length > 0 : true
 
   if (!hasAvailableSongs) {
@@ -71,6 +73,11 @@ export default function ManualSetlistCreation() {
     )
   }
 
+  const handleClearQuery = () => {
+    setQuery('')
+    setSearchParams({})
+  }
+
   return (
     <MaxHeightContainer
       fullHeight
@@ -78,26 +85,26 @@ export default function ManualSetlistCreation() {
         <div className="bg-base-100 shadow-lg p-4 xl:rounded-md xl:mt-2">
           <FlexList gap={2}>
             <Title>Create your first set</Title>
-            <Form method="get">
-              <SearchInput defaultValue={query} />
+            <Form method="get" onChange={e => submit(e.currentTarget)}>
+              <SearchInput value={query} onClear={handleClearQuery} onChange={e => setQuery(e.target.value)} />
             </Form>
             <FlexList direction="row" items="center" justify="end" gap={2}>
-              <Link to={{ pathname: 'sortBy', search: params.toString() }} isOutline icon={faSort}>
+              <Link to={{ pathname: 'sortBy', search: searchParams.toString() }} isOutline icon={faSort}>
                 <FlexList direction="row" gap={2}>
                   <span>Sort by:</span>
-                  <span>{sortByLabel(params)}</span>
+                  <span>{sortByLabel(searchParams)}</span>
                 </FlexList>
               </Link>
               <div className="indicator">
                 {hasParams ? <div className="indicator-item badge badge-secondary" /> : null}
-                <Link to={{ pathname: 'filters', search: params.toString() }} kind="secondary" isCollapsing isOutline icon={faFilter}>Filters</Link>
+                <Link to={{ pathname: 'filters', search: searchParams.toString() }} kind="secondary" isCollapsing isOutline icon={faFilter}>Filters</Link>
               </div>
             </FlexList>
           </FlexList>
         </div>
       }
       footer={
-        <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate(`.?${params}`)}>
+        <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate(`.?${searchParams}`)}>
           <Outlet />
         </MobileModal>
       }
