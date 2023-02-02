@@ -22,14 +22,14 @@ export const FlexList = ({
   wrap = false,
 }: FlexListProps) => {
   const createPadding = () => {
-    if (!pad) { return null }
+    if (!pad) { return '' }
     if (typeof pad === 'number') {
       return `p-${pad}`
     }
     return `px-${pad.x} py-${pad.y} pt-${pad.t} pb-${pad.b} pl-${pad.l} pr-${pad.r}`
   }
   return (
-    <div className={`${createPadding()} flex flex-${direction} gap-${gap} ${getItems(items)} justify-${justify} ${height ? `h-${height}` : ''} ${width ? `w-${width}` : ''} ${wrap ? 'flex-wrap' : ''}`}>
+    <div className={`FlexList ${createPadding()} flex flex-${direction} gap-${gap} ${getItems(items)} ${getJustify(justify)} ${height ? `h-${height}` : ''} ${width ? `w-${width}` : ''} ${wrap ? 'flex-wrap' : ''}`}>
       {children}
     </div>
   )
@@ -47,6 +47,25 @@ export const getItems = (items: FlexListProps['items']) => {
       return 'items-end'
     case 'center':
       return 'items-center'
+    default:
+      return ''
+  }
+}
+
+export const getJustify = (justify: FlexListProps['justify']) => {
+  switch (justify) {
+    case 'around':
+      return 'justify-around'
+    case "between":
+      return 'justify-between'
+    case "center":
+      return 'justify-center'
+    case "end":
+      return 'justify-end'
+    case "evenly":
+      return 'justify-evenly'
+    case "start":
+      return 'justify-start'
     default:
       return ''
   }

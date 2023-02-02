@@ -1,16 +1,17 @@
 import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
-import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams } from "@remix-run/react";
+import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { AvatarTitle, CreateNewButton, FlexHeader, FlexList, Input, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SetlistLink } from "~/components";
+import { AvatarTitle, CreateNewButton, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SearchInput, SetlistLink } from "~/components";
 import { getSetlists } from "~/models/setlist.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBoxOpen, faMagnifyingGlass, faSort } from "@fortawesome/free-solid-svg-icons";
+import { faBoxOpen, faSort } from "@fortawesome/free-solid-svg-icons";
 import { getSortFromParam } from "~/utils/params";
 import { capitalizeFirstLetter } from "~/utils/assorted";
 import { requireUserId } from "~/session.server";
+import { useState } from "react";
 
 export const meta: MetaFunction = () => ({
   title: "Setlists",
@@ -21,10 +22,13 @@ export async function loader({ request, params }: LoaderArgs) {
   const bandId = params.bandId
   invariant(bandId, 'bandId not found')
 
-  const url = new URL(request.url)
-  const q = url.searchParams.get('query')
-
-  const sort = url.searchParams.get('sort')
+  const urlSearchParams = (new URL(request.url).searchParams)
+  const q = urlSearchParams.get('query')
+  const intent = urlSearchParams.get('intent')
+  const sort = urlSearchParams.get('sort')
+  if (intent === 'clear') {
+    urlSearchParams.delete('query')
+  }
 
   const filterParams = {
     ...(q ? { q } : null),
@@ -45,16 +49,17 @@ export default function SetlistsRoute() {
   const { setlists } = useLoaderData<typeof loader>()
   const memberRole = useMemberRole()
   const isSub = memberRole === RoleEnum.SUB
-  const [params] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [query, setQuery] = useState(searchParams.get('query'))
   const { bandId } = useParams()
-  const query = params.get('query')
+  const submit = useSubmit()
   const { pathname, search } = useLocation()
   const navigate = useNavigate()
 
   const hasSetlists = setlists.length
 
   const sortByLabel = () => {
-    const sortObject = getSortFromParam(params.get('sort') ?? undefined)
+    const sortObject = getSortFromParam(searchParams.get('sort') ?? undefined)
     const [entry] = Object.entries(sortObject)
     // probably not the best solution, but removes At from createdAt and updatedAt keys
     const sort = capitalizeFirstLetter(entry[0]).replace('At', '')
@@ -73,6 +78,11 @@ export default function SetlistsRoute() {
       }
     }
     return `${sort} ${direction()}`
+  }
+
+  const handleClearQuery = () => {
+    setQuery('')
+    setSearchParams({})
   }
 
   return (
@@ -108,16 +118,11 @@ export default function SetlistsRoute() {
           fullHeight
           header={
             <FlexList pad={4} gap={4}>
-              <Form method="get">
-                <div className="input-group">
-                  <Input name="query" placeholder="Search..." defaultValue={query || ''} />
-                  <button type="submit" className="btn btn-square">
-                    <FontAwesomeIcon icon={faMagnifyingGlass} />
-                  </button>
-                </div>
+              <Form method="get" onChange={e => submit(e.currentTarget)}>
+                <SearchInput value={query} onClear={handleClearQuery} onChange={e => setQuery(e.target.value)} />
               </Form>
               <FlexList direction="row" items="center" justify="end" gap={2}>
-                <Link to={{ pathname: 'sortBy', search: params.toString() }} isOutline icon={faSort}>
+                <Link to={{ pathname: 'sortBy', search: searchParams.toString() }} isOutline icon={faSort}>
                   <FlexList direction="row" gap={2}>
                     <span>Sort by:</span>
                     <span>{sortByLabel()}</span>

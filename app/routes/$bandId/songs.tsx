@@ -3,13 +3,14 @@ import { json } from "@remix-run/node"
 import invariant from "tiny-invariant";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
-import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams } from "@remix-run/react";
+import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
 import { AvatarTitle, CatchContainer, CreateNewButton, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SearchInput, SongLink } from "~/components";
 import { faBoxOpen, faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sortByLabel } from "~/utils/params";
+import { useState } from "react";
 
 export const meta: MetaFunction = () => ({
   title: "Songs",
@@ -49,16 +50,22 @@ export default function SongsList() {
   const { songs } = useLoaderData<typeof loader>()
   const memberRole = useMemberRole()
   const isSub = memberRole === RoleEnum.SUB
-  const [params] = useSearchParams()
-  const hasParams = [...params.keys()].filter(key => key !== 'query' && key !== 'sort').length > 0
-  const query = params.get('query')
+  const submit = useSubmit()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [query, setQuery] = useState(searchParams.get('query'))
+  const hasParams = [...searchParams.keys()].filter(key => key !== 'query' && key !== 'sort').length > 0
   const { bandId } = useParams()
   const { pathname, search } = useLocation()
   const navigate = useNavigate()
 
   const hasSongs = songs.length
 
-  const sortBy = sortByLabel(params)
+  const sortBy = sortByLabel(searchParams)
+
+  const handleClearQuery = () => {
+    setQuery('')
+    setSearchParams({})
+  }
 
   return (
     <MaxHeightContainer
@@ -93,11 +100,11 @@ export default function SongsList() {
           fullHeight
           header={
             <FlexList pad={4} gap={4}>
-              <Form method="get">
-                <SearchInput defaultValue={query} />
+              <Form method="get" onChange={e => submit(e.currentTarget)}>
+                <SearchInput value={query} onClear={handleClearQuery} onChange={e => setQuery(e.target.value)} />
               </Form>
               <FlexList direction="row" items="center" justify="end" gap={2}>
-                <Link to={{ pathname: 'sortBy', search: params.toString() }} isOutline icon={faSort}>
+                <Link to={{ pathname: 'sortBy', search: searchParams.toString() }} isOutline icon={faSort}>
                   <FlexList direction="row" gap={2}>
                     <span>Sort by:</span>
                     <span>{sortBy}</span>
@@ -105,7 +112,7 @@ export default function SongsList() {
                 </Link>
                 <div className="indicator">
                   {hasParams ? <div className="indicator-item badge badge-secondary" /> : null}
-                  <Link to={{ pathname: 'filters', search: params.toString() }} kind="secondary" isCollapsing isOutline icon={faFilter}>Filters</Link>
+                  <Link to={{ pathname: 'filters', search: searchParams.toString() }} kind="secondary" isCollapsing isOutline icon={faFilter}>Filters</Link>
                 </div>
               </FlexList>
             </FlexList>

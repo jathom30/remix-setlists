@@ -1,4 +1,4 @@
-import { Form, useLoaderData, useSearchParams } from "@remix-run/react";
+import { Form, useLoaderData, useSearchParams, useSubmit } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node"
 import { json, redirect } from "@remix-run/node"
 import invariant from "tiny-invariant";
@@ -7,6 +7,7 @@ import { getSongsNotInSetlist } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
 import { createSet } from "~/models/set.server";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
 
 export async function loader({ request, params }: LoaderArgs) {
   const { bandId, setlistId } = params
@@ -45,8 +46,9 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function CreateSet() {
   const { songs } = useLoaderData<typeof loader>()
-  const [params] = useSearchParams()
-  const query = params.get('query')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [query, setQuery] = useState(searchParams.get('query'))
+  const submit = useSubmit()
   const hasAvailableSongs = !query ? songs.length > 0 : true
 
   if (!hasAvailableSongs) {
@@ -60,6 +62,11 @@ export default function CreateSet() {
     )
   }
 
+  const handleClearQuery = () => {
+    setQuery('')
+    setSearchParams({})
+  }
+
   return (
     <MaxHeightContainer
       fullHeight
@@ -70,8 +77,8 @@ export default function CreateSet() {
               <Title>New set</Title>
               {hasAvailableSongs ? <Link isOutline to="../createSong" icon={faPlus}>Create song</Link> : null}
             </FlexHeader>
-            <Form method="get">
-              <SearchInput defaultValue={query} />
+            <Form method="get" onChange={e => submit(e.currentTarget)}>
+              <SearchInput value={query} onClear={handleClearQuery} onChange={e => setQuery(e.target.value)} />
             </Form>
           </FlexList>
         </div>

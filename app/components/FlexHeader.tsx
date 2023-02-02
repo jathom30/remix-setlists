@@ -1,5 +1,5 @@
 import type { FlexListProps } from "./FlexList";
-import { getItems } from "./FlexList";
+import { getJustify, getItems } from "./FlexList";
 
 export const FlexHeader = ({ children, pad, items = 'center' }: { children: React.ReactNode; pad?: FlexListProps['pad']; items?: FlexListProps['items'] }) => {
   const createPadding = () => {
@@ -10,6 +10,6 @@ export const FlexHeader = ({ children, pad, items = 'center' }: { children: Reac
     return `px-${pad.x} py-${pad.y} pt-${pad.t} pb-${pad.b} pl-${pad.l} pr-${pad.r}`
   }
   return (
-    <div className={`flex ${getItems(items)} justify-between gap-2 w-full ${createPadding()}`}>{children}</div>
+    <div className={`FlexHeader flex ${getItems(items)} ${getJustify("between")} gap-2 w-full ${createPadding()}`}>{children}</div>
   )
 }

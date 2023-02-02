@@ -15,7 +15,7 @@ export async function action({ request, params }: ActionArgs) {
   await requireNonSubMember(request, bandId)
 
   await removeSongFromSet(setId, songId)
-  return redirect(`/${bandId}/setlist/edit/${setlistId}`)
+  return redirect(`/${bandId}/setlist/loadingSetlist?setlistId=${setlistId}`)
 }
 
 export default function RemoveSongFromSetlist() {

@@ -1,7 +1,8 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node"
-import { Form, useLoaderData, useSearchParams } from "@remix-run/react";
+import { Form, useLoaderData, useSearchParams, useSubmit } from "@remix-run/react";
+import { useState } from "react";
 import invariant from "tiny-invariant";
 import { FlexHeader, FlexList, Link, MaxHeightContainer, MulitSongSelect, SaveButtons, SearchInput, Title } from "~/components";
 import { addSongsToSet } from "~/models/set.server";
@@ -41,9 +42,15 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function AddSongsToSet() {
   const { songs } = useLoaderData<typeof loader>()
-  const [params] = useSearchParams()
-  const query = params.get('query')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [query, setQuery] = useState(searchParams.get('query'))
+  const submit = useSubmit()
   const hasAvailableSongs = !query ? songs.length > 0 : true
+
+  const handleClearQuery = () => {
+    setQuery('')
+    setSearchParams({})
+  }
 
   if (!hasAvailableSongs) {
     return (
@@ -62,11 +69,11 @@ export default function AddSongsToSet() {
         <div className="sticky top-0">
           <FlexList gap={2}>
             <FlexHeader>
-              <Title>add songs to set</Title>
+              <Title>Add songs to set</Title>
               {hasAvailableSongs ? <Link isOutline to="../createSong" icon={faPlus}>Create song</Link> : null}
             </FlexHeader>
-            <Form method="get">
-              <SearchInput defaultValue={query} />
+            <Form method="get" onChange={e => submit(e.currentTarget)}>
+              <SearchInput value={query} onClear={handleClearQuery} onChange={e => setQuery(e.target.value)} />
             </Form>
           </FlexList>
         </div>
