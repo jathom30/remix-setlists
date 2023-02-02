@@ -17,10 +17,10 @@ export async function loader({ params }: LoaderArgs) {
 export default function SetDataMetrics() {
   const { setMetrics } = useLoaderData<typeof loader>()
 
-  const { feels, tempos, isCoverLength, isOriginalLength } = setMetrics
-  const uniqueFeelIds = [...new Map(feels?.map(feel => [feel?.id, feel])).values()]
-  const feelSlices = uniqueFeelIds.map(feel => {
-    const feelCount = feels?.filter(f => f?.id === feel?.id)?.length || 0
+  const { feels, tempos, numberOfCoverSongs, numberOfOriginalSongs, numberOfSongsWithoutAuthor } = setMetrics
+  const uniqueFeels = [...new Map(feels?.map(feel => [feel?.id, feel])).values()]
+  const feelSlices = uniqueFeels.map(feel => {
+    const feelCount = (feels?.filter(f => f?.id === feel?.id)?.length || 0)
     const totalFeels = feels?.length || 0
     return {
       percent: feelCount / totalFeels,
@@ -28,6 +28,11 @@ export default function SetDataMetrics() {
     }
   })
 
+  const ratio = {
+    start: { label: 'Covers', amount: numberOfCoverSongs },
+    stop: { label: 'Originals', amount: numberOfOriginalSongs },
+    unset: { label: 'Songwriter not available', amount: numberOfSongsWithoutAuthor }
+  }
   return (
     <MaxHeightContainer
       fullHeight
@@ -42,9 +47,10 @@ export default function SetDataMetrics() {
     >
       <FlexList pad={4}>
         <Label>Covers/Originals ratio</Label>
-        <RatioBar ratio={{ start: { label: 'Covers', amount: isCoverLength }, stop: { label: 'Originals', amount: isOriginalLength } }} />
+        <RatioBar ratio={ratio} />
         <Label>Feels</Label>
         <PieChart slices={feelSlices} />
+
         <Label>Tempos</Label>
         <TempoWave tempos={tempos} />
       </FlexList>

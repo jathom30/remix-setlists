@@ -2,7 +2,9 @@ import { heatColors } from "~/utils/songConstants"
 import { getCoords, getPointsWithCurve } from "~/utils/svg"
 import { FlexList } from "./FlexList"
 
+
 export const TempoWave = ({ tempos }: { tempos: number[] }) => {
+
   const height = 13
   const width = 100
   const curve = getPointsWithCurve(getCoords(tempos, width))
@@ -26,7 +28,7 @@ export const TempoWave = ({ tempos }: { tempos: number[] }) => {
               <stop key={color} offset={`${i / heatColors.length * 100}%`} style={{ stopColor: color, stopOpacity: 1 }} />
             ))}
           </linearGradient>
-          <path d={finalCurve} fill="url(#grad)" />
+          <path d={finalCurve} stroke="#FFFFFF" fill="url(#grad)" />
         </svg>
       )}
     </div>
