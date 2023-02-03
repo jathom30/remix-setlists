@@ -6,7 +6,7 @@ import { Input } from "./Input"
 
 export const SearchInput = ({ value, onChange, onClear }: { value?: string | null; onChange: (e: ChangeEvent<HTMLInputElement>) => void; onClear: () => void }) => {
   return (
-    <div className="input-group">
+    <div className={value ? "input-group" : ""}>
       <Input name="query" placeholder="Search..." value={value || ''} onChange={onChange} />
       {value ? (
         <Button type="button" size="md" isRounded onClick={onClear}>
