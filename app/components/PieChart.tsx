@@ -4,23 +4,29 @@ import { createPaths } from "~/utils/svg";
 import { FeelTag } from "./FeelTag";
 import { FlexList } from "./FlexList";
 
-export const PieChart = ({ slices }: { slices: { percent: number; feel: SerializeFrom<Feel | null> }[] }) => {
+export const PieChart = ({ slices, noFeel }: { slices: { percent: number; feel: SerializeFrom<Feel | null> }[]; noFeel?: number }) => {
   const paths = createPaths(slices)
   return (
-    <FlexList direction="row">
-      <svg version="1.1" preserveAspectRatio="xMinYMin meet" viewBox="-1 -1 2 2" style={{ transform: 'rotate(-90deg)' }}>
+    <div className="grid grid-cols-2 gap-4">
+      <svg version="1.1" preserveAspectRatio="xMinYMin meet" viewBox="-1 -1 2 2" style={{ transform: 'rotate(-90deg)' }} className="h-full w-full">
         {paths.map(path => (
           <path key={path.pathData} d={path.pathData} fill={path.feel?.color || 'white'} />
         ))}
       </svg>
-      <div className="flex flex-col gap-2 flex-grow">
+      <FlexList gap={2}>
         {slices.map(slice => {
           if (!slice.feel) { return null }
           return (
             <FeelTag fullWidth feel={slice.feel} key={slice.feel.id}>{Math.round(slice.percent * 100)}%</FeelTag>
           )
         })}
-      </div>
-    </FlexList>
+        {noFeel ? (
+          <FlexList direction="row" gap={2} justify="center">
+            Songs without feels
+            <span>{Math.round(noFeel * 100)}%</span>
+          </FlexList>
+        ) : null}
+      </FlexList>
+    </div>
   )
 }

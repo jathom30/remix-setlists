@@ -1,5 +1,7 @@
 import type { Set, Setlist, Song } from "@prisma/client";
 import { prisma } from "~/db.server";
+import { getBand } from "./band.server";
+import { getSetlist } from "./setlist.server";
 
 export async function removeSongFromSet(setId: Set['id'], songId: Song['id']) {
   const updatedSet = await prisma.set.update({
@@ -31,11 +33,26 @@ export async function getSet(setId: Set['id']) {
 
 export async function getSetMetrics(setId: Set['id']) {
   const set = await prisma.set.findUnique({ where: { id: setId }, include: { songs: { include: { song: { include: { feels: true } } } } } })
-  const feels = set?.songs.map(song => song.song?.feels).flat()
-  const tempos = set?.songs.map(song => song.song?.tempo || 0) || []
-  const isCoverLength = set?.songs.filter(song => song.song?.isCover).length || 0
-  const isOriginalLength = set?.songs.filter(song => !song.song?.isCover).length || 0
-  return { feels, tempos, isCoverLength, isOriginalLength }
+  if (!set) {
+    throw new Response("Set not found", { status: 404 })
+  }
+  const setlist = await getSetlist(set.setlistId)
+  if (!setlist) {
+    throw new Response("Setlist not found", { status: 404 })
+  }
+  const band = await getBand(setlist.bandId)
+  if (!band) {
+    throw new Response("Band not found", { status: 404 })
+  }
+  const bandName = band.name
+  const numberOfOriginalSongs = set.songs.filter(song => song.song?.author === bandName).length || 0
+  const numberOfCoverSongs = set.songs.filter(song => song.song?.author ? (song.song.author !== bandName) : false).length || 0
+  const numberOfSongsWithoutAuthor = set.songs.filter(song => !song.song?.author).length || 0
+
+  const feels = set.songs.map(song => song.song?.feels).flat()
+  const tempos = set.songs.map(song => song.song?.tempo || 0) || []
+
+  return { songs: set?.songs, feels, tempos, numberOfCoverSongs, numberOfOriginalSongs, numberOfSongsWithoutAuthor }
 }
 
 export async function addSongsToSet(setId: Set['id'], songIds: Song['id'][]) {
