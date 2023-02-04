@@ -101,7 +101,7 @@ export default function BandSettingsPage() {
             <FlexHeader>
               <Label>Members</Label>
               {isAdmin ? (
-                <Link to="newMember" kind="outline" icon={faPlus}>Add new member</Link>
+                <Link to="newMember" kind="outline" isCollapsing icon={faPlus}>Add new member</Link>
               ) : null}
             </FlexHeader>
             <ItemBox>
@@ -130,7 +130,7 @@ export default function BandSettingsPage() {
             <FlexHeader>
               <Label>Feels</Label>
               {!isSub ? (
-                <Link to="feel/new" kind="outline" icon={faPlus}>Add new feel</Link>
+                <Link to="feel/new" kind="outline" isCollapsing icon={faPlus}>Add new feel</Link>
               ) : null}
             </FlexHeader>
             <ItemBox>

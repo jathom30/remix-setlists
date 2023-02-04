@@ -122,7 +122,7 @@ export default function UserRoute() {
           <FlexList gap={2}>
             <FlexHeader>
               <Label>Associated bands</Label>
-              <Link to="addBand" kind="outline" icon={faPlus}>Add new band</Link>
+              <Link to="addBand" kind="outline" isCollapsing icon={faPlus}>Add new band</Link>
             </FlexHeader>
             <ItemBox>
               <Form method="put" onChange={e => submit(e.currentTarget)}>
