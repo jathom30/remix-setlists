@@ -52,7 +52,7 @@ export default function EditFeel() {
   return (
     <Form method="put">
       <FlexList pad={4}>
-        <span className="font-bold">Edit feel</span>
+        <span className="font-bold">Edit {feel.label}</span>
         <Field name="name" label="Name">
           <Input name="name" defaultValue={feel.label} placeholder={feel.label} />
           {actionData?.errors.name ? <ErrorMessage message={actionData.errors.name} /> : null}
