@@ -6,5 +6,5 @@ export const majorMinorOptions = [
   { label: 'Minor', value: true },
 ]
 
-const tempoColors = ['info', 'accent', 'success', 'warning', 'error']
+const tempoColors = ['info', 'accent', 'success', 'warning', 'error'].reverse()
 export const heatColors = tempoColors.map(color => getColor(color))
