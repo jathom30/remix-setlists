@@ -135,9 +135,6 @@ export default function BandSettingsPage() {
             </FlexHeader>
             <ItemBox>
               <FlexList gap={0}>
-                {feels.length === 0 ? (
-                  <Label>No feels created yet</Label>
-                ) : null}
                 {feels.map(feel => (
                   <FlexHeader key={feel.id}>
                     <RemixLink to={`${feel.id}/edit`} className="btn btn-ghost h-auto flex-grow justify-start p-2 normal-case font-normal">
@@ -154,8 +151,14 @@ export default function BandSettingsPage() {
                     </Link> : null}
                   </FlexHeader>
                 ))}
-                <Divider />
-                <Link to="feel" kind="outline">See all</Link>
+                {feels.length === 0 ? (
+                  <Label>No feels created yet</Label>
+                ) : (
+                  <>
+                    <Divider />
+                    <Link to="feel" kind="outline">See all</Link>
+                  </>
+                )}
               </FlexList>
             </ItemBox>
           </FlexList>
