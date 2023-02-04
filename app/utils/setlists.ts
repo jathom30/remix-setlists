@@ -174,7 +174,3 @@ export const autoGenSetlist = (intitialSongs: Song[], settings: SetlistSettings)
 
   return sortedByPosition
 }
-
-// TODO starred songs
-// TODO create visual "pattern" option
-// example: wave line indicating general energy level to show user general path of a set
