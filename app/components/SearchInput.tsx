@@ -9,7 +9,7 @@ export const SearchInput = ({ value, onChange, onClear }: { value?: string | nul
     <div className={value ? "input-group" : ""}>
       <Input name="query" placeholder="Search..." value={value || ''} onChange={onChange} />
       {value ? (
-        <Button type="button" size="md" isRounded onClick={onClear}>
+        <Button type="reset" size="md" isRounded onClick={onClear}>
           <FontAwesomeIcon icon={faTimes} />
         </Button>
       ) : null}

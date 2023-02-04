@@ -1,4 +1,4 @@
-import type { LoaderArgs, SerializeFrom } from "@remix-run/server-runtime";
+import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node";
 import { FlexHeader, FlexList, Label, Link, MaxHeightContainer, Navbar, PieChart, RatioBar, TempoWave } from "~/components";
 import invariant from "tiny-invariant";
@@ -6,7 +6,6 @@ import { getSetMetrics } from "~/models/set.server";
 import { useLoaderData } from "@remix-run/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { Feel } from "@prisma/client";
 
 export async function loader({ params }: LoaderArgs) {
   const { setId } = params
@@ -19,7 +18,6 @@ export default function SetDataMetrics() {
   const { setMetrics } = useLoaderData<typeof loader>()
 
   const { songs, feels, tempos, numberOfCoverSongs, numberOfOriginalSongs, numberOfSongsWithoutAuthor } = setMetrics
-  const noFeel: SerializeFrom<Feel> = { id: 'noFeel', label: 'No Feel', color: '#000', updatedAt: '', createdAt: '', bandId: '' }
   const songsWithoutFeelsCount = songs.filter(song => song.song?.feels.length === 0).length
   const uniqueFeels = [...new Map(feels?.map(feel => [feel?.id, feel])).values()]
   const totalFeels = feels?.length + songsWithoutFeelsCount
