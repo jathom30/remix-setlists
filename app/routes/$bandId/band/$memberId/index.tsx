@@ -1,20 +1,17 @@
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import invariant from "tiny-invariant";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
-import { Button, FlexList, ItemBox, Label, Link, Tabs } from "~/components";
+import { Button, FlexList, Label, Tabs } from "~/components";
 import { getBand } from "~/models/band.server";
 import { requireAdminMember, requireUserId } from "~/session.server";
 import { RoleEnum } from "~/utils/enums";
-import { Form, useLoaderData, useParams, Link as RemixLink } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import { getUserById } from "~/models/user.server";
 import { useState } from "react";
 import { updateBandMemberRole } from "~/models/usersInBands.server";
 import { getFields } from "~/utils/form";
 
 export async function loader({ request, params }: LoaderArgs) {
-  const userId = await requireUserId(request)
-
   const { bandId, memberId } = params
   invariant(bandId, 'bandId not found')
   invariant(memberId, 'memberId not found')
@@ -27,9 +24,6 @@ export async function loader({ request, params }: LoaderArgs) {
     throw new Response('Band not found', { status: 404 })
   }
 
-  // cannot remove self from band if user if the only member
-  const canRemoveMember = band.members.reduce((total, member) => total += member.role as unknown as RoleEnum === RoleEnum.ADMIN ? 1 : 0, 0) > (userId === memberId ? 1 : 0)
-
   // if there are other members who are also admins, user can demote self from admin
   const canRemoveAsAdmin = band.members.filter(member => member.userId !== memberId).some(member => member.role === RoleEnum.ADMIN)
 
@@ -39,7 +33,7 @@ export async function loader({ request, params }: LoaderArgs) {
     role: band?.members.find(m => m.userId === memberId)?.role
   }
 
-  return json({ member: memberWithRole, canRemoveMember, canRemoveAsAdmin })
+  return json({ member: memberWithRole, canRemoveAsAdmin })
 }
 
 export async function action({ request, params }: ActionArgs) {
@@ -63,8 +57,7 @@ export async function action({ request, params }: ActionArgs) {
 }
 
 export default function EditMember() {
-  const { member, canRemoveMember, canRemoveAsAdmin } = useLoaderData<typeof loader>()
-  const { bandId } = useParams()
+  const { member, canRemoveAsAdmin } = useLoaderData<typeof loader>()
   const [roleTab, setRoleTab] = useState(member.role)
 
   return (
@@ -100,30 +93,6 @@ export default function EditMember() {
             </Form>
           </FlexList>
         </Tabs>
-      </FlexList>
-
-
-      <FlexList gap={2}>
-        <Label isDanger>Danger Zone</Label>
-        <ItemBox>
-          <FlexList gap={2}>
-            <span className="font-bold">Remove this member</span>
-            {canRemoveMember ? (
-              <p className="text-sm">
-                Removing this member will remove their access to this band's songs and setlists.
-              </p>
-            ) : (
-              <>
-                <p className="text-danger text-sm">
-                  You are the only admin. Make at least one other member an Admin before removing yourself.
-                </p>
-                <p className="text-sm text-error">If you would rather delete this band, you can do so <RemixLink className="underline font-bold" to={`/${bandId}/band/delete`}>here</RemixLink>.</p>
-              </>
-            )}
-
-            <Link isDisabled={!canRemoveMember} to="delete" icon={faTrash} kind="error">Remove</Link>
-          </FlexList>
-        </ItemBox>
       </FlexList>
     </FlexList>
   )

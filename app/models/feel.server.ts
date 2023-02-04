@@ -9,6 +9,16 @@ export async function getFeels(bandId: Band['id']) {
   })
 }
 
+export async function getMostRecentFeels(bandId: Band['id']) {
+  return prisma.feel.findMany({
+    where: { bandId },
+    orderBy: { updatedAt: 'desc' },
+    include: { songs: { select: { id: true } } },
+    take: 5,
+  })
+
+}
+
 export async function getFeel(feelId: Feel['id']) {
   return prisma.feel.findUnique({
     where: { id: feelId }

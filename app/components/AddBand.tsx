@@ -12,7 +12,7 @@ import { Navbar } from "./Navbar"
 import { SaveButtons } from "./SaveButtons"
 import { Title } from "./Title"
 
-export const AddBand = ({ onSubmit }: { onSubmit: () => void }) => {
+export const AddBand = ({ onSubmit, onClose }: { onSubmit: () => void; onClose: () => void }) => {
   const codeFetcher = useFetcher<{ error: string } | undefined>()
   const codeError = codeFetcher.data?.error
 
@@ -37,7 +37,7 @@ export const AddBand = ({ onSubmit }: { onSubmit: () => void }) => {
       <Navbar>
         <FlexHeader>
           <Title>Add band</Title>
-          <Button kind="ghost" isRounded onClick={onSubmit}><FontAwesomeIcon icon={faTimes} /></Button>
+          <Button kind="ghost" isRounded onClick={onClose}><FontAwesomeIcon icon={faTimes} /></Button>
         </FlexHeader>
       </Navbar>
       {!addType ? (

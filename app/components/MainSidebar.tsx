@@ -61,7 +61,7 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
 
   return (
     <AnimatePresence initial={false}>
-      <motion.div
+      <motion.aside
         animate={state}
         variants={{
           open: { width: '100%' },
@@ -108,7 +108,6 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
                       <span className="text-sm text-slate-400">{user.email}</span>
                     </TextOverflow>
                   </div>
-                  {/* <Divider /> */}
                   <li>
                     <RemixLink onClick={() => setIsUserOpen(false)} to="user">
                       <FontAwesomeIcon icon={faUser} />
@@ -168,9 +167,9 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
           </div>
         </MaxHeightContainer>
         <Modal open={showCreateMenu} onClose={() => setShowCreateMenu(false)} isPortal>
-          <AddBand onSubmit={() => setShowCreateMenu(false)} />
+          <AddBand onSubmit={() => setShowCreateMenu(false)} onClose={() => setShowCreateMenu(false)} />
         </Modal>
-      </motion.div>
+      </motion.aside>
     </AnimatePresence>
   )
 }

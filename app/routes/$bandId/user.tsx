@@ -1,10 +1,12 @@
-import { faPenToSquare, faSignOut, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faPlus, faSignOut, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json } from "@remix-run/node"
-import { Form, Outlet, useLoaderData, useLocation, useNavigate, Link as RemixLink } from "@remix-run/react";
-import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
+import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSubmit } from "@remix-run/react";
+import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { AvatarTitle, Badge, Button, CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar } from "~/components";
 import { getUserWithBands } from "~/models/user.server";
+import { requireUserId } from "~/session.server";
 import { capitalizeFirstLetter } from "~/utils/assorted";
 
 export const meta: MetaFunction = () => ({
@@ -20,14 +22,31 @@ export async function loader({ request }: LoaderArgs) {
   return json({ user })
 }
 
-const subRoutes = ['details', 'password', 'delete', 'remove']
+export async function action({ request }: ActionArgs) {
+  await requireUserId(request)
+
+  const formData = await request.formData()
+  const bandId = formData.get('bandId')?.toString()
+
+  if (!bandId) {
+    return json({
+      errors: { bandId: 'A band id must be selected' }
+    })
+  }
+
+  return redirect(`/${bandId}/user`)
+}
+
+const subRoutes = ['details', 'password', 'delete', 'remove', 'addBand']
 
 const themes = ["cupcake", "bumblebee", "emerald", "corporate", "synthwave", "retro", "cyberpunk", "valentine", "halloween", "garden", "forest", "aqua", "lofi", "pastel", "fantasy", "wireframe", "black", "luxury", "dracula", "cmyk", "autumn", "business", "acid", "lemonade", "night", "coffee", "winter"].sort()
 
 export default function UserRoute() {
   const { user } = useLoaderData<typeof loader>()
   const { pathname } = useLocation()
+  const { bandId } = useParams()
   const navigate = useNavigate()
+  const submit = useSubmit()
   return (
     <MaxHeightContainer
       fullHeight
@@ -101,21 +120,29 @@ export default function UserRoute() {
           <Divider />
 
           <FlexList gap={2}>
-            <Label>Associated bands</Label>
+            <FlexHeader>
+              <Label>Associated bands</Label>
+              <Link to="addBand" kind="outline" icon={faPlus}>Add new band</Link>
+            </FlexHeader>
             <ItemBox>
-              <FlexList gap={2}>
-                {user.bands.map(band => (
-                  <RemixLink className="btn btn-ghost" to={`remove/${band.bandId}`} key={band.bandId}>
-                    <FlexHeader>
-                      <FlexList direction="row" items="center">
-                        <FontAwesomeIcon icon={faTrash} />
-                        <span>{band.bandName}</span>
-                      </FlexList>
-                      <Badge>{band.role}</Badge>
+              <Form method="put" onChange={e => submit(e.currentTarget)}>
+                <FlexList gap={0}>
+                  {user.bands.map(band => (
+                    <FlexHeader key={band.bandId}>
+                      <label htmlFor={band.bandId} className="btn btn-ghost h-auto flex-grow justify-start p-2 normal-case font-normal">
+                        <FlexList direction="row" gap={2} items="center">
+                          <input className="radio" name="bandId" id={band.bandId} type="radio" value={band.bandId} defaultChecked={band.bandId === bandId} />
+                          <FlexList gap={2}>
+                            <span>{band.bandName}</span>
+                            <Badge>{band.role}</Badge>
+                          </FlexList>
+                        </FlexList>
+                      </label>
+                      <Link to={`remove/${band.bandId}`} kind="error" isRounded><FontAwesomeIcon icon={faTrash} /></Link>
                     </FlexHeader>
-                  </RemixLink>
-                ))}
-              </FlexList>
+                  ))}
+                </FlexList>
+              </Form>
             </ItemBox>
           </FlexList>
 

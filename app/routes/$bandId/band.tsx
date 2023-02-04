@@ -7,9 +7,9 @@ import { getBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { getUsersById } from "~/models/user.server";
 import { RoleEnum } from "~/utils/enums";
-import { faCamera, faEdit, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faCamera, faEdit, faPencil, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useMemberRole } from "~/utils";
-import { getFeels } from "~/models/feel.server";
+import { getMostRecentFeels } from "~/models/feel.server";
 import pluralize from "pluralize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -33,7 +33,7 @@ export async function loader({ request, params }: LoaderArgs) {
     role: band.members.find(m => m.userId === member.id)?.role
   }))
 
-  const feels = await getFeels(bandId)
+  const feels = await getMostRecentFeels(bandId)
 
   return json({ band, members: augmentedMembers, feels })
 }
@@ -98,21 +98,28 @@ export default function BandSettingsPage() {
           <Divider />
 
           <FlexList gap={2}>
-            <Label>Members</Label>
+            <FlexHeader>
+              <Label>Members</Label>
+              {isAdmin ? (
+                <Link to="newMember" kind="outline" icon={faPlus}>Add new member</Link>
+              ) : null}
+            </FlexHeader>
             <ItemBox>
-              <FlexList>
+              <FlexList gap={0}>
                 {members.map(member => (
                   <FlexHeader key={member.id}>
-                    <FlexList direction="row">
-                      <span className="font-bold">{member.name}</span>
-                      <Badge>{member.role}</Badge>
-                    </FlexList>
-                    {isAdmin ? <Link to={member.id} kind="ghost"><FontAwesomeIcon icon={faEdit} /></Link> : null}
+                    <RemixLink to={member.id} className="btn btn-ghost h-auto flex-grow justify-start p-2 normal-case font-normal">
+                      <FlexList direction="row" items="center">
+                        {isAdmin ? <FontAwesomeIcon icon={faEdit} /> : null}
+                        <span className="font-bold">{member.name}</span>
+                        <Badge>{member.role}</Badge>
+                      </FlexList>
+                    </RemixLink>
+                    {isAdmin ? <Link to={`${member.id}/delete`} kind="error" isRounded>
+                      <FontAwesomeIcon icon={faTrash} />
+                    </Link> : null}
                   </FlexHeader>
                 ))}
-                {isAdmin ? (
-                  <Link to="newMember" kind="outline">Add new member</Link>
-                ) : null}
               </FlexList>
             </ItemBox>
           </FlexList>
@@ -120,27 +127,38 @@ export default function BandSettingsPage() {
           <Divider />
 
           <FlexList gap={2}>
-            <Label>Feels</Label>
+            <FlexHeader>
+              <Label>Feels</Label>
+              {!isSub ? (
+                <Link to="feel/new" kind="outline" icon={faPlus}>Add new feel</Link>
+              ) : null}
+            </FlexHeader>
             <ItemBox>
-              <FlexList>
-                {feels.length === 0 ? (
-                  <Label>No feels created yet</Label>
-                ) : null}
+              <FlexList gap={0}>
                 {feels.map(feel => (
                   <FlexHeader key={feel.id}>
-                    <FlexList direction="row" items="center" gap={2}>
-                      {!isSub ? <Link to={`feel/${feel.id}/edit`} kind="ghost" isRounded><FontAwesomeIcon icon={faPencil} /></Link> : null}
-                      <FlexList gap={1}>
-                        <FeelTag feel={feel} />
-                        <span className="text-xs">Found in {pluralize('song', feel.songs.length, true)}</span>
+                    <RemixLink to={`${feel.id}/edit`} className="btn btn-ghost h-auto flex-grow justify-start p-2 normal-case font-normal">
+                      <FlexList direction="row" items="center" gap={4}>
+                        {!isSub ? <FontAwesomeIcon icon={faEdit} /> : null}
+                        <FlexList gap={1}>
+                          <FeelTag feel={feel} />
+                          <span className="text-xs">Found in {pluralize('song', feel.songs.length, true)}</span>
+                        </FlexList>
                       </FlexList>
-                    </FlexList>
+                    </RemixLink>
                     {!isSub ? <Link to={`feel/${feel.id}/delete`} kind="error" isRounded>
                       <FontAwesomeIcon icon={faTrash} />
                     </Link> : null}
                   </FlexHeader>
                 ))}
-                {!isSub ? <Link to="feel/new" kind="outline">Add new feel</Link> : null}
+                {feels.length === 0 ? (
+                  <Label>No feels created yet</Label>
+                ) : (
+                  <>
+                    <Divider />
+                    <Link to="feel" kind="outline">See all</Link>
+                  </>
+                )}
               </FlexList>
             </ItemBox>
           </FlexList>
