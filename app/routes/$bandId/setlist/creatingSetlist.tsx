@@ -33,10 +33,10 @@ export async function action({ request, params }: ActionArgs) {
 
   await requireNonSubMember(request, bandId)
 
-  return redirect(`/${bandId}/setlist/edit/${setlistId}`)
+  return redirect(`/${bandId}/setlist/${setlistId}/rename`)
 }
 
-export default function LoadingSetlist() {
+export default function CreatingSetlist() {
   const { setlist } = useLoaderData<typeof loader>()
   const { bandId } = useParams()
   const submit = useSubmit()
@@ -55,8 +55,7 @@ export default function LoadingSetlist() {
               <AvatarTitle title={`Loading ${setlist.name}`} />
               <Breadcrumbs breadcrumbs={[
                 { label: 'Setlists', to: `/${bandId}/setlists` },
-                { label: setlist.name, to: `/${bandId}/setlist/${setlist.id}` },
-                { label: 'Loading', to: '.' },
+                { label: 'Creating...', to: '.' },
               ]} />
             </FlexList>
           </FlexHeader>
@@ -82,7 +81,7 @@ export default function LoadingSetlist() {
             </FlexList>
           </div>
           <div className="absolute inset-0 flex flex-col gap-4 items-center justify-center">
-            <Title>Updating {setlist.name}...</Title>
+            <Title>Creating your setlist...</Title>
             <Spinner size="3x" />
           </div>
         </div>

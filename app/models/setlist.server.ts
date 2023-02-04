@@ -116,8 +116,10 @@ export async function createSetlistAuto(bandId: Band['id'], settings: SetlistSet
     ...(onlyCovers ? { isCover: true } : null),
   }
   const songs = await getSongs(bandId, params)
+  // remove excluded songs from pool
+  const withoutExcludedSongs = songs.filter(song => song.rank !== 'exclude')
   // split songs into sets by position so each desired set has an even distribution of openers and closers
-  const setsByPosition = createRandomSetsByPosition(songs, setCount)
+  const setsByPosition = createRandomSetsByPosition(withoutExcludedSongs, setCount)
 
   // trim above sets to desired minute length and sort songs so sets start with openers and end with closers
   const setsByLength = Object.keys(setsByPosition).reduce((sets: Record<string, Song[]>, key) => ({

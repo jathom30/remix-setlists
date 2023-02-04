@@ -139,7 +139,7 @@ export default function SongsFilters() {
                   { label: 'No Preference', value: ' ' },
                 ]}
                 isChecked={(val) => {
-                  const isCover = params.get('isChecked')
+                  const isCover = params.get('isCover')
                   return val === (isCover ?? ' ')
                 }}
               />

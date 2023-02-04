@@ -3,17 +3,24 @@ import type { SerializeFrom } from "@remix-run/server-runtime";
 import { prisma } from "~/db.server";
 import { getFields } from "~/utils/form";
 import { getSortFromParam } from "~/utils/params";
+import { getBand } from "./band.server";
 
 type SongParams = {
   q?: string
   tempos?: Song['tempo'][]
-  isCover?: Song['isCover']
+  isCover?: boolean
   feels?: Feel['id'][]
   positions?: Song['position'][]
   sort?: string
 }
 
 export async function getSongs(bandId: Band['id'], params?: SongParams) {
+  const band = await getBand(bandId)
+  if (!band) {
+    throw new Response("Band not found", { status: 404 })
+  }
+  const coversOnly = params?.isCover
+  const originalsOnly = typeof params?.isCover === 'boolean' && !params.isCover
   const orderBy = getSortFromParam(params?.sort)
   return prisma.song.findMany({
     where: {
@@ -21,8 +28,8 @@ export async function getSongs(bandId: Band['id'], params?: SongParams) {
       name: {
         contains: params?.q,
       },
-      ...(params?.isCover === false ? { NOT: { isCover: true } } : null),
-      ...(params?.isCover === true ? { isCover: true } : null),
+      ...(coversOnly ? { author: { not: band.name } } : null),
+      ...(originalsOnly ? { author: { equals: band.name } } : null),
       ...(params?.feels?.length ? { feels: { some: { id: { in: params?.feels } } } } : null),
       ...(params?.tempos?.length ? { tempo: { in: params.tempos } } : null),
       ...(params?.positions?.length ? { position: { in: params.positions } } : null),
