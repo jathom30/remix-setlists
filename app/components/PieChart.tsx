@@ -7,12 +7,14 @@ import { FlexList } from "./FlexList";
 export const PieChart = ({ slices, noFeel }: { slices: { percent: number; feel: SerializeFrom<Feel | null> }[]; noFeel?: number }) => {
   const paths = createPaths(slices)
   return (
-    <div className="grid grid-cols-2 gap-4">
-      <svg version="1.1" preserveAspectRatio="xMinYMin meet" viewBox="-1 -1 2 2" style={{ transform: 'rotate(-90deg)' }} className="h-full w-full">
-        {paths.map(path => (
-          <path key={path.pathData} d={path.pathData} fill={path.feel?.color || 'white'} />
-        ))}
-      </svg>
+    <div className="grid grid-cols-2 gap-4 grid-rows-1">
+      <div className="w-full h-full -rotate-90 origin-center flex">
+        <svg version="1.1" preserveAspectRatio="xMinYMin meet" viewBox="-1 -1 2 2" className="w-full h-full">
+          {paths.map(path => (
+            <path key={path.pathData} d={path.pathData} fill={path.feel?.color || 'white'} />
+          ))}
+        </svg>
+      </div>
       <FlexList gap={2}>
         {slices.map(slice => {
           if (!slice.feel) { return null }

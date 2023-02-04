@@ -46,7 +46,7 @@ export const Modal = ({ children, open, onClose, isPortal = false }: { children:
               opacity: 0,
             }}
             transition={{ ease: 'easeInOut' }}
-            className="absolute top-8 inset-x-4 bg-base-100 rounded overflow-auto max-w-xl m-auto"
+            className="absolute top-8 max-h-[calc(100vh - 4rem)] inset-x-4 bg-base-100 rounded overflow-auto max-w-xl m-auto"
             style={{ maxHeight: '90vh' }}
           >
             {children}
