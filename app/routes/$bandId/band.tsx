@@ -137,7 +137,7 @@ export default function BandSettingsPage() {
               <FlexList gap={0}>
                 {feels.map(feel => (
                   <FlexHeader key={feel.id}>
-                    <RemixLink to={`${feel.id}/edit`} className="btn btn-ghost h-auto flex-grow justify-start p-2 normal-case font-normal">
+                    <RemixLink to={`feel/${feel.id}/edit`} className="btn btn-ghost h-auto flex-grow justify-start p-2 normal-case font-normal">
                       <FlexList direction="row" items="center" gap={4}>
                         {!isSub ? <FontAwesomeIcon icon={faEdit} /> : null}
                         <FlexList gap={1}>
