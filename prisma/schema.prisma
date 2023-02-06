@@ -83,9 +83,10 @@ model BandIcon {
 }
 
 model Setlist {
-  id           String  @id @default(cuid())
+  id           String   @id @default(cuid())
   editedFromId String?
   name         String
+  isPublic     Boolean? @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

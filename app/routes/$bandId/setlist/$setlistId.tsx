@@ -4,12 +4,13 @@ import invariant from "tiny-invariant";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
-import { AvatarTitle, Breadcrumbs, Button, CatchContainer, Collapsible, CreateNewButton, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SongLink } from "~/components";
-import { faCompress, faDatabase, faEllipsisV, faExpand } from "@fortawesome/free-solid-svg-icons";
+import { AvatarTitle, Breadcrumbs, Button, CatchContainer, Collapsible, CreateNewButton, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SongLink } from "~/components";
+import { faCompress, faDatabase, faEllipsisV, faExpand, faEye, faRepublican } from "@fortawesome/free-solid-svg-icons";
 import { getSetLength } from "~/utils/setlists";
 import pluralize from "pluralize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
+import { Popover } from "react-tiny-popover";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -35,9 +36,10 @@ export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
   return { title: name }
 };
 
-const subRoutes = ['rename', 'edit', 'condensed', 'data', 'delete', 'menu', 'song']
+const subRoutes = ['rename', 'edit', 'condensed', 'data', 'delete', 'menu', 'song', 'confirmPublicLink']
 
 export default function Setlist() {
+  const [showTooltip, setShowTooltip] = useState(false)
   const { setlist } = useLoaderData<typeof loader>()
   const { pathname } = useLocation()
   const navigate = useNavigate()
@@ -61,7 +63,25 @@ export default function Setlist() {
         <>
           <Navbar>
             <FlexHeader>
-              <AvatarTitle title={setlist.name} />
+              <FlexList direction="row" gap={2} items="center">
+                <AvatarTitle title={setlist.name} />
+                {setlist.isPublic ? (
+                  <Popover
+                    isOpen={showTooltip}
+                    positions={['bottom']}
+                    content={
+                      <div className="max-w-sm shadow-2xl">
+                        <ItemBox>
+                          <p>This setlist is public, meaning anyone with the appropriate URL can see its condensed view.</p>
+                          <p>If you want this setlist to be private, click the menu button and then "View public link".</p>
+                        </ItemBox>
+                      </div>
+                    }
+                  >
+                    <FontAwesomeIcon icon={faEye} onMouseEnter={() => setShowTooltip(true)} onMouseLeave={() => setShowTooltip(false)} />
+                  </Popover>
+                ) : null}
+              </FlexList>
               <MobileMenu />
               <div className="hidden sm:block">
                 <Link kind="ghost" to="menu" icon={faEllipsisV}>Menu</Link>
