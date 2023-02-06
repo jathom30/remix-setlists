@@ -502,7 +502,7 @@ const DraggedSong = ({ isDragging = false, song, listeners }: { isDragging?: boo
         <div className={`btn btn-circle btn-sm cursor-grab`} {...listeners} tabIndex={-1}>
           <FontAwesomeIcon icon={faGripVertical} />
         </div>
-        {song.song ? <SongDisplay song={song.song} /> : null}
+        {song.song ? <SongDisplay song={song.song} width="half" /> : null}
         <Link kind="error" size="sm" isRounded to={`${song.setId}/removeSong/${song.songId}`}>
           <FontAwesomeIcon icon={faTrash} />
         </Link>
