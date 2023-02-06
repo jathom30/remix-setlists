@@ -48,7 +48,7 @@
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.33.0",
     "daisyui": "^2.47.0",
-    "framer-motion": "^8.5.4",
+    "framer-motion": "^9.0.1",
     "isbot": "^3.6.5",
     "pluralize": "^8.0.0",
     "react": "^18.2.0",
