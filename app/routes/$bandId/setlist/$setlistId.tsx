@@ -70,7 +70,7 @@ export default function Setlist() {
                     isOpen={showTooltip}
                     positions={['bottom']}
                     content={
-                      <div className="max-w-sm">
+                      <div className="max-w-sm shadow-2xl">
                         <ItemBox>
                           <p>This setlist is public, meaning anyone with the appropriate URL can see its condensed view.</p>
                           <p>If you want this setlist to be private, click the menu button and then "View public link".</p>
