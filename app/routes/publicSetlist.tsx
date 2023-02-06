@@ -53,9 +53,11 @@ export default function PublicSetlist() {
             <div key={set.id}>
               <Label>Set {set.positionInSetlist + 1} - {pluralize('minutes', setLength(set), true)}</Label>
               <FlexList gap={0}>
-                {set.songs.map(song => (
-                  <li key={song.songId}>{song.positionInSet + 1}. {song.song?.name}</li>
-                ))}
+                <ul>
+                  {set.songs.map(song => (
+                    <li key={song.songId}>{song.positionInSet + 1}. {song.song?.name}</li>
+                  ))}
+                </ul>
                 <Divider />
               </FlexList>
             </div>
