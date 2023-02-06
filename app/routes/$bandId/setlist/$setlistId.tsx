@@ -35,7 +35,7 @@ export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
   return { title: name }
 };
 
-const subRoutes = ['rename', 'edit', 'condensed', 'data', 'delete', 'menu', 'song']
+const subRoutes = ['rename', 'edit', 'condensed', 'data', 'delete', 'menu', 'song', 'confirmPublicLink']
 
 export default function Setlist() {
   const { setlist } = useLoaderData<typeof loader>()

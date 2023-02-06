@@ -65,6 +65,28 @@ export async function getCondensedSetlist(setlistId: Setlist['id']) {
   })
 }
 
+export async function getPublicSetlist(setlistId: Setlist['id']) {
+  const setlist = await prisma.setlist.findUnique({
+    where: { id: setlistId },
+    select: {
+      name: true, isPublic: true,
+      sets: {
+        include: {
+          songs: { include: { song: { select: { name: true, length: true } } }, orderBy: { positionInSet: 'asc' } }
+        },
+        orderBy: { positionInSetlist: 'asc' }
+      }
+    }
+  })
+  if (!setlist) {
+    throw new Response("Setlist not found", { status: 404 })
+  }
+  if (!setlist.isPublic) {
+    throw new Response("Setlist not public", { status: 403 })
+  }
+  return setlist
+}
+
 export async function getSetlistName(setlistId: Setlist['id']) {
   return prisma.setlist.findUnique({
     where: { id: setlistId },
