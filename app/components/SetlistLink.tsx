@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import type { Setlist, Song } from "@prisma/client"
 import type { SerializeFrom } from "@remix-run/node"
 import { Link, useLocation, useParams } from "@remix-run/react"
-import { useState } from "react"
+import { ReactNode, useState } from "react"
 import { Popover } from "react-tiny-popover"
 import { hoverAndFocusContainerStyles } from "~/styleUtils"
 import { FlexHeader } from "./FlexHeader"
@@ -13,7 +13,7 @@ import { Label } from "./Label"
 
 const setCount = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']
 
-export const SetlistLink = ({ setlist }: { setlist: SerializeFrom<Setlist & { sets: { songs: { song: { length: Song['length'] } }[] }[] }> }) => {
+export const SetlistLink = ({ setlist, publicRemark }: { setlist: SerializeFrom<Setlist & { sets: { songs: { song: { length: Song['length'] } }[] }[] }>; publicRemark?: string }) => {
   const [showTooltip, setShowTooltip] = useState(false)
   const { bandId } = useParams()
   const { pathname } = useLocation()
@@ -41,7 +41,7 @@ export const SetlistLink = ({ setlist }: { setlist: SerializeFrom<Setlist & { se
                   <div className="max-w-sm shadow-2xl">
                     <ItemBox>
                       <p>This setlist is public, meaning anyone with the appropriate URL can see its condensed view.</p>
-                      <p>If you want this setlist to be private, click the menu button and then "View public link".</p>
+                      <p>{publicRemark ?? 'If you want this setlist to be private, click the menu button and then "View public link".'}</p>
                     </ItemBox>
                   </div>
                 }

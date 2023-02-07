@@ -84,7 +84,7 @@ export default function Setlist() {
               </FlexList>
               <MobileMenu />
               <div className="hidden sm:block">
-                <Link kind="ghost" to="menu" icon={faEllipsisV}>Menu</Link>
+                <Link kind="ghost" to="menu" icon={faEllipsisV}>Settings</Link>
               </div>
             </FlexHeader>
           </Navbar>
