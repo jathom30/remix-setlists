@@ -21,14 +21,16 @@ export type ButtonProps = {
   isOutline?: boolean
   isCollapsing?: boolean
   isSaving?: boolean
-  size?: 'xs' | 'sm' | 'md' | 'lg'
+  size?: 'xs' | 'sm' | 'md' | 'lg',
+  ariaLabel?: string
 }
 
-export function Button({ isSaving = false, isCollapsing = false, isOutline = false, onClick, size, tabIndex, icon, name, value, isDisabled = false, isRounded = false, type = 'button', kind, children }: ButtonProps) {
+export function Button({ ariaLabel, isSaving = false, isCollapsing = false, isOutline = false, onClick, size, tabIndex, icon, name, value, isDisabled = false, isRounded = false, type = 'button', kind, children }: ButtonProps) {
 
   return (
     <FocusRing focusRingClass="ring ring-offset-transparent">
       <button
+        aria-label={ariaLabel}
         name={name}
         className={`btn ${buttonKind(kind)} ${icon ? 'gap-2' : ''} btn-sm sm:btn-md ${buttonSize(size)} ${isOutline ? 'btn-outline' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isRounded ? 'btn-circle' : ''} ${isSaving ? 'loading' : ''} touch-none select-none flex-nowrap focus-visible:outline-none`}
         onClick={onClick}

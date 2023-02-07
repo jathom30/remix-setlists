@@ -103,7 +103,7 @@ export default function SetlistsRoute() {
       }
       footer={
         <>
-          {(!isSub && hasSetlists) ? <CreateNewButton to={`/${bandId}/setlist/new`} /> : null}
+          {(!isSub && hasSetlists) ? <CreateNewButton to={`/${bandId}/setlist/new`} ariaLabel="New setlist" /> : null}
           <MobileModal
             open={subRoutes.some(path => pathname.includes(path))}
             onClose={() => navigate({ pathname: `/${bandId}/setlists`, search })}

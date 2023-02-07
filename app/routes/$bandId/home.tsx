@@ -52,7 +52,7 @@ export default function Select() {
       }
       footer={
         <>
-          <CreateNewButton to="menu" />
+          <CreateNewButton to="menu" ariaLabel="Add bands" />
           <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
             <Outlet />
           </MobileModal>

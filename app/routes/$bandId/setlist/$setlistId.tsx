@@ -5,7 +5,7 @@ import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import { AvatarTitle, Breadcrumbs, Button, CatchContainer, Collapsible, CreateNewButton, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SongLink } from "~/components";
-import { faCompress, faDatabase, faEllipsisV, faExpand, faEye, faRepublican } from "@fortawesome/free-solid-svg-icons";
+import { faCompress, faDatabase, faEllipsisV, faExpand, faEye } from "@fortawesome/free-solid-svg-icons";
 import { getSetLength } from "~/utils/setlists";
 import pluralize from "pluralize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -101,7 +101,7 @@ export default function Setlist() {
       }
       footer={
         <>
-          <CreateNewButton to="menu" icon={faEllipsisV} />
+          <CreateNewButton to="menu" icon={faEllipsisV} ariaLabel="Setlist options" />
           <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
             <Outlet />
           </MobileModal>

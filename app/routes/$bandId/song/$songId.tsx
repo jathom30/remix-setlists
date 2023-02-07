@@ -66,7 +66,7 @@ export default function SongDetails() {
       }
       footer={
         <>
-          {!isSub ? <CreateNewButton to="edit" icon={faPencil} /> : null}
+          {!isSub ? <CreateNewButton to="edit" icon={faPencil} ariaLabel="Edit song" /> : null}
           <MobileModal open={['edit', 'delete'].some(path => pathname.includes(path))} onClose={() => navigate('.')}>
             <Outlet />
           </MobileModal>

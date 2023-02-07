@@ -65,7 +65,7 @@ export const MobileMenu = () => {
   }
   return (
     <div className="sm:hidden">
-      <Button size="md" kind="ghost" isRounded onClick={() => setShowMenu(true)}>
+      <Button ariaLabel="Main menu" size="md" kind="ghost" isRounded onClick={() => setShowMenu(true)}>
         <FontAwesomeIcon icon={faBars} />
       </Button>
       {createPortal(

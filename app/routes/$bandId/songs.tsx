@@ -85,7 +85,7 @@ export default function SongsList() {
       }
       footer={
         <>
-          {(!isSub && hasSongs) ? <CreateNewButton to={`/${bandId}/song/new`} /> : null}
+          {(!isSub && hasSongs) ? <CreateNewButton to={`/${bandId}/song/new`} ariaLabel="New song" /> : null}
           <MobileModal
             open={subRoutes.some(path => pathname.includes(path))}
             onClose={() => navigate({ pathname: `/${bandId}/songs`, search })}
