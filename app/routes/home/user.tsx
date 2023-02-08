@@ -25,14 +25,13 @@ export default function User() {
           <span className="text-sm text-slate-400">{user.email}</span>
         </TextOverflow>
       </div>
-      {bandId ? (
-        <Link to={`/${bandId}/user`} icon={faUser} kind="secondary">User settings</Link>
-      ) : null}
+      <Link to={bandId ? `/${bandId}/user` : '/home/userSettings'} icon={faUser} kind="secondary">User settings</Link>
       <Form method="post" action="/logout">
         <FlexList>
           <Button type="submit" icon={faSignOut}>Sign out</Button>
         </FlexList>
       </Form>
+      <p>For tech support or general questions, reach out to us at <a className="link link-accent" href="mailto:support@setlists.pro">support@setlists.pro</a></p>
     </FlexList>
   )
 }

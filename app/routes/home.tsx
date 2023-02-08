@@ -1,10 +1,10 @@
-import { faBoxOpen, faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { faBoxOpen, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Form, NavLink, Outlet, useLoaderData, useLocation, useNavigate, useParams, useNavigation } from "@remix-run/react";
+import { NavLink, Outlet, useLoaderData, useLocation, useNavigate, useParams, useNavigation } from "@remix-run/react";
 import { useSpinDelay } from "spin-delay";
-import { Avatar, Badge, Button, CreateNewButton, FlexHeader, FlexList, Link, Loader, MaxHeightContainer, MobileModal, Navbar, Title } from "~/components";
+import { Avatar, Badge, CreateNewButton, FlexHeader, FlexList, Link, Loader, MaxHeightContainer, MobileModal, Navbar, Title } from "~/components";
 import { getBands } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 
@@ -18,7 +18,7 @@ export async function loader({ request }: LoaderArgs) {
   return json({ bands })
 }
 
-const subRoutes = ['new', 'existing', 'menu', 'user']
+const subRoutes = ['new', 'existing', 'menu', 'user', 'delete']
 
 export default function Home() {
   const { bands } = useLoaderData<typeof loader>()
@@ -45,9 +45,7 @@ export default function Home() {
                 <Link to="menu" kind="primary">Add band</Link>
               </div>
               <div>
-                <Form action="/logout" method="post">
-                  <Button isCollapsing type="submit" icon={faSignOut}>Sign out</Button>
-                </Form>
+                <Link to="user" isCollapsing icon={faUser} kind="ghost" aria-label="User settings menu">User</Link>
               </div>
             </FlexList>
           </FlexHeader>
