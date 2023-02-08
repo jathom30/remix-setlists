@@ -87,9 +87,9 @@ export default function Setlist() {
                 ) : null}
               </FlexList>
               <MobileMenu />
-              <div className="hidden sm:block">
+              {!isSub ? <div className="hidden sm:block">
                 <Link kind="ghost" to="menu" icon={faEllipsisV}>Settings</Link>
-              </div>
+              </div> : null}
             </FlexHeader>
           </Navbar>
           <Navbar shrink>
