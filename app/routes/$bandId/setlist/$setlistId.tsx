@@ -11,6 +11,8 @@ import pluralize from "pluralize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { Popover } from "react-tiny-popover";
+import { useMemberRole } from "~/utils";
+import { RoleEnum } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -39,6 +41,8 @@ export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
 const subRoutes = ['rename', 'edit', 'condensed', 'data', 'delete', 'menu', 'song', 'confirmPublicLink']
 
 export default function Setlist() {
+  const role = useMemberRole()
+  const isSub = role === RoleEnum.SUB
   const [showTooltip, setShowTooltip] = useState(false)
   const { setlist } = useLoaderData<typeof loader>()
   const { pathname } = useLocation()
@@ -83,9 +87,9 @@ export default function Setlist() {
                 ) : null}
               </FlexList>
               <MobileMenu />
-              <div className="hidden sm:block">
+              {!isSub ? <div className="hidden sm:block">
                 <Link kind="ghost" to="menu" icon={faEllipsisV}>Settings</Link>
-              </div>
+              </div> : null}
             </FlexHeader>
           </Navbar>
           <Navbar shrink>
@@ -101,7 +105,7 @@ export default function Setlist() {
       }
       footer={
         <>
-          <CreateNewButton to="menu" icon={faEllipsisV} ariaLabel="Setlist options" />
+          {!isSub ? <CreateNewButton to="menu" icon={faEllipsisV} ariaLabel="Setlist options" /> : null}
           <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
             <Outlet />
           </MobileModal>

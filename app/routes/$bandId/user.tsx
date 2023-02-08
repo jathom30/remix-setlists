@@ -160,6 +160,15 @@ export default function UserRoute() {
           </div>
 
           <FlexList gap={2}>
+            <Label>Support</Label>
+            <ItemBox>
+              <p>For tech support or general questions, reach out to us at <a className="link link-accent" href="mailto:support@setlists.pro">support@setlists.pro</a></p>
+            </ItemBox>
+          </FlexList>
+
+          <Divider />
+
+          <FlexList gap={2}>
             <Label isDanger>Danger zone</Label>
             <ItemBox>
               <FlexList>
