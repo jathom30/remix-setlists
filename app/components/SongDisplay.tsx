@@ -1,5 +1,6 @@
 import type { Song } from "@prisma/client"
 import type { SerializeFrom } from "@remix-run/node"
+import { Badge } from "./Badge"
 import { FlexList } from "./FlexList"
 import { TempoIcons } from "./TempoIcons"
 import { TextOverflow } from "./TextOverflow"
@@ -15,6 +16,8 @@ export const SongDisplay = ({ song, width }: { song: SerializeFrom<Song>; width?
             {song.author || '--'} | {songKey} |
           </span>
           <TempoIcons tempo={song.tempo} />
+          {song.position === 'opener' ? <Badge>Opener</Badge> : null}
+          {song.position === 'closer' ? <Badge>Closer</Badge> : null}
         </FlexList>
         <span className="text-xs text-text-subdued whitespace-nowrap">
           {new Date(song.updatedAt).toLocaleDateString('en-us', { month: 'numeric', day: 'numeric', year: '2-digit' })}

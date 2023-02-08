@@ -9,6 +9,7 @@ import { requireUserId } from "~/session.server";
 import pluralize from 'pluralize'
 import { RoleEnum, setlistAutoGenImportanceEnums } from "~/utils/enums";
 import { useMemberRole } from "~/utils";
+import { capitalizeFirstLetter } from "~/utils/assorted";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -95,7 +96,7 @@ export default function SongDetails() {
                 <span>{pluralize('Minutes', song.length, true)}</span>
 
                 <Label align="right">Position</Label>
-                <span>{song.position || 'Other'}</span>
+                <span>{capitalizeFirstLetter(song.position) || 'Other'}</span>
 
                 <Label align="right">Feels</Label>
                 <FlexList direction="row" gap={2} wrap>
