@@ -7,7 +7,7 @@ export let loader: LoaderFunction = () => {
     {
       short_name: "Setlists",
       name: "Setlists",
-      start_url: "/",
+      start_url: "/home",
       backgroundColor: '#000000',
       display: "standalone",
       shortcuts: [
