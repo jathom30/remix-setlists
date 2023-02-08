@@ -8,6 +8,7 @@ import { Divider, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeight
 import { getSong } from "~/models/song.server"
 import { requireUserId } from "~/session.server"
 import { useMemberRole } from "~/utils";
+import { capitalizeFirstLetter } from "~/utils/assorted";
 import { RoleEnum, setlistAutoGenImportanceEnums } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderArgs) {
@@ -70,7 +71,7 @@ export default function SongDetails() {
 
               <FlexList direction="row" items="center">
                 <Label>Position</Label>
-                <span>{song.position || 'Other'}</span>
+                <span>{capitalizeFirstLetter(song.position) || 'Other'}</span>
               </FlexList>
 
               <FlexList direction="row" items="center">
@@ -89,7 +90,7 @@ export default function SongDetails() {
         <Divider />
 
         <FlexList gap={2}>
-          <Label>Notes</Label>
+          <Label>Notes/Lyrics</Label>
           <ItemBox>
             <FlexList gap={2}>
               {!song.note ? (

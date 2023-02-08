@@ -9,6 +9,21 @@ export const Badge = ({ children, size = 'md', kind }: {
   kind?: BadgeKind
 }) => {
   return (
-    <span className={`badge ${badgeKind(kind)} ${size ? `badge-${size}` : ''}`}>{children}</span>
+    <span className={`badge ${badgeKind(kind)} ${getSize(size)}`}>{children}</span>
   )
+}
+
+const getSize = (size: 'xs' | 'sm' | 'md' | 'lg') => {
+  switch (size) {
+    case 'xs':
+      return 'badge-xs'
+    case 'sm':
+      return 'badge-sm'
+    case 'md':
+      return 'badge-md'
+    case 'lg':
+      return 'badge-lg'
+    default:
+      return ''
+  }
 }

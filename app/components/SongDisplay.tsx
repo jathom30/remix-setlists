@@ -16,8 +16,8 @@ export const SongDisplay = ({ song, width }: { song: SerializeFrom<Song>; width?
             {song.author || '--'} | {songKey} |
           </span>
           <TempoIcons tempo={song.tempo} />
-          {song.position === 'opener' ? <Badge>Opener</Badge> : null}
-          {song.position === 'closer' ? <Badge>Closer</Badge> : null}
+          {song.position === 'opener' ? <Badge size="sm">Opener</Badge> : null}
+          {song.position === 'closer' ? <Badge size="sm">Closer</Badge> : null}
         </FlexList>
         <span className="text-xs text-text-subdued whitespace-nowrap">
           {new Date(song.updatedAt).toLocaleDateString('en-us', { month: 'numeric', day: 'numeric', year: '2-digit' })}
