@@ -6,36 +6,213 @@ export const passwordReset = (email: string, magicLink: string) => {
 
   const msg = {
     to: email,
-    from: 'jathom30@gmail.com', // ! Once ready, update to support@setlists.pro
+    from: 'support@setlists.pro',
     subject: 'Password reset',
-    text: 'click the link to reset your password',
-    html: `<!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Reset</title>
-      </head>
-      <body>
-        <main style="max-width: 500px; margin: auto;">
-          <h3 style="text-align: center;">We received a request to reset your <strong>setlists</strong> password</h3>
-          <p>Keeping your account secure is important to us. The link below will expire in 10 minutes. You can request a new link at anytime <a href="https://setlists.pro/forgotPassword">here</a>.</p>
-          <div style="text-align: center;">
-            <a
-              href=${magicLink}
-              style="border-radius: 10px; background-color: rgb(0, 119, 255); padding: 10px; text-decoration: none; color: white;"
-            >
-              Reset password
-            </a>
-          </div>
-          <div>
-            <p>If you did not request a password change, please contact us IMMEDIATELY so we can keep your account secure.</p>
-            <p>Email us at <a href="mailto:support@setlists.pro?subject=Security issue">support@setlists.pro</a></p>
-          </div>
-        </main>
-      </body>
-    </html>`,
+    html: `<html data-editor-version="2" class="sg-campaigns" xmlns="http://www.w3.org/1999/xhtml">
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+          <!--[if !mso]><!-->
+          <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+          <!--<![endif]-->
+          <!--[if (gte mso 9)|(IE)]>
+          <xml>
+            <o:OfficeDocumentSettings>
+              <o:AllowPNG/>
+              <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+          </xml>
+          <![endif]-->
+          <!--[if (gte mso 9)|(IE)]>
+      <style type="text/css">
+        body {width: 600px;margin: 0 auto;}
+        table {border-collapse: collapse;}
+        table, td {mso-table-lspace: 0pt;mso-table-rspace: 0pt;}
+        img {-ms-interpolation-mode: bicubic;}
+      </style>
+    <![endif]-->
+          <style type="text/css">
+        body, p, div {
+          font-family: arial,helvetica,sans-serif;
+          font-size: 14px;
+        }
+        body {
+          color: #000000;
+        }
+        body a {
+          color: #1188E6;
+          text-decoration: none;
+        }
+        p { margin: 0; padding: 0; }
+        table.wrapper {
+          width:100% !important;
+          table-layout: fixed;
+          -webkit-font-smoothing: antialiased;
+          -webkit-text-size-adjust: 100%;
+          -moz-text-size-adjust: 100%;
+          -ms-text-size-adjust: 100%;
+        }
+        img.max-width {
+          max-width: 100% !important;
+        }
+        .column.of-2 {
+          width: 50%;
+        }
+        .column.of-3 {
+          width: 33.333%;
+        }
+        .column.of-4 {
+          width: 25%;
+        }
+        ul ul ul ul  {
+          list-style-type: disc !important;
+        }
+        ol ol {
+          list-style-type: lower-roman !important;
+        }
+        ol ol ol {
+          list-style-type: lower-latin !important;
+        }
+        ol ol ol ol {
+          list-style-type: decimal !important;
+        }
+        @media screen and (max-width:480px) {
+          .preheader .rightColumnContent,
+          .footer .rightColumnContent {
+            text-align: left !important;
+          }
+          .preheader .rightColumnContent div,
+          .preheader .rightColumnContent span,
+          .footer .rightColumnContent div,
+          .footer .rightColumnContent span {
+            text-align: left !important;
+          }
+          .preheader .rightColumnContent,
+          .preheader .leftColumnContent {
+            font-size: 80% !important;
+            padding: 5px 0;
+          }
+          table.wrapper-mobile {
+            width: 100% !important;
+            table-layout: fixed;
+          }
+          img.max-width {
+            height: auto !important;
+            max-width: 100% !important;
+          }
+          a.bulletproof-button {
+            display: block !important;
+            width: auto !important;
+            font-size: 80%;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+          }
+          .columns {
+            width: 100% !important;
+          }
+          .column {
+            display: block !important;
+            width: 100% !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+          }
+          .social-icon-column {
+            display: inline-block !important;
+          }
+        }
+      </style>
+        <style>
+          @media screen and (max-width:480px) {
+            table {
+              width: 480px !important;
+              }
+          }
+        </style>
+          <!--user entered Head Start--><!--End Head user entered-->
+        </head>
+        <body>
+          <center class="wrapper" data-link-color="#1188E6" data-body-style="font-size:14px; font-family:arial,helvetica,sans-serif; color:#000000; background-color:#FFFFFF;">
+            <div class="webkit">
+              <table cellpadding="0" cellspacing="0" border="0" width="100%" class="wrapper" bgcolor="#FFFFFF">
+                <tr>
+                  <td valign="top" bgcolor="#FFFFFF" width="100%">
+                    <table width="100%" role="content-container" class="outer" align="center" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td width="100%">
+                          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                              <td>
+                                <!--[if mso]>
+        <center>
+        <table><tr><td width="600">
+      <![endif]-->
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; max-width:600px;" align="center">
+                                          <tr>
+                                            <td role="modules-container" style="padding:0px 0px 0px 0px; color:#000000; text-align:left;" bgcolor="#FFFFFF" width="100%" align="left"><table class="module preheader preheader-hide" role="module" data-type="preheader" border="0" cellpadding="0" cellspacing="0" width="100%" style="display: none !important; mso-hide: all; visibility: hidden; opacity: 0; color: transparent; height: 0; width: 0;">
+        <tr>
+          <td role="module-content">
+            <p>We received a request to reset your password. Keeping your account secure is important to us. The link below will expire in 10 minutes.</p>
+          </td>
+        </tr>
+      </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="bc33178f-f3eb-4f97-9568-f3326b5ef0d8" data-mc-module-version="2019-10-22">
+        <tbody>
+          <tr>
+            <td style="padding:18px 0px 18px 0px; line-height:22px; text-align:inherit;" height="100%" valign="top" bgcolor="" role="module-content"><div><div style="font-family: inherit; text-align: center"><strong>We received a request to reset your Setlists password.</strong></div>
+    <div style="font-family: inherit; text-align: left">Keeping your account secure is important to us. The link below will expire in 10 minutes. You may request a new link at anytime <a href="https://setlists.pro/forgotPassword">here</a>.</div><div></div></div></td>
+          </tr>
+        </tbody>
+      </table><table border="0" cellpadding="0" cellspacing="0" class="module" data-role="module-button" data-type="button" role="module" style="table-layout:fixed;" width="100%" data-muid="d93731f4-1833-41eb-a52a-3c8dbb21c05c">
+          <tbody>
+            <tr>
+              <td align="center" bgcolor="" class="outer-td" style="padding:0px 0px 0px 0px;">
+                <table border="0" cellpadding="0" cellspacing="0" class="wrapper-mobile" style="text-align:center;">
+                  <tbody>
+                    <tr>
+                    <td align="center" bgcolor="#0bb2f2" class="inner-td" style="border-radius:6px; font-size:16px; text-align:center; background-color:inherit;">
+                      <a href=${magicLink} style="background-color:#0bb2f2; border:0px solid #333333; border-color:#333333; border-radius:6px; border-width:0px; color:#ffffff; display:inline-block; font-size:14px; font-weight:normal; letter-spacing:0px; line-height:normal; padding:12px 18px 12px 18px; text-align:center; text-decoration:none; border-style:solid;" target="_blank">Reset Password</a>
+                    </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="8aa87632-4b08-4a85-9787-25a4b0d2ed29" data-mc-module-version="2019-10-22">
+        <tbody>
+          <tr>
+            <td style="padding:18px 0px 18px 0px; line-height:22px; text-align:inherit;" height="100%" valign="top" bgcolor="" role="module-content"><div><div style="font-family: inherit; text-align: inherit">If you did not request a password change, please contact us <strong>immediately</strong> so we can keep your account secure.</div><div></div></div></td>
+          </tr>
+        </tbody>
+      </table><table class="module" role="module" data-type="text" border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;" data-muid="d8ddf862-c5e9-47d4-8930-ada8f73ebf47" data-mc-module-version="2019-10-22">
+        <tbody>
+          <tr>
+            <td style="padding:18px 0px 18px 0px; line-height:22px; text-align:inherit;" height="100%" valign="top" bgcolor="" role="module-content"><div><div style="font-family: inherit; text-align: inherit">Email us at <a href="mailto:support@setlists.pro?subject=&amp;body=">support@setlists.pro</a></div><div></div></div></td>
+          </tr>
+        </tbody>
+      </table></td>
+                                          </tr>
+                                        </table>
+                                        <!--[if mso]>
+                                      </td>
+                                    </tr>
+                                  </table>
+                                </center>
+                                <![endif]-->
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </center>
+        </body>
+      </html>`,
   }
 
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
