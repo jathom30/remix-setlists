@@ -6,7 +6,7 @@ import { hoverAndFocusContainerStyles } from "~/styleUtils"
 
 export const MulitSongSelect = ({ songs }: { songs: SerializeFrom<Song[]> }) => {
   return (
-    <div className="bg-base-200">
+    <div className="bg-base-200 min-h-[12rem]">
       <FlexList pad={4} gap={2}>
         {songs.map(song => (
           <label key={song.id} htmlFor={song.id}>

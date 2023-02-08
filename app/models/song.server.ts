@@ -103,11 +103,11 @@ export async function getSongsNotInSetlist(bandId: Band['id'], setlistId: Setlis
       sets: {
         include: {
           songs: {
-            select: { songId: true }
+            select: { songId: true },
           }
         }
       }
-    }
+    },
   })
   const songIdsInSetlist = setlist?.sets.reduce((songIds: string[], set) => {
     return [
@@ -126,7 +126,8 @@ export async function getSongsNotInSetlist(bandId: Band['id'], setlistId: Setlis
       name: {
         contains: params?.q
       },
-    }
+    },
+    orderBy: { name: 'asc' }
   })
 }
 
