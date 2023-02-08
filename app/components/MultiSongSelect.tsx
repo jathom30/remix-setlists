@@ -13,7 +13,7 @@ export const MulitSongSelect = ({ songs }: { songs: SerializeFrom<Song[]> }) => 
             <div className={hoverAndFocusContainerStyles}>
               <FlexList direction="row" gap={4} items="center">
                 <input id={song.id} value={song.id} type="checkbox" name="songs" className="checkbox checkbox-sm" />
-                <SongDisplay song={song} />
+                <SongDisplay song={song} width="half" />
               </FlexList>
             </div>
           </label>
