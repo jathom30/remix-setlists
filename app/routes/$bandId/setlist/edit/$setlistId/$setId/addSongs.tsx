@@ -1,10 +1,11 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node"
-import { Form, useLoaderData, useSearchParams, useSubmit } from "@remix-run/react";
+import { Form, useLoaderData, useNavigation, useSearchParams, useSubmit } from "@remix-run/react";
 import { useState } from "react";
+import { useSpinDelay } from "spin-delay";
 import invariant from "tiny-invariant";
-import { FlexHeader, FlexList, Link, MaxHeightContainer, MulitSongSelect, SaveButtons, SearchInput, Title } from "~/components";
+import { FlexHeader, FlexList, Link, Loader, MaxHeightContainer, MulitSongSelect, SaveButtons, SearchInput, Title } from "~/components";
 import { addSongsToSet } from "~/models/set.server";
 import { getSongsNotInSetlist } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
@@ -45,6 +46,11 @@ export default function AddSongsToSet() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [query, setQuery] = useState(searchParams.get('query'))
   const submit = useSubmit()
+  const navigation = useNavigation()
+  const songsFormData = navigation.formData?.getAll('songs').toString()
+  const formDataHasSongs = typeof songsFormData === 'string' && !!songsFormData.length
+  const isSearching = useSpinDelay(navigation.state !== 'idle' && !!query)
+  const isSubmitting = useSpinDelay(navigation.state !== 'idle' && formDataHasSongs)
   const hasAvailableSongs = !query ? songs.length > 0 : true
 
   const handleClearQuery = () => {
@@ -64,12 +70,15 @@ export default function AddSongsToSet() {
   }
 
   return (
-    <FlexList>
+    <FlexList gap={0}>
       <div className="bg-base-100 shadow-lg p-4 relative">
         <div className="sticky top-0">
           <FlexList gap={2}>
             <FlexHeader>
-              <Title>Add songs to set</Title>
+              <FlexList direction="row" items="center">
+                <Title>Add songs to set</Title>
+                {isSearching ? <Loader /> : null}
+              </FlexList>
               {hasAvailableSongs ? <Link isOutline to="../createSong" icon={faPlus}>Create song</Link> : null}
             </FlexHeader>
             <Form method="get" onChange={e => submit(e.currentTarget)}>
@@ -85,6 +94,7 @@ export default function AddSongsToSet() {
             <SaveButtons
               saveLabel="Add songs to set"
               cancelTo=".."
+              isSaving={isSubmitting}
             />
           }
         >
