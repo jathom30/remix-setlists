@@ -1,5 +1,5 @@
 import { faPlus, faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { Form, useSubmit, useNavigation } from "@remix-run/react";
+import { Form, useNavigation } from "@remix-run/react";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
@@ -38,7 +38,6 @@ export async function action({ request, params }: ActionArgs) {
 }
 
 export default function SaveChanges() {
-  const submit = useSubmit()
   const navigation = useNavigation()
   const intent = navigation.formData?.get('intent')
   const isSaving = useSpinDelay(navigation.state !== 'idle' && intent === 'overwrite')
