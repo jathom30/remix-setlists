@@ -214,7 +214,7 @@ export const SongForm = ({ song, feels, errors }: {
       <FlexList gap={2}>
         <FlexList direction="row" items="center" gap={2}>
           <Label>Position</Label>
-          <Button type="button" kind="ghost" size="xs" isRounded onClick={(e) => { e.preventDefault(); setShowPositionInfo(true) }}>
+          <Button type="button" kind="ghost" size="xs" isRounded onClick={() => setShowPositionInfo(true)}>
             <FontAwesomeIcon icon={faInfoCircle} />
           </Button>
         </FlexList>
@@ -232,7 +232,7 @@ export const SongForm = ({ song, feels, errors }: {
       <FlexList gap={2}>
         <FlexList direction="row" items="center" gap={2}>
           <Label>Setlist auto-generation importance</Label>
-          <Button type="button" kind="ghost" size="xs" isRounded onClick={(e) => { e.preventDefault(); setShowAutoGenInfo(true) }}>
+          <Button type="button" kind="ghost" size="xs" isRounded onClick={() => setShowAutoGenInfo(true)}>
             <FontAwesomeIcon icon={faInfoCircle} />
           </Button>
         </FlexList>
