@@ -30,6 +30,7 @@ export function Button({ ariaLabel, isSaving = false, isCollapsing = false, isOu
   return (
     <FocusRing focusRingClass="ring ring-offset-transparent">
       <button
+        type={type}
         aria-label={ariaLabel}
         name={name}
         className={`btn ${buttonKind(kind)} ${icon ? 'gap-2' : ''} btn-sm sm:btn-md ${buttonSize(size)} ${isOutline ? 'btn-outline' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isRounded ? 'btn-circle' : ''} ${isSaving ? 'loading' : ''} touch-none select-none flex-nowrap focus-visible:outline-none`}
