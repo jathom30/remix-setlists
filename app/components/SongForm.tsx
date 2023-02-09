@@ -1,4 +1,4 @@
-import { faBolt } from "@fortawesome/free-solid-svg-icons";
+import { faBolt, faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import type { Feel, Song } from "@prisma/client"
 import type { SerializeFrom } from '@remix-run/node'
 import Select from "react-select"
@@ -19,6 +19,13 @@ import { getTempoColor } from "./TempoIcons";
 import type { handleSongFormData } from "~/models/song.server";
 import { getColor } from "~/utils/tailwindColors";
 import { useMatchesData } from "~/utils";
+import { Button } from "./Button";
+import { Modal } from "./Modal";
+import { Title } from "./Title";
+import { FlexHeader } from "./FlexHeader";
+import { Badge } from "./Badge";
+import { Divider } from "./Divider";
+import { Navbar } from "./Navbar";
 
 const getRangeColor = (tempo: number) => {
   switch (tempo) {
@@ -41,6 +48,8 @@ export const SongForm = ({ song, feels, errors }: {
   song?: Partial<SerializeFrom<Song & { feels: Feel[] }>>; feels: SerializeFrom<Feel>[];
   errors?: SerializeFrom<ReturnType<typeof handleSongFormData>['errors']>;
 }) => {
+  const [showpositionInfo, setShowPositionInfo] = useState(false)
+  const [showAutoGenInfo, setShowAutoGenInfo] = useState(false)
   const [isWindow, setIsWindow] = useState(false)
   const [tempoColorClass, setTempoColorClass] = useState(getRangeColor(song?.tempo || 3))
   // const [authorField, setAuthorField] = useState<'cover' | 'original' | 'untouched'>('untouched')
@@ -198,7 +207,17 @@ export const SongForm = ({ song, feels, errors }: {
       </FlexList>
 
       <FlexList gap={2}>
-        <Label>Position</Label>
+        <Label>Notes/Lyrics</Label>
+        <textarea placeholder="Add a note or some lyrics..." className="textarea textarea-bordered" name="note" id="note" rows={5} defaultValue={song?.note || ''} />
+      </FlexList>
+
+      <FlexList gap={2}>
+        <FlexList direction="row" items="center" gap={2}>
+          <Label>Position</Label>
+          <Button type="button" kind="ghost" size="xs" isRounded onClick={(e) => { e.preventDefault(); setShowPositionInfo(true) }}>
+            <FontAwesomeIcon icon={faInfoCircle} />
+          </Button>
+        </FlexList>
         <RadioGroup
           name="position"
           options={[
@@ -211,22 +230,77 @@ export const SongForm = ({ song, feels, errors }: {
       </FlexList>
 
       <FlexList gap={2}>
-        <Label>Notes/Lyrics</Label>
-        <textarea placeholder="Add a note or some lyrics..." className="textarea textarea-bordered" name="note" id="note" rows={5} defaultValue={song?.note || ''} />
-      </FlexList>
-
-      <FlexList gap={2}>
-        <Label>Setlist auto-generation importance</Label>
+        <FlexList direction="row" items="center" gap={2}>
+          <Label>Setlist auto-generation importance</Label>
+          <Button type="button" kind="ghost" size="xs" isRounded onClick={(e) => { e.preventDefault(); setShowAutoGenInfo(true) }}>
+            <FontAwesomeIcon icon={faInfoCircle} />
+          </Button>
+        </FlexList>
         <RadioGroup
           name="rank"
           options={[
             { label: setlistAutoGenImportanceEnums.exclude, value: 'exclude' },
-            { label: setlistAutoGenImportanceEnums.include, value: 'include' },
+            // { label: setlistAutoGenImportanceEnums.include, value: 'include' },
             { label: setlistAutoGenImportanceEnums.no_preference, value: 'no_preference' },
           ]}
           isChecked={(val) => song?.rank === val}
         />
       </FlexList>
+
+      <Modal open={showpositionInfo} onClose={() => setShowPositionInfo(false)} isPortal>
+        <Navbar>
+          <FlexHeader>
+            <Title>Song position</Title>
+            <Button kind="ghost" isRounded onClick={() => setShowPositionInfo(false)}><FontAwesomeIcon icon={faTimes} /></Button>
+          </FlexHeader>
+        </Navbar>
+        <FlexList pad={4} gap={0}>
+          <p>A song's position helps us determine where it should be placed during our "auto-magical" setlist creation.</p>
+          <p>We prioritize openers and closers to be placed at the beginner and end of sets as seen in the example below.</p>
+          <Divider />
+          <Label>Example setlist:</Label>
+          <FlexList items="center">
+            <FlexHeader>
+              <Title>My Sample Setlist</Title>
+            </FlexHeader>
+            <div className="bg-base-300 w-full h-12 rounded">
+              <FlexList direction="row" items="center" gap={4} pad={2}>
+                <Title>Strong opener</Title>
+                <Badge>Opener</Badge>
+              </FlexList>
+            </div>
+            <div className="bg-base-300 w-full h-12 rounded">
+              <FlexList direction="row" items="center" gap={4} pad={2}>
+                <Title>Mid-set song</Title>
+              </FlexList>
+            </div>
+            <div className="bg-base-300 w-full h-12 rounded">
+              <FlexList direction="row" items="center" gap={4} pad={2}>
+                <Title>The ballad</Title>
+              </FlexList>
+            </div>
+            <div className="bg-base-300 w-full h-12 rounded">
+              <FlexList direction="row" items="center" gap={4} pad={2}>
+                <Title>Closing song</Title>
+                <Badge>Closer</Badge>
+              </FlexList>
+            </div>
+          </FlexList>
+        </FlexList>
+      </Modal>
+
+      <Modal open={showAutoGenInfo} onClose={() => setShowAutoGenInfo(false)} isPortal>
+        <Navbar>
+          <FlexHeader>
+            <Title>Setlist auto-generation importance</Title>
+            <Button kind="ghost" isRounded onClick={() => setShowAutoGenInfo(false)}><FontAwesomeIcon icon={faTimes} /></Button>
+          </FlexHeader>
+        </Navbar>
+        <FlexList pad={4}>
+          <p>When attempting to auto-magically generate a setlist for you, we take many variables into concideration.</p>
+          <p>It is possible that certain songs should never be included in our auto-magical generation, perhaps your band is still fine tuning the bridge for example. In this case we don't want it accidentally slipping into sets and scaring the singer.</p>
+        </FlexList>
+      </Modal>
     </FlexList>
   )
 }

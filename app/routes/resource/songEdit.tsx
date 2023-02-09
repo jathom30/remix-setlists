@@ -41,7 +41,7 @@ export function SongEdit({ song, feels, redirectTo }: { song: SerializeFrom<Song
           <Navbar>
             <FlexHeader>
               <Title>Edit {song.name}</Title>
-              <Link to=".." isRounded size="sm"><FontAwesomeIcon icon={faTimes} /></Link>
+              <Link to=".." kind="ghost" isRounded size="sm"><FontAwesomeIcon icon={faTimes} /></Link>
             </FlexHeader>
           </Navbar>
         }
