@@ -27,13 +27,14 @@ export type ButtonProps = {
 
 export function Button({ ariaLabel, isSaving = false, isCollapsing = false, isOutline = false, onClick, size, tabIndex, icon, name, value, isDisabled = false, isRounded = false, type = 'button', kind, children }: ButtonProps) {
 
+  const btnSize = buttonSize(size) ?? 'sm:btn-md'
   return (
     <FocusRing focusRingClass="ring ring-offset-transparent">
       <button
         type={type}
         aria-label={ariaLabel}
         name={name}
-        className={`btn ${buttonKind(kind)} ${icon ? 'gap-2' : ''} btn-sm sm:btn-md ${buttonSize(size)} ${isOutline ? 'btn-outline' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isRounded ? 'btn-circle' : ''} ${isSaving ? 'loading' : ''} touch-none select-none flex-nowrap focus-visible:outline-none`}
+        className={`btn ${buttonKind(kind)} ${icon ? 'gap-2' : ''} btn-sm ${btnSize} ${isOutline ? 'btn-outline' : ''} ${isDisabled ? 'btn-disabled' : ''} ${isRounded ? 'btn-circle' : ''} ${isSaving ? 'loading' : ''} touch-none select-none flex-nowrap focus-visible:outline-none`}
         onClick={onClick}
         value={value}
         style={{

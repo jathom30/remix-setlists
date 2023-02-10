@@ -42,7 +42,7 @@ export const buttonSize = (size?: ButtonProps['size']) => {
     case 'lg':
       return 'btn-lg'
     default:
-      return ''
+      return null
   }
 }
 
