@@ -44,7 +44,7 @@ export async function getSong(songId: Song['id'], bandId: Song['bandId'], includ
   const song = await prisma.band.findUnique({
     where: { id: bandId },
     select: {
-      song: { where: { id: songId }, include: { feels: true, sets: includeSets } }
+      song: { where: { id: songId }, include: { feels: true, sets: includeSets, links: true } }
     }
   })
   if (!song) { return }
@@ -144,11 +144,44 @@ export const handleSongFormData = (formData: FormData) => {
     { name: 'author', type: 'string', isRequired: false }
   ])
   const feels = formData.getAll('feels')
+  const entries = formData.entries()
 
-  const errorsWithFeels = { ...errors, ...(!Array.isArray(feels) ? { feels: 'Invalid feels' } : {}) }
+  let newLinks: { id?: string; href: string }[] = []
+  let existingLinks: { id: string, href: string }[] = []
+  let invalidLinkIds: string[] = []
+  for (const entry of entries) {
+    if (entry[0].includes('links')) {
+      if (typeof entry[1] !== 'string') {
+        throw new Response('Invalid external links', { status: 401 })
+      }
+
+      function validateURL(url: string) {
+        var regex = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
+        return regex.test(url);
+      }
+
+      // remove http from string so it gets saved without it and doesn't mess with UI
+      const webAddress = entry[1].toString().replace('http://', '').replace('https://', '')
+      // add it back for regex validation
+      if (webAddress && !validateURL('https://' + webAddress)) {
+        invalidLinkIds.push(entry[0].replace('links/', '').replace('temp/', ''))
+      }
+      if (entry[0].includes('temp')) {
+        if (entry[1].length) {
+          newLinks.push({ href: webAddress })
+        }
+      } else {
+        existingLinks.push({ id: entry[0].replace('links/', ''), href: webAddress })
+      }
+    }
+  }
+
+  const links = [...existingLinks, ...newLinks]
+  const deletedLinks = formData.getAll('deletedLinks').map(id => id.toString())
+  const errorsWithFeels = { ...errors, ...(!Array.isArray(feels) ? { feels: 'Invalid feels' } : {}), ...(invalidLinkIds.length > 0 ? { links: invalidLinkIds } : null) }
 
   if (Object.keys(errorsWithFeels).length) {
-    return { errors: errorsWithFeels, formFields: null, validFeels: null }
+    return { errors: errorsWithFeels, formFields: null, validFeels: null, links: null }
   }
 
   const validFeels = feels.reduce((acc: string[], feelId) => {
@@ -160,5 +193,5 @@ export const handleSongFormData = (formData: FormData) => {
     return acc
   }, [])
 
-  return { errors: null, formFields: fields, validFeels }
+  return { errors: null, formFields: fields, validFeels, links, deletedLinks }
 }

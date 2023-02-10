@@ -131,12 +131,23 @@ model Song {
   position  String
   rank      String
   feels     Feel[]
+  links     Link[]
 
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
   band      Band?         @relation(fields: [bandId], references: [id], onDelete: Cascade)
   bandId    String?
   sets      SongsInSets[]
+}
+
+model Link {
+  id     String  @id @default(cuid())
+  href   String
+  Song   Song?   @relation(fields: [songId], references: [id], onDelete: Cascade)
+  songId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Feel {

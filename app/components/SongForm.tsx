@@ -1,5 +1,5 @@
 import { faBolt, faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
-import type { Feel, Song } from "@prisma/client"
+import type { Feel, Link, Song } from "@prisma/client"
 import type { SerializeFrom } from '@remix-run/node'
 import Select from "react-select"
 import { positionEnums, setlistAutoGenImportanceEnums } from '~/utils/enums'
@@ -26,6 +26,7 @@ import { FlexHeader } from "./FlexHeader";
 import { Badge } from "./Badge";
 import { Divider } from "./Divider";
 import { Navbar } from "./Navbar";
+import { ExternalLinksInputs } from "./ExternalLinksInputs";
 
 const getRangeColor = (tempo: number) => {
   switch (tempo) {
@@ -45,14 +46,13 @@ const getRangeColor = (tempo: number) => {
 }
 
 export const SongForm = ({ song, feels, errors }: {
-  song?: Partial<SerializeFrom<Song & { feels: Feel[] }>>; feels: SerializeFrom<Feel>[];
+  song?: Partial<SerializeFrom<Song & { feels: Feel[]; links: Link[] }>>; feels: SerializeFrom<Feel>[];
   errors?: SerializeFrom<ReturnType<typeof handleSongFormData>['errors']>;
 }) => {
   const [showpositionInfo, setShowPositionInfo] = useState(false)
   const [showAutoGenInfo, setShowAutoGenInfo] = useState(false)
   const [isWindow, setIsWindow] = useState(false)
   const [tempoColorClass, setTempoColorClass] = useState(getRangeColor(song?.tempo || 3))
-  // const [authorField, setAuthorField] = useState<'cover' | 'original' | 'untouched'>('untouched')
   const [author, setAuthor] = useState(song?.author)
   const { band } = useMatchesData('routes/$bandId') as { band: { name: string } }
   const [isAuthorDisabled, setIsAuthorDisabled] = useState(song?.author === band.name)
@@ -63,6 +63,7 @@ export const SongForm = ({ song, feels, errors }: {
   }, [])
 
   if (!isWindow) { return null }
+
 
   const handleTempoChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
@@ -209,6 +210,16 @@ export const SongForm = ({ song, feels, errors }: {
       <FlexList gap={2}>
         <Label>Notes/Lyrics</Label>
         <textarea placeholder="Add a note or some lyrics..." className="textarea textarea-bordered" name="note" id="note" rows={5} defaultValue={song?.note || ''} />
+      </FlexList>
+
+      <FlexList gap={0}>
+        <FlexList direction="row" items="center" gap={2}>
+          <Label>External links</Label>
+          <Button type="button" kind="ghost" size="xs" isRounded onClick={() => setShowAutoGenInfo(true)}>
+            <FontAwesomeIcon icon={faInfoCircle} />
+          </Button>
+        </FlexList>
+        <ExternalLinksInputs links={song?.links} errors={errors?.links} />
       </FlexList>
 
       <FlexList gap={2}>

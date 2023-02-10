@@ -7,6 +7,7 @@ import { CatchContainer, ErrorContainer, MaxHeightContainer, MaxWidth, SaveButto
 import { createSong, handleSongFormData } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
 import type { ReactNode } from "react";
+import { deleteLink, upsertLink } from "~/models/links.server";
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData()
@@ -16,12 +17,23 @@ export async function action({ request }: ActionArgs) {
 
   await requireNonSubMember(request, bandId)
 
-  const { formFields, errors, validFeels } = handleSongFormData(formData)
+  const { formFields, errors, validFeels, links, deletedLinks } = handleSongFormData(formData)
 
   if (errors) {
     return json({ errors })
   }
   const song = await createSong(bandId, formFields, validFeels)
+
+  await Promise.all([
+    ...links.map(async link => {
+      return await upsertLink({ href: link.href, songId: song.id }, link.id)
+    }),
+    ...(deletedLinks.length > 0 ? deletedLinks.map(async deletedId => {
+      return await deleteLink(deletedId)
+    }) : [])
+  ])
+
+
   if (!redirectTo) {
     return redirect(`/${bandId}/song/${song.id}`)
   }
