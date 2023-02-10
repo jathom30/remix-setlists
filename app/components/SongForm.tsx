@@ -51,6 +51,7 @@ export const SongForm = ({ song, feels, errors }: {
 }) => {
   const [showpositionInfo, setShowPositionInfo] = useState(false)
   const [showAutoGenInfo, setShowAutoGenInfo] = useState(false)
+  const [showLinksInfo, setShowLinksInfo] = useState(false)
   const [isWindow, setIsWindow] = useState(false)
   const [tempoColorClass, setTempoColorClass] = useState(getRangeColor(song?.tempo || 3))
   const [author, setAuthor] = useState(song?.author)
@@ -215,7 +216,7 @@ export const SongForm = ({ song, feels, errors }: {
       <FlexList gap={0}>
         <FlexList direction="row" items="center" gap={2}>
           <Label>External links</Label>
-          <Button type="button" kind="ghost" size="xs" isRounded onClick={() => setShowAutoGenInfo(true)}>
+          <Button type="button" kind="ghost" size="xs" isRounded onClick={() => setShowLinksInfo(true)}>
             <FontAwesomeIcon icon={faInfoCircle} />
           </Button>
         </FlexList>
@@ -310,6 +311,18 @@ export const SongForm = ({ song, feels, errors }: {
         <FlexList pad={4}>
           <p>When attempting to auto-magically generate a setlist for you, we take many variables into concideration.</p>
           <p>It is possible that certain songs should never be included in our auto-magical generation, perhaps your band is still fine tuning the bridge for example. In this case we don't want it accidentally slipping into sets and scaring the singer.</p>
+        </FlexList>
+      </Modal>
+
+      <Modal open={showLinksInfo} onClose={() => setShowLinksInfo(false)} isPortal>
+        <Navbar>
+          <FlexHeader>
+            <Title>External links</Title>
+            <Button kind="ghost" isRounded onClick={() => setShowLinksInfo(false)}><FontAwesomeIcon icon={faTimes} /></Button>
+          </FlexHeader>
+        </Navbar>
+        <FlexList pad={4}>
+          <p>External links might be used for quick linking to lyrics, chord changes, wiki articles, etc.</p>
         </FlexList>
       </Modal>
     </FlexList>
