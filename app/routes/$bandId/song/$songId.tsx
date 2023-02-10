@@ -131,6 +131,31 @@ export default function SongDetails() {
 
           <Divider />
 
+          {song.links.length ? (
+            <>
+              <FlexList gap={2}>
+                <Label>Links</Label>
+                <ItemBox>
+                  <FlexList gap={2}>
+                    {song.links.map(link => (
+                      <a
+                        className="link link-accent"
+                        key={link.id}
+                        href={'https://' + link.href}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {link.href}
+                      </a>
+                    ))}
+                  </FlexList>
+                </ItemBox>
+              </FlexList>
+
+              <Divider />
+            </>
+          ) : null}
+
           <FlexList gap={2}>
             <Label>Settings</Label>
             <ItemBox>

@@ -6,6 +6,7 @@ import type { ActionArgs, SerializeFrom } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
 import { CatchContainer, ErrorContainer, FlexHeader, Link, MaxHeightContainer, Navbar, SaveButtons, SongForm, Title } from "~/components";
+import { deleteLink, upsertLink } from "~/models/links.server";
 import { handleSongFormData, updateSong } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
 
@@ -20,11 +21,20 @@ export async function action({ request }: ActionArgs) {
 
   await requireNonSubMember(request, bandId)
 
-  const { formFields, errors, validFeels } = handleSongFormData(formData)
+  const { formFields, errors, validFeels, links, deletedLinks } = handleSongFormData(formData)
 
   if (errors) {
     return json({ errors })
   }
+
+  await Promise.all([
+    ...links.map(async link => {
+      return await upsertLink({ href: link.href, songId }, link.id)
+    }),
+    ...(deletedLinks.length > 0 ? deletedLinks.map(async deletedId => {
+      return await deleteLink(deletedId)
+    }) : [])
+  ])
 
   await updateSong(songId, formFields, validFeels)
   return redirect(redirectTo)
