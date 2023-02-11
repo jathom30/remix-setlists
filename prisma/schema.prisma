@@ -53,9 +53,10 @@ model Band {
   setlists Setlist[]
   members  UsersInBands[]
 
-  icon  BandIcon?
-  feels Feel[]
-  song  Song[]
+  icon        BandIcon?
+  feels       Feel[]
+  song        Song[]
+  isUnlimited Boolean?  @default(false)
 }
 
 model UsersInBands {
