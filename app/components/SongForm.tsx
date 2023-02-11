@@ -54,7 +54,7 @@ export const SongForm = ({ song, feels, errors }: {
   const [showLinksInfo, setShowLinksInfo] = useState(false)
   const [isWindow, setIsWindow] = useState(false)
   const [tempoColorClass, setTempoColorClass] = useState(getRangeColor(song?.tempo || 3))
-  const [author, setAuthor] = useState(song?.author)
+  const [author, setAuthor] = useState(song?.author || '')
   const { band } = useMatchesData('routes/$bandId') as { band: { name: string } }
   const [isAuthorDisabled, setIsAuthorDisabled] = useState(song?.author === band.name)
 
@@ -201,10 +201,10 @@ export const SongForm = ({ song, feels, errors }: {
             placeholder="Artist name(s)..."
             isDisabled={isAuthorDisabled}
             onChange={e => setAuthor(e.target.value)}
-            value={author || ''}
+            value={author}
           />
         </Field>
-        <Checkbox name="isOriginal" onChange={handleOriginalPieceChange} label="Original piece" defaultChecked={isAuthorDisabled} />
+        <Checkbox name="isOriginal" onChange={handleOriginalPieceChange} label="Original piece" checked={isAuthorDisabled} />
         <input type="hidden" hidden name="author" value={author || undefined} />
       </FlexList>
 
