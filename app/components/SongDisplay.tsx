@@ -12,7 +12,7 @@ export const SongDisplay = ({ song, width }: { song: SerializeFrom<Song>; width?
       <TextOverflow className="font-bold">{song.name}</TextOverflow>
       <FlexList direction="row" justify="between" gap={2} wrap>
         <FlexList direction="row" gap={2} items="center" wrap>
-          <span className="text-xs">{song.author || '--'}</span>
+          {song.author ? <span className="text-xs">{song.author}</span> : null}
           <TempoIcons tempo={song.tempo} />
           <Badge size="sm" kind="outline">{songKey}</Badge>
           {song.position === 'opener' ? <Badge size="sm" kind="info">Opener</Badge> : null}
