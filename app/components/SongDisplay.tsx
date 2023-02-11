@@ -11,13 +11,12 @@ export const SongDisplay = ({ song, width }: { song: SerializeFrom<Song>; width?
     <FlexList gap={0} grow width={width}>
       <TextOverflow className="font-bold">{song.name}</TextOverflow>
       <FlexList direction="row" justify="between" gap={2} wrap>
-        <FlexList direction="row" gap={1} items="center">
-          <span className="text-xs text-text-subdued whitespace-nowrap">
-            {song.author || '--'} | {songKey} |
-          </span>
+        <FlexList direction="row" gap={2} items="center" wrap>
+          <span className="text-xs">{song.author || '--'}</span>
           <TempoIcons tempo={song.tempo} />
-          {song.position === 'opener' ? <Badge size="sm">Opener</Badge> : null}
-          {song.position === 'closer' ? <Badge size="sm">Closer</Badge> : null}
+          <Badge size="sm" kind="outline">{songKey}</Badge>
+          {song.position === 'opener' ? <Badge size="sm" kind="info">Opener</Badge> : null}
+          {song.position === 'closer' ? <Badge size="sm" kind="info">Closer</Badge> : null}
         </FlexList>
         <span className="text-xs text-text-subdued whitespace-nowrap">
           {new Date(song.updatedAt).toLocaleDateString('en-us', { month: 'numeric', day: 'numeric', year: '2-digit' })}
