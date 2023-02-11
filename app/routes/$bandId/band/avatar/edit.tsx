@@ -50,6 +50,7 @@ export async function action({ request, params }: ActionArgs) {
     if (!path || typeof path !== 'string') {
       throw new Response('Unwanted file', { status: 401 })
     }
+    console.log(path)
     await updateBandIcon(bandId, { path })
   }
 
