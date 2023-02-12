@@ -27,7 +27,7 @@ export default function ExisitingBand() {
   const actionData = useActionData<typeof action>()
 
   return (
-    <Form method="put" action="/resources/addExistingBand">
+    <Form method="put">
       <FlexList gap={0} pad={4}>
         <Label>Band Code</Label>
         <Input name="bandCode" placeholder="Enter your band code here..." />
