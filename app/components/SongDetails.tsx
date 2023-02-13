@@ -48,7 +48,11 @@ export const SongDetails = ({ song }: { song: SerializeFrom<Song & { feels: Feel
             </FlexList>
 
             <Label align="right">Found in</Label>
-            <RemixLink className="link link-accent" to="setlists">{pluralize('setlist', song.sets.length, true)}</RemixLink>
+            {song.sets.length > 0 ? (
+              <RemixLink className="link link-accent" to="setlists">{pluralize('setlist', song.sets.length, true)}</RemixLink>
+            ) : (
+              <span>0 setlists</span>
+            )}
           </div>
         </ItemBox>
       </FlexList>
