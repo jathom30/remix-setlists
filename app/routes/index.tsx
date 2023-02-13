@@ -1,7 +1,8 @@
 import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { motion, useAnimation, useInView } from "framer-motion";
-import { ReactNode, useEffect, useRef } from "react";
+import type { ReactNode } from "react";
+import { useEffect, useRef } from "react";
 import { Divider, FlexHeader, FlexList, ItemBox, Link, MaxWidth, Navbar, Title } from "~/components";
 import { getUserId } from "~/session.server";
 
