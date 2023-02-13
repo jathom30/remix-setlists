@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 
-describe.skip("smoke tests", () => {
+describe("smoke tests", () => {
   afterEach(() => {
     cy.cleanupUser();
   });
@@ -25,4 +25,14 @@ describe.skip("smoke tests", () => {
 
     cy.findByText(/verification sent/i)
   });
+
+  it.only("should allow you to create a band", () => {
+    cy.login()
+    cy.visitAndCheck('/home')
+    cy.findByRole('link', { name: /create new band/i }).click()
+
+    cy.findByText("Create a new band")
+    // cy.findByRole('textbox', { name: "name" }).type('My test band')
+    // cy.findByRole('button', { name: /create/i }).click()
+  })
 });

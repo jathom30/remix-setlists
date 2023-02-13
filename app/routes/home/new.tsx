@@ -4,7 +4,7 @@ import { redirect } from "@remix-run/node";
 import { createBand } from "~/models/band.server"
 import { requireUserId } from "~/session.server"
 import { Form, useActionData } from "@remix-run/react";
-import { ErrorMessage, FlexList, Input, SaveButtons } from "~/components";
+import { ErrorMessage, Field, FlexList, Input, SaveButtons, Title } from "~/components";
 
 export async function action({ request }: ActionArgs) {
   const userId = await requireUserId(request)
@@ -26,9 +26,11 @@ export default function NewBand() {
 
   return (
     <Form method="post">
-      <FlexList pad={4} gap={0}>
-        <h1>Create a new band</h1>
-        <Input name="name" placeholder="Band name..." />
+      <FlexList pad={4}>
+        <Title>Create  a new band</Title>
+        <Field name="name" label="Band name">
+          <Input aria-label="name" name="name" placeholder="Band name..." />
+        </Field>
         {actionData?.errors.name ? <ErrorMessage message="Band name is required" /> : null}
       </FlexList>
       <SaveButtons saveLabel="Create" cancelTo=".." />
