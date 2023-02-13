@@ -66,7 +66,7 @@ export default function SongDetailsRoute() {
       footer={
         <>
           {!isSub ? <CreateNewButton to="edit" icon={faPencil} ariaLabel="Edit song" /> : null}
-          <MobileModal open={['edit', 'delete'].some(path => pathname.includes(path))} onClose={() => navigate('.')}>
+          <MobileModal open={['edit', 'delete', 'setlists'].some(path => pathname.includes(path))} onClose={() => navigate('.')}>
             <Outlet />
           </MobileModal>
         </>

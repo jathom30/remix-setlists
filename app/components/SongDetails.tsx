@@ -12,6 +12,7 @@ import { ItemBox } from "./ItemBox"
 import { Label } from "./Label"
 import { Link } from "./Link"
 import { TempoIcons } from "./TempoIcons"
+import { Link as RemixLink } from '@remix-run/react'
 
 export const SongDetails = ({ song }: { song: SerializeFrom<Song & { feels: Feel[], sets: SongsInSets[], links: LinkType[] }> }) => {
   const memberRole = useMemberRole()
@@ -47,7 +48,7 @@ export const SongDetails = ({ song }: { song: SerializeFrom<Song & { feels: Feel
             </FlexList>
 
             <Label align="right">Found in</Label>
-            <span>{pluralize('setlist', song.sets.length, true)}</span>
+            <RemixLink className="link link-accent" to="setlists">{pluralize('setlist', song.sets.length, true)}</RemixLink>
           </div>
         </ItemBox>
       </FlexList>
@@ -99,16 +100,14 @@ export const SongDetails = ({ song }: { song: SerializeFrom<Song & { feels: Feel
       <FlexList gap={2}>
         <Label>Settings</Label>
         <ItemBox>
-
-          <FlexList gap={2} direction="row" items="center">
-            <Label>Setlist auto-generation importance</Label>
-            <span>{setlistAutoGenImportanceEnums[song.rank as keyof typeof setlistAutoGenImportanceEnums]}</span>
-          </FlexList>
           <FlexList gap={2} direction="row" items="center">
             <Label>Position</Label>
             <span>{capitalizeFirstLetter(song.position) || 'Other'}</span>
           </FlexList>
-
+          <FlexList gap={2} direction="row" items="center">
+            <Label>Setlist auto-generation importance</Label>
+            <span>{setlistAutoGenImportanceEnums[song.rank as keyof typeof setlistAutoGenImportanceEnums]}</span>
+          </FlexList>
         </ItemBox>
       </FlexList>
 
