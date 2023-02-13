@@ -1,5 +1,7 @@
 import { capitalizeFirstLetter, generateRandomHex, contrastColor, passwordStrength, getPasswordError } from './assorted'
 import { buttonKind, buttonSize, badgeKind } from './buttonStyles'
+import { valueAsType, getFields } from './form'
+import { getSortFromParam, sortByLabel } from './params'
 
 // Assorted utils
 describe('Assorted utils', () => {
@@ -69,5 +71,55 @@ describe('Button styles', () => {
   test('Badge kind', () => {
     expect(badgeKind('accent')).toBe('badge-accent')
     expect(badgeKind('error')).toBe('badge-error')
+  })
+})
+
+// Form utils
+describe('Form utils', () => {
+  test('Value as type', () => {
+    const stringValue = valueAsType('string', 'test')
+    expect(stringValue).toBe('test')
+
+    const booleanValue = valueAsType('boolean', 'true')
+    expect(booleanValue).toBe(true)
+
+    const numberValue = valueAsType('number', '42')
+    expect(numberValue).toBe(42)
+  })
+
+  test('Get fields', () => {
+    const formData = new FormData()
+    formData.set('name', 'test name')
+
+    const { fields, errors } = getFields<{ name: string; age: number }>(formData, [
+      { name: 'name', type: 'string', isRequired: true },
+      { name: 'age', type: 'number', isRequired: true },
+    ])
+
+    expect(fields.name).toBe('test name')
+    expect(errors.age).toBe('age is required')
+    expect(errors.name).toBe(undefined)
+  })
+})
+
+// Param utils
+describe('Param utils', () => {
+  test('Get sort from param', () => {
+    const ageSort = getSortFromParam('age:asc')
+    expect(ageSort).toStrictEqual({ age: 'asc' })
+    expect(getSortFromParam('')).toStrictEqual({ "": undefined })
+  })
+
+  test('Sort by label', () => {
+    const searchParams = new URLSearchParams()
+
+    searchParams.set('sort', 'name:asc')
+    expect(sortByLabel(searchParams)).toBe('Name A-Z')
+
+    searchParams.set('sort', 'name:desc')
+    expect(sortByLabel(searchParams)).toBe('Name Z-A')
+
+    searchParams.set('sort', 'tempo:asc')
+    expect(sortByLabel(searchParams)).toBe('Tempo slow-fast')
   })
 })
