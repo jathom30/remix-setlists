@@ -370,7 +370,7 @@ export default function EditSetlist() {
               cancelTo="confirmCancel"
             />
           </MaxWidth>
-          <MobileModal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
+          <MobileModal isPortal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
             <Outlet />
           </MobileModal>
         </>

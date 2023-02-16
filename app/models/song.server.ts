@@ -195,3 +195,15 @@ export const handleSongFormData = (formData: FormData) => {
 
   return { errors: null, formFields: fields, validFeels, links, deletedLinks }
 }
+
+export async function getSongSetlists(songId: Song['id']) {
+  const songWithSets = await prisma.song.findUnique({
+    where: { id: songId },
+    include: { sets: { select: { setId: true } } }
+  })
+  const setIds = songWithSets?.sets.map(set => set.setId)
+  return prisma.setlist.findMany({
+    where: { sets: { some: { id: { in: setIds } } } },
+    select: { name: true, id: true }
+  })
+}
