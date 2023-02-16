@@ -47,7 +47,7 @@ export default function App() {
     // 👆 false parameter is required for react project
   })
   return (
-    <html lang="en" className="h-full bg-base-200">
+    <html lang="en" className="h-full bg-base-300">
       <head>
         <Meta />
         <link rel="manifest" href="/resources/manifest.webmanifest" />
