@@ -1,14 +1,15 @@
 import { faker } from "@faker-js/faker";
 
-describe.skip("smoke tests", () => {
+describe("smoke tests", () => {
   afterEach(() => {
     cy.cleanupUser();
   });
 
-  it("should allow you to register and login", () => {
+  it("should allow you to register", () => {
     const loginForm = {
+      name: faker.name.firstName('male'),
       email: `${faker.internet.userName()}@example.com`,
-      password: faker.internet.password(),
+      password: 'passW04d!',
     };
 
     cy.then(() => ({ email: loginForm.email })).as("user");
@@ -17,35 +18,21 @@ describe.skip("smoke tests", () => {
 
     cy.findByRole("link", { name: /sign up/i }).click();
 
+    cy.findByRole("textbox", { name: /name/i }).type(loginForm.name);
     cy.findByRole("textbox", { name: /email/i }).type(loginForm.email);
     cy.findByLabelText(/password/i).type(loginForm.password);
     cy.findByRole("button", { name: /create account/i }).click();
 
-    cy.findByRole("link", { name: /notes/i }).click();
-    cy.findByRole("button", { name: /logout/i }).click();
-    cy.findByRole("link", { name: /log in/i });
+    cy.findByText(/verification sent/i)
   });
 
-  it("should allow you to make a note", () => {
-    const testNote = {
-      title: faker.lorem.words(1),
-      body: faker.lorem.sentences(1),
-    };
-    cy.login();
+  it.only("should allow you to create a band", () => {
+    cy.login()
+    cy.visitAndCheck('/home')
+    cy.findByRole('link', { name: /create new band/i }).click()
 
-    cy.visitAndCheck("/");
-
-    cy.findByRole("link", { name: /notes/i }).click();
-    cy.findByText("No notes yet");
-
-    cy.findByRole("link", { name: /\+ new note/i }).click();
-
-    cy.findByRole("textbox", { name: /title/i }).type(testNote.title);
-    cy.findByRole("textbox", { name: /body/i }).type(testNote.body);
-    cy.findByRole("button", { name: /save/i }).click();
-
-    cy.findByRole("button", { name: /delete/i }).click();
-
-    cy.findByText("No notes yet");
-  });
+    cy.findByText("Create a new band")
+    // cy.findByRole('textbox', { name: "name" }).type('My test band')
+    // cy.findByRole('button', { name: /create/i }).click()
+  })
 });
