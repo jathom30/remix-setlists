@@ -2,6 +2,8 @@
 
 A place for bands and their mates.
 
+Currently deployed at [setlists.pro](https://www.setlists.pro)
+
 ## Bands:
 
 - Users can be invited to or create any number of bands.
