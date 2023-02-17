@@ -2,7 +2,7 @@
 
 A place for bands and their mates.
 
-Currently deployed at [setlists.pro](https://www.setlists.pro)
+Currently deployed at [setlists.pro](https://setlists.pro)
 
 ## Bands:
 
