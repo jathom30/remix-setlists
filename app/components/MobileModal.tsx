@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Drawer } from "./Drawer";
 import { Modal } from "./Modal";
 
-export const MobileModal = ({ children, open, onClose }: { children: React.ReactNode; open: boolean; onClose: () => void }) => {
+export const MobileModal = ({ children, open, onClose, isPortal }: { children: React.ReactNode; open: boolean; onClose: () => void; isPortal?: boolean }) => {
   const [isMobile, setIsMobile] = useState(true)
   const mobileWidth = 640
 
@@ -22,7 +22,7 @@ export const MobileModal = ({ children, open, onClose }: { children: React.React
     return <Drawer open={open} onClose={onClose}>{children}</Drawer>
   } else {
     return (
-      <Modal open={open} onClose={onClose}>{children}</Modal>
+      <Modal isPortal={isPortal} open={open} onClose={onClose}>{children}</Modal>
     )
   }
 }

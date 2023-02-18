@@ -95,10 +95,10 @@ export default function SongsList() {
         </>
       }
     >
-      <MaxWidth>
-        <MaxHeightContainer
-          fullHeight
-          header={
+      <MaxHeightContainer
+        fullHeight
+        header={
+          <MaxWidth>
             <FlexList pad={4} gap={4}>
               <Form method="get" onChange={e => submit(e.currentTarget)}>
                 <SearchInput value={query} onClear={handleClearQuery} onChange={e => setQuery(e.target.value)} />
@@ -116,8 +116,10 @@ export default function SongsList() {
                 </div>
               </FlexList>
             </FlexList>
-          }
-        >
+          </MaxWidth>
+        }
+      >
+        <MaxWidth>
           <FlexList height="full">
             {hasSongs ? (
               <FlexList pad={4} gap={2}>
@@ -133,8 +135,8 @@ export default function SongsList() {
               </FlexList>
             )}
           </FlexList>
-        </MaxHeightContainer>
-      </MaxWidth>
+        </MaxWidth>
+      </MaxHeightContainer>
     </MaxHeightContainer>
   )
 }

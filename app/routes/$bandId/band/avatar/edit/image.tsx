@@ -15,10 +15,10 @@ export default function EditBandAvatarImage() {
     <FlexList pad={4}>
       {image ? (
         <>
-          <div className="aspect-square rounded overflow-hidden flex flex-col items-center justify-center">
+          <Button isOutline onClick={() => fileInputRef.current?.click()}>Replace image</Button>
+          <div className="aspect-square max-h-64 rounded overflow-hidden flex flex-col items-center justify-center">
             <img className="max-w-xs w-full h-full object-cover" src={image} alt="band logo" />
           </div>
-          <Button kind="ghost" onClick={() => fileInputRef.current?.click()}>Replace image</Button>
         </>
       ) : (
         <span>Max size: 10MB</span>

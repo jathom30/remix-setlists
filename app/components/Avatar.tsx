@@ -1,5 +1,6 @@
 import type { BandIcon } from "@prisma/client"
 import type { SerializeFrom } from "@remix-run/node"
+import { contrastColor } from "~/utils/assorted";
 
 export const Avatar = ({ icon, bandName, size = 'md' }: { icon?: SerializeFrom<BandIcon> | null; bandName: string; size?: 'sm' | 'md' | 'lg' | 'xl' }) => {
   const getSize = () => {
@@ -32,7 +33,6 @@ export const Avatar = ({ icon, bandName, size = 'md' }: { icon?: SerializeFrom<B
     }
   }
   return (
-    // <div className={`${getSize().width} aspect-square`}>
     <div className="avatar">
       <div className={`${getSize().width} rounded`}>
         {icon?.path ? (
@@ -40,7 +40,7 @@ export const Avatar = ({ icon, bandName, size = 'md' }: { icon?: SerializeFrom<B
         ) : (
           <div
             className={`h-full aspect-square flex items-center justify-center bg-primary ${getSize().text} rounded font-bold`}
-            style={{ backgroundColor: icon?.backgroundColor || undefined, color: icon?.textColor || undefined }}
+            style={{ backgroundColor: icon?.backgroundColor || '#FFFFFF', color: contrastColor(icon?.backgroundColor || "#FFFFFF") }}
           >
             <span>{bandName?.[0]?.toUpperCase()}</span>
           </div>
