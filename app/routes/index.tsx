@@ -49,8 +49,8 @@ export default function Landing() {
             <div className="mockup-phone">
               <div className="camera" aria-hidden></div>
               <div className="display">
-                <div className="artboard artboard-demo phone-1 block pt-6">
-                  <img src={photoBackground} alt="setlist example" />
+                <div className="artboard artboard-demo phone-1 block">
+                  <img className="h-full" src={photoBackground} alt="setlist example" />
                 </div>
               </div>
             </div>
@@ -59,57 +59,52 @@ export default function Landing() {
 
           <h2 className="text-4xl font-bold">Features</h2>
 
-          <h2 className="text-2xl font-bold">Bands</h2>
           <AnimateInView>
             <div className="flex gap-4 items-center flex-col md:flex-row-reverse">
               <ItemBox>
+                <h2 className="text-2xl font-bold">Bands</h2>
                 <p>Users can be invited to or create any number of bands!</p>
                 <p>Each band can be customized with a unqiue avatar image or icon. Apart from songs and setlists unique to the band, bands can create custom "feels" or genre tags to add to songs.</p>
                 <p>Admin members in bands can choose to add or remove members to their band.</p>
                 <Divider />
-                <Title>Member roles</Title>
+                <Title>Band members</Title>
                 <p>Bands can assign permissions to its members individually.</p>
                 <p><strong className="text-accent">Admin</strong>: Admins have full read/write/delete permissions for their band as well as its setlists, songs, and feels. Admins are capable of removing and inviting members (as well as deleting the band, if they so choose).</p>
                 <p><strong className="text-accent">Member</strong>: Members have read only permissions for band specific settings. However, they have full read/write/delete permissions for setlists, songs, and feels.</p>
                 <p><strong className="text-accent">Sub</strong>: Subs have read only permissions throughout the app. This is ideal for new members who need access to the band's setlists and song details, but aren't established enough to start adding songs and setlists to the group.</p>
               </ItemBox>
-              <div className="mockup-window border bg-base-300 sm:max-w-xs">
-                <img src={membersScreen} alt="Member screen example" />
-              </div>
+              <img className="h-full w-full max-w-xs rounded-lg object-cover shadow-lg" src={membersScreen} alt="member UI example" />
             </div>
           </AnimateInView>
 
           <Divider />
 
-          <h2 className="text-2xl font-bold">Setlists</h2>
           <AnimateInView>
             <div className="flex gap-4 items-center flex-col md:flex-row">
               <ItemBox>
+                <h2 className="text-2xl font-bold">Setlists</h2>
                 <p>Setlists are made up of one or more groups of songs called "sets". Setlists can be auto-generated or manually created.</p>
                 <p>Using our drag and drop system, editing setlists is a breeze!</p>
                 <Divider />
                 <p><strong className="text-accent">Data metrics</strong> are avialable for each set so you can keep track of how many covers or originals you've encluded. See if your set is leaning too far country or rock for the show. Even checkout the tempo changes from song to song chronologically!</p>
                 <p><strong>Want to share your setlists with fans or a stage tech?</strong> No problem! Setlists can be shared publically at any time. Now the sound guy at your show knows where you are in the set and can plan for that upcoming ballad or screamer.</p>
               </ItemBox>
-
-              <div className="mockup-window border bg-base-300 sm:max-w-xs">
-                <img className="" src={dataMetricScreen} alt="data metrics example" />
-              </div>
+              <img className="h-full w-full max-w-xs rounded-lg object-cover shadow-lg" src={dataMetricScreen} alt="data metrics example" />
             </div>
           </AnimateInView>
 
-          <h2 className="text-2xl font-bold">Songs and Feels</h2>
+          <Divider />
+
           <AnimateInView>
             <div className="flex gap-4 items-center flex-col md:flex-row-reverse">
               <ItemBox>
+                <h2 className="text-2xl font-bold">Songs and Feels</h2>
                 <p><strong className="text-accent">Your songs are the heart of your band.</strong> We allow you to make them as detailed as you'd like. We can hold on to the lyrics for you, keep track of the key, tempo, and feel of the tune.</p>
                 <p>Maybe you want to keep your lyrics or notes in an external doc? No problem, we allow you to create a link that will send you right to it.</p>
                 <Divider />
                 <p>Each song can be tagged with any number of "feels". These help you organize your songs when creating setlists or just to keep track of how many swing tunes your band has been learning.</p>
               </ItemBox>
-              <div className="mockup-window border bg-base-300 sm:max-w-xs">
-                <img src={songScreen} alt="song example" />
-              </div>
+              <img className="h-full w-full max-w-xs rounded-lg object-cover shadow-lg" src={songScreen} alt="song example" />
             </div>
           </AnimateInView>
 
