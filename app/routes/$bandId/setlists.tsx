@@ -3,7 +3,7 @@ import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { AvatarTitle, CreateNewButton, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SearchInput, SetlistLink } from "~/components";
-import { getSetlists } from "~/models/setlist.server";
+import { deleteUnneededClonedSetlists, getSetlists } from "~/models/setlist.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,12 +35,8 @@ export async function loader({ request, params }: LoaderArgs) {
     ...(sort ? { sort } : null),
   }
 
-  const setlists = (await getSetlists(bandId, filterParams))
-    // ! filtering right now incase a user navigates away from editing a setlist (creating a temp clone in the process)
-    // ! in the future, we should have a hook to warn users before navigating away from the edit process
-    .filter(setlist => !setlist.editedFromId)
-
-  return json({ setlists })
+  const [setlists] = await Promise.all([getSetlists(bandId, filterParams), deleteUnneededClonedSetlists(bandId)])
+  return json({ setlists: setlists.filter(setlist => !setlist.editedFromId) })
 }
 
 const subRoutes = ['sortBy', 'filters']

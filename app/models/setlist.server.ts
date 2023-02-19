@@ -120,6 +120,25 @@ export async function deleteSetlist(setlistId: Setlist['id']) {
   })
 }
 
+export async function deleteManySetlists(ids: Setlist['id'][]) {
+  return await prisma.setlist.deleteMany({
+    where: { id: { in: ids } }
+  })
+}
+
+export async function deleteUnneededClonedSetlists(bandId: Setlist['bandId']) {
+  // get all setlists of a band
+  const setlists = await prisma.setlist.findMany({
+    where: { bandId },
+    select: { id: true, editedFromId: true }
+  })
+  // filter to only setlists with an editedFromId
+  const clonedSetlists = setlists.filter(setlist => !!setlist.editedFromId)
+  if (!clonedSetlists.length) return
+  // delete all those setlists
+  return await deleteManySetlists(clonedSetlists.map(setlist => setlist.id))
+}
+
 export async function createSetlistAuto(bandId: Band['id'], settings: SetlistSettings) {
   const { filters, setCount, setLength } = settings
   const { noBallads, noCovers, onlyCovers } = filters
