@@ -3,7 +3,7 @@ import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { AvatarTitle, CreateNewButton, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SearchInput, SetlistLink } from "~/components";
-import { getSetlists } from "~/models/setlist.server";
+import { deleteManySetlists, getSetlists } from "~/models/setlist.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -36,11 +36,13 @@ export async function loader({ request, params }: LoaderArgs) {
   }
 
   const setlists = (await getSetlists(bandId, filterParams))
-    // ! filtering right now incase a user navigates away from editing a setlist (creating a temp clone in the process)
-    // ! in the future, we should have a hook to warn users before navigating away from the edit process
-    .filter(setlist => !setlist.editedFromId)
 
-  return json({ setlists })
+  // ! Deleting setlists with editedFromId because those were discarded during editing
+  // ! in the future, we should have a hook to warn users before navigating away from the edit process
+  const setlistsToDelete = setlists?.filter(setlist => !!setlist.editedFromId)
+  await deleteManySetlists(setlistsToDelete?.map(setlist => setlist.id))
+
+  return json({ setlists: setlists.filter(setlist => !setlist.editedFromId) })
 }
 
 const subRoutes = ['sortBy', 'filters']

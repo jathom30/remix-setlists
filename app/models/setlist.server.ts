@@ -120,6 +120,12 @@ export async function deleteSetlist(setlistId: Setlist['id']) {
   })
 }
 
+export async function deleteManySetlists(ids: Setlist['id'][]) {
+  return await prisma.setlist.deleteMany({
+    where: { id: { in: ids } }
+  })
+}
+
 export async function createSetlistAuto(bandId: Band['id'], settings: SetlistSettings) {
   const { filters, setCount, setLength } = settings
   const { noBallads, noCovers, onlyCovers } = filters
