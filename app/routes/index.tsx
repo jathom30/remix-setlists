@@ -39,7 +39,7 @@ export default function Landing() {
       </div>
 
       <MaxWidth>
-        <FlexList pad={4}>
+        <FlexList pad="md">
           <div className="flex gap-4 items-center flex-col md:flex-row">
             <div className="py-12 flex flex-col gap-4">
               <h1 className="text-5xl font-bold">Welcome to <span className="text-primary">Setlists</span></h1>

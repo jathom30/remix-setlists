@@ -84,7 +84,7 @@ export default function ResetPassword() {
 
   return (
     <div className="max-w-lg m-auto mt-8">
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <FontAwesomeIcon icon={faKey} size="5x" />
         <h1 className="text-center text-2xl font-bold">Set new password for {email}</h1>
         <ItemBox>
@@ -112,7 +112,7 @@ export default function ResetPassword() {
 export function ErrorBoundary({ error }: { error: Error }) {
   return (
     <div className="max-w-lg m-auto mt-8">
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <FontAwesomeIcon icon={faCircleXmark} size="5x" />
         <h1 className="text-center text-2xl font-bold">Oops...</h1>
         <ItemBox>
@@ -129,7 +129,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
 export function CatchBoundary() {
   return (
     <div className="max-w-lg m-auto mt-8">
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <FontAwesomeIcon icon={faCircleXmark} size="5x" />
         <h1 className="text-center text-2xl font-bold">Oops...</h1>
         <ItemBox>

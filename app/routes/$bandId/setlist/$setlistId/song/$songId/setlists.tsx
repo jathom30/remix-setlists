@@ -25,14 +25,14 @@ export default function Setlists() {
   const { setlists } = useLoaderData<typeof loader>()
 
   return (
-    <FlexList gap={0}>
+    <FlexList gap="none">
       <Navbar>
         <FlexHeader>
           <Title>Song's setlists</Title>
           <Link isRounded to=".." kind="ghost"><FontAwesomeIcon icon={faTimes} /></Link>
         </FlexHeader>
       </Navbar>
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <p>This song was found in the following {pluralize('setlist', setlists.length)}:</p>
         {setlists.map(setlist => (
           <Link isOutline kind={setlistId === setlist.id ? 'secondary' : undefined} key={setlist.id} to={`/${bandId}/setlist/${setlist.id}`}>{setlist.name}</Link>

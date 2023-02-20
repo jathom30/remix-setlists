@@ -404,7 +404,7 @@ export default function EditSetlist() {
                 isOpen={isOpenSets}
                 length={getLengthOfSet(containerId) || 0}
               >
-                <FlexList gap={2} pad={4}>
+                <FlexList gap="sm" pad="md">
                   <SortableContext items={items[containerId]} strategy={verticalListSortingStrategy}>
                     {items[containerId]?.map(itemId => (
                       <SortableSong
@@ -415,7 +415,7 @@ export default function EditSetlist() {
                     ))}
                     {items[containerId].length === 0 ? (
                       <div className="bg-base-300 rounded">
-                        <FlexList pad={4} direction="row" items="center" justify="center">
+                        <FlexList pad="md" direction="row" items="center" justify="center">
                           <span>This empty set will be deleted upon save</span>
                         </FlexList>
                       </div>
@@ -441,7 +441,7 @@ export default function EditSetlist() {
             ) : null}
           </DragOverlay>
         </DndContext>
-        <FlexList pad={4}>
+        <FlexList pad="md">
           <Link to={`createSet?position=${containers.length}`}>Create new set</Link>
         </FlexList>
       </MaxWidth>
@@ -498,7 +498,7 @@ const SortableSong = ({ id, song }: { id: UniqueIdentifier; song?: SetSong }) =>
 const DraggedSong = ({ isDragging = false, song, listeners }: { isDragging?: boolean; song: SetSong; listeners?: any }) => {
   return (
     <div className={`relative overflow-hidden rounded bg-base-100 ${isDragging ? 'bg-base-300' : ''}`}>
-      <FlexList pad={2} direction="row" items="center">
+      <FlexList pad="sm" direction="row" items="center">
         <div className={`btn btn-circle btn-sm cursor-grab`} {...listeners} tabIndex={-1}>
           <FontAwesomeIcon icon={faGripVertical} />
         </div>

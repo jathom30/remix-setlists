@@ -65,7 +65,7 @@ export default function Verifying() {
   const isSubmitting = useSpinDelay(navigation.state !== 'idle')
   return (
     <Form method="put">
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <FontAwesomeIcon icon={faCheckCircle} size="5x" />
         <h1 className="text-center text-2xl font-bold">Verified!</h1>
         <ItemBox>
@@ -83,7 +83,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
   console.log(error)
   return (
     <div className="max-w-lg m-auto mt-8">
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <FontAwesomeIcon icon={faCircleXmark} size="5x" />
         <h1 className="text-center text-2xl font-bold">Oops...</h1>
         <ItemBox>
@@ -100,7 +100,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
 export function CatchBoundary() {
   return (
     <div className="max-w-lg m-auto mt-8">
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <FontAwesomeIcon icon={faCircleXmark} size="5x" />
         <h1 className="text-center text-2xl font-bold">Oops...</h1>
         <ItemBox>

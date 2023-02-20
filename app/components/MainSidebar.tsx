@@ -222,7 +222,7 @@ const BandOption = ({ band, memberRole, isCollapsed = false, children }: { band:
   return (
     <div className="w-full">
       <FlexList direction="row" justify={isCollapsed ? 'center' : 'between'} items="center">
-        <FlexList direction="row" gap={2} items="center">
+        <FlexList direction="row" gap="sm" items="center">
           <Avatar icon={band?.icon} bandName={band?.name || ''} size="md" />
           {!isCollapsed ? (
             <>

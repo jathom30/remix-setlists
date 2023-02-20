@@ -45,7 +45,7 @@ export default function SetlistMenu() {
   const memberRole = useMemberRole()
   const isSub = memberRole === RoleEnum.SUB
   return (
-    <FlexList pad={4} gap={2}>
+    <FlexList pad="md" gap="sm">
       <Link to="../confirmPublicLink" icon={faShareNodes} isOutline>{setlist.isPublic ? 'See' : 'Create'} public link</Link>
       {!isSub ? (
         <>

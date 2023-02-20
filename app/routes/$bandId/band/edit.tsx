@@ -49,7 +49,7 @@ export default function EditBandName() {
   const isSubmitting = useSpinDelay(navigation.state !== 'idle')
   return (
     <Form method="put">
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <Field name="name" label="Band name">
           <Input name="name" defaultValue={bandName} placeholder={bandName} />
           {actionData?.error.name ? <ErrorMessage message={actionData.error.name} /> : null}

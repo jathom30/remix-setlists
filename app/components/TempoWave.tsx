@@ -17,7 +17,7 @@ export const TempoWave = ({ tempos }: { tempos: number[] }) => {
     <div className="TempoWave">
       {tempos.length <= 1 ? (
         <div className="TempoWave__empty">
-          <FlexList pad={4} items="center" justify="center">
+          <FlexList pad="md" items="center" justify="center">
             Add at least two songs to see setlist heatmap
           </FlexList>
         </div>

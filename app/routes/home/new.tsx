@@ -26,7 +26,7 @@ export default function NewBand() {
 
   return (
     <Form method="post">
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <Title>Create  a new band</Title>
         <Field name="name" label="Band name">
           <Input aria-label="name" name="name" placeholder="Band name..." />

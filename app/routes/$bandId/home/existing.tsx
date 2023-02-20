@@ -28,7 +28,7 @@ export default function ExisitingBand() {
 
   return (
     <Form method="put">
-      <FlexList gap={0} pad={4}>
+      <FlexList gap="none" pad="md">
         <Label>Band Code</Label>
         <Input name="bandCode" placeholder="Enter your band code here..." />
         {actionData?.error ? <ErrorMessage message={actionData.error} /> : null}

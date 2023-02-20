@@ -56,8 +56,8 @@ export default function AutoSetlistCreation() {
           <SaveButtons saveLabel="Generate setlist" cancelTo=".." />
         }
       >
-        <FlexList pad={4}>
-          <FlexList gap={2}>
+        <FlexList pad="md">
+          <FlexList gap="sm">
             <Label>1. Set details</Label>
             <ItemBox>
               <FlexList>
@@ -73,7 +73,7 @@ export default function AutoSetlistCreation() {
             </ItemBox>
           </FlexList>
 
-          <FlexList gap={2}>
+          <FlexList gap="sm">
             <Label>2. Auto-generation settings</Label>
             <ItemBox>
               <FlexList>
@@ -91,7 +91,7 @@ export default function AutoSetlistCreation() {
             </ItemBox>
           </FlexList>
 
-          <FlexList gap={2}>
+          <FlexList gap="sm">
             <Label>3. Additional options</Label>
             <ItemBox>
               <Checkbox name="excludeBallads" value="excludeBallads" label="Exclude ballads" />

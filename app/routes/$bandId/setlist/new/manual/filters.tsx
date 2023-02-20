@@ -47,7 +47,7 @@ export default function SongsFilters() {
       <MaxHeightContainer
         header={
           <div className="border-b border-slate-300 bg-white">
-            <FlexList pad={2} direction="row" justify="between" items="center">
+            <FlexList pad="sm" direction="row" justify="between" items="center">
               <Link kind="ghost" to={{ pathname: `/${bandId}/songs`, search }}><FontAwesomeIcon icon={faChevronLeft} /></Link>
               <span className="font-bold">Filters</span>
               <Button name="intent" value="reset" type="button" isOutline onClick={e => submit(e.currentTarget)}>Reset</Button>
@@ -60,9 +60,9 @@ export default function SongsFilters() {
           </div>
         }
       >
-        <FlexList gap={0}>
+        <FlexList gap="none">
           <FilterOption label="Tempo">
-            <FlexList gap={0}>
+            <FlexList gap="none">
               {Array.from({ length: 5 }, (_, i) => (
                 <Checkbox
                   key={i}
@@ -85,7 +85,7 @@ export default function SongsFilters() {
             />
           </FilterOption>
           <FilterOption label="Artist">
-            <FlexList gap={2}>
+            <FlexList gap="sm">
               <RadioGroup
                 name="isCover"
                 options={[
@@ -101,7 +101,7 @@ export default function SongsFilters() {
             </FlexList>
           </FilterOption>
           <FilterOption label="Positions">
-            <FlexList gap={0}>
+            <FlexList gap="none">
               {positions.map(position => (
                 <Checkbox
                   key={position}

@@ -204,7 +204,7 @@ export function CatchBoundary() {
     return (
       <div className="h-full">
         <MaxWidth>
-          <FlexList pad={4} items="center">
+          <FlexList pad="md" items="center">
             <FontAwesomeIcon icon={faUserLock} size="5x" />
             <ItemBox>
               <FlexList>

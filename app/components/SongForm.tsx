@@ -84,7 +84,7 @@ export const SongForm = ({ song, feels, errors }: {
   const border = getColor('base-content', .2)
 
   return (
-    <FlexList pad={4}>
+    <FlexList pad="md">
       <Field name="name" label="Name" isRequired>
         <Input name="name" defaultValue={song?.name} placeholder="Song name..." />
         {errors?.name ? (<ErrorMessage message={errors.name} />) : null}
@@ -94,7 +94,7 @@ export const SongForm = ({ song, feels, errors }: {
         {errors?.length ? (<ErrorMessage message={errors.length} />) : null}
       </Field>
 
-      <FlexList gap={2}>
+      <FlexList gap="sm">
         <Label>Key</Label>
         <div className="grid grid-cols-2 gap-4">
           <Select
@@ -194,7 +194,7 @@ export const SongForm = ({ song, feels, errors }: {
         <FeelSelect feels={feels} defaultFeels={song?.feels} />
       </Field>
 
-      <FlexList gap={0}>
+      <FlexList gap="none">
         <Field name="visAuthor" label="Artist(s)">
           <Input
             name="visAuthor"
@@ -208,13 +208,13 @@ export const SongForm = ({ song, feels, errors }: {
         <input type="hidden" hidden name="author" value={author || undefined} />
       </FlexList>
 
-      <FlexList gap={2}>
+      <FlexList gap="sm">
         <Label>Notes/Lyrics</Label>
         <textarea placeholder="Add a note or some lyrics..." className="textarea textarea-bordered" name="note" id="note" rows={5} defaultValue={song?.note || ''} />
       </FlexList>
 
-      <FlexList gap={0}>
-        <FlexList direction="row" items="center" gap={2}>
+      <FlexList gap="none">
+        <FlexList direction="row" items="center" gap="sm">
           <Label>External links</Label>
           <Button type="button" kind="ghost" size="xs" isRounded onClick={() => setShowLinksInfo(true)}>
             <FontAwesomeIcon icon={faInfoCircle} />
@@ -223,8 +223,8 @@ export const SongForm = ({ song, feels, errors }: {
         <ExternalLinksInputs links={song?.links} errors={errors?.links} />
       </FlexList>
 
-      <FlexList gap={2}>
-        <FlexList direction="row" items="center" gap={2}>
+      <FlexList gap="sm">
+        <FlexList direction="row" items="center" gap="sm">
           <Label>Position</Label>
           <Button type="button" kind="ghost" size="xs" isRounded onClick={() => setShowPositionInfo(true)}>
             <FontAwesomeIcon icon={faInfoCircle} />
@@ -241,8 +241,8 @@ export const SongForm = ({ song, feels, errors }: {
         />
       </FlexList>
 
-      <FlexList gap={2}>
-        <FlexList direction="row" items="center" gap={2}>
+      <FlexList gap="sm">
+        <FlexList direction="row" items="center" gap="sm">
           <Label>Setlist auto-generation importance</Label>
           <Button type="button" kind="ghost" size="xs" isRounded onClick={() => setShowAutoGenInfo(true)}>
             <FontAwesomeIcon icon={faInfoCircle} />
@@ -266,7 +266,7 @@ export const SongForm = ({ song, feels, errors }: {
             <Button kind="ghost" isRounded onClick={() => setShowPositionInfo(false)}><FontAwesomeIcon icon={faTimes} /></Button>
           </FlexHeader>
         </Navbar>
-        <FlexList pad={4} gap={0}>
+        <FlexList pad="md" gap="none">
           <p>A song's position helps us determine where it should be placed during our "auto-magical" setlist creation.</p>
           <p>We prioritize openers and closers to be placed at the beginner and end of sets as seen in the example below.</p>
           <Divider />
@@ -276,23 +276,23 @@ export const SongForm = ({ song, feels, errors }: {
               <Title>My Sample Setlist</Title>
             </FlexHeader>
             <div className="bg-base-300 w-full h-12 rounded">
-              <FlexList direction="row" items="center" gap={4} pad={2}>
+              <FlexList direction="row" items="center" gap="md" pad="sm">
                 <Title>Strong opener</Title>
                 <Badge>Opener</Badge>
               </FlexList>
             </div>
             <div className="bg-base-300 w-full h-12 rounded">
-              <FlexList direction="row" items="center" gap={4} pad={2}>
+              <FlexList direction="row" items="center" gap="md" pad="sm">
                 <Title>Mid-set song</Title>
               </FlexList>
             </div>
             <div className="bg-base-300 w-full h-12 rounded">
-              <FlexList direction="row" items="center" gap={4} pad={2}>
+              <FlexList direction="row" items="center" gap="md" pad="sm">
                 <Title>The ballad</Title>
               </FlexList>
             </div>
             <div className="bg-base-300 w-full h-12 rounded">
-              <FlexList direction="row" items="center" gap={4} pad={2}>
+              <FlexList direction="row" items="center" gap="md" pad="sm">
                 <Title>Closing song</Title>
                 <Badge>Closer</Badge>
               </FlexList>
@@ -308,7 +308,7 @@ export const SongForm = ({ song, feels, errors }: {
             <Button kind="ghost" isRounded onClick={() => setShowAutoGenInfo(false)}><FontAwesomeIcon icon={faTimes} /></Button>
           </FlexHeader>
         </Navbar>
-        <FlexList pad={4}>
+        <FlexList pad="md">
           <p>When attempting to auto-magically generate a setlist for you, we take many variables into concideration.</p>
           <p>It is possible that certain songs should never be included in our auto-magical generation, perhaps your band is still fine tuning the bridge for example. In this case we don't want it accidentally slipping into sets and scaring the singer.</p>
         </FlexList>
@@ -321,7 +321,7 @@ export const SongForm = ({ song, feels, errors }: {
             <Button kind="ghost" isRounded onClick={() => setShowLinksInfo(false)}><FontAwesomeIcon icon={faTimes} /></Button>
           </FlexHeader>
         </Navbar>
-        <FlexList pad={4}>
+        <FlexList pad="md">
           <p>External links might be used for quick linking to lyrics, chord changes, wiki articles, etc.</p>
         </FlexList>
       </Modal>

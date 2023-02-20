@@ -51,7 +51,7 @@ export default function DeleteBand() {
 
   return (
     <Form method="delete">
-      <FlexList pad={4} gap={2}>
+      <FlexList pad="md" gap="sm">
         <h3 className="font-bold">Are you sure?</h3>
         <p className="text-xs text-text-subdued">Deleting this band will destroy all songs and setlists associated with the band as well as remove any other band member's connection to this band.</p>
         <p className="text-xs text-text-subdued">To delete, type this band's name below.</p>

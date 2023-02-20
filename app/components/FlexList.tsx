@@ -1,7 +1,10 @@
+import type { Sizes } from "~/utils/flexStyles";
+import { getPadding } from "~/utils/flexStyles";
+
 export type FlexListProps = {
   children: React.ReactNode;
-  gap?: number
-  pad?: number | Partial<Record<'x' | 'y' | 'l' | 'r' | 't' | 'b', number>>
+  gap?: Sizes
+  pad?: Sizes | Partial<Record<'x' | 'y' | 'l' | 'r' | 't' | 'b', Sizes>>
   items?: 'center' | 'start' | 'end' | 'baseline' | 'stretch'
   justify?: 'start' | 'end' | 'center' | 'between' | 'around' | 'evenly'
   direction?: 'row' | 'row-reverse' | 'col' | 'col-reverse'
@@ -13,7 +16,7 @@ export type FlexListProps = {
 
 export const FlexList = ({
   children,
-  gap = 4,
+  gap = 'md',
   pad,
   items,
   direction = 'col',
@@ -23,18 +26,44 @@ export const FlexList = ({
   grow = false,
   wrap = false,
 }: FlexListProps) => {
-  const createPadding = () => {
-    if (!pad) { return '' }
-    if (typeof pad === 'number') {
-      return `p-${pad}`
-    }
-    return `px-${pad.x} py-${pad.y} pt-${pad.t} pb-${pad.b} pl-${pad.l} pr-${pad.r}`
-  }
   return (
-    <div className={`FlexList ${grow ? 'grow' : ''} ${createPadding()} flex flex-${direction} gap-${gap} ${getItems(items)} ${getJustify(justify)} ${height ? `h-${height}` : ''} ${width === 'full' ? `w-full` : ''} ${width === 'half' ? 'w-1/2' : ''} ${wrap ? 'flex-wrap' : ''}`}>
+    <div className={`FlexList ${grow ? 'grow' : ''} ${getPadding(pad)} flex ${getDirection(direction)} ${getGap(gap)} ${getItems(items)} ${getJustify(justify)} ${height ? `h-${height}` : ''} ${width === 'full' ? `w-full` : ''} ${width === 'half' ? 'w-1/2' : ''} ${wrap ? 'flex-wrap' : ''}`}>
       {children}
     </div>
   )
+}
+
+
+const getGap = (gap: Sizes) => {
+  switch (gap) {
+    case 'xs':
+      return 'gap-1'
+    case 'sm':
+      return 'gap-2'
+    case 'md':
+      return 'gap-4'
+    case 'lg':
+      return 'gap-6'
+    case 'xl':
+      return 'gap-8'
+    default:
+      return ''
+  }
+}
+
+export const getDirection = (direction: FlexListProps['direction']) => {
+  switch (direction) {
+    case 'col':
+      return 'flex-col'
+    case 'col-reverse':
+      return 'flex-col-reverse'
+    case 'row':
+      return 'flex-row'
+    case 'row-reverse':
+      return 'flex-row-reverse'
+    default:
+      return ''
+  }
 }
 
 export const getItems = (items: FlexListProps['items']) => {

@@ -70,8 +70,8 @@ export default function UserRoute() {
       }
     >
       <MaxWidth>
-        <FlexList pad={4}>
-          <FlexList gap={2}>
+        <FlexList pad="md">
+          <FlexList gap="sm">
             <Label>Theme</Label>
             <select name="theme" className="select select-bordered w-full" data-choose-theme>
               <option value="">Default</option>
@@ -83,18 +83,18 @@ export default function UserRoute() {
               ))}
             </select>
           </FlexList>
-          <FlexList gap={2}>
+          <FlexList gap="sm">
             <FlexHeader>
               <Label>User Details</Label>
               <Link kind="ghost" to="details"><FontAwesomeIcon icon={faPenToSquare} /></Link>
             </FlexHeader>
             <ItemBox>
               <FlexList>
-                <FlexList gap={0}>
+                <FlexList gap="none">
                   <Label>Name</Label>
                   <span>{user.name}</span>
                 </FlexList>
-                <FlexList gap={0}>
+                <FlexList gap="none">
                   <Label>Email</Label>
                   <span>{user.email}</span>
                 </FlexList>
@@ -104,13 +104,13 @@ export default function UserRoute() {
 
           <Divider />
 
-          <FlexList gap={2}>
+          <FlexList gap="sm">
             <FlexHeader>
               <Label>Security</Label>
               <Link to="password" kind="ghost"><FontAwesomeIcon icon={faPenToSquare} /></Link>
             </FlexHeader>
             <ItemBox>
-              <FlexList gap={0}>
+              <FlexList gap="none">
                 <Label>Password</Label>
                 <span>************</span>
               </FlexList>
@@ -119,20 +119,20 @@ export default function UserRoute() {
 
           <Divider />
 
-          <FlexList gap={2}>
+          <FlexList gap="sm">
             <FlexHeader>
               <Label>Associated bands</Label>
               <Link to="addBand" kind="outline" isCollapsing icon={faPlus}>Add new band</Link>
             </FlexHeader>
             <ItemBox>
               <Form method="put" onChange={e => submit(e.currentTarget)}>
-                <FlexList gap={0}>
+                <FlexList gap="none">
                   {user.bands.map(band => (
                     <FlexHeader key={band.bandId}>
                       <label htmlFor={band.bandId} className="btn btn-ghost h-auto flex-grow justify-start p-2 normal-case font-normal">
-                        <FlexList direction="row" gap={2} items="center">
+                        <FlexList direction="row" gap="sm" items="center">
                           <input className="radio" name="bandId" id={band.bandId} type="radio" value={band.bandId} defaultChecked={band.bandId === bandId} />
-                          <FlexList gap={2}>
+                          <FlexList gap="sm">
                             <span>{band.bandName}</span>
                             <Badge>{band.role}</Badge>
                           </FlexList>
@@ -159,7 +159,7 @@ export default function UserRoute() {
             </FlexList>
           </div>
 
-          <FlexList gap={2}>
+          <FlexList gap="sm">
             <Label>Support</Label>
             <ItemBox>
               <p>For tech support or general questions, reach out to us at <a className="link link-accent" href="mailto:support@setlists.pro">support@setlists.pro</a></p>
@@ -168,7 +168,7 @@ export default function UserRoute() {
 
           <Divider />
 
-          <FlexList gap={2}>
+          <FlexList gap="sm">
             <Label isDanger>Danger zone</Label>
             <ItemBox>
               <FlexList>

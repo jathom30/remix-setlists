@@ -5,7 +5,7 @@ import { FlexHeader, FlexList, Link, Navbar, Title } from "~/components";
 
 export default function UserSettingsPage() {
   return (
-    <FlexList gap={0}>
+    <FlexList gap="none">
       <Navbar>
         <FlexHeader>
           <Title>User settings</Title>

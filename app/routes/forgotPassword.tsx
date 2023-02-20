@@ -45,7 +45,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="max-w-lg m-auto mt-8">
-      <FlexList pad={4}>
+      <FlexList pad="md">
         {emailSuccess ? (
           <>
             <FontAwesomeIcon icon={faEnvelope} size="5x" />

@@ -7,19 +7,19 @@ import { hoverAndFocusContainerStyles } from "~/styleUtils";
 export default function NewSetlist() {
 
   return (
-    <FlexList pad={4}>
-      <FlexList gap={2}>
+    <FlexList pad="md">
+      <FlexList gap="sm">
         <Link to="manual" className={hoverAndFocusContainerStyles}>
-          <FlexList pad={4} gap={2} items="center">
+          <FlexList pad="md" gap="sm" items="center">
             <FontAwesomeIcon icon={faHammer} />
             <span>Manual</span>
           </FlexList>
         </Link>
         <span className="text-sm">Manually add, remove, and move songs as you please.</span>
       </FlexList>
-      <FlexList gap={2}>
+      <FlexList gap="sm">
         <Link to="auto" className={hoverAndFocusContainerStyles}>
-          <FlexList pad={4} gap={2} items="center">
+          <FlexList pad="md" gap="sm" items="center">
             <FontAwesomeIcon icon={faMagicWandSparkles} />
             <span>Auto-magical</span>
           </FlexList>

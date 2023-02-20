@@ -55,7 +55,7 @@ export default function EditUserDetails() {
 
   return (
     <Form method="put">
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <p className="font-bold">Update user details</p>
         <Field name="name" label="Name">
           <Input name="name" placeholder="Your name" defaultValue={user.name || ''} />

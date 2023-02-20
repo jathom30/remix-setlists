@@ -64,7 +64,7 @@ export default function ManualSetlistCreation() {
 
   if (!hasAvailableSongs) {
     return (
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <h3 className="font-bold text-2xl">No available songs</h3>
         <p className="text-text-subdued text-sm">It looks like this setlist has used all your available songs.</p>
         <Link to={`/${bandId}/song/new`} kind="primary">Create a new song?</Link>
@@ -83,14 +83,14 @@ export default function ManualSetlistCreation() {
       fullHeight
       header={
         <div className="bg-base-100 shadow-lg p-4 xl:rounded-md xl:mt-2">
-          <FlexList gap={2}>
+          <FlexList gap="sm">
             <Title>Create your first set</Title>
             <Form method="get" onChange={e => submit(e.currentTarget)}>
               <SearchInput value={query} onClear={handleClearQuery} onChange={e => setQuery(e.target.value)} />
             </Form>
-            <FlexList direction="row" items="center" justify="end" gap={2}>
+            <FlexList direction="row" items="center" justify="end" gap="sm">
               <Link to={{ pathname: 'sortBy', search: searchParams.toString() }} isOutline icon={faSort}>
-                <FlexList direction="row" gap={2}>
+                <FlexList direction="row" gap="sm">
                   <span>Sort by:</span>
                   <span>{sortByLabel(searchParams)}</span>
                 </FlexList>

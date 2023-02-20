@@ -26,7 +26,7 @@ export default function NewBand() {
 
   return (
     <Form method="post">
-      <FlexList pad={4} gap={0}>
+      <FlexList pad="md" gap="none">
         <h1>Create a new band</h1>
         <Input name="name" placeholder="Band name..." />
         {actionData?.errors.name ? <ErrorMessage message="Band name is required" /> : null}

@@ -49,7 +49,7 @@ export default function RenameSetlist() {
   return (
     <Form method="put">
       <FlexList>
-        <FlexList gap={2} pad={4}>
+        <FlexList gap="sm" pad="md">
           <Label required>Setlist name</Label>
           <Input name="name" defaultValue={setlist.name} />
           {data?.errors.name ? <ErrorMessage message="A setlist name is required" /> : null}

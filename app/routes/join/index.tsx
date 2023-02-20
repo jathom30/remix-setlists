@@ -112,7 +112,7 @@ export default function Join() {
 
   return (
     <div className="h-full">
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <Form method="post" className="space-y-6">
           <div>
             <label

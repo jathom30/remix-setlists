@@ -67,9 +67,9 @@ export default function BandSettingsPage() {
       }
     >
       <MaxWidth>
-        <FlexList pad={4}>
-          <FlexHeader pad={2}>
-            <FlexList direction="row" gap={2} items="center">
+        <FlexList pad="md">
+          <FlexHeader pad="sm">
+            <FlexList direction="row" gap="sm" items="center">
               {isAdmin ? (
                 <Link to="edit" kind="ghost"><FontAwesomeIcon icon={faPencil} /></Link>
               ) : null}
@@ -88,7 +88,7 @@ export default function BandSettingsPage() {
           </FlexHeader>
           <ItemBox>
             <FlexHeader>
-              <FlexList gap={0}>
+              <FlexList gap="none">
                 <Label>Created on</Label>
                 <span className="text-sm">{new Date(band.createdAt || '').toDateString()}</span>
               </FlexList>
@@ -97,7 +97,7 @@ export default function BandSettingsPage() {
 
           <Divider />
 
-          <FlexList gap={2}>
+          <FlexList gap="sm">
             <FlexHeader>
               <Label>Members</Label>
               {isAdmin ? (
@@ -105,7 +105,7 @@ export default function BandSettingsPage() {
               ) : null}
             </FlexHeader>
             <ItemBox>
-              <FlexList gap={0}>
+              <FlexList gap="none">
                 {members.map(member => (
                   <FlexHeader key={member.id}>
                     <RemixLink to={member.id} className="btn btn-ghost h-auto flex-grow justify-start p-2 normal-case font-normal">
@@ -126,7 +126,7 @@ export default function BandSettingsPage() {
 
           <Divider />
 
-          <FlexList gap={2}>
+          <FlexList gap="sm">
             <FlexHeader>
               <Label>Feels</Label>
               {!isSub ? (
@@ -134,11 +134,11 @@ export default function BandSettingsPage() {
               ) : null}
             </FlexHeader>
             <ItemBox>
-              <FlexList gap={0}>
+              <FlexList gap="none">
                 {feels.map(feel => (
                   <FlexHeader key={feel.id}>
                     <RemixLink to={`feel/${feel.id}/edit`} className="btn btn-ghost h-auto flex-grow justify-start p-2 normal-case font-normal">
-                      <FlexList direction="row" items="center" gap={4}>
+                      <FlexList direction="row" items="center" gap="md">
                         {!isSub ? <FontAwesomeIcon icon={faEdit} /> : null}
                         <FlexList gap={1}>
                           <FeelTag feel={feel} />
@@ -166,7 +166,7 @@ export default function BandSettingsPage() {
           <Divider />
 
           {isAdmin ? (
-            <FlexList gap={2}>
+            <FlexList gap="sm">
               <Label isDanger>Danger Zone</Label>
               <ItemBox>
                 <FlexList>

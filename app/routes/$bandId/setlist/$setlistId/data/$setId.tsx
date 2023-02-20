@@ -46,7 +46,7 @@ export default function SetDataMetrics() {
         </Navbar>
       }
     >
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <Label>Covers/Originals ratio</Label>
         <RatioBar ratio={ratio} />
         <Label>Feels</Label>

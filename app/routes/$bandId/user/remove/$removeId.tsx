@@ -46,7 +46,7 @@ export default function RemoveSelfFromBand() {
   const { removeId } = useParams()
   if (!canRemoveMember) {
     return (
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <span className="font-bold">Cannot remove self from band.</span>
         <p className="text-danger text-sm">
           You are the only admin. Make at least one other member an Admin before removing yourself.

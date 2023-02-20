@@ -9,7 +9,7 @@ export const ConfirmDelete = ({ label, deleteLabel = 'Delete', message, cancelTo
   const navigation = useNavigation()
   const isSubmitting = useSpinDelay(navigation.state !== 'idle')
   return (
-    <FlexList pad={4}>
+    <FlexList pad="md">
       <h3 className="font-bold">{label}</h3>
       <p>{message}</p>
       <div className="flex flex-col gap-2 sm:flex-row-reverse">

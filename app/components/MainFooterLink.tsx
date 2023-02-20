@@ -11,7 +11,7 @@ export const MainFooterLink = ({ icon, label, to }: { icon: IconDefinition; labe
 
   return (
     <Link className={`p-2 ${isActive ? 'text-secondary' : 'text-base-content'}`} to={to}>
-      <FlexList items="center" gap={0}>
+      <FlexList items="center" gap="none">
         <FontAwesomeIcon icon={icon} />
         <span>{label}</span>
       </FlexList>

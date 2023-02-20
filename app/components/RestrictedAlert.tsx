@@ -5,7 +5,7 @@ import { MaxWidth } from "./MaxWidth"
 export const RestrictedAlert = ({ dismissTo }: { dismissTo: string }) => {
   return (
     <MaxWidth>
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <h1 className="text-3xl font-bold">Restricted Access</h1>
         <div>
           <p>You do not have proper access to perform this action.</p>

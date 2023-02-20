@@ -5,7 +5,7 @@ import { Button, Divider, FlexList, ItemBox, Label, Link } from "~/components";
 export default function UserSettings() {
   return (
     <>
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <FlexList>
           <Form action="/logout" method="post">
             <FlexList>
@@ -16,7 +16,7 @@ export default function UserSettings() {
 
         <Divider />
 
-        <FlexList gap={2}>
+        <FlexList gap="sm">
           <Label isDanger>Danger zone</Label>
           <ItemBox>
             <FlexList>

@@ -61,7 +61,7 @@ export default function Home() {
       }
     >
       {hasNoBands ? (
-        <FlexList pad={4}>
+        <FlexList pad="md">
           <FontAwesomeIcon icon={faBoxOpen} size="5x" />
           <p className="text-center">You don't have any bands added to this account.</p>
           <Link to="new">Create new band</Link>
@@ -72,9 +72,9 @@ export default function Home() {
           <div className="grid sm:grid-cols-2 gap-2 sm:gap-4 p-4">
             {bands.map(band => (
               <NavLink to={`/${band.id}/setlists`} key={band.id} className="bg-base-100 rounded hover:bg-base-200">
-                <FlexList direction="row" pad={4} items="center">
+                <FlexList direction="row" pad="md" items="center">
                   <Avatar size="lg" icon={band.icon} bandName={band.name} />
-                  <FlexList gap={0}>
+                  <FlexList gap="none">
                     <h2 className="text-2xl">{band.name}</h2>
                     <div>
                       <Badge>{band.members[0].role}</Badge>

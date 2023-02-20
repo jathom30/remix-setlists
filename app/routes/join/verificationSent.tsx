@@ -18,7 +18,7 @@ export async function loader({ request }: LoaderArgs) {
 
 export default function VerificationSent() {
   return (
-    <FlexList pad={4}>
+    <FlexList pad="md">
       <FontAwesomeIcon icon={faEnvelopeOpen} size="5x" />
       <h1 className="text-center text-2xl font-bold">Verification sent</h1>
       <ItemBox>
