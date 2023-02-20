@@ -1,9 +1,11 @@
 import type { Size } from "~/utils/flexStyles";
 import { getPadding } from "~/utils/flexStyles";
 
+type MediaQuery = Size
+
 export type FlexListProps = {
   children: React.ReactNode;
-  gap?: Size
+  gap?: Size | Partial<Record<MediaQuery, Size>>
   pad?: Size | Partial<Record<'x' | 'y' | 'l' | 'r' | 't' | 'b', Size>>
   items?: 'center' | 'start' | 'end' | 'baseline' | 'stretch'
   justify?: 'start' | 'end' | 'center' | 'between' | 'around' | 'evenly'
@@ -33,8 +35,29 @@ export const FlexList = ({
   )
 }
 
+const getGap = (gap: FlexListProps['gap']) => {
+  if (!gap) { return '' }
+  if (typeof gap === 'string') {
+    return createGap(gap)
+  }
+  return createMediaQueryGap(gap)
+}
 
-const getGap = (gap: Size) => {
+const createMediaQueryGap = (gap: Partial<Record<MediaQuery, Size>>) => {
+  const gapKeys = Object.keys(gap) as MediaQuery[]
+  const finalGap = gapKeys.reduce((acc, key) => {
+    const gapAtMedia = gap[key]
+    if (!gapAtMedia) {
+      return acc
+    }
+    const mediaGap = key === 'none' ? createGap(gapAtMedia) : `${key}:${createGap(gapAtMedia)}`
+    return [...acc, mediaGap]
+  }, [] as string[])
+  return finalGap.join(' ')
+}
+
+
+const createGap = (gap: Size) => {
   switch (gap) {
     case 'xs':
       return 'gap-1'
@@ -46,6 +69,8 @@ const getGap = (gap: Size) => {
       return 'gap-6'
     case 'xl':
       return 'gap-8'
+    case 'none':
+      return 'gap-0'
     default:
       return ''
   }
