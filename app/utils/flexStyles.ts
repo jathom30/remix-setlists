@@ -1,8 +1,8 @@
 import type { FlexListProps } from "~/components"
 
-export type Sizes = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'none'
+export type Size = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'none'
 
-const createPaddingX = (x?: Sizes) => {
+const createPaddingX = (x?: Size) => {
   switch (x) {
     case 'xs':
       return 'px-1'
@@ -18,7 +18,7 @@ const createPaddingX = (x?: Sizes) => {
       return ''
   }
 }
-const createPaddingY = (y?: Sizes) => {
+const createPaddingY = (y?: Size) => {
   switch (y) {
     case 'xs':
       return 'py-1'
@@ -34,7 +34,7 @@ const createPaddingY = (y?: Sizes) => {
       return ''
   }
 }
-const createPaddingTop = (top?: Sizes) => {
+const createPaddingTop = (top?: Size) => {
   switch (top) {
     case 'xs':
       return 'pt-1'
@@ -50,7 +50,7 @@ const createPaddingTop = (top?: Sizes) => {
       return ''
   }
 }
-const createPaddingBottom = (bottom?: Sizes) => {
+const createPaddingBottom = (bottom?: Size) => {
   switch (bottom) {
     case 'xs':
       return 'pb-1'
@@ -66,7 +66,7 @@ const createPaddingBottom = (bottom?: Sizes) => {
       return ''
   }
 }
-const createPaddingLeft = (left?: Sizes) => {
+const createPaddingLeft = (left?: Size) => {
   switch (left) {
     case 'xs':
       return 'pl-1'
@@ -82,7 +82,7 @@ const createPaddingLeft = (left?: Sizes) => {
       return ''
   }
 }
-const createPaddingRight = (right?: Sizes) => {
+const createPaddingRight = (right?: Size) => {
   switch (right) {
     case 'xs':
       return 'pr-1'
@@ -98,7 +98,7 @@ const createPaddingRight = (right?: Sizes) => {
       return ''
   }
 }
-const createPadding = (padding: Sizes) => {
+const createPadding = (padding: Size) => {
   switch (padding) {
     case 'xs':
       return 'p-1'

@@ -4,6 +4,7 @@ import { FocusRing } from "@react-aria/focus";
 import type { MouseEvent } from "react";
 import React from "react"
 import { buttonKind, buttonSize } from "~/utils/buttonStyles";
+import type { Size } from "~/utils/flexStyles";
 
 export type ButtonKind = 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'warning' | 'error' | 'ghost' | 'link' | 'outline' | 'active' | 'disabled'
 
@@ -21,7 +22,7 @@ export type ButtonProps = {
   isOutline?: boolean
   isCollapsing?: boolean
   isSaving?: boolean
-  size?: 'xs' | 'sm' | 'md' | 'lg',
+  size?: Size,
   ariaLabel?: string
 }
 

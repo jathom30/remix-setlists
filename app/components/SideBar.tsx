@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 
-export const SideBar = ({ children, collapse = false }: { children?: React.ReactNode, collapse?: boolean }) => {
+export const SideBar = ({ children }: { children?: React.ReactNode }) => {
   return (
     <motion.div
       className={`h-full bg-component-background border-r border-component-background-darken`}

@@ -1,10 +1,10 @@
-import type { Sizes } from "~/utils/flexStyles";
+import type { Size } from "~/utils/flexStyles";
 import { getPadding } from "~/utils/flexStyles";
 
 export type FlexListProps = {
   children: React.ReactNode;
-  gap?: Sizes
-  pad?: Sizes | Partial<Record<'x' | 'y' | 'l' | 'r' | 't' | 'b', Sizes>>
+  gap?: Size
+  pad?: Size | Partial<Record<'x' | 'y' | 'l' | 'r' | 't' | 'b', Size>>
   items?: 'center' | 'start' | 'end' | 'baseline' | 'stretch'
   justify?: 'start' | 'end' | 'center' | 'between' | 'around' | 'evenly'
   direction?: 'row' | 'row-reverse' | 'col' | 'col-reverse'
@@ -34,7 +34,7 @@ export const FlexList = ({
 }
 
 
-const getGap = (gap: Sizes) => {
+const getGap = (gap: Size) => {
   switch (gap) {
     case 'xs':
       return 'gap-1'

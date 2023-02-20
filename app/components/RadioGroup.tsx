@@ -1,8 +1,8 @@
-import type { Sizes } from "~/utils/flexStyles";
+import type { Size } from "~/utils/flexStyles";
 import { Field } from "./Field";
 import { FlexList } from "./FlexList";
 
-export const RadioGroup = ({ options, name, direction = 'row', gap, isChecked }: { options: { label: string, value: string }[]; name: string; direction?: 'row' | 'col'; gap?: Sizes; isChecked: (value: string) => boolean }) => {
+export const RadioGroup = ({ options, name, direction = 'row', gap, isChecked }: { options: { label: string, value: string }[]; name: string; direction?: 'row' | 'col'; gap?: Size; isChecked: (value: string) => boolean }) => {
   return (
     <FlexList direction={direction} gap={gap}>
       {options.map(option => (
