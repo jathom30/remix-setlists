@@ -37,7 +37,6 @@ export default function Landing() {
           </FlexHeader>
         </Navbar>
       </div>
-
       <MaxWidth>
         <FlexList pad="md">
           <div className="flex gap-4 items-center flex-col md:flex-row">

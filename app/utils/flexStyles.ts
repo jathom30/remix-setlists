@@ -1,7 +1,11 @@
 import type { FlexListProps } from "~/components"
 
 export type Size = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'none'
+export type Side = 'x' | 'y' | 'l' | 'r' | 't' | 'b'
+export type FlexDirection = 'row' | 'row-reverse' | 'col' | 'col-reverse'
+export type Padding = Size | Partial<Record<Side, Size>>
 
+// ************* PADDING UTILS ************* //
 const createPaddingX = (x?: Size) => {
   switch (x) {
     case 'xs':
@@ -98,27 +102,98 @@ const createPaddingRight = (right?: Size) => {
       return ''
   }
 }
-const createPadding = (padding: Size) => {
-  switch (padding) {
+const createPadding = (padding: Padding) => {
+  if (typeof padding === 'string') {
+    switch (padding) {
+      case 'xs':
+        return 'p-1'
+      case 'sm':
+        return 'p-2'
+      case 'md':
+        return 'p-4'
+      case 'lg':
+        return 'p-6'
+      case 'xl':
+        return 'p-8'
+      default:
+        return ''
+    }
+  }
+  return [createPaddingX(padding.x), createPaddingY(padding.y), createPaddingTop(padding.t), createPaddingBottom(padding.b), createPaddingLeft(padding.l), createPaddingRight(padding.r)].filter(classname => !!classname).join(' ')
+}
+
+function padEntryIsMediaQuery(padEntry: Record<string, Padding | Size>): padEntry is Record<Size, Padding> {
+  const [value] = Object.values(padEntry)
+  return typeof value !== 'string'
+}
+function padEntryIsSide(padEntry: Record<string, Padding | Size>): padEntry is Record<Side, Size> {
+  const [value] = Object.values(padEntry)
+  return typeof value === 'string'
+}
+
+const createMediaQueryPadding = (padding: Partial<Record<Side, Size>> | Partial<Record<Size, Padding>>): string => {
+  const paddingEntries = Object.entries(padding) as ([Size, Padding] | [Side, Size])[]
+
+  const finalPadding = paddingEntries.reduce((acc, entry) => {
+    const item = { [entry[0]]: entry[1] }
+    if (padEntryIsMediaQuery(item)) {
+      const mediaPad = entry[0] === 'none' ? createPadding(entry[1]) : `${entry[0]}:${createPadding(entry[1])}`
+      return [...acc, mediaPad]
+    }
+    if (padEntryIsSide(item)) {
+      return [...acc, createPadding(item)]
+    }
+    return acc
+  }, [] as string[])
+  return finalPadding.join(' ')
+}
+
+export const getPadding = (padding: FlexListProps['pad']): string => {
+  if (!padding) { return '' }
+  if (typeof padding === 'string') {
+    return createPadding(padding)
+  }
+  return createMediaQueryPadding(padding)
+}
+
+// ************* GAP UTILS ************* //
+
+const createMediaQueryGap = (gap: Partial<Record<Size, Size>>) => {
+  const gapKeys = Object.keys(gap) as Size[]
+  const finalGap = gapKeys.reduce((acc, key) => {
+    const gapAtMedia = gap[key]
+    if (!gapAtMedia) {
+      return acc
+    }
+    const mediaGap = key === 'none' ? createGap(gapAtMedia) : `${key}:${createGap(gapAtMedia)}`
+    return [...acc, mediaGap]
+  }, [] as string[])
+  return finalGap.join(' ')
+}
+
+const createGap = (gap: Size) => {
+  switch (gap) {
     case 'xs':
-      return 'p-1'
+      return 'gap-1'
     case 'sm':
-      return 'p-2'
+      return 'gap-2'
     case 'md':
-      return 'p-4'
+      return 'gap-4'
     case 'lg':
-      return 'p-6'
+      return 'gap-6'
     case 'xl':
-      return 'p-8'
+      return 'gap-8'
+    case 'none':
+      return 'gap-0'
     default:
       return ''
   }
 }
 
-export const getPadding = (padding: FlexListProps['pad']) => {
-  if (!padding) { return '' }
-  if (typeof padding === 'string') {
-    return createPadding(padding)
+export const getGap = (gap: FlexListProps['gap']): string => {
+  if (!gap) { return '' }
+  if (typeof gap === 'string') {
+    return createGap(gap)
   }
-  return [createPaddingX(padding.x), createPaddingY(padding.y), createPaddingTop(padding.t), createPaddingBottom(padding.b), createPaddingLeft(padding.l), createPaddingRight(padding.r)].join(' ')
+  return createMediaQueryGap(gap)
 }

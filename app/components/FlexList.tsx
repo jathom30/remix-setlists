@@ -1,15 +1,13 @@
-import type { Size } from "~/utils/flexStyles";
-import { getPadding } from "~/utils/flexStyles";
-
-type MediaQuery = Size
+import type { FlexDirection, Padding, Size } from "~/utils/flexStyles";
+import { getGap, getPadding } from "~/utils/flexStyles";
 
 export type FlexListProps = {
   children: React.ReactNode;
-  gap?: Size | Partial<Record<MediaQuery, Size>>
-  pad?: Size | Partial<Record<'x' | 'y' | 'l' | 'r' | 't' | 'b', Size>>
+  gap?: Size | Partial<Record<Size, Size>>
+  pad?: Padding | Partial<Record<Size, Padding>>
   items?: 'center' | 'start' | 'end' | 'baseline' | 'stretch'
   justify?: 'start' | 'end' | 'center' | 'between' | 'around' | 'evenly'
-  direction?: 'row' | 'row-reverse' | 'col' | 'col-reverse'
+  direction?: FlexDirection | Partial<Record<Size, FlexDirection>>
   height?: 'full'
   width?: 'full' | 'half'
   grow?: boolean
@@ -35,48 +33,7 @@ export const FlexList = ({
   )
 }
 
-const getGap = (gap: FlexListProps['gap']) => {
-  if (!gap) { return '' }
-  if (typeof gap === 'string') {
-    return createGap(gap)
-  }
-  return createMediaQueryGap(gap)
-}
-
-const createMediaQueryGap = (gap: Partial<Record<MediaQuery, Size>>) => {
-  const gapKeys = Object.keys(gap) as MediaQuery[]
-  const finalGap = gapKeys.reduce((acc, key) => {
-    const gapAtMedia = gap[key]
-    if (!gapAtMedia) {
-      return acc
-    }
-    const mediaGap = key === 'none' ? createGap(gapAtMedia) : `${key}:${createGap(gapAtMedia)}`
-    return [...acc, mediaGap]
-  }, [] as string[])
-  return finalGap.join(' ')
-}
-
-
-const createGap = (gap: Size) => {
-  switch (gap) {
-    case 'xs':
-      return 'gap-1'
-    case 'sm':
-      return 'gap-2'
-    case 'md':
-      return 'gap-4'
-    case 'lg':
-      return 'gap-6'
-    case 'xl':
-      return 'gap-8'
-    case 'none':
-      return 'gap-0'
-    default:
-      return ''
-  }
-}
-
-export const getDirection = (direction: FlexListProps['direction']) => {
+const createDirection = (direction: FlexListProps['direction']) => {
   switch (direction) {
     case 'col':
       return 'flex-col'
@@ -90,6 +47,27 @@ export const getDirection = (direction: FlexListProps['direction']) => {
       return ''
   }
 }
+
+const createMediaQueryDirection = (direction: Partial<Record<Size, FlexDirection>>) => {
+  const directionKeys = Object.keys(direction) as Size[]
+  const finalDirection = directionKeys.reduce((acc, key) => {
+    const directionAtMedia = direction[key]
+    if (!directionAtMedia) { return acc }
+    const mediaDirection = key === 'none' ? createDirection(directionAtMedia) : `${key}:${createDirection(directionAtMedia)}`
+    return [...acc, mediaDirection]
+  }, [] as string[])
+  return finalDirection.join(' ')
+}
+
+const getDirection = (direction: FlexListProps['direction']): string => {
+  if (!direction) return ''
+  if (typeof direction === 'string') {
+    return createDirection(direction)
+  }
+  return createMediaQueryDirection(direction)
+}
+
+
 
 export const getItems = (items: FlexListProps['items']) => {
   switch (items) {
