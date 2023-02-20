@@ -42,7 +42,7 @@ export default function FeelsList() {
             <RemixLink to={`${feel.id}/edit`} className="btn btn-ghost h-auto flex-grow justify-start p-2 normal-case font-normal">
               <FlexList direction="row" items="center" gap="md">
                 {!isSub ? <FontAwesomeIcon icon={faPencil} /> : null}
-                <FlexList gap={1}>
+                <FlexList gap="xs">
                   <FeelTag feel={feel} />
                   <span className="text-xs">Found in {pluralize('song', feel.songs.length, true)}</span>
                 </FlexList>
