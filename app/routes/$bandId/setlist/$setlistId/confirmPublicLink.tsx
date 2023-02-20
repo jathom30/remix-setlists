@@ -54,7 +54,7 @@ export default function ConfirmPublicLink() {
   const { setlist, setlistPublicUrl } = useLoaderData<typeof loader>()
 
   return (
-    <FlexList gap={0}>
+    <FlexList gap="none">
       <Navbar>
         <FlexHeader>
           <Title>{setlist.isPublic ? 'Setlist is public' : 'Create public link?'}</Title>
@@ -63,13 +63,13 @@ export default function ConfirmPublicLink() {
       </Navbar>
       {setlist.isPublic ? (
         <>
-          <FlexList pad={4}>
+          <FlexList pad="md">
             <p>This setlist is public. You can <a className="link link-accent" href={setlistPublicUrl} target="_blank" rel="noreferrer">follow this link</a> to see it.</p>
             <CopyClick textToCopy={setlistPublicUrl} copyMessage="Click to copy link" successMessage="Link copied!" />
             <p>If you would like this setlist to no longer be public, you can do so below.</p>
           </FlexList>
           <Form method="put">
-            <FlexList pad={4}>
+            <FlexList pad="md">
               <input type="hidden" hidden name="intent" value="remove" />
               <Button type="submit" kind="error">Remove public link</Button>
             </FlexList>
@@ -77,7 +77,7 @@ export default function ConfirmPublicLink() {
         </>
       ) : (
         <>
-          <FlexList pad={4}>
+          <FlexList pad="md">
             <p>Creating a public link will allow anyone with access to the URL to <strong>view</strong> this setlist. However, they will not be able to add, edit, or alter this setlist in any way.</p>
             <p>This is useful if you want to share your setlists with fans or allow someone access to this setlist without having to join your band.</p>
           </FlexList>

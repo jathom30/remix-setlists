@@ -73,7 +73,7 @@ export default function EditBandAvatar() {
         </div>
       } footer={
         <div className="bg-base-100">
-          <FlexList pad={4}>
+          <FlexList pad="md">
             <Button type="submit" kind="primary" icon={faSave} isSaving={isSubmitting}>Save</Button>
           </FlexList>
         </div>

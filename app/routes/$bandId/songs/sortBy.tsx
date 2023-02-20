@@ -9,12 +9,12 @@ export default function SongsSortBy() {
   const submit = useSubmit()
   return (
     <fetcher.Form method="put" action={`/resource/songSortBy?${params}`} onChange={e => submit(e.currentTarget)}>
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <Label>Sort by</Label>
         <RadioGroup
           name="sort"
           direction="col"
-          gap={0}
+          gap="none"
           options={sortOptions}
           isChecked={(val) => {
             const sort = params.get('sort')

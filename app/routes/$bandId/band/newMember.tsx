@@ -35,13 +35,13 @@ export default function NewMember() {
   const fetcher = useFetcher()
 
   return (
-    <FlexList pad={4}>
-      <FlexList gap={0}>
+    <FlexList pad="md">
+      <FlexList gap="none">
         <h5 className="text-xl font-bold">Invite new member</h5>
         <span className="text-text-subdued text-sm">Invite new members with the band code below.</span>
       </FlexList>
 
-      <FlexList gap={0}>
+      <FlexList gap="none">
         <Label>Band code</Label>
         <CopyClick textToCopy={band.code} copyMessage={band.code} successMessage="Band code copied!" />
       </FlexList>

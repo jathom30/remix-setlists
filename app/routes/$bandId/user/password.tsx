@@ -48,7 +48,7 @@ export default function UpdatePassword() {
 
   return (
     <Form method="put">
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <p className="font-bold">Update your password</p>
         <Field name="password" label="Password">
           <Input name="password" type="password" placeholder="Update password" onChange={e => setPassword(e.target.value)} />

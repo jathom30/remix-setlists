@@ -51,7 +51,7 @@ export default function LoadingSetlist() {
       header={
         <Navbar>
           <FlexHeader>
-            <FlexList gap={2}>
+            <FlexList gap="sm">
               <AvatarTitle title={`Loading ${setlist.name}`} />
               <Breadcrumbs breadcrumbs={[
                 { label: 'Setlists', to: `/${bandId}/setlists` },
@@ -66,10 +66,10 @@ export default function LoadingSetlist() {
       <MaxWidth>
         <div className="relative">
           <div className="animate-pulse">
-            <FlexList items="center" pad={4}>
+            <FlexList items="center" pad="md">
               {/* skeleton UI */}
               <FlexHeader>
-                <FlexList direction="row" gap={4}>
+                <FlexList direction="row" gap="md">
                   <motion.div className="bg-base-100 w-12 h-12 rounded" />
                   <motion.div className="bg-base-100 w-48 h-12 rounded" />
                 </FlexList>

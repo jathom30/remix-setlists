@@ -33,7 +33,7 @@ export const PasswordStrength = ({ tests, strength }: { tests: ReturnType<typeof
   }
 
   return (
-    <FlexList gap={0}>
+    <FlexList gap="none">
       <div className="h-4 bg-base-100 rounded overflow-hidden">
         <motion.div animate={{ width: `${width}%`, background: color() }} className="h-full w-1/2 bg-base-200" />
       </div>

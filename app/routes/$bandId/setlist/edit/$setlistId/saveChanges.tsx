@@ -45,7 +45,7 @@ export default function SaveChanges() {
 
   return (
     <Form method="put">
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <FlexHeader>
           <h1 className="font-bold">Save these changes?</h1>
           <Link to=".." isRounded><FontAwesomeIcon icon={faTimes} /></Link>

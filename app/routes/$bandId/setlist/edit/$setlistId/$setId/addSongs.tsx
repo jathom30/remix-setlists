@@ -60,7 +60,7 @@ export default function AddSongsToSet() {
 
   if (!hasAvailableSongs) {
     return (
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <h3 className="font-bold text-2xl">No available songs</h3>
         <p className="text-text-subdued text-sm">It looks like this setlist has used all your available songs.</p>
         <Link to={`../createSong`} kind="primary">Create a new song?</Link>
@@ -70,10 +70,10 @@ export default function AddSongsToSet() {
   }
 
   return (
-    <FlexList gap={0}>
+    <FlexList gap="none">
       <div className="bg-base-100 shadow-lg p-4 relative">
         <div className="sticky top-0">
-          <FlexList gap={2}>
+          <FlexList gap="sm">
             <FlexHeader>
               <FlexList direction="row" items="center">
                 <Title>Add songs to set</Title>

@@ -26,10 +26,10 @@ export const ExternalLinksInputs = ({ links, errors }: { links?: SerializeFrom<L
 
   const hasError = (id: string) => !!errors?.find(error => error === id)
   return (
-    <FlexList pad={0}>
+    <FlexList>
       {currentLinks.map(link => (
-        <FlexList key={link.id} gap={0}>
-          <FlexList direction="row" gap={2} items="center">
+        <FlexList key={link.id} gap="none">
+          <FlexList direction="row" gap="sm" items="center">
             <label className="input-group">
               <span>https://</span>
               <Input name={`links/${link.id}`} defaultValue={link.href} placeholder="website.com" />

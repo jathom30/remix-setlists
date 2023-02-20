@@ -1,8 +1,9 @@
 import type { BandIcon } from "@prisma/client"
 import type { SerializeFrom } from "@remix-run/node"
 import { contrastColor } from "~/utils/assorted";
+import type { Size } from "~/utils/flexStyles";
 
-export const Avatar = ({ icon, bandName, size = 'md' }: { icon?: SerializeFrom<BandIcon> | null; bandName: string; size?: 'sm' | 'md' | 'lg' | 'xl' }) => {
+export const Avatar = ({ icon, bandName, size = 'md' }: { icon?: SerializeFrom<BandIcon> | null; bandName: string; size?: Size }) => {
   const getSize = () => {
     switch (size) {
       case 'sm':

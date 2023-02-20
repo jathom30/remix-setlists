@@ -53,7 +53,7 @@ export default function CreateSet() {
 
   if (!hasAvailableSongs) {
     return (
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <h3 className="font-bold text-2xl">No available songs</h3>
         <p className="text-text-subdued text-sm">It looks like this setlist has used all your available songs.</p>
         <Link to={`../createSong`} kind="primary">Create a new song?</Link>
@@ -72,7 +72,7 @@ export default function CreateSet() {
       fullHeight
       header={
         <div className="bg-base-100 shadow-lg p-4">
-          <FlexList gap={2}>
+          <FlexList gap="sm">
             <FlexHeader>
               <Title>New set</Title>
               {hasAvailableSongs ? <Link isOutline to="../createSong" icon={faPlus}>Create song</Link> : null}

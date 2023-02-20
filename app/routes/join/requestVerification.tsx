@@ -52,7 +52,7 @@ export default function RequestVerification() {
 
   const displayEmail = user?.email || email || ''
   return (
-    <FlexList pad={4}>
+    <FlexList pad="md">
       <FontAwesomeIcon icon={faEnvelope} size="5x" />
       <h1 className="text-center text-2xl font-bold">Request a verification email</h1>
       <p className="text-sm text-slate-500 text-center">It looks like your account is not yet verified with us</p>

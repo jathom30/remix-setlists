@@ -64,11 +64,11 @@ export default function CondensedSetlist() {
         </>
       }
     >
-      <FlexList pad={4} gap={0}>
+      <FlexList pad="md" gap="none">
         {sortedSets.map((set, i) => (
           <div key={set.id}>
             <Label>Set {i + 1} - {pluralize('minutes', getSetLength(set), true)}</Label>
-            <FlexList gap={0}>
+            <FlexList gap="none">
               {set.songs.map((song) => (
                 <span key={song.songId}>{song.positionInSet + 1}. {song.song?.name}</span>
               ))}

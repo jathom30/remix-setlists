@@ -70,7 +70,7 @@ export const MobileMenu = () => {
       </Button>
       {createPortal(
         <Drawer open={showMenu} onClose={() => setShowMenu(false)}>
-          <FlexList pad={4}>
+          <FlexList pad="md">
             {routes.map(route => (
               <Link size="md" key={route.to} to={`/${bandId}/${route.to}`} kind={isActive(route.to) ? 'primary' : undefined} isOutline={!isActive(route.to)} isSaving={isNavigatingTo(route.to)} icon={route.icon}>{route.label}</Link>
             ))}

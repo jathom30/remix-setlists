@@ -33,7 +33,7 @@ export const AddBand = ({ onSubmit, onClose }: { onSubmit: () => void; onClose: 
 
 
   return (
-    <FlexList gap={0}>
+    <FlexList gap="none">
       <Navbar>
         <FlexHeader>
           <Title>Add band</Title>
@@ -41,7 +41,7 @@ export const AddBand = ({ onSubmit, onClose }: { onSubmit: () => void; onClose: 
         </FlexHeader>
       </Navbar>
       {!addType ? (
-        <FlexList pad={4}>
+        <FlexList pad="md">
           <p>How do you want to add a band?</p>
           <Button onClick={() => setAddType('code')} size="md" kind="secondary" isOutline icon={faBarcode}>Add with code</Button>
           <Button onClick={() => setAddType('new')} size="md" kind="primary" icon={faPlus}>Create a new band</Button>
@@ -49,7 +49,7 @@ export const AddBand = ({ onSubmit, onClose }: { onSubmit: () => void; onClose: 
       ) : null}
       {addType === 'code' ? (
         <codeFetcher.Form method="put" action="/resources/addExistingBand">
-          <FlexList gap={0} pad={4}>
+          <FlexList gap="none" pad="md">
             <Field name="bandCode" label="Band code">
               <Input name="bandCode" placeholder="Enter your band code here..." />
               {codeError ? <ErrorMessage message={codeError} /> : null}
@@ -63,7 +63,7 @@ export const AddBand = ({ onSubmit, onClose }: { onSubmit: () => void; onClose: 
       ) : null}
       {addType === 'new' ? (
         <newFetcher.Form method="put" action="/resources/createNewBand">
-          <FlexList pad={4} gap={0}>
+          <FlexList pad="md" gap="none">
             <Field name="name" label="Create a new band">
               <Input name="name" placeholder="Band name..." />
               {newError ? <ErrorMessage message="Band name is required" /> : null}

@@ -30,19 +30,19 @@ export default function FeelsList() {
       fullHeight
       footer={
         <div className="bg-base-100 shadow-xl">
-          <FlexList pad={4}>
+          <FlexList pad="md">
             <Link to="new" kind="primary">Add new feel</Link>
           </FlexList>
         </div>
       }
     >
-      <FlexList pad={2} gap={0}>
+      <FlexList pad="sm" gap="none">
         {feels?.map(feel => (
           <FlexHeader key={feel.id}>
             <RemixLink to={`${feel.id}/edit`} className="btn btn-ghost h-auto flex-grow justify-start p-2 normal-case font-normal">
-              <FlexList direction="row" items="center" gap={4}>
+              <FlexList direction="row" items="center" gap="md">
                 {!isSub ? <FontAwesomeIcon icon={faPencil} /> : null}
-                <FlexList gap={1}>
+                <FlexList gap="xs">
                   <FeelTag feel={feel} />
                   <span className="text-xs">Found in {pluralize('song', feel.songs.length, true)}</span>
                 </FlexList>

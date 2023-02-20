@@ -12,7 +12,7 @@ export default function EditBandAvatarImage() {
     setImage(URL.createObjectURL(e.target.files[0]))
   }
   return (
-    <FlexList pad={4}>
+    <FlexList pad="md">
       {image ? (
         <>
           <Button isOutline onClick={() => fileInputRef.current?.click()}>Replace image</Button>

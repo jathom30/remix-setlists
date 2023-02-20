@@ -21,7 +21,7 @@ export const getTempoColor = (tempo: number) => {
 
 export const TempoIcons = ({ tempo }: { tempo: number }) => {
   return (
-    <FlexList direction="row" gap={0}>
+    <FlexList direction="row" gap="none">
       {Array.from({ length: 5 }, (_, i) => (
         <FontAwesomeIcon icon={faBolt} size="xs" key={i} className={i < tempo ? getTempoColor(tempo) : 'text-base-300'} color={i < tempo ? 'black' : 'lightgrey'} />
       ))}

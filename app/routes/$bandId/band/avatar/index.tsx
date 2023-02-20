@@ -14,7 +14,7 @@ export async function loader({ request, params }: LoaderArgs) {
 export default function AvatarBase() {
   const data = useBandIcon()
   return (
-    <FlexList pad={4} items="center">
+    <FlexList pad="md" items="center">
       <Avatar bandName={data?.bandName || ''} icon={data?.icon} size="xl" />
       <FlexList direction="row">
         <Link icon={faPencil} to="edit">Change</Link>

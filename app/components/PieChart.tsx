@@ -15,7 +15,7 @@ export const PieChart = ({ slices, noFeel }: { slices: { percent: number; feel: 
           ))}
         </svg>
       </div>
-      <FlexList gap={2}>
+      <FlexList gap="sm">
         {slices.map(slice => {
           if (!slice.feel) { return null }
           return (
@@ -23,7 +23,7 @@ export const PieChart = ({ slices, noFeel }: { slices: { percent: number; feel: 
           )
         })}
         {noFeel ? (
-          <FlexList direction="row" gap={2} justify="center">
+          <FlexList direction="row" gap="sm" justify="center">
             Songs without feels
             <span>{Math.round(noFeel * 100)}%</span>
           </FlexList>

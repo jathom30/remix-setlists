@@ -18,7 +18,7 @@ export async function loader({ request }: LoaderArgs) {
 export default function User() {
   const { user, bandId } = useLoaderData<typeof loader>()
   return (
-    <FlexList pad={4}>
+    <FlexList pad="md">
       <div className="flex flex-col items-baseline">
         <TextOverflow>{user.name}</TextOverflow>
         <TextOverflow>

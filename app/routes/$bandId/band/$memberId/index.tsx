@@ -61,18 +61,18 @@ export default function EditMember() {
   const [roleTab, setRoleTab] = useState(member.role)
 
   return (
-    <FlexList pad={4}>
-      <FlexList gap={0}>
+    <FlexList pad="md">
+      <FlexList gap="none">
         <Label>Member</Label>
         <span className="font-bold">{member.name}</span>
       </FlexList>
 
-      <FlexList gap={0}>
+      <FlexList gap="none">
         <Label>Access Level</Label>
         <span className="font-bold">{member.role}</span>
       </FlexList>
 
-      <FlexList gap={2}>
+      <FlexList gap="sm">
         <Label>Update member role</Label>
         <Tabs
           tabs={[

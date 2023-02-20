@@ -9,13 +9,13 @@ export const ConfirmDelete = ({ label, deleteLabel = 'Delete', message, cancelTo
   const navigation = useNavigation()
   const isSubmitting = useSpinDelay(navigation.state !== 'idle')
   return (
-    <FlexList pad={4}>
+    <FlexList pad="md">
       <h3 className="font-bold">{label}</h3>
       <p>{message}</p>
-      <div className="flex flex-col gap-2 sm:flex-row-reverse">
+      <FlexList gap="sm" direction={{ none: 'col', sm: 'row-reverse' }}>
         <Button type="submit" kind="error" icon={faTrash} isSaving={isSubmitting}>{isSubmitting ? 'Deleting...' : deleteLabel}</Button>
         <Link to={cancelTo}>Cancel</Link>
-      </div>
+      </FlexList>
     </FlexList>
   )
 }

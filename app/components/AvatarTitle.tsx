@@ -12,7 +12,7 @@ export const AvatarTitle = ({ title }: { title: ReactNode }) => {
   const isSubmitting = useSpinDelay(navigation.state !== 'idle')
   const band = useBandIcon()
   return (
-    <FlexList direction="row" items="center" gap={2}>
+    <FlexList direction="row" items="center" gap="sm">
       <div className="sm:hidden">
         {band ? (
           <Link to="/home">

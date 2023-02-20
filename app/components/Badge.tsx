@@ -1,11 +1,12 @@
 import type { ReactNode } from "react"
 import { badgeKind } from "~/utils/buttonStyles";
+import type { Size } from "~/utils/flexStyles";
 
 export type BadgeKind = 'outline' | 'primary' | 'secondary' | 'accent' | 'ghost' | 'info' | 'success' | 'warning' | 'error'
 
 export const Badge = ({ children, size = 'md', kind }: {
   children: ReactNode;
-  size?: 'xs' | 'sm' | 'md' | 'lg';
+  size?: Size;
   kind?: BadgeKind
 }) => {
   return (
@@ -13,7 +14,7 @@ export const Badge = ({ children, size = 'md', kind }: {
   )
 }
 
-const getSize = (size: 'xs' | 'sm' | 'md' | 'lg') => {
+const getSize = (size: Size) => {
   switch (size) {
     case 'xs':
       return 'badge-xs'

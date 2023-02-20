@@ -19,8 +19,8 @@ export const SongDetails = ({ song }: { song: SerializeFrom<Song & { feels: Feel
   const isSub = memberRole === RoleEnum.SUB
 
   return (
-    <FlexList pad={4}>
-      <FlexList gap={2}>
+    <FlexList pad="md">
+      <FlexList gap="sm">
         <Label>Details</Label>
         <ItemBox>
           <div className="grid grid-cols-[max-content_1fr] items-center gap-2">
@@ -40,7 +40,7 @@ export const SongDetails = ({ song }: { song: SerializeFrom<Song & { feels: Feel
             <span>{pluralize('Minutes', song.length, true)}</span>
 
             <Label align="right">Feels</Label>
-            <FlexList direction="row" gap={2} wrap>
+            <FlexList direction="row" gap="sm" wrap>
               {song.feels.map(feel => (
                 <FeelTag key={feel.id} feel={feel} />
               ))}
@@ -59,10 +59,10 @@ export const SongDetails = ({ song }: { song: SerializeFrom<Song & { feels: Feel
 
       <Divider />
 
-      <FlexList gap={2}>
+      <FlexList gap="sm">
         <Label>Notes/Lyrics</Label>
         <ItemBox>
-          <FlexList gap={2}>
+          <FlexList gap="sm">
             {!song.note ? (
               <span>--</span>
             ) : (
@@ -78,10 +78,10 @@ export const SongDetails = ({ song }: { song: SerializeFrom<Song & { feels: Feel
 
       {song.links.length ? (
         <>
-          <FlexList gap={2}>
+          <FlexList gap="sm">
             <Label>Links</Label>
             <ItemBox>
-              <FlexList gap={2}>
+              <FlexList gap="sm">
                 {song.links.map(link => (
                   <a
                     className="link link-accent"
@@ -101,14 +101,14 @@ export const SongDetails = ({ song }: { song: SerializeFrom<Song & { feels: Feel
         </>
       ) : null}
 
-      <FlexList gap={2}>
+      <FlexList gap="sm">
         <Label>Settings</Label>
         <ItemBox>
-          <FlexList gap={2} direction="row" items="center">
+          <FlexList gap="sm" direction="row" items="center">
             <Label>Position</Label>
             <span>{capitalizeFirstLetter(song.position) || 'Other'}</span>
           </FlexList>
-          <FlexList gap={2} direction="row" items="center">
+          <FlexList gap="sm" direction="row" items="center">
             <Label>Setlist auto-generation importance</Label>
             <span>{setlistAutoGenImportanceEnums[song.rank as keyof typeof setlistAutoGenImportanceEnums]}</span>
           </FlexList>
@@ -118,7 +118,7 @@ export const SongDetails = ({ song }: { song: SerializeFrom<Song & { feels: Feel
       <Divider />
 
       {!isSub ? (
-        <FlexList gap={2}>
+        <FlexList gap="sm">
           <Label isDanger>Danger zone</Label>
           <ItemBox>
             <FlexList>

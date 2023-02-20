@@ -30,7 +30,7 @@ export async function action({ request, params }: ActionArgs) {
 export default function ConfirmCancel() {
   return (
     <Form method="put">
-      <FlexList pad={4}>
+      <FlexList pad="md">
         <h1 className="font-bold">Cancel changes?</h1>
         <p className="text-slate-500">You will lose all changes made to this setlist.</p>
         <Link to="..">Continue editing</Link>

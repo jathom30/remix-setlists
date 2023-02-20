@@ -1,10 +1,13 @@
+import type { FlexDirection, Padding, Size } from "~/utils/flexStyles";
+import { getGap, getPadding } from "~/utils/flexStyles";
+
 export type FlexListProps = {
   children: React.ReactNode;
-  gap?: number
-  pad?: number | Partial<Record<'x' | 'y' | 'l' | 'r' | 't' | 'b', number>>
+  gap?: Size | Partial<Record<Size, Size>>
+  pad?: Padding | Partial<Record<Size, Padding>>
   items?: 'center' | 'start' | 'end' | 'baseline' | 'stretch'
   justify?: 'start' | 'end' | 'center' | 'between' | 'around' | 'evenly'
-  direction?: 'row' | 'row-reverse' | 'col' | 'col-reverse'
+  direction?: FlexDirection | Partial<Record<Size, FlexDirection>>
   height?: 'full'
   width?: 'full' | 'half'
   grow?: boolean
@@ -13,7 +16,7 @@ export type FlexListProps = {
 
 export const FlexList = ({
   children,
-  gap = 4,
+  gap = 'md',
   pad,
   items,
   direction = 'col',
@@ -23,19 +26,48 @@ export const FlexList = ({
   grow = false,
   wrap = false,
 }: FlexListProps) => {
-  const createPadding = () => {
-    if (!pad) { return '' }
-    if (typeof pad === 'number') {
-      return `p-${pad}`
-    }
-    return `px-${pad.x} py-${pad.y} pt-${pad.t} pb-${pad.b} pl-${pad.l} pr-${pad.r}`
-  }
   return (
-    <div className={`FlexList ${grow ? 'grow' : ''} ${createPadding()} flex flex-${direction} gap-${gap} ${getItems(items)} ${getJustify(justify)} ${height ? `h-${height}` : ''} ${width === 'full' ? `w-full` : ''} ${width === 'half' ? 'w-1/2' : ''} ${wrap ? 'flex-wrap' : ''}`}>
+    <div className={`FlexList ${grow ? 'grow' : ''} ${getPadding(pad)} flex ${getDirection(direction)} ${getGap(gap)} ${getItems(items)} ${getJustify(justify)} ${height ? `h-${height}` : ''} ${width === 'full' ? `w-full` : ''} ${width === 'half' ? 'w-1/2' : ''} ${wrap ? 'flex-wrap' : ''}`}>
       {children}
     </div>
   )
 }
+
+const createDirection = (direction: FlexListProps['direction']) => {
+  switch (direction) {
+    case 'col':
+      return 'flex-col'
+    case 'col-reverse':
+      return 'flex-col-reverse'
+    case 'row':
+      return 'flex-row'
+    case 'row-reverse':
+      return 'flex-row-reverse'
+    default:
+      return ''
+  }
+}
+
+const createMediaQueryDirection = (direction: Partial<Record<Size, FlexDirection>>) => {
+  const directionKeys = Object.keys(direction) as Size[]
+  const finalDirection = directionKeys.reduce((acc, key) => {
+    const directionAtMedia = direction[key]
+    if (!directionAtMedia) { return acc }
+    const mediaDirection = key === 'none' ? createDirection(directionAtMedia) : `${key}:${createDirection(directionAtMedia)}`
+    return [...acc, mediaDirection]
+  }, [] as string[])
+  return finalDirection.join(' ')
+}
+
+const getDirection = (direction: FlexListProps['direction']): string => {
+  if (!direction) return ''
+  if (typeof direction === 'string') {
+    return createDirection(direction)
+  }
+  return createMediaQueryDirection(direction)
+}
+
+
 
 export const getItems = (items: FlexListProps['items']) => {
   switch (items) {

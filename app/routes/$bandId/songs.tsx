@@ -100,13 +100,13 @@ export default function SongsList() {
         fullHeight
         header={
           <MaxWidth>
-            <FlexList pad={4} gap={4}>
+            <FlexList pad="md" gap="md">
               <Form method="get" onChange={e => submit(e.currentTarget)}>
                 <SearchInput value={query} onClear={handleClearQuery} onChange={e => setQuery(e.target.value)} />
               </Form>
-              <FlexList direction="row" items="center" justify="end" gap={2}>
+              <FlexList direction="row" items="center" justify="end" gap="sm">
                 <Link to={{ pathname: 'sortBy', search: searchParams.toString() }} isOutline icon={faSort}>
-                  <FlexList direction="row" gap={2}>
+                  <FlexList direction="row" gap="sm">
                     <span>Sort by:</span>
                     <span>{sortBy}</span>
                   </FlexList>
@@ -123,13 +123,13 @@ export default function SongsList() {
         <MaxWidth>
           <FlexList height="full">
             {hasSongs ? (
-              <FlexList pad={4} gap={2}>
+              <FlexList pad="md" gap="sm">
                 {songs.map(song => (
                   <SongLink key={song.id} song={song} />
                 ))}
               </FlexList>
             ) : (
-              <FlexList pad={4}>
+              <FlexList pad="md">
                 <FontAwesomeIcon icon={faBoxOpen} size="3x" />
                 <p className="text-center">Looks like this band doesn't have any songs yet.</p>
                 {!isSub ? <Link to={`/${bandId}/song/new`} kind="primary">Create your first song</Link> : null}

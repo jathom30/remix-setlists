@@ -68,7 +68,7 @@ export default function Setlist() {
         <>
           <Navbar>
             <FlexHeader>
-              <FlexList direction="row" gap={2} items="center">
+              <FlexList direction="row" gap="sm" items="center">
                 <AvatarTitle title={setlist.name} />
                 {setlist.isPublic ? (
                   <Popover
@@ -114,7 +114,7 @@ export default function Setlist() {
       }
     >
       <MaxWidth>
-        <FlexList pad={4}>
+        <FlexList pad="md">
           {setlist.sets.map((set, i) => (
             <Collapsible
               key={set.id}
@@ -133,7 +133,7 @@ export default function Setlist() {
                 </div>
               }
             >
-              <FlexList gap={2}>
+              <FlexList gap="sm">
                 {set.songs.map(song => {
                   if (!song.song) { return null }
                   return (

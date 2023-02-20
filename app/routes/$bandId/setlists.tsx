@@ -113,13 +113,13 @@ export default function SetlistsRoute() {
         <MaxHeightContainer
           fullHeight
           header={
-            <FlexList pad={4} gap={4}>
+            <FlexList pad="md" gap="md">
               <Form method="get" onChange={e => submit(e.currentTarget)}>
                 <SearchInput value={query} onClear={handleClearQuery} onChange={e => setQuery(e.target.value)} />
               </Form>
-              <FlexList direction="row" items="center" justify="end" gap={2}>
+              <FlexList direction="row" items="center" justify="end" gap="sm">
                 <Link to={{ pathname: 'sortBy', search: searchParams.toString() }} isOutline icon={faSort}>
-                  <FlexList direction="row" gap={2}>
+                  <FlexList direction="row" gap="sm">
                     <span>Sort by:</span>
                     <span>{sortByLabel()}</span>
                   </FlexList>
@@ -130,13 +130,13 @@ export default function SetlistsRoute() {
         >
           <FlexList height="full">
             {hasSetlists ? (
-              <FlexList pad={4} gap={2}>
+              <FlexList pad="md" gap="sm">
                 {setlists.map(setlist => (
                   <SetlistLink key={setlist.id} setlist={setlist} publicRemark="You can remove the public link by clicking on this setlist's settings." />
                 ))}
               </FlexList>
             ) : (
-              <FlexList pad={4}>
+              <FlexList pad="md">
                 <FontAwesomeIcon icon={faBoxOpen} size="3x" />
                 <p className="text-center">Looks like this band doesn't have any setlists yet.</p>
                 {!isSub ? <Link to={`/${bandId}/setlist/new`} kind="primary">Create your first setlist</Link> : null}

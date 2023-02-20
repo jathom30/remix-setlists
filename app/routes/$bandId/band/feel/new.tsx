@@ -45,8 +45,8 @@ export default function NewFeel() {
 
   return (
     <Form method="post">
-      <FlexList pad={4}>
-        <FlexList gap={2}>
+      <FlexList pad="md">
+        <FlexList gap="sm">
           <span>Create a new feel</span>
           <span className="text-sm text-text-subdued">Feels can be added to songs. They are a useful way to help categorize your songs.</span>
         </FlexList>

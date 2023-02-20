@@ -64,7 +64,7 @@ export function DroppableContainer({
       {...attributes}
     >
       <Collapsible isOpen={isOpen} header={
-        <FlexHeader pad={4}>
+        <FlexHeader pad="md">
           <FlexList direction="row" items="center">
             <div
               className="btn btn-accent btn-sm cursor-grab"

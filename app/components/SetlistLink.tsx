@@ -29,9 +29,9 @@ export const SetlistLink = ({ setlist, publicRemark }: { setlist: SerializeFrom<
       state={pathname}
       className={hoverAndFocusContainerStyles}
     >
-      <FlexList gap={0}>
+      <FlexList gap="none">
         <FlexHeader>
-          <FlexList direction="row" gap={2} items="center">
+          <FlexList direction="row" gap="sm" items="center">
             <span className="font-bold">{setlist.name}</span>
             {setlist.isPublic ? (
               <Popover

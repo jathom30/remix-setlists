@@ -41,7 +41,7 @@ export default function DeleteMember() {
 
   if (!canRemoveMember) {
     return (
-      <FlexList pad={4} gap={2}>
+      <FlexList pad="md" gap="sm">
         <p className="text-danger text-sm">
           You are the only admin. Make at least one other member an Admin before removing yourself.
         </p>
