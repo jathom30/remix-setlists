@@ -13,7 +13,8 @@ export async function loader({ request, params }: LoaderArgs) {
   invariant(bandId, 'bandId not found')
   await requireNonSubMember(request, bandId)
 
-  const song = await getSong(songId, bandId, true)
+  const response = await getSong(songId, bandId, true)
+  const song = response?.song
   if (!song) {
     throw new Response('Song not found', { status: 404 })
   }
