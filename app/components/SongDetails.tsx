@@ -1,5 +1,5 @@
 import { faInfoCircle, faTrash } from "@fortawesome/free-solid-svg-icons"
-import type { Feel, Song, Link as LinkType, SongsInSets } from "@prisma/client";
+import type { Feel, Song, Link as LinkType, SongsInSets, Setlist } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/node"
 import pluralize from "pluralize"
 import { useMemberRole } from "~/utils";
@@ -19,11 +19,12 @@ import { Button } from "./Button";
 import { SongSettingsInfo } from "./SongSettingsInfo";
 import { Modal } from "./Modal";
 
-export const SongDetails = ({ song }: { song: SerializeFrom<Song & { feels: Feel[], sets: SongsInSets[], links: LinkType[] }> }) => {
+export const SongDetails = ({ song, setlists }: { song: SerializeFrom<Song & { feels: Feel[], sets: SongsInSets[], links: LinkType[] }>; setlists: Pick<Setlist, "id" | "name" | "editedFromId">[] | undefined }) => {
   const memberRole = useMemberRole()
   const isSub = memberRole === RoleEnum.SUB
   const [showSettingsInfo, setShowSettingsInfo] = useState(false)
 
+  const visibleSetlists = setlists?.filter(setlist => !setlist.editedFromId)
   return (
     <>
       <FlexList pad={4}>
@@ -55,8 +56,8 @@ export const SongDetails = ({ song }: { song: SerializeFrom<Song & { feels: Feel
               </FlexList>
 
               <Label align="right">Found in</Label>
-              {song.sets.length > 0 ? (
-                <RemixLink className="link link-accent" to="setlists">{pluralize('setlist', song.sets.length, true)}</RemixLink>
+              {visibleSetlists?.length ? (
+                <RemixLink className="link link-accent" to="setlists">{pluralize('setlist', visibleSetlists.length, true)}</RemixLink>
               ) : (
                 <span>0 setlists</span>
               )}

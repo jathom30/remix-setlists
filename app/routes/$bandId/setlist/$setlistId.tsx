@@ -1,7 +1,7 @@
 import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
-import { deleteUnneededClonedSetlists, getSetlist } from "~/models/setlist.server";
+import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import { AvatarTitle, Breadcrumbs, Button, CatchContainer, Collapsible, CreateNewButton, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SongLink } from "~/components";
@@ -21,7 +21,7 @@ export async function loader({ request, params }: LoaderArgs) {
   invariant(setlistId, 'setlistId not found')
   invariant(bandId, 'bandId not found')
 
-  const [setlist] = await Promise.all([getSetlist(setlistId), deleteUnneededClonedSetlists(bandId)])
+  const setlist = await getSetlist(setlistId)
 
   if (!setlist) {
     throw new Response("Setlist not found", { status: 404 })

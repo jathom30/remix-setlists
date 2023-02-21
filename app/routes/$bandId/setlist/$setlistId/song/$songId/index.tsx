@@ -15,15 +15,17 @@ export async function loader({ request, params }: LoaderArgs) {
   invariant(songId, 'songId not found')
   invariant(bandId, 'bandId not found')
 
-  const song = await getSong(songId, bandId)
+  const response = await getSong(songId, bandId)
+  const song = response?.song
+  const setlists = response?.setlists
   if (!song) {
     throw new Response('Song not found', { status: 404 })
   }
-  return json({ song })
+  return json({ song, setlists })
 }
 
 export default function SongDetailsRoute() {
-  const { song } = useLoaderData<typeof loader>()
+  const { song, setlists } = useLoaderData<typeof loader>()
   const memberRole = useMemberRole()
   const isSub = memberRole === RoleEnum.SUB
 
@@ -40,7 +42,7 @@ export default function SongDetailsRoute() {
       }
     >
       <div className="bg-base-200">
-        <SongDetails song={song} />
+        <SongDetails song={song} setlists={setlists} />
       </div>
     </MaxHeightContainer>
   )
