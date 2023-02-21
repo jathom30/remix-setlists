@@ -13,7 +13,7 @@ import { Label } from "./Label"
 
 const setCount = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']
 
-export const SetlistLink = ({ setlist, publicRemark }: { setlist: SerializeFrom<Setlist & { sets: { songs: { song: { length: Song['length'] } }[] }[] }>; publicRemark?: string }) => {
+export const SetlistLink = ({ setlist, publicRemark }: { setlist: SerializeFrom<Setlist & { sets: { updatedAt: string; songs: { song: { length: Song['length'] } }[] }[] }>; publicRemark?: string }) => {
   const [showTooltip, setShowTooltip] = useState(false)
   const { bandId } = useParams()
   const { pathname } = useLocation()
@@ -21,6 +21,11 @@ export const SetlistLink = ({ setlist, publicRemark }: { setlist: SerializeFrom<
     const setLength = set.songs.reduce((total, song) => total += song.song.length, 0)
     return total += setLength
   }, 0) / setlist.sets.length)
+
+  const updatedAt = () => {
+    const [mostRecentSetlist] = setlist.sets.sort((a, b) => Date.parse(a.updatedAt) - Date.parse(b.updatedAt))
+    return new Date(mostRecentSetlist.updatedAt).toDateString()
+  }
 
   return (
     <Link
@@ -54,7 +59,7 @@ export const SetlistLink = ({ setlist, publicRemark }: { setlist: SerializeFrom<
         </FlexHeader>
         <FlexHeader>
           <span className="text-xs">{setCount[setlist.sets.length]} {getDisplaySetLength} minute set(s)</span>
-          <span className="text-xs whitespace-nowrap">{new Date(setlist.updatedAt).toDateString()}</span>
+          <span className="text-xs whitespace-nowrap">{updatedAt()}</span>
         </FlexHeader>
       </FlexList>
     </Link>

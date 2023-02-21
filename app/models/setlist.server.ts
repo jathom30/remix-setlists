@@ -34,7 +34,7 @@ export async function getSetlists(bandId: Band['id'], params?: { q?: string, sor
         contains: params?.q
       }
     },
-    include: { sets: { select: { songs: { include: { song: { select: { length: true } } } } } } },
+    include: { sets: { select: { songs: { include: { song: { select: { length: true } } } }, updatedAt: true } } },
     orderBy,
   })
   return setlists
