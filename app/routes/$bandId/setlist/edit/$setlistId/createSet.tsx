@@ -75,7 +75,7 @@ export default function CreateSet() {
           <FlexList gap={2}>
             <FlexHeader>
               <Title>New set</Title>
-              {hasAvailableSongs ? <Link isOutline to="../createSong" icon={faPlus}>Create song</Link> : null}
+              {hasAvailableSongs ? <Link isOutline to="../createSong" isCollapsing icon={faPlus}>Create song</Link> : null}
             </FlexHeader>
             <Form method="get" onChange={e => submit(e.currentTarget)}>
               <SearchInput value={query} onClear={handleClearQuery} onChange={e => setQuery(e.target.value)} />

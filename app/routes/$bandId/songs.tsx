@@ -11,7 +11,6 @@ import { RoleEnum } from "~/utils/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sortByLabel } from "~/utils/params";
 import { useState } from "react";
-import { deleteUnneededClonedSetlists } from "~/models/setlist.server";
 
 export const meta: MetaFunction = () => ({
   title: "Songs",
@@ -40,7 +39,7 @@ export async function loader({ request, params }: LoaderArgs) {
     positions: positionParams,
   }
 
-  const [songs] = await Promise.all([getSongs(bandId, songParams), deleteUnneededClonedSetlists(bandId)])
+  const songs = await getSongs(bandId, songParams)
 
   return json({ songs })
 }

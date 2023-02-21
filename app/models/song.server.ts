@@ -44,11 +44,12 @@ export async function getSong(songId: Song['id'], bandId: Song['bandId'], includ
   const song = await prisma.band.findUnique({
     where: { id: bandId },
     select: {
-      song: { where: { id: songId }, include: { feels: true, sets: includeSets, links: true } }
+      song: { where: { id: songId }, include: { feels: true, sets: includeSets, links: true } },
+      setlists: { where: { sets: { some: { songs: { some: { songId } } } } }, select: { name: true, id: true, editedFromId: true } }
     }
   })
   if (!song) { return }
-  return song?.song[0]
+  return { song: song?.song[0], setlists: song.setlists }
 }
 
 export async function getSongName(songId: Song['id']) {
@@ -202,8 +203,8 @@ export async function getSongSetlists(songId: Song['id']) {
     include: { sets: { select: { setId: true } } }
   })
   const setIds = songWithSets?.sets.map(set => set.setId)
-  return prisma.setlist.findMany({
+  return (await prisma.setlist.findMany({
     where: { sets: { some: { id: { in: setIds } } } },
-    select: { name: true, id: true }
-  })
+    select: { name: true, id: true, editedFromId: true }
+  }))?.filter(setlist => !setlist.editedFromId)
 }

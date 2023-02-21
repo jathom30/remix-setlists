@@ -105,7 +105,7 @@ export default function BandSettingsPage() {
               ) : null}
             </FlexHeader>
             <ItemBox>
-              <FlexList gap={0}>
+              <FlexList gap={1}>
                 {members.map(member => (
                   <FlexHeader key={member.id}>
                     <RemixLink to={member.id} className="btn btn-ghost h-auto flex-grow justify-start p-2 normal-case font-normal">

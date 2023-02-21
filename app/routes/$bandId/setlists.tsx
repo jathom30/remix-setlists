@@ -3,7 +3,7 @@ import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { AvatarTitle, CreateNewButton, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SearchInput, SetlistLink } from "~/components";
-import { deleteUnneededClonedSetlists, getSetlists } from "~/models/setlist.server";
+import { getSetlists } from "~/models/setlist.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,7 +35,7 @@ export async function loader({ request, params }: LoaderArgs) {
     ...(sort ? { sort } : null),
   }
 
-  const [setlists] = await Promise.all([getSetlists(bandId, filterParams), deleteUnneededClonedSetlists(bandId)])
+  const setlists = await getSetlists(bandId, filterParams)
   return json({ setlists: setlists.filter(setlist => !setlist.editedFromId) })
 }
 

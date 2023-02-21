@@ -24,6 +24,7 @@ export default function Setlists() {
   const { bandId } = useParams()
   const { setlists } = useLoaderData<typeof loader>()
 
+
   return (
     <FlexList gap={0}>
       <Navbar>
