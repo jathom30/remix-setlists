@@ -13,7 +13,7 @@ export const MulitSongSelect = ({ songs }: { songs: SerializeFrom<Song[]> }) => 
         {songs.length === 0 ? (
           <FlexList>
             <FontAwesomeIcon icon={faMagnifyingGlass} size="3x" />
-            <p>We couldn't find any songs that match your search...</p>
+            <p className="text-center">We couldn't find any songs that match your search...</p>
           </FlexList>
         ) : (
           songs.map(song => (
