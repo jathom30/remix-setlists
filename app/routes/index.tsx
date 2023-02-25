@@ -26,7 +26,7 @@ export const meta: MetaFunction = () => ({
 export default function Landing() {
   return (
     <div className="mt-16 pb-16">
-      <div className="fixed top-0 inset-x-0 z-10">
+      <div className="fixed top-0 inset-x-0 z-20">
         <Navbar>
           <FlexHeader>
             <Title>Setlists</Title>

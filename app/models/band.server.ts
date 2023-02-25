@@ -87,10 +87,18 @@ export async function createBand(band: Pick<Band, 'name'>, userId: User['id']) {
 }
 
 export async function updateBand(bandId: Band['id'], band: Partial<Band>) {
-  return prisma.band.update({
+  const originalBand = await prisma.band.findUnique({ where: { id: bandId }, select: { name: true } })
+  const updatedBand = await prisma.band.update({
     where: { id: bandId },
     data: band
   })
+  await prisma.song.updateMany({
+    where: { bandId, author: originalBand?.name },
+    data: {
+      author: updatedBand.name
+    }
+  })
+  return updatedBand
 }
 
 export async function updateBandCode(bandId: Band['id']) {
