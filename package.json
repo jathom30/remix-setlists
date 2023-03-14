@@ -47,7 +47,7 @@
     "@tailwindcss/typography": "^0.5.9",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.33.0",
-    "daisyui": "^2.50.0",
+    "daisyui": "^2.51.3",
     "framer-motion": "^9.0.4",
     "isbot": "^3.6.6",
     "pluralize": "^8.0.0",
