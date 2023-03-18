@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 
 type CollapsibleProps = {
   children?: ReactNode
-  header: ReactNode
+  header?: ReactNode
   isOpen?: boolean
   isBordered?: boolean;
 }

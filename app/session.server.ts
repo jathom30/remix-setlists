@@ -46,7 +46,8 @@ export async function getUser(request: Request) {
 
 export async function requireUserId(
   request: Request,
-  redirectTo: string = new URL(request.url).pathname
+  // redirect includes search params
+  redirectTo: string = `${new URL(request.url).pathname}?${new URL(request.url).searchParams}`
 ) {
   const userId = await getUserId(request);
   const searchParams = new URLSearchParams([["redirectTo", redirectTo]]);

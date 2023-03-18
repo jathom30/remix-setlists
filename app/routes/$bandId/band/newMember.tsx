@@ -1,10 +1,15 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
-import { Button, CatchContainer, CopyClick, ErrorContainer, FlexList, Label } from "~/components";
+import { Button, CatchContainer, Collapsible, CopyClick, ErrorContainer, FlexList, Label } from "~/components";
 import { requireAdminMember } from "~/session.server";
 import invariant from "tiny-invariant";
 import { getBand, updateBandCode } from "~/models/band.server";
 import { useFetcher, useLoaderData } from "@remix-run/react";
+import { faQrcode } from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
+import { QRCode } from 'react-qrcode-logo';
+import { getDomainUrl } from "~/utils/assorted";
+import { useThemeColor } from "~/hooks";
 
 export async function loader({ request, params }: LoaderArgs) {
   const bandId = params.bandId
@@ -16,8 +21,10 @@ export async function loader({ request, params }: LoaderArgs) {
   if (!band) {
     throw new Response('Band not found', { status: 404 })
   }
+  const domainUrl = getDomainUrl(request)
+  const qrCodeAddress = `${domainUrl}/home/existing?code=${band.code}`
 
-  return json({ band })
+  return json({ band, qrCodeAddress })
 }
 
 export async function action({ request, params }: ActionArgs) {
@@ -31,8 +38,12 @@ export async function action({ request, params }: ActionArgs) {
 }
 
 export default function NewMember() {
-  const { band } = useLoaderData<typeof loader>()
+  const { band, qrCodeAddress } = useLoaderData<typeof loader>()
   const fetcher = useFetcher()
+  const [showQr, setShowQr] = useState(false)
+
+  const background = useThemeColor('base-100')
+  const accent = useThemeColor('accent')
 
   return (
     <FlexList pad={4}>
@@ -44,6 +55,22 @@ export default function NewMember() {
       <FlexList gap={0}>
         <Label>Band code</Label>
         <CopyClick textToCopy={band.code} copyMessage={band.code} successMessage="Band code copied!" />
+      </FlexList>
+
+      <FlexList gap={2}>
+        <Collapsible isOpen={showQr}>
+          <FlexList items="center">
+            <QRCode
+              bgColor={background}
+              fgColor={accent}
+              value={qrCodeAddress}
+              qrStyle="dots"
+              eyeRadius={10}
+            />
+          </FlexList>
+        </Collapsible>
+
+        <Button onClick={() => setShowQr(!showQr)} isOutline icon={faQrcode}>{showQr ? 'Hide' : 'Show'} QR code</Button>
       </FlexList>
 
       <fetcher.Form method="put" action=".">
