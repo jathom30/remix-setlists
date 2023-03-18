@@ -8,13 +8,11 @@ export const PieChart = ({ slices, noFeel }: { slices: { percent: number; feel: 
   const paths = createPaths(slices)
   return (
     <div className="grid grid-cols-2 gap-4 grid-rows-1">
-      <div className="w-full h-full -rotate-90 origin-center flex">
-        <svg version="1.1" preserveAspectRatio="xMinYMin meet" viewBox="-1 -1 2 2" className="w-full h-full">
-          {paths.map(path => (
-            <path key={path.pathData} d={path.pathData} fill={path.feel?.color || 'white'} />
-          ))}
-        </svg>
-      </div>
+      <svg version="1.1" preserveAspectRatio="xMinYMin meet" viewBox="-1 -1 2 2" className="w-full h-auto aspect-square -rotate-90">
+        {paths.map(path => (
+          <path key={path.pathData} d={path.pathData} fill={path.feel?.color || 'white'} />
+        ))}
+      </svg>
       <FlexList gap={2}>
         {slices.map(slice => {
           if (!slice.feel) { return null }
