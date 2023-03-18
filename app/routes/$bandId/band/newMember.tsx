@@ -9,6 +9,7 @@ import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { QRCode } from 'react-qrcode-logo';
 import { getDomainUrl } from "~/utils/assorted";
+import { useThemeColor } from "~/hooks";
 
 export async function loader({ request, params }: LoaderArgs) {
   const bandId = params.bandId
@@ -41,6 +42,8 @@ export default function NewMember() {
   const fetcher = useFetcher()
   const [showQr, setShowQr] = useState(false)
 
+  const background = useThemeColor('base-100')
+  const accent = useThemeColor('accent')
 
   return (
     <FlexList pad={4}>
@@ -57,7 +60,13 @@ export default function NewMember() {
       <FlexList gap={2}>
         <Collapsible isOpen={showQr}>
           <FlexList items="center">
-            <QRCode value={qrCodeAddress} qrStyle="dots" />
+            <QRCode
+              bgColor={background}
+              fgColor={accent}
+              value={qrCodeAddress}
+              qrStyle="dots"
+              eyeRadius={10}
+            />
           </FlexList>
         </Collapsible>
 
