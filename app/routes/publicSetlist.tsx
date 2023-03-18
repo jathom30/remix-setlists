@@ -42,7 +42,7 @@ export default function PublicSetlist() {
         <Navbar>
           <FlexHeader>
             <Title>{setlist.name}</Title>
-            <Link to={`/${bandId}/setlist/${setlistId}`} icon={faEllipsisV} isCollapsing kind="ghost">Menu</Link>
+            <Link to={`/${bandId}/setlist/${setlistId}`} icon={faEllipsisV} isCollapsing kind="ghost">Details</Link>
           </FlexHeader>
         </Navbar>
       }

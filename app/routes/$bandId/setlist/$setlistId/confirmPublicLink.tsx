@@ -1,14 +1,17 @@
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faQrcode, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Form, useLoaderData } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Button, CatchContainer, CopyClick, ErrorContainer, FlexHeader, FlexList, Link, Navbar, SaveButtons, Title } from "~/components";
+import { Button, CatchContainer, Collapsible, CopyClick, ErrorContainer, FlexHeader, FlexList, Link, Navbar, SaveButtons, Title } from "~/components";
 import { requireUserId } from "~/session.server";
 import invariant from "tiny-invariant";
 import { getSetlist, updateSetlist } from "~/models/setlist.server";
 import { getDomainUrl } from "~/utils/assorted";
+import { useState } from "react";
+import { useThemeColor } from "~/hooks";
+import { QRCode } from "react-qrcode-logo";
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -52,6 +55,10 @@ export async function action({ request, params }: ActionArgs) {
 
 export default function ConfirmPublicLink() {
   const { setlist, setlistPublicUrl } = useLoaderData<typeof loader>()
+  const [showQr, setShowQr] = useState(false)
+
+  const background = useThemeColor('base-100')
+  const accent = useThemeColor('accent')
 
   return (
     <FlexList gap={0}>
@@ -66,6 +73,21 @@ export default function ConfirmPublicLink() {
           <FlexList pad={4}>
             <p>This setlist is public. You can <a className="link link-accent" href={setlistPublicUrl} target="_blank" rel="noreferrer">follow this link</a> to see it.</p>
             <CopyClick textToCopy={setlistPublicUrl} copyMessage="Click to copy link" successMessage="Link copied!" />
+            <FlexList gap={2}>
+              <Collapsible isOpen={showQr}>
+                <FlexList items="center">
+                  <QRCode
+                    bgColor={background}
+                    fgColor={accent}
+                    value={setlistPublicUrl}
+                    qrStyle="dots"
+                    eyeRadius={10}
+                  />
+                </FlexList>
+              </Collapsible>
+
+              <Button onClick={() => setShowQr(!showQr)} isOutline icon={faQrcode}>{showQr ? 'Hide' : 'Show'} QR code</Button>
+            </FlexList>
             <p>If you would like this setlist to no longer be public, you can do so below.</p>
           </FlexList>
           <Form method="put">
