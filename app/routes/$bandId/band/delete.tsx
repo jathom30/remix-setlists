@@ -9,6 +9,7 @@ import type { ChangeEvent } from "react";
 import { useState } from "react";
 import { getFields } from "~/utils/form";
 import { requireAdminMember } from "~/session.server";
+import { deleteImage } from "~/models/cloudinary.server";
 
 export async function loader({ request, params }: LoaderArgs) {
   const { bandId } = params
@@ -35,6 +36,7 @@ export async function action({ request, params }: ActionArgs) {
     return json({ errors })
   }
 
+  await deleteImage(bandId)
   await deleteBand(bandId)
   return redirect('/home')
 }

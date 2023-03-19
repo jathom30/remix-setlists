@@ -10,11 +10,13 @@ cloudinary.config({
   secure: true
 });
 
+const folder = 'band-avatar'
+
 export async function uploadImage(data: AsyncIterable<Uint8Array>, bandId: string) {
   const uploadPromise = new Promise<UploadApiResponse>(async (resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
-        folder: "band-avatar",
+        folder,
         transformation: { width: 400, quality: 'auto' },
         use_filename: true,
         unique_filename: false,
@@ -32,4 +34,12 @@ export async function uploadImage(data: AsyncIterable<Uint8Array>, bandId: strin
   });
 
   return uploadPromise;
+}
+
+export async function deleteImage(bandId: string) {
+  return cloudinary.uploader.destroy(`${folder}/${bandId}`, (error, result) => {
+    if (error) {
+      console.error(error)
+    }
+  })
 }
