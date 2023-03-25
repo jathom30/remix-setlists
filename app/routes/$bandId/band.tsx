@@ -12,6 +12,7 @@ import { useMemberRole } from "~/utils";
 import { getMostRecentFeels } from "~/models/feel.server";
 import pluralize from "pluralize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FEEL_LIMIT, MEMBER_LIMIT, SETLIST_LIMIT, SONG_LIMIT } from "~/utils/unlimitedBands";
 
 export const meta: MetaFunction = () => ({
   title: "Band settings",
@@ -48,7 +49,7 @@ export default function BandSettingsPage() {
   const navigate = useNavigate()
 
   // sub routes can include member id if user is updating member's role
-  const subRoutes = ['newMember', 'avatar', 'edit', 'updateMember', 'removeSelf', 'delete', ...members.map(m => m.id), 'feel']
+  const subRoutes = ['newMember', 'avatar', 'edit', 'updateMember', 'removeSelf', 'delete', ...members.map(m => m.id), 'feel', 'billing']
   return (
     <MaxHeightContainer
       fullHeight
@@ -164,6 +165,32 @@ export default function BandSettingsPage() {
           </FlexList>
 
           <Divider />
+
+          <FlexList gap={2}>
+            <Label>Subscription status</Label>
+            <ItemBox>
+              <FlexList>
+                {band.isUnlimited ? (
+                  <>
+                    <Badge size="lg" kind="accent">Unlimited</Badge>
+                    <p>With the unlimited plan, this band has no restrictions on the number of members, setlists, feels, or songs.</p>
+                  </>
+                ) : (
+                  <>
+                    <Badge size="lg" kind="info">Free plan</Badge>
+                    <p>{band.name} can continue to use the free plan as long as it wants, but there are limitations on resources listed below.</p>
+                    <ul>
+                      <li>{band.members.length} of {MEMBER_LIMIT} members added</li>
+                      <li>-- of {SETLIST_LIMIT} setlists created</li>
+                      <li>{feels.length} of {FEEL_LIMIT} feels created</li>
+                      <li>-- of {SONG_LIMIT} songs created</li>
+                    </ul>
+                  </>
+                )}
+                <Link to="billing" isOutline>Manage</Link>
+              </FlexList>
+            </ItemBox>
+          </FlexList>
 
           {isAdmin ? (
             <FlexList gap={2}>

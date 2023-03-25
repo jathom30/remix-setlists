@@ -33,7 +33,6 @@ export default function BandRoute() {
         <div className="hidden sm:block sm:h-full">
           <MainSidebar band={band} memberRole={memberRole} bands={bands} />
         </div>
-
         <div className="h-full sm:hidden">
           <Outlet />
         </div>
