@@ -86,7 +86,7 @@
     "cypress": "^12.8.1",
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.6.0",
-    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-cypress": "^2.13.2",
     "happy-dom": "^8.2.6",
     "i": "^0.3.7",
     "msw": "^1.0.0",
