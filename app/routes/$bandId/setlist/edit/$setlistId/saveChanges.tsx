@@ -52,7 +52,7 @@ export default function SaveChanges() {
         </FlexHeader>
         <p className="text-slate-500">You can either save these changes to the exisiting setlist or create a new setlist based off these changes and keep the original setlist uneffected.</p>
         <Button name="intent" value="overwrite" kind="primary" type="submit" isSaving={isSaving} icon={faSave}>Save</Button>
-        <Button name="intent" value="new" isSaving={isCloning} icon={faPlus}>Save as new</Button>
+        <Button name="intent" value="new" isSaving={isCloning} type="submit" icon={faPlus}>Save as new</Button>
       </FlexList>
     </Form>
   )
