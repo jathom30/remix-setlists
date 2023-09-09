@@ -2,11 +2,11 @@ import { faGripVertical } from "@fortawesome/free-solid-svg-icons";
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
 import { ClientOnly } from 'remix-utils'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { SerializeFrom } from "@remix-run/node";
-import { json, type LoaderArgs } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import type { ActionArgs, SerializeFrom } from "@remix-run/node";
+import { json, redirect, type LoaderArgs } from "@remix-run/node";
+import { Form, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { FlexHeader, FlexList, SongDisplay, TempoIcons, TextOverflow } from "~/components";
+import { FlexHeader, FlexList, SaveButtons, SongDisplay, TempoIcons, TextOverflow } from "~/components";
 import { getSongs } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
 import { CSS } from "@dnd-kit/utilities";
@@ -21,6 +21,7 @@ import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import type { Song } from "@prisma/client";
+import { createSetlistWithMultipleSets } from "~/models/setlist.server";
 
 export async function loader({ request, params }: LoaderArgs) {
   const { bandId } = params
@@ -29,6 +30,35 @@ export async function loader({ request, params }: LoaderArgs) {
 
   const songs = await getSongs(bandId)
   return json({ songs })
+}
+
+export async function action({ request, params }: ActionArgs) {
+  const { bandId } = params
+  invariant(bandId)
+  await requireNonSubMember(request, bandId)
+
+  const formData = await request.formData()
+  const entries = formData.entries()
+
+  // key is position in setlist, value is array of song ids
+  const sets: Record<string, string[]> = {}
+  for (const entry of entries) {
+    const [index, songIds] = entry
+    if (typeof songIds !== 'string') { return null }
+    sets[index] = songIds.split(',')
+  }
+  // remove any sets that do not have songs
+  const cleanedSets = Object.entries(sets).reduce((all: Record<string, string[]>, [positionInSetlist, songIds]) => {
+    // remove "empty" song ids
+    const cleanedSongIds = songIds.filter(id => Boolean(id))
+    if (!cleanedSongIds.length) {
+      return all
+    }
+    return { ...all, [positionInSetlist]: cleanedSongIds }
+  }, {})
+  const setlist = await createSetlistWithMultipleSets(bandId, cleanedSets)
+
+  return redirect(`/${bandId}/setlist/${setlist.id}/rename`)
 }
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
@@ -42,7 +72,6 @@ export default function Fresh() {
   const initialSongIds = songs.map(song => song.id)
   const initialData = {
     [UNUSED_SONG_IDS]: initialSongIds,
-    // b: initialSongIds.slice(5)
   }
   const [songIdsBySet, setSongIdsBySet] = useState<Record<string, UniqueIdentifier[]>>(initialData)
   // sets are derived from the above songIdsBySet' keys
@@ -163,216 +192,240 @@ export default function Fresh() {
     return songs.reduce((sum: number, songId) => sum += (getSongById(songId)?.length || 0), 0)
   }
 
+  const getSetIndex = (setId: UniqueIdentifier) => setIds.findIndex(id => id === setId)
+
   return (
-    <DndContext
-      id="setlist"
-      sensors={sensors}
-      collisionDetection={collisionDetectionStrategy}
-      measuring={{
-        droppable: {
-          strategy: MeasuringStrategy.Always,
-        },
-      }}
-      onDragStart={({ active }) => {
-        setActiveId(active.id)
-        setClonedItems(songIdsBySet)
-      }}
-      onDragOver={({ active, over }) => {
-        const overId = over?.id;
+    <Form method="post" className="h-full flex flex-col">
+      <div className="overflow-hidden flex-1">
+        <DndContext
+          id="setlist"
+          sensors={sensors}
+          collisionDetection={collisionDetectionStrategy}
+          measuring={{
+            droppable: {
+              strategy: MeasuringStrategy.Always,
+            },
+          }}
+          onDragStart={({ active }) => {
+            setActiveId(active.id)
+            setClonedItems(songIdsBySet)
+          }}
+          onDragOver={({ active, over }) => {
+            const overId = over?.id;
 
-        if (overId == null || active.id in songIdsBySet) {
-          return;
-        }
-
-        const overContainer = findContainer(overId);
-        const activeContainer = findContainer(active.id);
-
-        if (!overContainer || !activeContainer) {
-          return;
-        }
-
-        if (activeContainer !== overContainer) {
-          setSongIdsBySet((items) => {
-            const activeItems = items[activeContainer];
-            const overItems = items[overContainer];
-            const overIndex = overItems.indexOf(overId);
-            const activeIndex = activeItems.indexOf(active.id);
-
-            let newIndex: number;
-
-            if (overId in items) {
-              newIndex = overItems.length + 1;
-            } else {
-              const isBelowOverItem =
-                over &&
-                active.rect.current.translated &&
-                active.rect.current.translated.top >
-                over.rect.top + over.rect.height;
-
-              const modifier = isBelowOverItem ? 1 : 0;
-
-              newIndex =
-                overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+            if (overId == null || active.id in songIdsBySet) {
+              return;
             }
 
-            recentlyMovedToNewContainer.current = true;
+            const overContainer = findContainer(overId);
+            const activeContainer = findContainer(active.id);
 
-            return {
-              ...items,
-              [activeContainer]: items[activeContainer].filter(
-                (item) => item !== active.id
-              ),
-              [overContainer]: [
-                ...items[overContainer].slice(0, newIndex),
-                items[activeContainer][activeIndex],
-                ...items[overContainer].slice(
-                  newIndex,
-                  items[overContainer].length
-                ),
-              ],
-            };
-          });
-        }
-      }}
-      onDragEnd={({ active, over }) => {
-        if (active.id in songIdsBySet && over?.id) {
-          setSetIds((containers) => {
-            const activeIndex = containers.indexOf(active.id);
-            const overIndex = containers.indexOf(over.id);
+            if (!overContainer || !activeContainer) {
+              return;
+            }
 
-            return arrayMove(containers, activeIndex, overIndex);
-          });
-        }
+            if (activeContainer !== overContainer) {
+              setSongIdsBySet((items) => {
+                const activeItems = items[activeContainer];
+                const overItems = items[overContainer];
+                const overIndex = overItems.indexOf(overId);
+                const activeIndex = activeItems.indexOf(active.id);
 
-        const activeContainer = findContainer(active.id);
+                let newIndex: number;
 
-        if (!activeContainer) {
-          setActiveId(null);
-          return;
-        }
+                if (overId in items) {
+                  newIndex = overItems.length + 1;
+                } else {
+                  const isBelowOverItem =
+                    over &&
+                    active.rect.current.translated &&
+                    active.rect.current.translated.top >
+                    over.rect.top + over.rect.height;
 
-        const overId = over?.id;
+                  const modifier = isBelowOverItem ? 1 : 0;
 
-        if (overId == null) {
-          setActiveId(null);
-          return;
-        }
+                  newIndex =
+                    overIndex >= 0 ? overIndex + modifier : overItems.length + 1;
+                }
 
-        // if (overId === TRASH_ID) {
-        //   setSongIdsBySet((items) => ({
-        //     ...items,
-        //     [activeContainer]: items[activeContainer].filter(
-        //       (id) => id !== activeId
-        //     ),
-        //   }));
-        //   setActiveId(null);
-        //   return;
-        // }
+                recentlyMovedToNewContainer.current = true;
 
-        function getNextContainerId() {
-          const containerIds = Object.keys(songIdsBySet);
-          const lastContainerId = containerIds[containerIds.length - 1];
+                return {
+                  ...items,
+                  [activeContainer]: items[activeContainer].filter(
+                    (item) => item !== active.id
+                  ),
+                  [overContainer]: [
+                    ...items[overContainer].slice(0, newIndex),
+                    items[activeContainer][activeIndex],
+                    ...items[overContainer].slice(
+                      newIndex,
+                      items[overContainer].length
+                    ),
+                  ],
+                };
+              });
+            }
+          }}
+          onDragEnd={({ active, over }) => {
+            // if moving whole sets
+            if (active.id in songIdsBySet && over?.id) {
+              setSetIds((containers) => {
+                const activeIndex = containers.indexOf(active.id);
+                const overIndex = containers.indexOf(over.id);
 
-          return String.fromCharCode(lastContainerId.charCodeAt(0) + 1);
-        }
+                return arrayMove(containers, activeIndex, overIndex);
+              });
+            }
 
-        if (overId === PLACEHOLDER_ID) {
-          const newContainerId = getNextContainerId();
+            const activeContainer = findContainer(active.id);
 
-          unstable_batchedUpdates(() => {
-            setSetIds((containers) => [...containers, newContainerId]);
-            setSongIdsBySet((items) => ({
-              ...items,
-              [activeContainer]: items[activeContainer].filter(
-                (id) => id !== activeId
-              ),
-              [newContainerId]: [active.id],
-            }));
+            if (!activeContainer) {
+              setActiveId(null);
+              return;
+            }
+
+            const overId = over?.id;
+
+            if (overId == null) {
+              setActiveId(null);
+              return;
+            }
+
+            function getNextContainerId() {
+              const containerIds = Object.keys(songIdsBySet);
+              const lastContainerId = containerIds[containerIds.length - 1];
+
+              return String.fromCharCode(lastContainerId.charCodeAt(0) + 1);
+            }
+
+            if (overId === PLACEHOLDER_ID) {
+              const newContainerId = getNextContainerId();
+
+              unstable_batchedUpdates(() => {
+                // when creating a new set
+                setSetIds((containers) => [...containers, newContainerId]);
+                setSongIdsBySet((items) => ({
+                  ...items,
+                  [activeContainer]: items[activeContainer].filter(
+                    (id) => id !== activeId
+                  ),
+                  [newContainerId]: [active.id],
+                }));
+                setActiveId(null);
+              });
+              return;
+            }
+
+            const overContainer = findContainer(overId);
+
+            if (overContainer) {
+              const activeIndex = songIdsBySet[activeContainer].indexOf(active.id);
+              const overIndex = songIdsBySet[overContainer].indexOf(overId);
+              // if (activeIndex !== overIndex) {
+              setSongIdsBySet((items) => {
+                const newSets = {
+                  ...items,
+                  [overContainer]: arrayMove(
+                    items[overContainer],
+                    activeIndex,
+                    overIndex
+                  ),
+                }
+                // remove empty sets
+                const cleanedSets = Object.entries(newSets).reduce((sets: Record<string, UniqueIdentifier[]>, [setId, songIds]) => {
+                  // remove sets with no songs unless it is the "unused" song pool
+                  if (!songIds.length && setId !== UNUSED_SONG_IDS) {
+                    return sets
+                  }
+                  return { ...sets, [setId]: songIds }
+                }, {})
+                // need to update setIds if cleaning removed one
+                if (Object.keys(cleanedSets).length !== Object.keys(newSets).length) {
+                  setSetIds(Object.keys(cleanedSets))
+                }
+                return newSets
+              });
+              // }
+            }
             setActiveId(null);
-          });
-          return;
-        }
-
-        const overContainer = findContainer(overId);
-
-        if (overContainer) {
-          const activeIndex = songIdsBySet[activeContainer].indexOf(active.id);
-          const overIndex = songIdsBySet[overContainer].indexOf(overId);
-
-          if (activeIndex !== overIndex) {
-            setSongIdsBySet((items) => ({
-              ...items,
-              [overContainer]: arrayMove(
-                items[overContainer],
-                activeIndex,
-                overIndex
-              ),
-            }));
-          }
-        }
-
-        setActiveId(null);
-      }}
-      onDragCancel={onDragCancel}
-    >
-      <SortableContext
-        items={[...setIds, PLACEHOLDER_ID]}
-      >
-        <FlexList direction="row" gap={0} height="full">
-          <aside className="p-2 flex flex-col border-r h-full w-80">
-            <h1 className="pb-2 font-bold text-lg">Available Songs</h1>
-            <DroppableUnusedSongsList id={UNUSED_SONG_IDS} songIds={songIdsBySet[UNUSED_SONG_IDS]}>
-              <FlexList direction="col" gap={2}>
-                <SortableContext items={songIdsBySet[UNUSED_SONG_IDS]}>
-                  {songIdsBySet[UNUSED_SONG_IDS].map(songId => (
-                    <DraggableUnusedSong key={songId} song={getSongById(songId)} />
-                  ))}
-                </SortableContext>
-              </FlexList>
-            </DroppableUnusedSongsList>
-          </aside>
-
-          <main className="p-2 w-full h-full flex flex-col overflow-hidden">
-            <h1 className="pb-2 font-bold text-lg">New Setlist</h1>
-            <div className="flex flex-col overflow-auto gap-2">
-              {setIds.filter(setId => setId !== UNUSED_SONG_IDS).map((setId, index) => (
-                <DroppableSet key={setId} id={setId} index={index} songIds={songIdsBySet[setId]} minuteLength={getSetLengthInMinutes(setId)}>
-                  <FlexList>
-                    <SortableContext items={songIdsBySet[setId]}>
-                      {songIdsBySet[setId].map(songId => (
-                        <DraggableSong key={songId} song={getSongById(songId)} />
+          }}
+          onDragCancel={onDragCancel}
+        >
+          <SortableContext
+            items={[...setIds, PLACEHOLDER_ID]}
+          >
+            <FlexList direction="row" gap={0} height="full">
+              <aside className="p-2 flex flex-col border-r h-full w-80">
+                <h1 className="pb-2 font-bold text-lg">Available Songs</h1>
+                <DroppableUnusedSongsList id={UNUSED_SONG_IDS} songIds={songIdsBySet[UNUSED_SONG_IDS]}>
+                  <FlexList direction="col" gap={2}>
+                    <SortableContext items={songIdsBySet[UNUSED_SONG_IDS]}>
+                      {songIdsBySet[UNUSED_SONG_IDS].map(songId => (
+                        <DraggableUnusedSong key={songId} song={getSongById(songId)} />
                       ))}
                     </SortableContext>
                   </FlexList>
-                </DroppableSet>
-              ))}
-              <DroppableSet id={PLACEHOLDER_ID} index={-1} songIds={[]} minuteLength={-1} />
-            </div>
-          </main>
-        </FlexList>
-      </SortableContext>
-      <ClientOnly fallback={<span>Loading...</span>}>
-        {() => createPortal(
-          <DragOverlay>
-            {activeId ? setIds.includes(activeId) ? <SetDragOverlay setId={activeId} index={0} /> : <DraggableUnusedSong song={getSongById(activeId)} /> : null}
-          </DragOverlay>,
-          document.body
-        )}
-      </ClientOnly>
-    </DndContext>
+                </DroppableUnusedSongsList>
+              </aside>
+
+              <main className="p-2 w-full h-full flex flex-col overflow-hidden">
+                <h1 className="pb-2 font-bold text-lg">New Setlist</h1>
+                <div className="flex flex-col overflow-auto gap-2">
+                  {setIds.filter(setId => setId !== UNUSED_SONG_IDS).map((setId, index) => (
+                    <DroppableSet key={setId} id={setId} index={index} songIds={songIdsBySet[setId]} minuteLength={getSetLengthInMinutes(setId)}>
+                      <FlexList>
+                        <SortableContext items={songIdsBySet[setId]}>
+                          {songIdsBySet[setId].map(songId => (
+                            <DraggableSong key={songId} song={getSongById(songId)} />
+                          ))}
+                        </SortableContext>
+                      </FlexList>
+                    </DroppableSet>
+                  ))}
+                  <DroppableSet id={PLACEHOLDER_ID} index={-1} songIds={[]} minuteLength={-1} />
+                </div>
+              </main>
+            </FlexList>
+          </SortableContext>
+          <ClientOnly fallback={<span>Loading...</span>}>
+            {() => createPortal(
+              <DragOverlay>
+                {activeId
+                  ? setIds.includes(activeId)
+                    ? <SetDragOverlay setId={activeId} index={getSetIndex(activeId)} setLengthInMinutes={getSetLengthInMinutes(activeId)} />
+                    : <DraggableUnusedSong song={getSongById(activeId)} />
+                  : null
+                }
+              </DragOverlay>,
+              document.body
+            )}
+          </ClientOnly>
+        </DndContext>
+      </div>
+      <SaveButtons saveLabel="Create setlist" />
+    </Form>
   )
 }
 
-const SetDragOverlay = ({ setId, index }: { setId: UniqueIdentifier; index: number }) => {
+const SetDragOverlay = ({ setId, index, setLengthInMinutes }: { setId: UniqueIdentifier; index: number; setLengthInMinutes: number }) => {
   return (
     <div className={`bg-base-200 p-4 rounded`}>
       <FlexList direction="row" items="center">
         <div className="btn cursor-grab" data-cypress="draggable-handle">
           <FontAwesomeIcon icon={faGripVertical} />
         </div>
-        <h2 className="font-bold">Set {index + 1} - 15 min</h2>
+        <h2 className="font-bold">Set {index} - {setLengthInMinutes} min</h2>
       </FlexList>
     </div>
+  )
+}
+
+const DragHandle = ({ children, listeners, attributes }: { children: ReactNode; listeners?: SyntheticListenerMap; attributes: DraggableAttributes }) => {
+  return (
+    <button className="btn cursor-grab" data-cypress="draggable-handle" {...listeners} {...attributes}>
+      {children}
+    </button>
   )
 }
 
@@ -405,14 +458,6 @@ const DraggableUnusedSong = ({ song }: { song?: SerializeFrom<Song> }) => {
       </div>
     </div>
   );
-}
-
-const DragHandle = ({ children, listeners, attributes }: { children: ReactNode; listeners?: SyntheticListenerMap; attributes: DraggableAttributes }) => {
-  return (
-    <button className="btn cursor-grab" data-cypress="draggable-handle" {...listeners} {...attributes}>
-      {children}
-    </button>
-  )
 }
 
 const DroppableUnusedSongsList = ({ children, id, songIds }: { children: ReactNode; id: UniqueIdentifier; songIds: UniqueIdentifier[] }) => {
@@ -501,6 +546,7 @@ const DroppableSet = ({ children, id, index, songIds, minuteLength }: { children
       <FlexList gap={2}>
         {children}
       </FlexList>
+      <input hidden type="hidden" name={index.toString()} value={songIds as string[]} />
     </div>
   )
 }

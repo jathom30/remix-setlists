@@ -77,7 +77,6 @@ export async function addSongsToSet(setId: Set['id'], songIds: Song['id'][]) {
 }
 
 export async function createSet(setlistId: Setlist['id'], songIds: Song['id'][], positionInSetlist: Set['positionInSetlist']) {
-
   return prisma.set.create({
     data: {
       setlistId,

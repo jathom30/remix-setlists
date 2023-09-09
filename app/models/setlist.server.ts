@@ -25,6 +25,26 @@ export async function createSetlist(bandId: Band['id'], songIds: Song['id'][]) {
   })
 }
 
+export async function createSetlistWithMultipleSets(bandId: Band['id'], setIds: Record<string, string[]>) {
+  return await prisma.setlist.create({
+    data: {
+      name: 'Temp name',
+      bandId,
+      sets: {
+        create: Object.entries(setIds).map(([positionInSetlist, songIds]) => ({
+          songs: {
+            create: songIds.map((songId, positionInSet) => ({
+              songId, positionInSet
+            })),
+          },
+          positionInSetlist: Number(positionInSetlist)
+        }))
+      }
+    }
+  })
+}
+
+
 export async function getSetlists(bandId: Band['id'], params?: { q?: string, sort?: string }) {
   const orderBy = getSortFromParam(params?.sort)
   const setlists = await prisma.setlist.findMany({

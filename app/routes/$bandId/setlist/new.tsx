@@ -7,7 +7,7 @@ export const meta: MetaFunction = () => ({
 });
 
 const getHeader = (pathname: string) => {
-  if (pathname.includes('manual')) {
+  if (pathname.includes('fresh')) {
     return 'Manual'
   }
   if (pathname.includes('auto')) {
