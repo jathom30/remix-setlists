@@ -72,12 +72,6 @@ export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: {
       let overId = getFirstCollision(intersections, 'id');
 
       if (overId != null) {
-        // if (overId === TRASH_ID) {
-        //   // If the intersecting droppable is the trash, return early
-        //   // Remove this if you're not using trashable functionality in your app
-        //   return intersections;
-        // }
-
         if (overId in songIdsBySet) {
           const containerItems = songIdsBySet[overId];
 

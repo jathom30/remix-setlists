@@ -25,11 +25,17 @@ export async function createSetlist(bandId: Band['id'], songIds: Song['id'][]) {
   })
 }
 
-export async function createSetlistWithMultipleSets(bandId: Band['id'], setIds: Record<string, string[]>) {
+export async function createSetlistWithMultipleSets(bandId: Band['id'], setIds: Record<string, string[]>, editedFromId?: Setlist['editedFromId']) {
+  let originalSetlistName = ''
+  if (editedFromId) {
+    const setlist = await getSetlist(editedFromId)
+    originalSetlistName = setlist?.name || ''
+  }
   return await prisma.setlist.create({
     data: {
-      name: 'Temp name',
+      name: originalSetlistName || 'Temp name',
       bandId,
+      editedFromId,
       sets: {
         create: Object.entries(setIds).map(([positionInSetlist, songIds]) => ({
           songs: {
@@ -131,6 +137,25 @@ export async function updateSetlist(setlistId: Setlist['id'], setlist: Partial<S
   return prisma.setlist.update({
     where: { id: setlistId },
     data: setlist
+  })
+}
+
+export async function newUpdateSetlist(setlistId: Setlist['id'], setIds: Record<string, string[]>) {
+  return await prisma.setlist.update({
+    where: { id: setlistId },
+    data: {
+      sets: {
+        deleteMany: { setlistId },
+        create: Object.entries(setIds).map(([positionInSetlist, songIds]) => ({
+          songs: {
+            create: songIds.map((songId, positionInSet) => ({
+              songId, positionInSet
+            })),
+          },
+          positionInSetlist: Number(positionInSetlist)
+        }))
+      }
+    }
   })
 }
 
