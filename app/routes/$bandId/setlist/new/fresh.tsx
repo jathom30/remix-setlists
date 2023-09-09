@@ -16,7 +16,6 @@ import { closestCenter, pointerWithin, rectIntersection, getFirstCollision, Mous
 import { DndContext, KeyboardSensor, useSensor, useSensors, DragOverlay } from "@dnd-kit/core";
 import type { AnimateLayoutChanges } from "@dnd-kit/sortable";
 import { arrayMove, defaultAnimateLayoutChanges, SortableContext, useSortable } from "@dnd-kit/sortable";
-import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import { coordinateGetter } from "~/utils/dnd";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -51,7 +50,6 @@ export default function Fresh() {
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
-  const isSortingContainer = activeId ? setIds.includes(activeId) : false;
 
   const getSongById = (songId: UniqueIdentifier) => {
     return songs.find(song => song.id === songId)
@@ -160,13 +158,14 @@ export default function Fresh() {
     });
   }, [songIdsBySet]);
 
-  useEffect(() => {
-    if (typeof document === 'undefined') return
-    // setMenuContainer(document.getElementById('modal-portal'))
-  }, []);
+  const getSetLengthInMinutes = (setId: UniqueIdentifier) => {
+    const songs = songIdsBySet[setId]
+    return songs.reduce((sum: number, songId) => sum += (getSongById(songId)?.length || 0), 0)
+  }
 
   return (
     <DndContext
+      id="setlist"
       sensors={sensors}
       collisionDetection={collisionDetectionStrategy}
       measuring={{
@@ -315,7 +314,6 @@ export default function Fresh() {
         setActiveId(null);
       }}
       onDragCancel={onDragCancel}
-      modifiers={[restrictToFirstScrollableAncestor]}
     >
       <SortableContext
         items={[...setIds, PLACEHOLDER_ID]}
@@ -334,20 +332,22 @@ export default function Fresh() {
             </DroppableUnusedSongsList>
           </aside>
 
-          <main className="flex-grow p-2 h-full">
+          <main className="p-2 w-full h-full flex flex-col overflow-hidden">
             <h1 className="pb-2 font-bold text-lg">New Setlist</h1>
-            {setIds.filter(setId => setId !== UNUSED_SONG_IDS).map((setId, index) => (
-              <DroppableSet key={setId} id={setId} index={index} songIds={songIdsBySet[setId]}>
-                <FlexList>
-                  <SortableContext items={songIdsBySet[setId]}>
-                    {songIdsBySet[setId].map(songId => (
-                      <DraggableSong key={songId} song={getSongById(songId)} />
-                    ))}
-                  </SortableContext>
-                </FlexList>
-              </DroppableSet>
-            ))}
-            <DroppableSet id={PLACEHOLDER_ID} index={-1} songIds={[]} />
+            <div className="flex flex-col overflow-auto gap-2">
+              {setIds.filter(setId => setId !== UNUSED_SONG_IDS).map((setId, index) => (
+                <DroppableSet key={setId} id={setId} index={index} songIds={songIdsBySet[setId]} minuteLength={getSetLengthInMinutes(setId)}>
+                  <FlexList>
+                    <SortableContext items={songIdsBySet[setId]}>
+                      {songIdsBySet[setId].map(songId => (
+                        <DraggableSong key={songId} song={getSongById(songId)} />
+                      ))}
+                    </SortableContext>
+                  </FlexList>
+                </DroppableSet>
+              ))}
+              <DroppableSet id={PLACEHOLDER_ID} index={-1} songIds={[]} minuteLength={-1} />
+            </div>
           </main>
         </FlexList>
       </SortableContext>
@@ -418,8 +418,6 @@ const DragHandle = ({ children, listeners, attributes }: { children: ReactNode; 
 const DroppableUnusedSongsList = ({ children, id, songIds }: { children: ReactNode; id: UniqueIdentifier; songIds: UniqueIdentifier[] }) => {
   const {
     active,
-    // attributes,
-    // listeners,
     over,
     setNodeRef,
     isDragging,
@@ -441,7 +439,7 @@ const DroppableUnusedSongsList = ({ children, id, songIds }: { children: ReactNo
   return (
     <div
       ref={setNodeRef}
-      className={`flex flex-col gap-2 ${isOverContainer ? 'bg-base-300' : ''}`}
+      className={`flex flex-col overflow-auto gap-2 h-full ${isOverContainer ? 'bg-base-300' : ''}`}
       style={{ transition, transform: CSS.Translate.toString(transform), opacity: isDragging ? 0.5 : undefined }}
     >
       {children}
@@ -449,7 +447,7 @@ const DroppableUnusedSongsList = ({ children, id, songIds }: { children: ReactNo
   )
 }
 
-const DroppableSet = ({ children, id, index, songIds }: { children?: ReactNode; id: UniqueIdentifier, index: number; songIds: UniqueIdentifier[] }) => {
+const DroppableSet = ({ children, id, index, songIds, minuteLength }: { children?: ReactNode; id: UniqueIdentifier, index: number; songIds: UniqueIdentifier[]; minuteLength: number }) => {
   const {
     active,
     attributes,
@@ -477,7 +475,7 @@ const DroppableSet = ({ children, id, index, songIds }: { children?: ReactNode; 
     return (
       <div
         ref={setNodeRef}
-        className={`bg-base-200 p-4 rounded text-center border border-dashed ${isOverContainer ? 'bg-base-300' : ''}`}
+        className={`bg-base-200 p-4 rounded text-center border ${isOverContainer ? '' : 'border-dashed'}`}
         aria-label="Droppable region"
         style={{ transition, transform: CSS.Translate.toString(transform), opacity: isDragging ? 0.5 : undefined }}
       >
@@ -489,7 +487,7 @@ const DroppableSet = ({ children, id, index, songIds }: { children?: ReactNode; 
   return (
     <div
       ref={setNodeRef}
-      className={`bg-base-200 p-4 rounded ${isOverContainer ? 'bg-base-300' : ''}`}
+      className={`bg-base-200 p-4 rounded ${isOverContainer ? 'border' : ''}`}
       style={{ transition, transform: CSS.Translate.toString(transform), opacity: isDragging ? 0.5 : undefined }}
     >
       <div className="pb-2">
@@ -497,7 +495,7 @@ const DroppableSet = ({ children, id, index, songIds }: { children?: ReactNode; 
           <DragHandle listeners={listeners} attributes={attributes}>
             <FontAwesomeIcon icon={faGripVertical} />
           </DragHandle>
-          <h2 className="font-bold">Set {index + 1} - 15 min</h2>
+          <h2 className="font-bold">Set {index + 1} - {minuteLength} min</h2>
         </FlexList>
       </div>
       <FlexList gap={2}>
@@ -524,11 +522,11 @@ const DraggableSong = ({ song }: { song?: SerializeFrom<Song> }) => {
       className="bg-base-100 p-2 px-4 rounded"
       style={{ transition, transform: CSS.Translate.toString(transform), opacity: isDragging ? 0.5 : undefined }}
     >
-      <FlexList direction="row" items="center">
+      <FlexList direction="row" items="center" width="full">
         <DragHandle attributes={attributes} listeners={listeners}>
           <FontAwesomeIcon icon={faGripVertical} />
         </DragHandle>
-        <SongDisplay song={song} />
+        <SongDisplay song={song} width="half" />
       </FlexList>
     </div>
   )
