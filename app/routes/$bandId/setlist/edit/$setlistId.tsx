@@ -55,7 +55,7 @@ const subRoutes = ['addSongs', 'newSong', 'removeSong', 'createSet', 'createSong
 
 export default function EditSetlist() {
   const { setlist, songs } = useLoaderData<typeof loader>()
-  const { bandId } = useParams()
+  const { bandId, setlistId } = useParams()
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
@@ -105,7 +105,7 @@ export default function EditSetlist() {
           <>
             <SaveButtons
               saveLabel="Save"
-              cancelTo="confirmCancel"
+              cancelTo={`/${bandId}/setlist/${setlistId}`}
             />
             <MobileModal isPortal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
               <Outlet />
