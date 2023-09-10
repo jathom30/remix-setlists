@@ -6,6 +6,8 @@ import { AvatarTitle, Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, M
 import { getSetlist, newUpdateSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { getSongs } from "~/models/song.server";
+import { emitter } from "~/utils/emitter.server";
+
 
 export async function loader({ request, params }: LoaderArgs) {
   const { setlistId, bandId } = params
@@ -48,7 +50,9 @@ export async function action({ request, params }: ActionArgs) {
   }, {})
 
   const newSetlist = await newUpdateSetlist(setlistId, cleanedSets)
-  return redirect(`/${bandId}/setlist/${newSetlist.id}`)
+
+  emitter.emit('setlist', "newSetlist.id")
+  return null
 }
 
 const subRoutes = ['addSongs', 'newSong', 'removeSong', 'createSet', 'createSong', 'saveChanges', 'confirmCancel']
@@ -78,7 +82,7 @@ export default function EditSetlist() {
     }, {})
 
 
-  // set songIds
+  // let time = useEventSource("/resources/stream", { event: "time" });
 
   return (
     <Form method="put" className="h-full">

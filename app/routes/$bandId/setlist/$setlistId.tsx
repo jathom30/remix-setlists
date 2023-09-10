@@ -1,6 +1,7 @@
 import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
+import { useEventSource } from 'remix-utils'
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
@@ -9,7 +10,7 @@ import { faCompress, faDatabase, faEllipsisV, faExpand, faEye } from "@fortaweso
 import { getSetLength } from "~/utils/setlists";
 import pluralize from "pluralize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Popover } from "react-tiny-popover";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
@@ -51,6 +52,12 @@ export default function Setlist() {
   const { bandId } = useParams()
   const setKeyDefaults = setlist.sets.reduce((acc, set) => ({ ...acc, [set.id]: true }), {} as Record<string, boolean>)
   const [isOpen, setIsOpen] = useState(setKeyDefaults)
+
+  const event = useEventSource(`/resources/stream`, { event: 'setlist' })
+
+  useEffect(() => {
+    console.log(event)
+  }, [event])
 
   const handleOpenSet = (setId: string) => {
     setIsOpen(prevOpen => {
