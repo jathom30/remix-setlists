@@ -4,9 +4,7 @@ import { emitter } from "~/utils/emitter.server";
 
 export async function loader({ request }: LoaderArgs) {
   return eventStream(request.signal, function setup(send) {
-    console.log("EVENT STREAM")
     function listener(setlist: string) {
-      console.log("LISTENER")
       send({ event: 'setlist', data: setlist })
     }
 

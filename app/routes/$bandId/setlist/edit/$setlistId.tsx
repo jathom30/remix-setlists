@@ -51,8 +51,8 @@ export async function action({ request, params }: ActionArgs) {
 
   const newSetlist = await newUpdateSetlist(setlistId, cleanedSets)
 
-  emitter.emit('setlist', "newSetlist.id")
-  return null
+  emitter.emit('setlist', newSetlist.id)
+  return redirect(`/${bandId}/setlist/${newSetlist.id}`)
 }
 
 const subRoutes = ['addSongs', 'newSong', 'removeSong', 'createSet', 'createSong', 'saveChanges', 'confirmCancel']

@@ -307,8 +307,8 @@ export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: {
         <SortableContext
           items={[...setIds, PLACEHOLDER_ID]}
         >
-          <FlexList direction="row" gap={0} height="full">
-            <aside className="p-2 flex flex-col border-r h-full w-80">
+          <div className="grid grid-rows-3 h-full sm:flex">
+            <aside className="p-2 flex flex-col border-b sm:border-r sm:border-b-0 sm:w-52 md:w-80">
               <h1 className="pb-2 font-bold text-lg">Available Songs</h1>
               <DroppableUnusedSongsList id={UNUSED_SONG_IDS} songIds={songIdsBySet[UNUSED_SONG_IDS]}>
                 <FlexList direction="col" gap={2}>
@@ -321,7 +321,7 @@ export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: {
               </DroppableUnusedSongsList>
             </aside>
 
-            <main className="p-2 w-full h-full flex flex-col overflow-hidden">
+            <main className="p-2 row-span-2 w-full flex flex-col overflow-hidden">
               <h1 className="pb-2 font-bold text-lg">{setlistTitle || 'New Setlist'}</h1>
               <div className="flex flex-col overflow-auto gap-2">
                 {setIds.filter(setId => setId !== UNUSED_SONG_IDS).map((setId, index) => (
@@ -338,7 +338,8 @@ export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: {
                 <DroppableSet id={PLACEHOLDER_ID} index={-1} songIds={[]} minuteLength={-1} />
               </div>
             </main>
-          </FlexList>
+          </div>
+
         </SortableContext>
         <ClientOnly fallback={<span>Loading...</span>}>
           {() => createPortal(
