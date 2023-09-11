@@ -5,7 +5,6 @@ import invariant from "tiny-invariant";
 import { SaveButtons, SetlistDndInterface } from "~/components";
 import { getSongs } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
-
 import { createSetlistWithMultipleSets } from "~/models/setlist.server";
 
 export async function loader({ request, params }: LoaderArgs) {
@@ -52,7 +51,7 @@ export default function Fresh() {
   return (
     <Form method="post" className="h-full flex flex-col">
       <SetlistDndInterface songs={songs} />
-      <SaveButtons saveLabel="Create setlist" />
+      <SaveButtons saveLabel="Create setlist" isDisabled />
     </Form>
   )
 }

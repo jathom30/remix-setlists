@@ -82,8 +82,6 @@ export default function EditSetlist() {
     }, {})
 
 
-  // let time = useEventSource("/resources/stream", { event: "time" });
-
   return (
     <Form method="put" className="h-full">
       <MaxHeightContainer

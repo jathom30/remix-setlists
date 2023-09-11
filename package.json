@@ -44,6 +44,7 @@
     "@remix-run/serve": "^1.19.3",
     "@remix-run/server-runtime": "^1.19.3",
     "@sendgrid/mail": "^7.7.0",
+    "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/typography": "^0.5.9",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.33.0",

@@ -1,9 +1,9 @@
-import { faDragon, faGripLines, faGripVertical } from "@fortawesome/free-solid-svg-icons";
+import { faGripVertical } from "@fortawesome/free-solid-svg-icons";
 import { createPortal, unstable_batchedUpdates } from 'react-dom';
 import { ClientOnly } from 'remix-utils'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { SerializeFrom } from "@remix-run/node";
-import { FlexHeader, FlexList, SongDisplay, TempoIcons, TextOverflow } from "~/components";
+import { DragInTheMiddle, FlexHeader, FlexList, SongDisplay, TempoIcons, TextOverflow } from "~/components";
 import { CSS } from "@dnd-kit/utilities";
 import type { UniqueIdentifier, CollisionDetection, DraggableAttributes } from "@dnd-kit/core";
 import { MeasuringStrategy } from "@dnd-kit/core";
@@ -12,7 +12,7 @@ import { DndContext, KeyboardSensor, useSensor, useSensors, DragOverlay } from "
 import type { AnimateLayoutChanges } from "@dnd-kit/sortable";
 import { arrayMove, defaultAnimateLayoutChanges, SortableContext, useSortable } from "@dnd-kit/sortable";
 import { coordinateGetter } from "~/utils/dnd";
-import type { DragEvent, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import type { Song } from "@prisma/client";
@@ -22,9 +22,26 @@ const animateLayoutChanges: AnimateLayoutChanges = (args) =>
 
 const PLACEHOLDER_ID = 'placeholder'
 const UNUSED_SONG_IDS = 'unused'
+const SEPARATOR = 'separator'
 
 export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: { songs: SerializeFrom<Song>[]; initialSetsState?: Record<string, UniqueIdentifier[]>; setlistTitle?: string }) => {
   const allSongIds = songs.map(song => song.id)
+  const [y, setY] = useState(0)
+  const [containerHeight, setContainerHeight] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // get container height
+  useEffect(() => {
+    if (!containerRef.current) { return }
+
+    const getHeight = () => {
+      const containerHeight = containerRef.current?.clientHeight || 0
+      setContainerHeight(containerHeight)
+    }
+    getHeight()
+    window.addEventListener('resize', getHeight)
+    return () => window.removeEventListener('resize', getHeight)
+  }, [])
 
   // when setting initial state, filter used from unused songs
   const songIdsInInitialSetsState = Object.values(initialSetsState || {}).flat()
@@ -147,8 +164,10 @@ export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: {
     return songs.reduce((sum: number, songId) => sum += (getSongById(songId)?.length || 0), 0)
   }
 
+  const splitRatio = 2 / 3
+
   return (
-    <div className="overflow-hidden flex-1 border">
+    <div className="@container overflow-hidden flex-1" ref={containerRef}>
       <DndContext
         id="setlist"
         sensors={sensors}
@@ -219,7 +238,25 @@ export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: {
             });
           }
         }}
-        onDragEnd={({ active, over }) => {
+        onDragEnd={({ active, over, delta }) => {
+          // if moving separator
+          if (active.id === SEPARATOR) {
+            const minHeight = 120
+            const initialHeight = containerHeight * splitRatio
+            const maxHeight = containerHeight - minHeight
+            setY(prevY => {
+              const nextY = prevY - delta.y
+              const nextHeight = initialHeight - nextY
+              if (nextHeight < minHeight) {
+                return initialHeight - minHeight
+              }
+              if (nextHeight > maxHeight) {
+                return (maxHeight - initialHeight) * -1
+              }
+              return nextY
+            })
+          }
+
           // if moving whole sets
           if (active.id in songIdsBySet && over?.id) {
             setSetIds((containers) => {
@@ -307,8 +344,9 @@ export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: {
         <SortableContext
           items={[...setIds, PLACEHOLDER_ID]}
         >
-          <div className="h-full flex">
-            <aside className="p-2 flex flex-col w-52 md:w-80">
+          {/* desktop, drag and drop */}
+          <div className="h-full hidden sm:flex">
+            <aside className="p-2 flex flex-col w-52 @3xl:w-80">
               <h1 className="pb-2 font-bold text-lg">Available Songs</h1>
               <DroppableUnusedSongsList id={UNUSED_SONG_IDS} songIds={songIdsBySet[UNUSED_SONG_IDS]}>
                 <FlexList direction="col" gap={2}>
@@ -337,7 +375,48 @@ export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: {
                 <DroppableSet id={PLACEHOLDER_ID} index={-1} songIds={[]} minuteLength={-1} />
               </div>
             </main>
+          </div>
 
+          {/* mobile drag and drop */}
+          <div className="h-full">
+            <DragInTheMiddle
+              id={SEPARATOR}
+              y={y}
+              containerHeight={containerHeight}
+              splitRatio={2 / 3}
+              topContent={
+                <main className="p-2 w-full h-full flex flex-col overflow-hidden">
+                  <h1 className="pb-2 font-bold text-lg">{setlistTitle || 'New Setlist'}</h1>
+                  <div className="flex flex-col overflow-auto gap-2">
+                    {setIds.filter(setId => setId !== UNUSED_SONG_IDS).map((setId, index) => (
+                      <DroppableSet key={setId} id={setId} index={index} songIds={songIdsBySet[setId]} minuteLength={getSetLengthInMinutes(setId)}>
+                        <FlexList>
+                          <SortableContext items={songIdsBySet[setId]}>
+                            {songIdsBySet[setId].map(songId => (
+                              <DraggableSong key={songId} song={getSongById(songId)} />
+                            ))}
+                          </SortableContext>
+                        </FlexList>
+                      </DroppableSet>
+                    ))}
+                    <DroppableSet id={PLACEHOLDER_ID} index={-1} songIds={[]} minuteLength={-1} />
+                  </div>
+                </main>
+              }
+              bottomContent={
+                <aside className="p-2 flex flex-col overflow-hidden">
+                  <h1 className="pb-2 font-bold text-lg">Available Songs</h1>
+                  <DroppableUnusedSongsList id={UNUSED_SONG_IDS} songIds={songIdsBySet[UNUSED_SONG_IDS]}>
+                    <FlexList direction="col" gap={2}>
+                      <SortableContext items={songIdsBySet[UNUSED_SONG_IDS]}>
+                        {songIdsBySet[UNUSED_SONG_IDS].map(songId => (
+                          <DraggableUnusedSong key={songId} song={getSongById(songId)} />
+                        ))}
+                      </SortableContext>
+                    </FlexList>
+                  </DroppableUnusedSongsList>
+                </aside>}
+            />
           </div>
 
         </SortableContext>
