@@ -1,11 +1,12 @@
-import type { ActionArgs } from "@remix-run/node";
-import { json, redirect, type LoaderArgs } from "@remix-run/node";
+import { type ActionArgs, json, redirect, type LoaderArgs } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { SaveButtons, SetlistDndInterface } from "~/components";
+import { Button, SaveButtons, SetlistDndInterface } from "~/components";
 import { getSongs } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
 import { createSetlistWithMultipleSets } from "~/models/setlist.server";
+import { faSave } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export async function loader({ request, params }: LoaderArgs) {
   const { bandId } = params
@@ -51,7 +52,22 @@ export default function Fresh() {
   return (
     <Form method="post" className="h-full flex flex-col">
       <SetlistDndInterface songs={songs} />
-      <SaveButtons saveLabel="Create setlist" isDisabled />
+      <div className="sticky sm:hidden">
+        <div className="absolute bottom-4 right-4">
+          <Button
+            size="lg"
+            ariaLabel="Save setlist"
+            kind="primary"
+            isRounded
+            type="submit"
+          >
+            <FontAwesomeIcon icon={faSave} size="2x" />
+          </Button>
+        </div>
+      </div>
+      <div className="hidden sm:block">
+        <SaveButtons saveLabel="Save Setlist" />
+      </div>
     </Form>
   )
 }

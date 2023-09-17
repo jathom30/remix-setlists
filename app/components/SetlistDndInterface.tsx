@@ -3,12 +3,10 @@ import { createPortal, unstable_batchedUpdates } from 'react-dom';
 import { ClientOnly } from 'remix-utils'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { SerializeFrom } from "@remix-run/node";
-import { DragInTheMiddle, FlexHeader, FlexList, SongDisplay, TempoIcons, TextOverflow } from "~/components";
+import { DragInTheMiddle, FlexList, SongDisplay } from "~/components";
 import { CSS } from "@dnd-kit/utilities";
 import type { UniqueIdentifier, CollisionDetection, DraggableAttributes } from "@dnd-kit/core";
-import { MeasuringStrategy } from "@dnd-kit/core";
-import { closestCenter, pointerWithin, rectIntersection, getFirstCollision, MouseSensor, TouchSensor } from "@dnd-kit/core";
-import { DndContext, KeyboardSensor, useSensor, useSensors, DragOverlay } from "@dnd-kit/core";
+import { closestCenter, pointerWithin, rectIntersection, getFirstCollision, MouseSensor, TouchSensor, DndContext, KeyboardSensor, useSensor, useSensors, DragOverlay, MeasuringStrategy } from "@dnd-kit/core";
 import type { AnimateLayoutChanges } from "@dnd-kit/sortable";
 import { arrayMove, defaultAnimateLayoutChanges, SortableContext, useSortable } from "@dnd-kit/sortable";
 import { coordinateGetter } from "~/utils/dnd";
@@ -239,7 +237,7 @@ export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: {
           }
         }}
         onDragEnd={({ active, over, delta }) => {
-          // if moving separator
+          // * if moving MOBILE separator
           if (active.id === SEPARATOR) {
             const minHeight = 120
             const initialHeight = containerHeight * splitRatio
@@ -352,7 +350,7 @@ export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: {
                 <FlexList direction="col" gap={2}>
                   <SortableContext items={songIdsBySet[UNUSED_SONG_IDS]}>
                     {songIdsBySet[UNUSED_SONG_IDS].map(songId => (
-                      <DraggableUnusedSong key={songId} song={getSongById(songId)} />
+                      <DraggableSong key={songId} song={getSongById(songId)} />
                     ))}
                   </SortableContext>
                 </FlexList>
@@ -390,13 +388,11 @@ export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: {
                   <div className="flex flex-col overflow-auto gap-2">
                     {setIds.filter(setId => setId !== UNUSED_SONG_IDS).map((setId, index) => (
                       <DroppableSet key={setId} id={setId} index={index} songIds={songIdsBySet[setId]} minuteLength={getSetLengthInMinutes(setId)}>
-                        <FlexList>
-                          <SortableContext items={songIdsBySet[setId]}>
-                            {songIdsBySet[setId].map(songId => (
-                              <DraggableSong key={songId} song={getSongById(songId)} />
-                            ))}
-                          </SortableContext>
-                        </FlexList>
+                        <SortableContext items={songIdsBySet[setId]}>
+                          {songIdsBySet[setId].map(songId => (
+                            <DraggableSong key={songId} song={getSongById(songId)} />
+                          ))}
+                        </SortableContext>
                       </DroppableSet>
                     ))}
                     <DroppableSet id={PLACEHOLDER_ID} index={-1} songIds={[]} minuteLength={-1} />
@@ -410,7 +406,7 @@ export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: {
                     <FlexList direction="col" gap={2}>
                       <SortableContext items={songIdsBySet[UNUSED_SONG_IDS]}>
                         {songIdsBySet[UNUSED_SONG_IDS].map(songId => (
-                          <DraggableUnusedSong key={songId} song={getSongById(songId)} />
+                          <DraggableSong key={songId} song={getSongById(songId)} />
                         ))}
                       </SortableContext>
                     </FlexList>
@@ -426,7 +422,7 @@ export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: {
               {activeId
                 ? setIds.includes(activeId)
                   ? <SetDragOverlay />
-                  : <DraggableUnusedSong song={getSongById(activeId)} />
+                  : <DraggableSong song={getSongById(activeId)} />
                 : null
               }
             </DragOverlay>,
@@ -453,41 +449,10 @@ const SetDragOverlay = () => {
 
 const DragHandle = ({ children, listeners, attributes }: { children: ReactNode; listeners?: SyntheticListenerMap; attributes: DraggableAttributes }) => {
   return (
-    <button className="btn cursor-grab" data-cypress="draggable-handle" {...listeners} {...attributes}>
+    <button className="btn btn-sm btn-ghost cursor-grab" data-cypress="draggable-handle" {...listeners} {...attributes}>
       {children}
     </button>
   )
-}
-
-const DraggableUnusedSong = ({ song }: { song?: SerializeFrom<Song> }) => {
-  const {
-    attributes,
-    isDragging,
-    listeners,
-    setNodeRef,
-    transform,
-    transition
-  } = useSortable({ id: song?.id || '' });
-
-  if (!song) { return null }
-  return (
-    <div
-      ref={setNodeRef}
-      className="p-2 pl-4 bg-base-100 rounded flex items-center gap-4"
-      style={{ transition, transform: CSS.Translate.toString(transform), opacity: isDragging ? 0.5 : undefined }}
-    >
-      <DragHandle attributes={attributes} listeners={listeners}>
-        <FontAwesomeIcon icon={faGripVertical} />
-      </DragHandle>
-      <div className="flex flex-col w-full overflow-hidden">
-        <TextOverflow className="font-bold">{song.name}</TextOverflow>
-        <FlexHeader>
-          <TextOverflow className="text-xs">{song.author || '--'}</TextOverflow>
-          <TempoIcons tempo={song.tempo} />
-        </FlexHeader>
-      </div>
-    </div>
-  );
 }
 
 const DroppableUnusedSongsList = ({ children, id, songIds }: { children: ReactNode; id: UniqueIdentifier; songIds: UniqueIdentifier[] }) => {
@@ -595,10 +560,10 @@ const DraggableSong = ({ song }: { song?: SerializeFrom<Song> }) => {
   return (
     <div
       ref={setNodeRef}
-      className="bg-base-100 p-2 px-4 rounded"
+      className="bg-base-100 p-2 rounded"
       style={{ transition, transform: CSS.Translate.toString(transform), opacity: isDragging ? 0.5 : undefined }}
     >
-      <FlexList direction="row" items="center" width="full">
+      <FlexList direction="row" items="center" width="full" gap={2}>
         <DragHandle attributes={attributes} listeners={listeners}>
           <FontAwesomeIcon icon={faGripVertical} />
         </DragHandle>

@@ -2,11 +2,13 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from '@remix-run/node'
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { AvatarTitle, Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, MaxHeightContainer, MobileMenu, MobileModal, Navbar, SaveButtons, SetlistDndInterface } from "~/components";
+import { AvatarTitle, Breadcrumbs, Button, CatchContainer, ErrorContainer, FlexHeader, MaxHeightContainer, MobileMenu, MobileModal, Navbar, SaveButtons, SetlistDndInterface } from "~/components";
 import { getSetlist, newUpdateSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { getSongs } from "~/models/song.server";
 import { emitter } from "~/utils/emitter.server";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSave } from "@fortawesome/free-solid-svg-icons";
 
 
 export async function loader({ request, params }: LoaderArgs) {
@@ -105,10 +107,25 @@ export default function EditSetlist() {
         }
         footer={
           <>
-            <SaveButtons
-              saveLabel="Save"
-              cancelTo={`/${bandId}/setlist/${setlistId}`}
-            />
+            <div className="sticky sm:hidden">
+              <div className="absolute bottom-4 right-4">
+                <Button
+                  size="lg"
+                  ariaLabel="Save setlist"
+                  kind="primary"
+                  isRounded
+                  type="submit"
+                >
+                  <FontAwesomeIcon icon={faSave} size="2x" />
+                </Button>
+              </div>
+            </div>
+            <div className="hidden sm:block">
+              <SaveButtons
+                saveLabel="Save"
+                cancelTo={`/${bandId}/setlist/${setlistId}`}
+              />
+            </div>
             <MobileModal isPortal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
               <Outlet />
             </MobileModal>
