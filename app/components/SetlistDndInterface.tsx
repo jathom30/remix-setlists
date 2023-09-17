@@ -376,7 +376,7 @@ export const SetlistDndInterface = ({ songs, initialSetsState, setlistTitle }: {
           </div>
 
           {/* mobile drag and drop */}
-          <div className="h-full">
+          <div className="h-full sm:hidden">
             <DragInTheMiddle
               id={SEPARATOR}
               y={y}

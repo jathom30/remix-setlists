@@ -1,13 +1,12 @@
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import { faCheck, faListOl, faMusic, faPlus, faSignOut, faSort, faUser, faUsers } from "@fortawesome/free-solid-svg-icons"
+import { faAngleLeft, faAngleRight, faCheck, faListOl, faMusic, faPlus, faSignOut, faSort, faUser, faUsers } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import type { BandIcon } from "@prisma/client"
 import { Popover } from 'react-tiny-popover'
 import type { SerializeFrom } from "@remix-run/server-runtime"
 import { AnimatePresence, motion } from "framer-motion"
 import type { ReactNode } from "react";
-import { useEffect } from "react";
-import { useState } from "react"
+import { useEffect, useState } from "react";
 import { useUser } from "~/utils"
 import { Avatar } from "./Avatar"
 import { Badge } from "./Badge"
@@ -152,6 +151,11 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
         >
           <div className="flex flex-col h-full p-2 gap-4 justify-between">
             <ul className="menu p-2 rounded-box">
+              <li className={isOpen ? 'self-end' : ''}>
+                <Button kind="ghost" onClick={() => setIsOpen(!isOpen)}>
+                  <FontAwesomeIcon icon={isOpen ? faAngleLeft : faAngleRight} />
+                </Button>
+              </li>
               <li>
                 <SideBarLink to="setlists" isOpen={isOpen} label="Setlists" icon={faListOl} />
               </li>
