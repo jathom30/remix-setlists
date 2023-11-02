@@ -6,7 +6,7 @@ import { Popover } from 'react-tiny-popover'
 import type { SerializeFrom } from "@remix-run/server-runtime"
 import { AnimatePresence, motion } from "framer-motion"
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useUser } from "~/utils"
 import { Avatar } from "./Avatar"
 import { Badge } from "./Badge"
@@ -18,8 +18,6 @@ import { useLocation, Link as RemixLink, useParams, Form } from "@remix-run/reac
 import { Divider } from "./Divider";
 import { Modal } from "./Modal";
 import { AddBand } from "./AddBand";
-import resolveConfig from "tailwindcss/resolveConfig";
-import tailwindConfig from "tailwind.config";
 
 type MainSidebarProps = {
   band: SerializeFrom<{
@@ -45,16 +43,6 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const state = isOpen ? 'open' : 'closed'
   const { pathname } = useLocation()
-  const fullConfig = resolveConfig(tailwindConfig)
-  const screens = fullConfig.theme?.screens as Record<string, string> | undefined
-  const mediumBreakpoint = parseInt(screens?.md || '768px')
-
-  useEffect(() => {
-    const handleIsOpen = () => setIsOpen(window.innerWidth > mediumBreakpoint)
-    window.addEventListener('resize', handleIsOpen)
-    handleIsOpen()
-    return () => window.removeEventListener('resize', handleIsOpen)
-  }, [mediumBreakpoint])
 
   const isActive = pathname.split('/')[2].includes('user')
 

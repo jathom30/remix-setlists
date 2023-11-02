@@ -11,7 +11,7 @@ export const SongDisplay = ({ song, width }: { song: SerializeFrom<Song>; width?
     <div className={`@container flex flex-col grow ${width === 'full' ? `w-full` : ''} ${width === 'half' ? 'w-1/2' : ''}`}>
       <TextOverflow className="font-bold">{song.name}</TextOverflow>
       <FlexList direction="row" gap={2} items="center" wrap>
-        {song.author ? <span className="text-xs">{song.author}</span> : null}
+        {song.author ? <TextOverflow className="text-xs">{song.author}</TextOverflow> : null}
         <div className="hidden @xs:block">
           <TempoIcons tempo={song.tempo} />
         </div>
