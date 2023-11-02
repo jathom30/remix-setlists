@@ -8,20 +8,21 @@ import { TextOverflow } from "./TextOverflow"
 export const SongDisplay = ({ song, width }: { song: SerializeFrom<Song>; width?: 'full' | 'half' }) => {
   const songKey = song.keyLetter ? `${song.keyLetter} ${song.isMinor ? 'Minor' : 'Major'}` : '--'
   return (
-    <FlexList gap={0} grow width={width}>
+    <div className={`@container flex flex-col grow ${width === 'full' ? `w-full` : ''} ${width === 'half' ? 'w-1/2' : ''}`}>
       <TextOverflow className="font-bold">{song.name}</TextOverflow>
-      <FlexList direction="row" justify="between" gap={2} wrap>
-        <FlexList direction="row" gap={2} items="center" wrap>
-          {song.author ? <span className="text-xs">{song.author}</span> : null}
+      <FlexList direction="row" gap={2} items="center" wrap>
+        {song.author ? <TextOverflow className="text-xs">{song.author}</TextOverflow> : null}
+        <div className="hidden @xs:block">
           <TempoIcons tempo={song.tempo} />
+        </div>
+        <div className="hidden @xs:block">
           <Badge size="sm" kind="outline">{songKey}</Badge>
+        </div>
+        <div className="hidden @xs:block">
           {song.position === 'opener' ? <Badge size="sm" kind="info">Opener</Badge> : null}
           {song.position === 'closer' ? <Badge size="sm" kind="info">Closer</Badge> : null}
-        </FlexList>
-        <span className="text-xs text-text-subdued whitespace-nowrap">
-          {new Date(song.updatedAt).toLocaleDateString('en-us', { month: 'numeric', day: 'numeric', year: '2-digit' })}
-        </span>
+        </div>
       </FlexList>
-    </FlexList>
+    </div>
   )
 }

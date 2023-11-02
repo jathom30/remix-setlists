@@ -1,13 +1,13 @@
 import { Outlet, useLocation, useParams } from "@remix-run/react"
 import type { MetaFunction } from "@remix-run/server-runtime";
-import { AvatarTitle, Breadcrumbs, FlexHeader, MaxHeightContainer, MaxWidth, MobileMenu, Navbar } from "~/components"
+import { AvatarTitle, Breadcrumbs, FlexHeader, MaxHeightContainer, MobileMenu, Navbar } from "~/components"
 
 export const meta: MetaFunction = () => ({
   title: 'New setlist'
 });
 
 const getHeader = (pathname: string) => {
-  if (pathname.includes('manual')) {
+  if (pathname.includes('fresh')) {
     return 'Manual'
   }
   if (pathname.includes('auto')) {
@@ -42,9 +42,7 @@ export default function NewSetlist() {
         </>
       }
     >
-      <MaxWidth>
-        <Outlet />
-      </MaxWidth>
+      <Outlet />
     </MaxHeightContainer>
   )
 }

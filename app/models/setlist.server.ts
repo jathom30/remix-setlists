@@ -25,6 +25,32 @@ export async function createSetlist(bandId: Band['id'], songIds: Song['id'][]) {
   })
 }
 
+export async function createSetlistWithMultipleSets(bandId: Band['id'], setIds: Record<string, string[]>, editedFromId?: Setlist['editedFromId']) {
+  let originalSetlistName = ''
+  if (editedFromId) {
+    const setlist = await getSetlist(editedFromId)
+    originalSetlistName = setlist?.name || ''
+  }
+  return await prisma.setlist.create({
+    data: {
+      name: originalSetlistName || 'Temp name',
+      bandId,
+      editedFromId,
+      sets: {
+        create: Object.entries(setIds).map(([positionInSetlist, songIds]) => ({
+          songs: {
+            create: songIds.map((songId, positionInSet) => ({
+              songId, positionInSet
+            })),
+          },
+          positionInSetlist: Number(positionInSetlist)
+        }))
+      }
+    }
+  })
+}
+
+
 export async function getSetlists(bandId: Band['id'], params?: { q?: string, sort?: string }) {
   const orderBy = getSortFromParam(params?.sort)
   const setlists = await prisma.setlist.findMany({
@@ -114,6 +140,25 @@ export async function updateSetlist(setlistId: Setlist['id'], setlist: Partial<S
   })
 }
 
+export async function newUpdateSetlist(setlistId: Setlist['id'], setIds: Record<string, string[]>) {
+  return await prisma.setlist.update({
+    where: { id: setlistId },
+    data: {
+      sets: {
+        deleteMany: { setlistId },
+        create: Object.entries(setIds).map(([positionInSetlist, songIds]) => ({
+          songs: {
+            create: songIds.map((songId, positionInSet) => ({
+              songId, positionInSet
+            })),
+          },
+          positionInSetlist: Number(positionInSetlist)
+        }))
+      }
+    }
+  })
+}
+
 export async function deleteSetlist(setlistId: Setlist['id']) {
   return prisma.setlist.delete({
     where: { id: setlistId },
@@ -179,21 +224,14 @@ export async function createSetlistAuto(bandId: Band['id'], settings: SetlistSet
   return setlist.id
 }
 
-// cloned setlist is created when editing
-// cloned setlist is manipulated, upon saving, use editedFromId to overwrite OG setlist
 export async function cloneSetlist(setlistId: Setlist['id']) {
   const originalSetlist = await getSetlist(setlistId)
   if (!originalSetlist) { return null }
-  // destroy any setlists that may have been cloned previously, but abandoned during editing
-  const oldSetlist = await prisma.setlist.findFirst({ where: { editedFromId: originalSetlist.id } })
-  if (oldSetlist) {
-    deleteSetlist(oldSetlist.id)
-  }
+
   return prisma.setlist.create({
     data: {
-      name: originalSetlist.name,
+      name: `${originalSetlist.name} [CLONE]`,
       bandId: originalSetlist.bandId,
-      editedFromId: originalSetlist.id,
       sets: {
         create: originalSetlist?.sets.map(set => ({
           songs: {

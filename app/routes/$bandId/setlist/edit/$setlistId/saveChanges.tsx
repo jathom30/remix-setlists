@@ -31,6 +31,7 @@ export async function action({ request, params }: ActionArgs) {
 
   // on overwrite, update OG setlist to match cloned setlist, then delete clone and redirect to OG
   if (intent === 'overwrite') {
+    console.log('****', setlistId, clonedSetlist.editedFromId, '****')
     const updatedSetlistId = await overwriteSetlist(clonedSetlist.id)
     return redirect(`/${bandId}/setlist/${updatedSetlistId}`)
   }

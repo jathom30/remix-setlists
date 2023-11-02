@@ -1,15 +1,13 @@
-import { Form, useParams, useNavigation, useLoaderData } from "@remix-run/react";
+import { useParams, useLoaderData, Form } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { Button, FlexList, Link } from "~/components";
 import { cloneSetlist, getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
-import { useSpinDelay } from "spin-delay";
-import { faFileSignature, faListOl, faPenToSquare, faShareNodes, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faClone, faFileSignature, faListOl, faPenToSquare, faShareNodes, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 export async function loader({ request, params }: LoaderArgs) {
   const { setlistId, bandId } = params
@@ -40,8 +38,6 @@ export async function action({ request, params }: ActionArgs) {
 export default function SetlistMenu() {
   const { setlist } = useLoaderData<typeof loader>()
   const { bandId, setlistId } = useParams()
-  const navigation = useNavigation()
-  const isSubmitting = useSpinDelay(navigation.state !== 'idle' && navigation.location.pathname.includes('edit'))
   const memberRole = useMemberRole()
   const isSub = memberRole === RoleEnum.SUB
   return (
@@ -50,10 +46,9 @@ export default function SetlistMenu() {
       {!isSub ? (
         <>
           <Link to={`/${bandId}/setlist/${setlistId}/rename`} isOutline icon={faFileSignature}>Rename setlist</Link>
-          <Form method="post">
-            <FlexList>
-              <Button isSaving={isSubmitting} type="submit" isOutline icon={faPenToSquare}>Edit setlist</Button>
-            </FlexList>
+          <Link to={`/${bandId}/setlist/edit/${setlistId}`} isOutline icon={faPenToSquare}>Edit setlist</Link>
+          <Form method="post" className="flex flex-col">
+            <Button type="submit" isOutline icon={faClone}>Clone setlist</Button>
           </Form>
         </>
       ) : null}
