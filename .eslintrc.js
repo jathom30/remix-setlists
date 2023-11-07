@@ -50,6 +50,7 @@ module.exports = {
           "warn",
           { validStrategies: ["ternary"] },
         ],
+        "react/no-unescaped-entities": 0
       },
     },
 

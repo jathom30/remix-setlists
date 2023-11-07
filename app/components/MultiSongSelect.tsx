@@ -25,6 +25,7 @@ export const MulitSongSelect = ({
           </FlexList>
         ) : (
           songs.map((song) => (
+            // eslint-disable-next-line jsx-a11y/label-has-associated-control
             <label key={song.id} htmlFor={song.id}>
               <div className={hoverAndFocusContainerStyles}>
                 <FlexList direction="row" gap={4} items="center">

@@ -17,6 +17,7 @@ export async function uploadImage(
   bandId: string,
 ) {
   const uploadPromise = new Promise<UploadApiResponse>(
+    // eslint-disable-next-line no-async-promise-executor
     async (resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
@@ -44,7 +45,7 @@ export async function uploadImage(
 }
 
 export async function deleteImage(bandId: string) {
-  return cloudinary.uploader.destroy(`${folder}/${bandId}`, (error, result) => {
+  return cloudinary.uploader.destroy(`${folder}/${bandId}`, (error) => {
     if (error) {
       console.error(error);
     }

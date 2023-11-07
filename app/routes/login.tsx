@@ -126,7 +126,8 @@ export default function LoginPage() {
                 ref={emailRef}
                 id="email"
                 required
-                autoFocus={true}
+                // eslint-disable-next-line jsx-a11y/no-autofocus
+                autoFocus
                 name="email"
                 type="email"
                 autoComplete="email"
@@ -135,8 +136,8 @@ export default function LoginPage() {
                 className="input input-bordered w-full"
               />
               {actionData?.errors?.email ? <div className="pt-1 text-error" id="email-error">
-                  {actionData.errors.email}
-                </div> : null}
+                {actionData.errors.email}
+              </div> : null}
             </div>
           </div>
 
@@ -156,8 +157,8 @@ export default function LoginPage() {
                 className="input input-bordered w-full"
               />
               {actionData?.errors?.password ? <div className="pt-1 text-error" id="password-error">
-                  {actionData.errors.password}
-                </div> : null}
+                {actionData.errors.password}
+              </div> : null}
             </div>
           </div>
 

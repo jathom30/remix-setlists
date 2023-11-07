@@ -152,6 +152,7 @@ export default function Join() {
                 ref={nameRef}
                 id="name"
                 required
+                // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus={true}
                 name="name"
                 type="text"
@@ -160,8 +161,8 @@ export default function Join() {
                 className="input input-bordered w-full"
               />
               {actionData?.errors?.name ? <div className="pt-1 text-error" id="email-error">
-                  {actionData.errors.name}
-                </div> : null}
+                {actionData.errors.name}
+              </div> : null}
             </div>
           </div>
 
@@ -182,8 +183,8 @@ export default function Join() {
                 className="input input-bordered w-full"
               />
               {actionData?.errors?.email ? <div className="pt-1 text-error" id="email-error">
-                  {actionData.errors.email}
-                </div> : null}
+                {actionData.errors.email}
+              </div> : null}
             </div>
           </div>
 
@@ -207,8 +208,8 @@ export default function Join() {
                 <PasswordStrength tests={tests} strength={strength} />
               </div>
               {actionData?.errors?.password ? <div className="pt-1 text-error" id="password-error">
-                  {actionData.errors.password}
-                </div> : null}
+                {actionData.errors.password}
+              </div> : null}
             </div>
           </div>
 

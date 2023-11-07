@@ -15,29 +15,24 @@ import { FeelSelect } from "~/routes/$bandId.resources.FeelSelect";
 import { useMatchesData } from "~/utils";
 import { positionEnums, setlistAutoGenImportanceEnums } from "~/utils/enums";
 import { keyLetters, majorMinorOptions } from "~/utils/songConstants";
+import { getColor } from "~/utils/tailwindColors";
 
+import { Badge } from "./Badge";
+import { Button } from "./Button";
 import { Checkbox } from "./Checkbox";
+import { Divider } from "./Divider";
 import { ErrorMessage } from "./ErrorMessage";
+import { ExternalLinksInputs } from "./ExternalLinksInputs";
 import { Field } from "./Field";
+import { FlexHeader } from "./FlexHeader";
 import { FlexList } from "./FlexList";
-import { Label } from "./Label";
 import { Input } from "./Input";
-
+import { Label } from "./Label";
 import { Modal } from "./Modal";
 import { Navbar } from "./Navbar";
 import { RadioGroup } from "./RadioGroup";
-
-
 import { getTempoColor } from "./TempoIcons";
-
-import { getColor } from "~/utils/tailwindColors";
-
-import { Button } from "./Button";
 import { Title } from "./Title";
-import { FlexHeader } from "./FlexHeader";
-import { Badge } from "./Badge";
-import { Divider } from "./Divider";
-import { ExternalLinksInputs } from "./ExternalLinksInputs";
 
 const getRangeColor = (tempo: number) => {
   switch (tempo) {
@@ -148,11 +143,11 @@ export const SongForm = ({
                 borderColor: border,
                 ...(isFocused
                   ? {
-                      outline: 2,
-                      outlineStyle: "solid",
-                      outlineColor: border,
-                      outlineOffset: 2,
-                    }
+                    outline: 2,
+                    outlineStyle: "solid",
+                    outlineColor: border,
+                    outlineOffset: 2,
+                  }
                   : null),
                 "&:hover": {
                   borderColor: baseContent,
@@ -211,7 +206,7 @@ export const SongForm = ({
                 backgroundColor: base100,
                 color: baseContent,
               }),
-              option: (baseStyles, state) => ({
+              option: (baseStyles) => ({
                 ...baseStyles,
                 backgroundColor: base100,
                 color: baseContent,
@@ -235,11 +230,11 @@ export const SongForm = ({
                 borderColor: border,
                 ...(isFocused
                   ? {
-                      outline: 2,
-                      outlineStyle: "solid",
-                      outlineColor: border,
-                      outlineOffset: 2,
-                    }
+                    outline: 2,
+                    outlineStyle: "solid",
+                    outlineColor: border,
+                    outlineOffset: 2,
+                  }
                   : null),
                 "&:hover": {
                   borderColor: baseContent,
@@ -298,7 +293,7 @@ export const SongForm = ({
                 backgroundColor: base100,
                 color: baseContent,
               }),
-              option: (baseStyles, state) => ({
+              option: (baseStyles) => ({
                 ...baseStyles,
                 backgroundColor: base100,
                 color: baseContent,

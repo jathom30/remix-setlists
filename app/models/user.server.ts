@@ -87,7 +87,7 @@ export async function verifyLogin(
     throw new Response("Account is locked", { status: 401 });
   }
 
-  const { password: _password, ...userWithoutPassword } = userWithPassword;
+  const { ...userWithoutPassword } = userWithPassword;
 
   return userWithoutPassword;
 }

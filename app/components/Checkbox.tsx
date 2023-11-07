@@ -18,12 +18,14 @@ export const Checkbox = ({
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 }) => {
   return (
+    // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label
-      id={name}
+      htmlFor={name}
       className="cursor-pointer hover:bg-base-200 p-2 rounded-lg"
     >
       <FlexList direction="row" gap={2} items="center">
         <input
+          id={name}
           onChange={onChange}
           className="checkbox"
           type="checkbox"

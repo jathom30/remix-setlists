@@ -38,7 +38,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({ setlist });
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return [
       {

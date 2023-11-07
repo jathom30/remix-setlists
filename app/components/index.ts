@@ -49,7 +49,6 @@ export * from "./SaveButtons";
 export * from "./SearchInput";
 export * from "./SetlistLink";
 export * from "./SideBar";
-export * from "./SiteHeader";
 export * from "./SongDetails";
 export * from "./SongDisplay";
 export * from "./SongForm";

@@ -4,7 +4,7 @@ import invariant from "tiny-invariant";
 
 import { requireUserId } from "~/session.server";
 
-export async function action({ request, params }: ActionFunctionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   await requireUserId(request);
   const formData = await request.formData();
   const redirectTo = formData.get("redirectTo")?.toString();

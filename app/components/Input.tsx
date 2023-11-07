@@ -8,6 +8,7 @@ interface InputProps {
   onChange?: React.InputHTMLAttributes<HTMLInputElement>["onChange"];
   inputRef?: LegacyRef<HTMLInputElement>;
   isDisabled?: boolean;
+  id?: string;
   value?: string;
 }
 
@@ -22,11 +23,13 @@ export const Input = ({
   defaultValue,
   onChange,
   inputRef,
+  id,
   isDisabled = false,
 }: InputProps) => {
   return (
     <input
       type={type}
+      id={id}
       className="input input-bordered w-full max-w-sx"
       name={name}
       value={value}

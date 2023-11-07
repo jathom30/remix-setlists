@@ -44,9 +44,10 @@ export const ExternalLinksInputs = ({
       {currentLinks.map((link) => (
         <FlexList key={link.id} gap={0}>
           <FlexList direction="row" gap={2} items="center">
-            <label className="input-group">
+            <label htmlFor={link.id} className="input-group">
               <span>https://</span>
               <Input
+                id={link.id}
                 name={`links/${link.id}`}
                 defaultValue={link.href}
                 placeholder="website.com"

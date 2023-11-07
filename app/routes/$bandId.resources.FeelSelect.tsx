@@ -87,11 +87,11 @@ export const FeelSelect = ({
           borderColor: border,
           ...(isFocused
             ? {
-                outline: 2,
-                outlineStyle: "solid",
-                outlineColor: border,
-                outlineOffset: 2,
-              }
+              outline: 2,
+              outlineStyle: "solid",
+              outlineColor: border,
+              outlineOffset: 2,
+            }
             : null),
           "&:hover": {
             borderColor: baseContent,
@@ -134,7 +134,7 @@ export const FeelSelect = ({
           backgroundColor: base100,
           color: baseContent,
         }),
-        option: (baseStyles, state) => ({
+        option: (baseStyles) => ({
           ...baseStyles,
           backgroundColor: base100,
           color: baseContent,

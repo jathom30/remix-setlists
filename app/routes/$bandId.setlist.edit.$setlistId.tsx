@@ -19,6 +19,7 @@ import {
   useSensors,
   DragOverlay,
 } from "@dnd-kit/core";
+import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import {
   arrayMove,
@@ -199,7 +200,7 @@ export default function EditSetlist() {
       const intersections =
         pointerIntersections.length > 0
           ? // If there are droppables intersecting with the pointer, return those
-            pointerIntersections
+          pointerIntersections
           : rectIntersection(args);
       let overId = getFirstCollision(intersections, "id");
 
@@ -315,7 +316,7 @@ export default function EditSetlist() {
             over &&
             active.rect.current.translated &&
             active.rect.current.translated.top >
-              over.rect.top + over.rect.height;
+            over.rect.top + over.rect.height;
 
           const modifier = isBelowOverItem ? 1 : 0;
 
@@ -610,13 +611,12 @@ const DraggedSong = ({
 }: {
   isDragging?: boolean;
   song: SetSong;
-  listeners?: any;
+  listeners?: SyntheticListenerMap;
 }) => {
   return (
     <div
-      className={`relative overflow-hidden rounded bg-base-100 ${
-        isDragging ? "bg-base-300" : ""
-      }`}
+      className={`relative overflow-hidden rounded bg-base-100 ${isDragging ? "bg-base-300" : ""
+        }`}
     >
       <FlexList pad={2} direction="row" items="center">
         <div

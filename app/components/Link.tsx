@@ -30,11 +30,9 @@ export function Link(props: ButtonProps & RemixLinkProps) {
       prefetch={prefetch}
       className={`btn ${buttonKind(kind)} btn-sm sm:btn-md ${buttonSize(
         size,
-      )} ${isOutline ? "btn-outline" : ""} ${icon ? "gap-2" : ""} ${
-        isDisabled ? "btn-disabled" : ""
-      } ${isSaving ? "loading" : ""} ${
-        isRounded ? "btn-circle" : ""
-      } touch-none select-none flex-nowrap focus-visible:outline-none`}
+      )} ${isOutline ? "btn-outline" : ""} ${icon ? "gap-2" : ""} ${isDisabled ? "btn-disabled" : ""
+        } ${isSaving ? "loading" : ""} ${isRounded ? "btn-circle" : ""
+        } touch-none select-none flex-nowrap focus-visible:outline-none ${className}`}
     >
       {icon && !isSaving ? <FontAwesomeIcon icon={icon} /> : null}
       <div className={`${isCollapsing ? "hidden md:block" : ""}`}>

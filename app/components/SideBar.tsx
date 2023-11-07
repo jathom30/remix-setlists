@@ -2,10 +2,8 @@ import { motion } from "framer-motion";
 
 export const SideBar = ({
   children,
-  collapse = false,
 }: {
   children?: React.ReactNode;
-  collapse?: boolean;
 }) => {
   return (
     <motion.div

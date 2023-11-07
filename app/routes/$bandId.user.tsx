@@ -216,6 +216,7 @@ export default function UserRoute() {
                 <FlexList gap={0}>
                   {user.bands.map((band) => (
                     <FlexHeader key={band.bandId}>
+                      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                       <label
                         htmlFor={band.bandId}
                         className="btn btn-ghost h-auto flex-grow justify-start p-2 normal-case font-normal"
