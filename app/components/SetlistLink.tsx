@@ -13,12 +13,12 @@ import { Label } from "./Label"
 
 const setCount = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']
 
-export const SetlistLink = ({ setlist, publicRemark }: { setlist: SerializeFrom<Setlist & { sets: { updatedAt: string; songs: { song: { length: Song['length'] } }[] }[] }>; publicRemark?: string }) => {
+export const SetlistLink = ({ setlist, publicRemark }: { setlist: SerializeFrom<Setlist & { sets: { updatedAt: string; songs: { song: { length: Song['length'] } | null }[] }[] }>; publicRemark?: string }) => {
   const [showTooltip, setShowTooltip] = useState(false)
   const { bandId } = useParams()
   const { pathname } = useLocation()
   const getDisplaySetLength = Math.ceil(setlist.sets.reduce((total, set) => {
-    const setLength = set.songs.reduce((total, song) => total += song.song.length, 0)
+    const setLength = set.songs.reduce((total, song) => total += (song.song?.length || 0), 0)
     return total += setLength
   }, 0) / setlist.sets.length)
 

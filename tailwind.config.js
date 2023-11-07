@@ -1,5 +1,3 @@
-import type { Config } from "tailwindcss";
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./app/**/*.{ts,tsx,jsx,js}"],
@@ -28,4 +26,4 @@ module.exports = {
     prefix: "",
     darkTheme: "dark",
   },
-} satisfies Config;
+};

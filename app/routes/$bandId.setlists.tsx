@@ -132,7 +132,11 @@ export default function SetlistsRoute() {
             {hasSetlists ? (
               <FlexList pad={4} gap={2}>
                 {setlists.map(setlist => (
-                  <SetlistLink key={setlist.id} setlist={setlist} publicRemark="You can remove the public link by clicking on this setlist's settings." />
+                  <SetlistLink
+                    key={setlist.id}
+                    setlist={setlist}
+                    publicRemark="You can remove the public link by clicking on this setlist's settings."
+                  />
                 ))}
               </FlexList>
             ) : (
