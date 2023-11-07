@@ -1,24 +1,44 @@
-import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useCatch, useSearchParams } from "@remix-run/react";
-import * as React from "react";
-import { createUserSession, getUser } from "~/session.server";
-import { generateTokenLink, verifyLogin } from "~/models/user.server";
-import { safeRedirect, validateEmail } from "~/utils";
-import { verifyAccount } from "~/email/verify";
-import { getDomainUrl } from "~/utils/assorted";
-import { CatchContainer, ErrorContainer, FlexList, MaxWidth, Link as CustomLink, ItemBox, Button } from "~/components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserLock } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import {
+  Form,
+  Link,
+  isRouteErrorResponse,
+  useActionData,
+  useRouteError,
+  useSearchParams,
+} from "@remix-run/react";
+import * as React from "react";
 
-export async function loader({ request }: LoaderArgs) {
+import {
+  CatchContainer,
+  ErrorContainer,
+  FlexList,
+  MaxWidth,
+  Link as CustomLink,
+  ItemBox,
+  Button,
+} from "~/components";
+import { verifyAccount } from "~/email/verify";
+import { generateTokenLink, verifyLogin } from "~/models/user.server";
+import { createUserSession, getUser } from "~/session.server";
+import { safeRedirect, validateEmail } from "~/utils";
+import { getDomainUrl } from "~/utils/assorted";
+
+export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUser(request);
 
   if (user?.verified) return redirect("/home");
   return json({});
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
@@ -28,21 +48,21 @@ export async function action({ request }: ActionArgs) {
   if (!validateEmail(email)) {
     return json(
       { errors: { email: "Email is invalid", password: null } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (typeof password !== "string" || password.length === 0) {
     return json(
       { errors: { email: null, password: "Password is required" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (password.length < 8) {
     return json(
       { errors: { email: null, password: "Password is too short" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -51,15 +71,15 @@ export async function action({ request }: ActionArgs) {
   if (!user) {
     return json(
       { errors: { email: "Invalid email or password", password: null } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (!user.verified) {
-    const domainUrl = getDomainUrl(request)
-    const magicLink = await generateTokenLink(email, 'join/verify', domainUrl);
-    verifyAccount(email, magicLink)
-    return redirect('/join/verificationSent')
+    const domainUrl = getDomainUrl(request);
+    const magicLink = await generateTokenLink(email, "join/verify", domainUrl);
+    verifyAccount(email, magicLink);
+    return redirect("/join/verificationSent");
   }
 
   return createUserSession({
@@ -71,9 +91,11 @@ export async function action({ request }: ActionArgs) {
 }
 
 export const meta: MetaFunction = () => {
-  return {
-    title: "Login",
-  };
+  return [
+    {
+      title: "Login",
+    },
+  ];
 };
 
 export default function LoginPage() {
@@ -96,10 +118,7 @@ export default function LoginPage() {
       <div className="mx-auto w-full max-w-md px-8">
         <Form method="post" className="space-y-6">
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="email" className="block text-sm font-medium">
               Email address
             </label>
             <div className="mt-1">
@@ -107,7 +126,8 @@ export default function LoginPage() {
                 ref={emailRef}
                 id="email"
                 required
-                autoFocus={true}
+                // eslint-disable-next-line jsx-a11y/no-autofocus
+                autoFocus
                 name="email"
                 type="email"
                 autoComplete="email"
@@ -115,19 +135,14 @@ export default function LoginPage() {
                 aria-describedby="email-error"
                 className="input input-bordered w-full"
               />
-              {actionData?.errors?.email && (
-                <div className="pt-1 text-error" id="email-error">
-                  {actionData.errors.email}
-                </div>
-              )}
+              {actionData?.errors?.email ? <div className="pt-1 text-error" id="email-error">
+                {actionData.errors.email}
+              </div> : null}
             </div>
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="password" className="block text-sm font-medium">
               Password
             </label>
             <div className="mt-1">
@@ -141,11 +156,9 @@ export default function LoginPage() {
                 aria-describedby="password-error"
                 className="input input-bordered w-full"
               />
-              {actionData?.errors?.password && (
-                <div className="pt-1 text-error" id="password-error">
-                  {actionData.errors.password}
-                </div>
-              )}
+              {actionData?.errors?.password ? <div className="pt-1 text-error" id="password-error">
+                {actionData.errors.password}
+              </div> : null}
             </div>
           </div>
 
@@ -163,10 +176,7 @@ export default function LoginPage() {
                 type="checkbox"
                 className="checkbox"
               />
-              <label
-                htmlFor="remember"
-                className="ml-2 block text-sm"
-              >
+              <label htmlFor="remember" className="ml-2 block text-sm">
                 Remember me
               </label>
             </div>
@@ -198,9 +208,12 @@ export default function LoginPage() {
   );
 }
 
-export function CatchBoundary() {
-  const caught = useCatch()
-  if (caught.status === 401) {
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return <ErrorContainer error={error as Error} />;
+  }
+  if (error.status === 401) {
     return (
       <div className="h-full">
         <MaxWidth>
@@ -208,21 +221,22 @@ export function CatchBoundary() {
             <FontAwesomeIcon icon={faUserLock} size="5x" />
             <ItemBox>
               <FlexList>
-                <h1 className="font-bold text-xl text-danger">Your account has been locked</h1>
-                <p>You have exceeded the maximum number of attempts. Your account will remain locked until you reset your password.</p>
-                <CustomLink to="/forgotPassword" kind="secondary">Reset password</CustomLink>
+                <h1 className="font-bold text-xl text-danger">
+                  Your account has been locked
+                </h1>
+                <p>
+                  You have exceeded the maximum number of attempts. Your account
+                  will remain locked until you reset your password.
+                </p>
+                <CustomLink to="/forgotPassword" kind="secondary">
+                  Reset password
+                </CustomLink>
               </FlexList>
             </ItemBox>
           </FlexList>
         </MaxWidth>
       </div>
-    )
+    );
   }
-  return <CatchContainer />
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  return (
-    <ErrorContainer error={error} />
-  )
+  return <CatchContainer status={error.status} data={error.data} />;
 }

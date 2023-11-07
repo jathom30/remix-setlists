@@ -4,6 +4,7 @@ import type { SerializeFrom } from "@remix-run/server-runtime";
 import { useMemo } from "react";
 
 import type { User } from "~/models/user.server";
+
 import { RoleEnum } from "./utils/enums";
 
 const DEFAULT_REDIRECT = "/";
@@ -17,7 +18,7 @@ const DEFAULT_REDIRECT = "/";
  */
 export function safeRedirect(
   to: FormDataEntryValue | string | null | undefined,
-  defaultRedirect: string = DEFAULT_REDIRECT
+  defaultRedirect: string = DEFAULT_REDIRECT,
 ) {
   if (!to || typeof to !== "string") {
     return defaultRedirect;
@@ -37,18 +38,18 @@ export function safeRedirect(
  * @returns {JSON|undefined} The router data or undefined if not found
  */
 export function useMatchesData(
-  id: string
+  id: string,
 ): Record<string, unknown> | undefined {
   const matchingRoutes = useMatches();
   const route = useMemo(
     () => matchingRoutes.find((route) => route.id === id),
-    [matchingRoutes, id]
+    [matchingRoutes, id],
   );
-  return route?.data;
+  return route?.data as Record<string, unknown>;
 }
 
-function isUser(user: any): user is User {
-  return user && typeof user === "object" && typeof user.email === "string";
+function isUser(user: unknown): user is User {
+  return Boolean(user && typeof user === "object" && 'email' in user && typeof user.email === "string");
 }
 
 export function useOptionalUser(): User | undefined {
@@ -59,23 +60,23 @@ export function useOptionalUser(): User | undefined {
   return data.user;
 }
 
-function isMemberRole(role: any): role is RoleEnum {
-  return role && typeof role === 'string'
+function isMemberRole(role: unknown): role is RoleEnum {
+  return Boolean(role && typeof role === "string");
 }
 
 export function useMemberRole(): RoleEnum {
-  const data = useMatchesData('routes/$bandId')
+  const data = useMatchesData("routes/$bandId");
   if (!data || !isMemberRole(data.memberRole)) {
-    return RoleEnum.SUB
+    return RoleEnum.SUB;
   }
-  return data.memberRole
+  return data.memberRole;
 }
 
 export function useUser(): User {
   const maybeUser = useOptionalUser();
   if (!maybeUser) {
     throw new Error(
-      "No user found in root loader, but user is required by useUser. If user is optional, try useOptionalUser instead."
+      "No user found in root loader, but user is required by useUser. If user is optional, try useOptionalUser instead.",
     );
   }
   return maybeUser;
@@ -85,13 +86,20 @@ export function validateEmail(email: unknown): email is string {
   return typeof email === "string" && email.length > 3 && email.includes("@");
 }
 
-const isBand = (data: any): data is { band: { icon: SerializeFrom<BandIcon>; name: string } } => {
-  return data?.band?.icon as BandIcon !== undefined
-}
+const isBand = (
+  data: unknown,
+): data is { band: { icon: SerializeFrom<BandIcon>; name: string } } => {
+  const bandData = data && typeof data === 'object' && 'band' in data
+  return Boolean(bandData)
+};
 
 export function useBandIcon() {
-  const data = useMatchesData('routes/$bandId')
-  if (!data) { return }
-  if (!isBand(data)) { return }
-  return { icon: data.band.icon, bandName: data.band.name }
+  const data = useMatchesData("routes/$bandId");
+  if (!data) {
+    return;
+  }
+  if (!isBand(data)) {
+    return;
+  }
+  return { icon: data.band.icon, bandName: data.band.name };
 }

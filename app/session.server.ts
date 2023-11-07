@@ -3,6 +3,7 @@ import invariant from "tiny-invariant";
 
 import type { User } from "~/models/user.server";
 import { getUserById } from "~/models/user.server";
+
 import { getMemberRole } from "./models/usersInBands.server";
 import { RoleEnum } from "./utils/enums";
 
@@ -27,7 +28,7 @@ export async function getSession(request: Request) {
 }
 
 export async function getUserId(
-  request: Request
+  request: Request,
 ): Promise<User["id"] | undefined> {
   const session = await getSession(request);
   const userId = session.get(USER_SESSION_KEY);
@@ -47,7 +48,9 @@ export async function getUser(request: Request) {
 export async function requireUserId(
   request: Request,
   // redirect includes search params
-  redirectTo: string = `${new URL(request.url).pathname}?${new URL(request.url).searchParams}`
+  redirectTo = `${new URL(request.url).pathname}?${
+    new URL(request.url).searchParams
+  }`,
 ) {
   const userId = await getUserId(request);
   const searchParams = new URLSearchParams([["redirectTo", redirectTo]]);
@@ -56,34 +59,43 @@ export async function requireUserId(
   }
   const user = await getUserById(userId);
   if (!user?.verified) {
-    throw redirect(`/join/requestVerification?${searchParams}`)
+    throw redirect(`/join/requestVerification?${searchParams}`);
   }
   return userId;
 }
 
-
-export async function requireMemberOfRole(request: Request, bandId: string, role: RoleEnum) {
-  const userId = await requireUserId(request)
-  const memberRole = await getMemberRole(bandId, userId) as unknown as RoleEnum
+export async function requireMemberOfRole(
+  request: Request,
+  bandId: string,
+  role: RoleEnum,
+) {
+  const userId = await requireUserId(request);
+  const memberRole = (await getMemberRole(
+    bandId,
+    userId,
+  )) as unknown as RoleEnum;
 
   if (memberRole !== role) {
-    throw new Response('Permission denied', { status: 403 })
+    throw new Response("Permission denied", { status: 403 });
   }
-  return userId
+  return userId;
 }
 
 export async function requireAdminMember(request: Request, bandId: string) {
-  return requireMemberOfRole(request, bandId, RoleEnum.ADMIN)
+  return requireMemberOfRole(request, bandId, RoleEnum.ADMIN);
 }
 
 export async function requireNonSubMember(request: Request, bandId: string) {
-  const userId = await requireUserId(request)
-  const memberRole = await getMemberRole(bandId, userId) as unknown as RoleEnum
+  const userId = await requireUserId(request);
+  const memberRole = (await getMemberRole(
+    bandId,
+    userId,
+  )) as unknown as RoleEnum;
 
   if (memberRole === RoleEnum.SUB) {
-    throw new Response('Permission denied', { status: 403 })
+    throw new Response("Permission denied", { status: 403 });
   }
-  return memberRole
+  return memberRole;
 }
 
 export async function requireUser(request: Request) {
@@ -113,7 +125,7 @@ export async function createUserSession({
       "Set-Cookie": await sessionStorage.commitSession(session, {
         maxAge: remember
           ? 60 * 60 * 24 * 7 * 4 // 28 days
-          : 60 * 60 * 24 * 7 // 7 days
+          : 60 * 60 * 24 * 7, // 7 days
       }),
     },
   });

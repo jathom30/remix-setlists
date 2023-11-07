@@ -1,14 +1,20 @@
-import { useCatch } from "@remix-run/react"
-import { NotFound } from "./NotFound"
-import { RestrictedAlert } from "./RestrictedAlert"
+import type { ReactNode } from "react";
 
-export const CatchContainer = () => {
-  const caught = useCatch()
-  if (caught.status === 403) {
-    return <RestrictedAlert dismissTo={`..`} />
+import { NotFound } from "./NotFound";
+import { RestrictedAlert } from "./RestrictedAlert";
+
+export const CatchContainer = ({
+  status,
+  data,
+}: {
+  status: number;
+  data: ReactNode;
+}) => {
+  if (status === 403) {
+    return <RestrictedAlert dismissTo={`..`} />;
   }
-  if (caught.status === 404) {
-    return <NotFound dismissTo=".." message={caught.data} />
+  if (status === 404) {
+    return <NotFound dismissTo=".." message={data} />;
   }
-  throw new Error(`Unhandled error: ${caught.status}`)
-}
+  throw new Error(`Unhandled error: ${status}`);
+};

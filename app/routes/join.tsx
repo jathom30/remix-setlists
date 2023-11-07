@@ -7,5 +7,5 @@ export default function Join() {
         <Outlet />
       </div>
     </div>
-  )
+  );
 }

@@ -1,8 +1,13 @@
-import resolveConfig from 'tailwindcss/resolveConfig'
-import tailwindConfig from '../../tailwind.config.js'
+import resolveConfig from "tailwindcss/resolveConfig";
 
-const fullConfig = resolveConfig(tailwindConfig)
+import tailwindConfig from "../../tailwind.config.js";
 
-const colors = fullConfig.theme?.colors as unknown as Record<string, ({ opacityValue }: { opacityValue: number }) => string>
+const fullConfig = resolveConfig(tailwindConfig);
 
-export const getColor = (name: string, opactity?: number) => colors?.[name]({ opacityValue: opactity ?? 1 })
+const colors = fullConfig.theme?.colors as unknown as Record<
+  string,
+  ({ opacityValue }: { opacityValue: number }) => string
+>;
+
+export const getColor = (name: string, opactity?: number) =>
+  colors?.[name]({ opacityValue: opactity ?? 1 });

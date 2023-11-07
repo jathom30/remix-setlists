@@ -1,13 +1,13 @@
-import sgMail from '@sendgrid/mail'
-import invariant from 'tiny-invariant'
+import sgMail from "@sendgrid/mail";
+import invariant from "tiny-invariant";
 
 export const verifyAccount = (email: string, magicLink: string) => {
-  invariant(process.env.SENDGRID_API_KEY, 'sendgrid api key must be set')
+  invariant(process.env.SENDGRID_API_KEY, "sendgrid api key must be set");
 
   const msg = {
     to: email,
-    from: 'support@setlists.pro',
-    subject: 'Verify your email',
+    from: "support@setlists.pro",
+    subject: "Verify your email",
     html: `<html data-editor-version="2" class="sg-campaigns" xmlns="http://www.w3.org/1999/xhtml">
     <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -207,17 +207,17 @@ export const verifyAccount = (email: string, magicLink: string) => {
         </div>
       </center>
     </body>
-  </html>`
-  }
+  </html>`,
+  };
 
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   sgMail
     .send(msg)
     .then((response) => {
-      console.log(response[0].statusCode)
-      console.log(response[0].headers)
+      console.log(response[0].statusCode);
+      console.log(response[0].headers);
     })
     .catch((error) => {
-      console.error(error)
-    })
-}
+      console.error(error);
+    });
+};

@@ -1,9 +1,17 @@
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import { faPlus } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { Link } from "react-router-dom"
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link } from "react-router-dom";
 
-export const CreateNewButton = ({ to, icon = faPlus, ariaLabel }: { to: string, icon?: IconDefinition; ariaLabel?: string }) => {
+export const CreateNewButton = ({
+  to,
+  icon = faPlus,
+  ariaLabel,
+}: {
+  to: string;
+  icon?: IconDefinition;
+  ariaLabel?: string;
+}) => {
   return (
     <div className="sticky sm:hidden">
       <div className="absolute bottom-4 right-4">
@@ -16,5 +24,5 @@ export const CreateNewButton = ({ to, icon = faPlus, ariaLabel }: { to: string, 
         </Link>
       </div>
     </div>
-  )
-}
+  );
+};

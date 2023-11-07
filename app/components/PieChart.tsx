@@ -1,24 +1,45 @@
 import type { Feel } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/node";
+
 import { createPaths } from "~/utils/svg";
+
 import { FeelTag } from "./FeelTag";
 import { FlexList } from "./FlexList";
 
-export const PieChart = ({ slices, noFeel }: { slices: { percent: number; feel: SerializeFrom<Feel | null> }[]; noFeel?: number }) => {
-  const paths = createPaths(slices)
+export const PieChart = ({
+  slices,
+  noFeel,
+}: {
+  slices: { percent: number; feel: SerializeFrom<Feel | null> }[];
+  noFeel?: number;
+}) => {
+  const paths = createPaths(slices);
   return (
     <div className="grid grid-cols-2 gap-4 grid-rows-1">
-      <svg version="1.1" preserveAspectRatio="xMinYMin meet" viewBox="-1 -1 2 2" className="w-full h-auto aspect-square -rotate-90">
-        {paths.map(path => (
-          <path key={path.pathData} d={path.pathData} fill={path.feel?.color || 'white'} />
+      <svg
+        version="1.1"
+        preserveAspectRatio="xMinYMin meet"
+        viewBox="-1 -1 2 2"
+        className="w-full h-auto aspect-square -rotate-90"
+      >
+        {paths.map((path) => (
+          <path
+            key={path.pathData}
+            d={path.pathData}
+            fill={path.feel?.color || "white"}
+          />
         ))}
       </svg>
       <FlexList gap={2}>
-        {slices.map(slice => {
-          if (!slice.feel) { return null }
+        {slices.map((slice) => {
+          if (!slice.feel) {
+            return null;
+          }
           return (
-            <FeelTag fullWidth feel={slice.feel} key={slice.feel.id}>{Math.round(slice.percent * 100)}%</FeelTag>
-          )
+            <FeelTag fullWidth feel={slice.feel} key={slice.feel.id}>
+              {Math.round(slice.percent * 100)}%
+            </FeelTag>
+          );
         })}
         {noFeel ? (
           <FlexList direction="row" gap={2} justify="center">
@@ -28,5 +49,5 @@ export const PieChart = ({ slices, noFeel }: { slices: { percent: number; feel: 
         ) : null}
       </FlexList>
     </div>
-  )
-}
+  );
+};

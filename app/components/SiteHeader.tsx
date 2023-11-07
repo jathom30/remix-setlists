@@ -1,5 +1,6 @@
 import { faSignOut, faUser } from "@fortawesome/free-solid-svg-icons";
 import { Form } from "@remix-run/react";
+
 import { Button, Link } from ".";
 
 export function SiteHeader() {
@@ -10,15 +11,11 @@ export function SiteHeader() {
           User Details
         </Link>
         <Form action="/logout" method="post">
-          <Button
-            isCollapsing
-            icon={faSignOut}
-            type="submit" isRounded
-          >
+          <Button isCollapsing icon={faSignOut} type="submit" isRounded>
             Logout
           </Button>
         </Form>
       </div>
     </header>
-  )
+  );
 }

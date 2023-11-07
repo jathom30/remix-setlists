@@ -1,7 +1,11 @@
-import { AnimatePresence, motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 
-export const Drawer = ({ children, open, onClose }: {
+export const Drawer = ({
+  children,
+  open,
+  onClose,
+}: {
   children: ReactNode;
   open: boolean;
   onClose: () => void;
@@ -9,10 +13,7 @@ export const Drawer = ({ children, open, onClose }: {
   return (
     <AnimatePresence>
       {open ? (
-        <motion.div
-          key="drawer"
-          className="sticky inset-0"
-        >
+        <motion.div key="drawer" className="sticky inset-0">
           <motion.div
             role="presentation"
             onTap={onClose}
@@ -20,10 +21,10 @@ export const Drawer = ({ children, open, onClose }: {
               opacity: 0,
             }}
             animate={{
-              opacity: .5
+              opacity: 0.5,
             }}
             exit={{
-              opacity: 0
+              opacity: 0,
             }}
             className="bg-black fixed inset-0"
           />
@@ -41,14 +42,14 @@ export const Drawer = ({ children, open, onClose }: {
               y: 200,
               opacity: 0,
             }}
-            transition={{ ease: 'easeInOut' }}
+            transition={{ ease: "easeInOut" }}
             className="absolute bottom-0 left-0 right-0 bg-base-100 rounded-t overflow-auto"
-            style={{ maxHeight: '80vh' }}
+            style={{ maxHeight: "80vh" }}
           >
             {children}
           </motion.div>
         </motion.div>
       ) : null}
     </AnimatePresence>
-  )
-}
+  );
+};

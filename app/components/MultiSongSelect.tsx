@@ -1,26 +1,41 @@
-import type { Song } from "@prisma/client"
-import type { SerializeFrom } from "@remix-run/server-runtime"
-import { FlexList } from "./FlexList"
-import { SongDisplay } from "./SongDisplay"
-import { hoverAndFocusContainerStyles } from "~/styleUtils"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { Song } from "@prisma/client";
+import type { SerializeFrom } from "@remix-run/node";
 
-export const MulitSongSelect = ({ songs }: { songs: SerializeFrom<Song[]> }) => {
+import { hoverAndFocusContainerStyles } from "~/styleUtils";
+
+import { FlexList } from "./FlexList";
+import { SongDisplay } from "./SongDisplay";
+
+export const MulitSongSelect = ({
+  songs,
+}: {
+  songs: SerializeFrom<Song[]>;
+}) => {
   return (
     <div className="bg-base-200 h-full min-h-[24rem]">
       <FlexList pad={4} gap={2}>
         {songs.length === 0 ? (
           <FlexList>
             <FontAwesomeIcon icon={faMagnifyingGlass} size="3x" />
-            <p className="text-center">We couldn't find any songs that match your search...</p>
+            <p className="text-center">
+              We couldn't find any songs that match your search...
+            </p>
           </FlexList>
         ) : (
-          songs.map(song => (
+          songs.map((song) => (
+            // eslint-disable-next-line jsx-a11y/label-has-associated-control
             <label key={song.id} htmlFor={song.id}>
               <div className={hoverAndFocusContainerStyles}>
                 <FlexList direction="row" gap={4} items="center">
-                  <input id={song.id} value={song.id} type="checkbox" name="songs" className="checkbox checkbox-sm" />
+                  <input
+                    id={song.id}
+                    value={song.id}
+                    type="checkbox"
+                    name="songs"
+                    className="checkbox checkbox-sm"
+                  />
                   <SongDisplay song={song} width="half" />
                 </FlexList>
               </div>
@@ -29,5 +44,5 @@ export const MulitSongSelect = ({ songs }: { songs: SerializeFrom<Song[]> }) => 
         )}
       </FlexList>
     </div>
-  )
-}
+  );
+};
