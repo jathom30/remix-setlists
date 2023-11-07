@@ -1,18 +1,20 @@
 import type { Band, Feel, Setlist, Song } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/server-runtime";
+
 import { prisma } from "~/db.server";
 import { getFields } from "~/utils/form";
 import { getSortFromParam } from "~/utils/params";
+
 import { getBand } from "./band.server";
 
-type SongParams = {
+interface SongParams {
   q?: string;
   tempos?: Song["tempo"][];
   isCover?: boolean;
   feels?: Feel["id"][];
   positions?: Song["position"][];
   sort?: string;
-};
+}
 
 export async function getSongs(bandId: Band["id"], params?: SongParams) {
   const band = await getBand(bandId);
@@ -188,9 +190,9 @@ export const handleSongFormData = (formData: FormData) => {
   const feels = formData.getAll("feels");
   const entries = formData.entries();
 
-  let newLinks: { id?: string; href: string }[] = [];
-  let existingLinks: { id: string; href: string }[] = [];
-  let invalidLinkIds: string[] = [];
+  const newLinks: { id?: string; href: string }[] = [];
+  const existingLinks: { id: string; href: string }[] = [];
+  const invalidLinkIds: string[] = [];
   for (const entry of entries) {
     if (entry[0].includes("links")) {
       if (typeof entry[1] !== "string") {
@@ -198,7 +200,7 @@ export const handleSongFormData = (formData: FormData) => {
       }
 
       function validateURL(url: string) {
-        var regex =
+        const regex =
           /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
         return regex.test(url);
       }

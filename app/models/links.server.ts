@@ -1,4 +1,5 @@
 import type { Link, Song } from "@prisma/client";
+
 import { prisma } from "~/db.server";
 
 export async function getLinks(songId: Song["id"]) {

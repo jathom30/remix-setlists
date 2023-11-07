@@ -1,4 +1,6 @@
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
+import { json } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import {
   Outlet,
   isRouteErrorResponse,
@@ -8,9 +10,8 @@ import {
   useParams,
   useRouteError,
 } from "@remix-run/react";
-import { json } from "@remix-run/node";
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import invariant from "tiny-invariant";
+
 import {
   AvatarTitle,
   Breadcrumbs,
@@ -28,8 +29,8 @@ import {
 } from "~/components";
 import { getSong } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
-import { RoleEnum } from "~/utils/enums";
 import { useMemberRole } from "~/utils";
+import { RoleEnum } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);

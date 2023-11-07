@@ -1,5 +1,6 @@
 import type { Song } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/node";
+
 import { Badge } from "./Badge";
 import { FlexList } from "./FlexList";
 import { TempoIcons } from "./TempoIcons";

@@ -4,6 +4,7 @@ import type { SerializeFrom } from "@remix-run/server-runtime";
 import { useMemo } from "react";
 
 import type { User } from "~/models/user.server";
+
 import { RoleEnum } from "./utils/enums";
 
 const DEFAULT_REDIRECT = "/";
@@ -47,8 +48,8 @@ export function useMatchesData(
   return route?.data as Record<string, unknown>;
 }
 
-function isUser(user: any): user is User {
-  return user && typeof user === "object" && typeof user.email === "string";
+function isUser(user: unknown): user is User {
+  return Boolean(user && typeof user === "object" && 'email' in user && typeof user.email === "string");
 }
 
 export function useOptionalUser(): User | undefined {
@@ -59,8 +60,8 @@ export function useOptionalUser(): User | undefined {
   return data.user;
 }
 
-function isMemberRole(role: any): role is RoleEnum {
-  return role && typeof role === "string";
+function isMemberRole(role: unknown): role is RoleEnum {
+  return Boolean(role && typeof role === "string");
 }
 
 export function useMemberRole(): RoleEnum {
@@ -86,9 +87,10 @@ export function validateEmail(email: unknown): email is string {
 }
 
 const isBand = (
-  data: any,
+  data: unknown,
 ): data is { band: { icon: SerializeFrom<BandIcon>; name: string } } => {
-  return (data?.band?.icon as BandIcon) !== undefined;
+  const bandData = data && typeof data === 'object' && 'band' in data
+  return Boolean(bandData)
 };
 
 export function useBandIcon() {

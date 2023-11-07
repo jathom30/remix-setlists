@@ -1,3 +1,5 @@
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Form,
   useLoaderData,
@@ -6,9 +8,8 @@ import {
   useRouteError,
   isRouteErrorResponse,
 } from "@remix-run/react";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
+
 import {
   Button,
   CatchContainer,
@@ -16,9 +17,9 @@ import {
   ErrorContainer,
   FlexList,
 } from "~/components";
+import { getBand } from "~/models/band.server";
 import { removeMemberFromBand } from "~/models/usersInBands.server";
 import { requireAdminMember, requireNonSubMember } from "~/session.server";
-import { getBand } from "~/models/band.server";
 import { RoleEnum } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {

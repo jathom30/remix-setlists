@@ -1,8 +1,9 @@
-import { Form, useActionData } from "@remix-run/react";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
+import { Form, useActionData } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
+
 import {
   ErrorMessage,
   Field,
@@ -11,9 +12,9 @@ import {
   PasswordStrength,
   SaveButtons,
 } from "~/components";
+import { updateUserPassword } from "~/models/user.server";
 import { requireUserId } from "~/session.server";
 import { getPasswordError, passwordStrength } from "~/utils/assorted";
-import { updateUserPassword } from "~/models/user.server";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request);

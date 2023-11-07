@@ -2,6 +2,7 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Feel } from "@prisma/client";
 import { json } from "@remix-run/node";
+import type { LoaderFunctionArgs, SerializeFrom } from "@remix-run/node";
 import {
   useFetcher,
   useLoaderData,
@@ -10,11 +11,11 @@ import {
   useSearchParams,
   useSubmit,
 } from "@remix-run/react";
-import type { LoaderFunctionArgs, SerializeFrom } from "@remix-run/node";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import Select from "react-select";
 import invariant from "tiny-invariant";
+
 import {
   Button,
   Checkbox,

@@ -1,5 +1,6 @@
 import type { BandIcon } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/node";
+
 import { contrastColor } from "~/utils/assorted";
 
 export const Avatar = ({

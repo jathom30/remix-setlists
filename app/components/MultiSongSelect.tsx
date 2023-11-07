@@ -1,10 +1,12 @@
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Song } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/node";
+
+import { hoverAndFocusContainerStyles } from "~/styleUtils";
+
 import { FlexList } from "./FlexList";
 import { SongDisplay } from "./SongDisplay";
-import { hoverAndFocusContainerStyles } from "~/styleUtils";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
 export const MulitSongSelect = ({
   songs,

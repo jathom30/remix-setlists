@@ -1,7 +1,8 @@
 import { faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
+import { isRouteErrorResponse, useRouteError } from "@remix-run/react";
 import invariant from "tiny-invariant";
+
 import {
   Avatar,
   CatchContainer,

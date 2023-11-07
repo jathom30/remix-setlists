@@ -1,7 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link as RemixLink } from "@remix-run/react";
 import type { RemixLinkProps } from "@remix-run/react/dist/components";
+
 import { buttonKind, buttonSize } from "~/utils/buttonStyles";
+
 import type { ButtonProps } from "./Button";
 
 export function Link(props: ButtonProps & RemixLinkProps) {

@@ -13,16 +13,8 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import * as React from "react";
-
-import { getUserId } from "~/session.server";
-
-import {
-  createUser,
-  generateTokenLink,
-  getUserByEmail,
-} from "~/models/user.server";
-import { validateEmail } from "~/utils";
 import invariant from "tiny-invariant";
+
 import {
   Button,
   CatchContainer,
@@ -31,6 +23,13 @@ import {
   PasswordStrength,
 } from "~/components";
 import { verifyAccount } from "~/email/verify";
+import {
+  createUser,
+  generateTokenLink,
+  getUserByEmail,
+} from "~/models/user.server";
+import { getUserId } from "~/session.server";
+import { validateEmail } from "~/utils";
 import {
   getDomainUrl,
   getPasswordError,
@@ -160,11 +159,9 @@ export default function Join() {
                 aria-describedby="name-error"
                 className="input input-bordered w-full"
               />
-              {actionData?.errors?.name && (
-                <div className="pt-1 text-error" id="email-error">
+              {actionData?.errors?.name ? <div className="pt-1 text-error" id="email-error">
                   {actionData.errors.name}
-                </div>
-              )}
+                </div> : null}
             </div>
           </div>
 
@@ -184,11 +181,9 @@ export default function Join() {
                 aria-describedby="email-error"
                 className="input input-bordered w-full"
               />
-              {actionData?.errors?.email && (
-                <div className="pt-1 text-error" id="email-error">
+              {actionData?.errors?.email ? <div className="pt-1 text-error" id="email-error">
                   {actionData.errors.email}
-                </div>
-              )}
+                </div> : null}
             </div>
           </div>
 
@@ -211,11 +206,9 @@ export default function Join() {
               <div className="pt-2">
                 <PasswordStrength tests={tests} strength={strength} />
               </div>
-              {actionData?.errors?.password && (
-                <div className="pt-1 text-error" id="password-error">
+              {actionData?.errors?.password ? <div className="pt-1 text-error" id="password-error">
                   {actionData.errors.password}
-                </div>
-              )}
+                </div> : null}
             </div>
           </div>
 

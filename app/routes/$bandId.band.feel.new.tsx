@@ -1,12 +1,15 @@
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Form,
   isRouteErrorResponse,
   useActionData,
   useRouteError,
 } from "@remix-run/react";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { useState } from "react";
+import { HexColorPicker } from "react-colorful";
 import invariant from "tiny-invariant";
+
 import {
   CatchContainer,
   ErrorContainer,
@@ -16,10 +19,8 @@ import {
   Input,
   SaveButtons,
 } from "~/components";
-import { requireNonSubMember } from "~/session.server";
 import { createFeel } from "~/models/feel.server";
-import { HexColorPicker } from "react-colorful";
-import { useState } from "react";
+import { requireNonSubMember } from "~/session.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId } = params;

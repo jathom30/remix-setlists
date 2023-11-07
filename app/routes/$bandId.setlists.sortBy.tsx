@@ -1,3 +1,5 @@
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import {
   Form,
   isRouteErrorResponse,
@@ -5,9 +7,8 @@ import {
   useSearchParams,
   useSubmit,
 } from "@remix-run/react";
-import type { ActionFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { redirect } from "@remix-run/node";
+
 import {
   CatchContainer,
   ErrorContainer,

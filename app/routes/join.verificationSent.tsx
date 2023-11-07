@@ -1,8 +1,9 @@
 import { faEnvelopeOpen } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Form, Link } from "@remix-run/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
+import { Form, Link } from "@remix-run/react";
+
 import { FlexList, ItemBox } from "~/components";
 import { getUser } from "~/session.server";
 

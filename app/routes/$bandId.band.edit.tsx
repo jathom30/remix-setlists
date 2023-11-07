@@ -1,14 +1,15 @@
 import { faSave } from "@fortawesome/free-solid-svg-icons";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Form,
   useActionData,
   useLoaderData,
   useNavigation,
 } from "@remix-run/react";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
 import { useSpinDelay } from "spin-delay";
 import invariant from "tiny-invariant";
+
 import { Button, ErrorMessage, Field, FlexList, Input } from "~/components";
 import { getBand, updateBand } from "~/models/band.server";
 import { requireAdminMember } from "~/session.server";

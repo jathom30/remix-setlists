@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 
-type MaxHeightContainerType = {
+interface MaxHeightContainerType {
   header?: ReactNode;
   footer?: ReactNode;
   fullHeight?: boolean;
   children?: ReactNode;
-};
+}
 
 export const MaxHeightContainer = ({
   children,

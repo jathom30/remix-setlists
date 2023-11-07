@@ -1,19 +1,6 @@
+import { faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import invariant from "tiny-invariant";
-import {
-  CatchContainer,
-  ErrorContainer,
-  FlexList,
-  MaxHeightContainer,
-  MobileModal,
-  MulitSongSelect,
-  Link,
-  SaveButtons,
-  Title,
-  SearchInput,
-} from "~/components";
-import { getSongs } from "~/models/song.server";
 import {
   Form,
   Outlet,
@@ -26,11 +13,26 @@ import {
   useSearchParams,
   useSubmit,
 } from "@remix-run/react";
-import { createSetlist } from "~/models/setlist.server";
-import { requireNonSubMember } from "~/session.server";
-import { faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
-import { sortByLabel } from "~/utils/params";
 import { useState } from "react";
+import invariant from "tiny-invariant";
+
+import {
+  CatchContainer,
+  ErrorContainer,
+  FlexList,
+  MaxHeightContainer,
+  MobileModal,
+  MulitSongSelect,
+  Link,
+  SaveButtons,
+  Title,
+  SearchInput,
+} from "~/components";
+import { createSetlist } from "~/models/setlist.server";
+import { getSongs } from "~/models/song.server";
+import { requireNonSubMember } from "~/session.server";
+import { sortByLabel } from "~/utils/params";
+
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId } = params;

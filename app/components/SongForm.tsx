@@ -3,33 +3,40 @@ import {
   faInfoCircle,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Feel, Link, Song } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/node";
+import type { ChangeEvent } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
+
+import type { handleSongFormData } from "~/models/song.server";
+import { FeelSelect } from "~/routes/$bandId.resources.FeelSelect";
+import { useMatchesData } from "~/utils";
 import { positionEnums, setlistAutoGenImportanceEnums } from "~/utils/enums";
+import { keyLetters, majorMinorOptions } from "~/utils/songConstants";
+
+import { Checkbox } from "./Checkbox";
+import { ErrorMessage } from "./ErrorMessage";
+import { Field } from "./Field";
 import { FlexList } from "./FlexList";
 import { Label } from "./Label";
 import { Input } from "./Input";
-import { Field } from "./Field";
-import { keyLetters, majorMinorOptions } from "~/utils/songConstants";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { RadioGroup } from "./RadioGroup";
-import { ErrorMessage } from "./ErrorMessage";
-import type { ChangeEvent } from "react";
-import { useEffect, useState } from "react";
-import { Checkbox } from "./Checkbox";
-import { FeelSelect } from "~/routes/$bandId.resources.FeelSelect";
-import { getTempoColor } from "./TempoIcons";
-import type { handleSongFormData } from "~/models/song.server";
-import { getColor } from "~/utils/tailwindColors";
-import { useMatchesData } from "~/utils";
-import { Button } from "./Button";
+
 import { Modal } from "./Modal";
+import { Navbar } from "./Navbar";
+import { RadioGroup } from "./RadioGroup";
+
+
+import { getTempoColor } from "./TempoIcons";
+
+import { getColor } from "~/utils/tailwindColors";
+
+import { Button } from "./Button";
 import { Title } from "./Title";
 import { FlexHeader } from "./FlexHeader";
 import { Badge } from "./Badge";
 import { Divider } from "./Divider";
-import { Navbar } from "./Navbar";
 import { ExternalLinksInputs } from "./ExternalLinksInputs";
 
 const getRangeColor = (tempo: number) => {

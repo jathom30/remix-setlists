@@ -1,8 +1,9 @@
 import { faChevronLeft, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
+
 import {
   Button,
   ErrorMessage,
@@ -12,11 +13,11 @@ import {
   ItemBox,
   Link,
 } from "~/components";
-import { validateEmail } from "~/utils";
-import { generateTokenLink, getUserByEmail } from "~/models/user.server";
 import { verifyAccount } from "~/email/verify";
-import { getDomainUrl } from "~/utils/assorted";
+import { generateTokenLink, getUserByEmail } from "~/models/user.server";
 import { getUser } from "~/session.server";
+import { validateEmail } from "~/utils";
+import { getDomainUrl } from "~/utils/assorted";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const urlSearchParams = new URL(request.url).searchParams;

@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+
 import { contrastColor } from "~/utils/assorted";
 
 const prisma = new PrismaClient();

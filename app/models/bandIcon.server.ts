@@ -1,4 +1,5 @@
 import type { Band, BandIcon } from "@prisma/client";
+
 import { prisma } from "~/db.server";
 
 export async function getBandIcon(bandId: BandIcon["bandId"]) {

@@ -1,12 +1,15 @@
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Form,
   useLoaderData,
   useSearchParams,
   useSubmit,
 } from "@remix-run/react";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { useState } from "react";
 import invariant from "tiny-invariant";
+
 import {
   FlexHeader,
   FlexList,
@@ -18,11 +21,9 @@ import {
   SearchInput,
   Title,
 } from "~/components";
+import { createSet } from "~/models/set.server";
 import { getSongsNotInSetlist } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
-import { createSet } from "~/models/set.server";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId, setlistId } = params;

@@ -1,7 +1,8 @@
-import { Form } from "@remix-run/react";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
+import { Form } from "@remix-run/react";
 import invariant from "tiny-invariant";
+
 import { ConfirmDelete } from "~/components";
 import { updateBandIcon } from "~/models/bandIcon.server";
 import { requireAdminMember } from "~/session.server";

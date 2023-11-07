@@ -1,3 +1,5 @@
+import { faUserLock } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -13,11 +15,7 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import * as React from "react";
-import { createUserSession, getUser } from "~/session.server";
-import { generateTokenLink, verifyLogin } from "~/models/user.server";
-import { safeRedirect, validateEmail } from "~/utils";
-import { verifyAccount } from "~/email/verify";
-import { getDomainUrl } from "~/utils/assorted";
+
 import {
   CatchContainer,
   ErrorContainer,
@@ -27,8 +25,11 @@ import {
   ItemBox,
   Button,
 } from "~/components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserLock } from "@fortawesome/free-solid-svg-icons";
+import { verifyAccount } from "~/email/verify";
+import { generateTokenLink, verifyLogin } from "~/models/user.server";
+import { createUserSession, getUser } from "~/session.server";
+import { safeRedirect, validateEmail } from "~/utils";
+import { getDomainUrl } from "~/utils/assorted";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUser(request);
@@ -133,11 +134,9 @@ export default function LoginPage() {
                 aria-describedby="email-error"
                 className="input input-bordered w-full"
               />
-              {actionData?.errors?.email && (
-                <div className="pt-1 text-error" id="email-error">
+              {actionData?.errors?.email ? <div className="pt-1 text-error" id="email-error">
                   {actionData.errors.email}
-                </div>
-              )}
+                </div> : null}
             </div>
           </div>
 
@@ -156,11 +155,9 @@ export default function LoginPage() {
                 aria-describedby="password-error"
                 className="input input-bordered w-full"
               />
-              {actionData?.errors?.password && (
-                <div className="pt-1 text-error" id="password-error">
+              {actionData?.errors?.password ? <div className="pt-1 text-error" id="password-error">
                   {actionData.errors.password}
-                </div>
-              )}
+                </div> : null}
             </div>
           </div>
 

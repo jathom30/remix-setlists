@@ -1,3 +1,5 @@
+import { faBoxOpen, faSort } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
@@ -10,7 +12,9 @@ import {
   useSearchParams,
   useSubmit,
 } from "@remix-run/react";
+import { useState } from "react";
 import invariant from "tiny-invariant";
+
 import {
   AvatarTitle,
   CreateNewButton,
@@ -26,14 +30,12 @@ import {
   SetlistLink,
 } from "~/components";
 import { getSetlists } from "~/models/setlist.server";
-import { useMemberRole } from "~/utils";
-import { RoleEnum } from "~/utils/enums";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBoxOpen, faSort } from "@fortawesome/free-solid-svg-icons";
-import { getSortFromParam } from "~/utils/params";
-import { capitalizeFirstLetter } from "~/utils/assorted";
 import { requireUserId } from "~/session.server";
-import { useState } from "react";
+import { useMemberRole } from "~/utils";
+import { capitalizeFirstLetter } from "~/utils/assorted";
+import { RoleEnum } from "~/utils/enums";
+import { getSortFromParam } from "~/utils/params";
+
 
 export const meta: MetaFunction = () => [
   {

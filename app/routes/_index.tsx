@@ -3,6 +3,11 @@ import { redirect } from "@remix-run/node";
 import { motion, useAnimation, useInView } from "framer-motion";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
+
+import membersScreen from "~/assets/mobileMembers.png";
+import dataMetricScreen from "~/assets/mobileSetData.png";
+import photoBackground from "~/assets/mobileSetlist.png";
+import songScreen from "~/assets/songSample.png";
 import {
   Divider,
   FlexHeader,
@@ -14,10 +19,6 @@ import {
   Title,
 } from "~/components";
 import { getUserId } from "~/session.server";
-import photoBackground from "~/assets/mobileSetlist.png";
-import dataMetricScreen from "~/assets/mobileSetData.png";
-import membersScreen from "~/assets/mobileMembers.png";
-import songScreen from "~/assets/songSample.png";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getUserId(request);

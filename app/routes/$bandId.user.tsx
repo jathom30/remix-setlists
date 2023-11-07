@@ -6,6 +6,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json, redirect } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import {
   Form,
   Outlet,
@@ -17,11 +22,7 @@ import {
   useRouteError,
   useSubmit,
 } from "@remix-run/react";
-import type {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/node";
+
 import {
   AvatarTitle,
   Badge,

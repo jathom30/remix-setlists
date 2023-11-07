@@ -1,4 +1,4 @@
-export type FlexListProps = {
+export interface FlexListProps {
   children: React.ReactNode;
   gap?: number;
   pad?: number | Partial<Record<"x" | "y" | "l" | "r" | "t" | "b", number>>;
@@ -9,7 +9,7 @@ export type FlexListProps = {
   width?: "full" | "half";
   grow?: boolean;
   wrap?: boolean;
-};
+}
 
 export const FlexList = ({
   children,

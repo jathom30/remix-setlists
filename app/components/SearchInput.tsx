@@ -1,6 +1,7 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ChangeEvent } from "react";
+
 import { Button } from "./Button";
 import { Input } from "./Input";
 

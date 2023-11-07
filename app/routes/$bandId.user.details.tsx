@@ -1,11 +1,12 @@
-import { Form, useLoaderData } from "@remix-run/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
+import { Form, useLoaderData } from "@remix-run/react";
+import invariant from "tiny-invariant";
+
 import { Field, FlexList, Input, SaveButtons } from "~/components";
+import { updateUser } from "~/models/user.server";
 import { requireUser } from "~/session.server";
 import { validateEmail } from "~/utils";
-import { updateUser } from "~/models/user.server";
-import invariant from "tiny-invariant";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await requireUser(request);

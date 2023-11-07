@@ -1,12 +1,12 @@
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { json , redirect } from "@remix-run/node";
 import {
   Form,
   isRouteErrorResponse,
   useActionData,
   useRouteError,
 } from "@remix-run/react";
-import { json } from "@remix-run/node";
-import type { ActionFunctionArgs } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+
 import {
   CatchContainer,
   ErrorContainer,
@@ -16,8 +16,8 @@ import {
   Label,
   SaveButtons,
 } from "~/components";
-import { requireUserId } from "~/session.server";
 import { updateBandByCode } from "~/models/band.server";
+import { requireUserId } from "~/session.server";
 
 export async function action({ request }: ActionFunctionArgs) {
   const userId = await requireUserId(request);

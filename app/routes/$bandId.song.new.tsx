@@ -7,6 +7,7 @@ import {
   useRouteError,
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
+
 import {
   MaxHeightContainer,
   ErrorContainer,
@@ -17,9 +18,9 @@ import {
   AvatarTitle,
   MobileMenu,
 } from "~/components";
-import { requireNonSubMember } from "~/session.server";
 import { getFeels } from "~/models/feel.server";
 import { SongNew } from "~/routes/resource.songNew";
+import { requireNonSubMember } from "~/session.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId } = params;

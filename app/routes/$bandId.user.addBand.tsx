@@ -1,4 +1,5 @@
 import { useNavigate } from "@remix-run/react";
+
 import { AddBand } from "~/components/AddBand";
 
 export default function AddABand() {

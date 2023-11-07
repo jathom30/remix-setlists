@@ -1,9 +1,12 @@
+import crypto from "crypto";
+
 import type { Password, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import crypto from "crypto";
+
 import { prisma } from "~/db.server";
 import { requireUserId } from "~/session.server";
 import { encrypt } from "~/utils/encryption.server";
+
 import { deleteLoginAttempt, incrementLoginAttempt } from "./loginAttempts";
 import { createToken, deleteToken, getToken } from "./token.server";
 

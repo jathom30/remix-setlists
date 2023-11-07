@@ -1,13 +1,17 @@
 import { faQrcode, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { redirect, json } from "@remix-run/node";
 import {
   Form,
   isRouteErrorResponse,
   useLoaderData,
   useRouteError,
 } from "@remix-run/react";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { redirect, json } from "@remix-run/node";
+import { useState } from "react";
+import { QRCode } from "react-qrcode-logo";
+import invariant from "tiny-invariant";
+
 import {
   Button,
   CatchContainer,
@@ -21,13 +25,11 @@ import {
   SaveButtons,
   Title,
 } from "~/components";
-import { requireUserId } from "~/session.server";
-import invariant from "tiny-invariant";
-import { getSetlist, updateSetlist } from "~/models/setlist.server";
-import { getDomainUrl } from "~/utils/assorted";
-import { useState } from "react";
 import { useThemeColor } from "~/hooks";
-import { QRCode } from "react-qrcode-logo";
+import { getSetlist, updateSetlist } from "~/models/setlist.server";
+import { requireUserId } from "~/session.server";
+import { getDomainUrl } from "~/utils/assorted";
+
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);

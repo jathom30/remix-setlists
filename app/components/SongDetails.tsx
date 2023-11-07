@@ -1,4 +1,5 @@
 import { faInfoCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type {
   Feel,
   Song,
@@ -7,23 +8,25 @@ import type {
   Setlist,
 } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/node";
+import { Link as RemixLink } from "@remix-run/react";
 import pluralize from "pluralize";
+import { useState } from "react";
+
 import { useMemberRole } from "~/utils";
 import { capitalizeFirstLetter } from "~/utils/assorted";
 import { RoleEnum, setlistAutoGenImportanceEnums } from "~/utils/enums";
+
+import { Button } from "./Button";
 import { Divider } from "./Divider";
 import { FeelTag } from "./FeelTag";
 import { FlexList } from "./FlexList";
 import { ItemBox } from "./ItemBox";
 import { Label } from "./Label";
 import { Link } from "./Link";
-import { TempoIcons } from "./TempoIcons";
-import { Link as RemixLink } from "@remix-run/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
-import { Button } from "./Button";
-import { SongSettingsInfo } from "./SongSettingsInfo";
 import { Modal } from "./Modal";
+import { SongSettingsInfo } from "./SongSettingsInfo";
+import { TempoIcons } from "./TempoIcons";
+
 
 export const SongDetails = ({
   song,

@@ -1,16 +1,16 @@
 import type { Song, SongsInSets } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/node";
 
-export type SetlistFilters = {
+export interface SetlistFilters {
   noCovers: boolean;
   onlyCovers: boolean;
   noBallads: boolean;
-};
-export type SetlistSettings = {
+}
+export interface SetlistSettings {
   filters: SetlistFilters;
   setCount: number;
   setLength: number;
-};
+}
 
 export const getSetLength = (
   songs: Pick<SerializeFrom<SongsInSets & { song: Song | null }>, "song">[],
@@ -116,7 +116,7 @@ const getSongsOfPositionPerSet = (
 ) => {
   const positionPerSet = songCountByPostitionPerSet(songs, setCount, position);
   let availableSongs = positionPerSet.songs;
-  const sets = Array.from({ length: setCount }).map((_) => {
+  const sets = Array.from({ length: setCount }).map(() => {
     const randomSongs = setlistOfSongCountLength(
       availableSongs,
       positionPerSet.perSet,

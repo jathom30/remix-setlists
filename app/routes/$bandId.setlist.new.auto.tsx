@@ -1,6 +1,8 @@
-import { Form, useActionData } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
 import type { ActionFunctionArgs } from "@remix-run/node";
+import { Form, useActionData } from "@remix-run/react";
+import invariant from "tiny-invariant";
+
 import {
   FlexList,
   ItemBox,
@@ -13,16 +15,15 @@ import {
   Field,
   RadioGroup,
 } from "~/components";
-import { getFields } from "~/utils/form";
-import invariant from "tiny-invariant";
 import { createSetlistAuto } from "~/models/setlist.server";
+import { getFields } from "~/utils/form";
 
-type AutoFormType = {
+interface AutoFormType {
   setLength: number;
   setCount: number;
   songRole: string;
   excludeBallads?: string;
-};
+}
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId } = params;

@@ -1,11 +1,12 @@
-import { Form, Link, useLoaderData, useParams } from "@remix-run/react";
 import { redirect, json } from "@remix-run/node";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { Form, Link, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
+
 import { Button, ConfirmDelete, ErrorContainer, FlexList } from "~/components";
+import { getBand } from "~/models/band.server";
 import { removeMemberFromBand } from "~/models/usersInBands.server";
 import { requireUserId } from "~/session.server";
-import { getBand } from "~/models/band.server";
 import { RoleEnum } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {

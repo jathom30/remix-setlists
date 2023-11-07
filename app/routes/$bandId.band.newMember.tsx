@@ -1,5 +1,16 @@
+import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
+import {
+  isRouteErrorResponse,
+  useFetcher,
+  useLoaderData,
+  useRouteError,
+} from "@remix-run/react";
+import { useState } from "react";
+import { QRCode } from "react-qrcode-logo";
+import invariant from "tiny-invariant";
+
 import {
   Button,
   CatchContainer,
@@ -9,20 +20,10 @@ import {
   FlexList,
   Label,
 } from "~/components";
-import { requireAdminMember } from "~/session.server";
-import invariant from "tiny-invariant";
-import { getBand, updateBandCode } from "~/models/band.server";
-import {
-  isRouteErrorResponse,
-  useFetcher,
-  useLoaderData,
-  useRouteError,
-} from "@remix-run/react";
-import { faQrcode } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
-import { QRCode } from "react-qrcode-logo";
-import { getDomainUrl } from "~/utils/assorted";
 import { useThemeColor } from "~/hooks";
+import { getBand, updateBandCode } from "~/models/band.server";
+import { requireAdminMember } from "~/session.server";
+import { getDomainUrl } from "~/utils/assorted";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const bandId = params.bandId;

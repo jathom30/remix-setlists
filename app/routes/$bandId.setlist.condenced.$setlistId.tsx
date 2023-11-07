@@ -1,6 +1,14 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import {
+  isRouteErrorResponse,
+  useLoaderData,
+  useParams,
+  useRouteError,
+} from "@remix-run/react";
+import pluralize from "pluralize";
 import invariant from "tiny-invariant";
+
 import {
   AvatarTitle,
   Breadcrumbs,
@@ -16,13 +24,6 @@ import {
 } from "~/components";
 import { getCondensedSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
-import {
-  isRouteErrorResponse,
-  useLoaderData,
-  useParams,
-  useRouteError,
-} from "@remix-run/react";
-import pluralize from "pluralize";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);

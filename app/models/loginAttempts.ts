@@ -1,5 +1,7 @@
 import type { User } from "@prisma/client";
+
 import { prisma } from "~/db.server";
+
 import { updateUser } from "./user.server";
 
 export async function createLoginAttempt(userId: User["id"]) {

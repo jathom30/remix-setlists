@@ -3,6 +3,7 @@ import invariant from "tiny-invariant";
 
 import type { User } from "~/models/user.server";
 import { getUserById } from "~/models/user.server";
+
 import { getMemberRole } from "./models/usersInBands.server";
 import { RoleEnum } from "./utils/enums";
 
@@ -47,7 +48,7 @@ export async function getUser(request: Request) {
 export async function requireUserId(
   request: Request,
   // redirect includes search params
-  redirectTo: string = `${new URL(request.url).pathname}?${
+  redirectTo = `${new URL(request.url).pathname}?${
     new URL(request.url).searchParams
   }`,
 ) {

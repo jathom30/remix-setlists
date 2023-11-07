@@ -1,9 +1,9 @@
-type LabelProps = {
+interface LabelProps {
   required?: boolean;
   children?: React.ReactNode;
   isDanger?: boolean;
   align?: "left" | "center" | "right";
-};
+}
 
 export const Label = ({
   required,
@@ -30,12 +30,10 @@ export const Label = ({
       }`}
     >
       {children}
-      {required && (
-        <>
+      {required ? <>
           {" "}
           <span className="font-normal">[Required]</span>
-        </>
-      )}
+        </> : null}
     </span>
   );
 };

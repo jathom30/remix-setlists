@@ -1,12 +1,13 @@
+import type { Feel } from "@prisma/client";
 import type { ActionFunctionArgs, SerializeFrom } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import { useFetcher, useParams } from "@remix-run/react";
+import { useEffect, useState } from "react";
+import CreatableSelect from "react-select/creatable";
 import invariant from "tiny-invariant";
+
 import { createFeel } from "~/models/feel.server";
 import { requireNonSubMember } from "~/session.server";
-import CreatableSelect from "react-select/creatable";
-import type { Feel } from "@prisma/client";
-import { useEffect, useState } from "react";
-import { useFetcher, useParams } from "@remix-run/react";
 import { getColor } from "~/utils/tailwindColors";
 
 export async function action({ request, params }: ActionFunctionArgs) {

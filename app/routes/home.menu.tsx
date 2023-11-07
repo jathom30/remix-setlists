@@ -1,4 +1,5 @@
 import { faBarcode, faPlus } from "@fortawesome/free-solid-svg-icons";
+
 import { FlexList, Link } from "~/components";
 
 export default function CreateBandMenu() {

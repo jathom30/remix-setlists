@@ -1,25 +1,26 @@
 import {
-  Form,
-  useParams,
-  useNavigation,
-  useLoaderData,
-} from "@remix-run/react";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import invariant from "tiny-invariant";
-import { Button, FlexList, Link } from "~/components";
-import { cloneSetlist, getSetlist } from "~/models/setlist.server";
-import { requireNonSubMember } from "~/session.server";
-import { useMemberRole } from "~/utils";
-import { RoleEnum } from "~/utils/enums";
-import { useSpinDelay } from "spin-delay";
-import {
   faFileSignature,
   faListOl,
   faPenToSquare,
   faShareNodes,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import {
+  Form,
+  useParams,
+  useNavigation,
+  useLoaderData,
+} from "@remix-run/react";
+import { useSpinDelay } from "spin-delay";
+import invariant from "tiny-invariant";
+
+import { Button, FlexList, Link } from "~/components";
+import { cloneSetlist, getSetlist } from "~/models/setlist.server";
+import { requireNonSubMember } from "~/session.server";
+import { useMemberRole } from "~/utils";
+import { RoleEnum } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { setlistId, bandId } = params;

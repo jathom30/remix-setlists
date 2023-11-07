@@ -1,14 +1,15 @@
-import invariant from "tiny-invariant";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import { Form, useLoaderData } from "@remix-run/react";
+import { useState } from "react";
+import invariant from "tiny-invariant";
+
 import { Button, FlexList, Label, Tabs } from "~/components";
 import { getBand } from "~/models/band.server";
+import { getUserById } from "~/models/user.server";
+import { updateBandMemberRole } from "~/models/usersInBands.server";
 import { requireAdminMember, requireUserId } from "~/session.server";
 import { RoleEnum } from "~/utils/enums";
-import { Form, useLoaderData } from "@remix-run/react";
-import { getUserById } from "~/models/user.server";
-import { useState } from "react";
-import { updateBandMemberRole } from "~/models/usersInBands.server";
 import { getFields } from "~/utils/form";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {

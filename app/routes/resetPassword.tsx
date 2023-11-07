@@ -4,6 +4,8 @@ import {
   faKey,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Form,
   useActionData,
@@ -11,8 +13,10 @@ import {
   Link as RemixLink,
   useNavigation,
 } from "@remix-run/react";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { useState } from "react";
+import { useSpinDelay } from "spin-delay";
+import invariant from "tiny-invariant";
+
 import {
   Button,
   ErrorMessage,
@@ -23,18 +27,16 @@ import {
   Link,
   PasswordStrength,
 } from "~/components";
+import { deleteToken } from "~/models/token.server";
 import {
   compareToken,
   getUserById,
   updateUser,
   updateUserPassword,
 } from "~/models/user.server";
-import invariant from "tiny-invariant";
-import { deleteToken } from "~/models/token.server";
-import { useState } from "react";
 import { getPasswordError, passwordStrength } from "~/utils/assorted";
 import { decrypt } from "~/utils/encryption.server";
-import { useSpinDelay } from "spin-delay";
+
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);

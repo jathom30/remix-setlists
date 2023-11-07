@@ -11,31 +11,33 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { BandIcon } from "@prisma/client";
-import { Popover } from "react-tiny-popover";
 import type { SerializeFrom } from "@remix-run/node";
-import { AnimatePresence, motion } from "framer-motion";
-import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
-import { useUser } from "~/utils";
-import { Avatar } from "./Avatar";
-import { Badge } from "./Badge";
-import { Button } from "./Button";
-import { FlexList } from "./FlexList";
-import { MaxHeightContainer } from "./MaxHeightContainer";
-import { TextOverflow } from "./TextOverflow";
 import {
   useLocation,
   Link as RemixLink,
   useParams,
   Form,
 } from "@remix-run/react";
-import { Divider } from "./Divider";
-import { Modal } from "./Modal";
-import { AddBand } from "./AddBand";
+import { AnimatePresence, motion } from "framer-motion";
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+import { Popover } from "react-tiny-popover";
 import resolveConfig from "tailwindcss/resolveConfig";
-import tailwindConfig from "tailwind.config";
 
-type MainSidebarProps = {
+import tailwindConfig from "tailwind.config";
+import { useUser } from "~/utils";
+
+import { AddBand } from "./AddBand";
+import { Avatar } from "./Avatar";
+import { Badge } from "./Badge";
+import { Button } from "./Button";
+import { Divider } from "./Divider";
+import { FlexList } from "./FlexList";
+import { MaxHeightContainer } from "./MaxHeightContainer";
+import { Modal } from "./Modal";
+import { TextOverflow } from "./TextOverflow";
+
+interface MainSidebarProps {
   band: SerializeFrom<{
     name: string;
     icon: BandIcon | null;
@@ -49,7 +51,7 @@ type MainSidebarProps = {
       role: string;
     }[];
   }>[];
-};
+}
 
 export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
   const user = useUser();

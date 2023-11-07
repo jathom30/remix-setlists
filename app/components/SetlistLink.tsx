@@ -5,7 +5,9 @@ import type { SerializeFrom } from "@remix-run/node";
 import { Link, useLocation, useParams } from "@remix-run/react";
 import { useState } from "react";
 import { Popover } from "react-tiny-popover";
+
 import { hoverAndFocusContainerStyles } from "~/styleUtils";
+
 import { FlexHeader } from "./FlexHeader";
 import { FlexList } from "./FlexList";
 import { ItemBox } from "./ItemBox";

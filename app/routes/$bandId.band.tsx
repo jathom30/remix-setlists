@@ -1,4 +1,14 @@
 import {
+  faCamera,
+  faEdit,
+  faPencil,
+  faPlus,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { json } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import {
   Outlet,
   useLoaderData,
   useLocation,
@@ -7,9 +17,9 @@ import {
   useRouteError,
   isRouteErrorResponse,
 } from "@remix-run/react";
-import { json } from "@remix-run/node";
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import pluralize from "pluralize";
 import invariant from "tiny-invariant";
+
 import {
   Avatar,
   AvatarTitle,
@@ -30,20 +40,12 @@ import {
   Navbar,
 } from "~/components";
 import { getBand } from "~/models/band.server";
-import { requireUserId } from "~/session.server";
-import { getUsersById } from "~/models/user.server";
-import { RoleEnum } from "~/utils/enums";
-import {
-  faCamera,
-  faEdit,
-  faPencil,
-  faPlus,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { useMemberRole } from "~/utils";
 import { getMostRecentFeels } from "~/models/feel.server";
-import pluralize from "pluralize";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { getUsersById } from "~/models/user.server";
+import { requireUserId } from "~/session.server";
+import { useMemberRole } from "~/utils";
+import { RoleEnum } from "~/utils/enums";
+
 
 export const meta: MetaFunction = () => [
   {

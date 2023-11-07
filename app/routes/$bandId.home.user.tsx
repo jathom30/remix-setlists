@@ -1,7 +1,8 @@
 import { faSignOut, faUser } from "@fortawesome/free-solid-svg-icons";
-import { Form, useLoaderData } from "@remix-run/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import { Form, useLoaderData } from "@remix-run/react";
+
 import { Button, FlexList, Link, TextOverflow } from "~/components";
 import { getUserBands } from "~/models/usersInBands.server";
 import { requireUser } from "~/session.server";

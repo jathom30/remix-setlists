@@ -1,6 +1,6 @@
 import type { LegacyRef } from "react";
 
-type InputProps = {
+interface InputProps {
   name: string;
   type?: React.InputHTMLAttributes<HTMLInputElement>["type"];
   placeholder?: string;
@@ -9,7 +9,7 @@ type InputProps = {
   inputRef?: LegacyRef<HTMLInputElement>;
   isDisabled?: boolean;
   value?: string;
-};
+}
 
 export const inputStyles =
   "w-full p-2 text-base rounded border-1 border-text-subdued relative bg-component-background text-text";

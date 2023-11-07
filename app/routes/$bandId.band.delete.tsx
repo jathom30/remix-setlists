@@ -1,16 +1,5 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import invariant from "tiny-invariant";
-import {
-  Button,
-  CatchContainer,
-  ErrorContainer,
-  ErrorMessage,
-  FlexList,
-  Input,
-} from "~/components";
-import { deleteBand, getBandName } from "~/models/band.server";
+import { redirect , json } from "@remix-run/node";
 import {
   Form,
   isRouteErrorResponse,
@@ -20,9 +9,20 @@ import {
 } from "@remix-run/react";
 import type { ChangeEvent } from "react";
 import { useState } from "react";
-import { getFields } from "~/utils/form";
-import { requireAdminMember } from "~/session.server";
+import invariant from "tiny-invariant";
+
+import {
+  Button,
+  CatchContainer,
+  ErrorContainer,
+  ErrorMessage,
+  FlexList,
+  Input,
+} from "~/components";
+import { deleteBand, getBandName } from "~/models/band.server";
 import { deleteImage } from "~/models/cloudinary.server";
+import { requireAdminMember } from "~/session.server";
+import { getFields } from "~/utils/form";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId } = params;

@@ -21,7 +21,7 @@ export function contrastColor(hex: string) {
   if (cleanedHex.length !== 6) {
     throw new Error("Invalid HEX color");
   }
-  var r = parseInt(cleanedHex.slice(0, 2), 16),
+  const r = parseInt(cleanedHex.slice(0, 2), 16),
     g = parseInt(cleanedHex.slice(2, 4), 16),
     b = parseInt(cleanedHex.slice(4, 6), 16);
   // https://stackoverflow.com/a/3943023/112731

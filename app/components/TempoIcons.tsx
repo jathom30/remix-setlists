@@ -1,5 +1,6 @@
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import { FlexList } from "./FlexList";
 
 export const getTempoColor = (tempo: number) => {

@@ -1,15 +1,16 @@
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import {
   Form,
   isRouteErrorResponse,
   useParams,
   useRouteError,
 } from "@remix-run/react";
-import type { ActionFunctionArgs } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
+
 import { CatchContainer, ConfirmDelete, ErrorContainer } from "~/components";
-import { requireNonSubMember } from "~/session.server";
 import { removeSongFromSet } from "~/models/set.server";
+import { requireNonSubMember } from "~/session.server";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { songId, setlistId, bandId, setId } = params;

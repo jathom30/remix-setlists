@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { Link } from "./Link";
+
 import { FlexList } from "./FlexList";
+import { Link } from "./Link";
 import { MaxWidth } from "./MaxWidth";
 
 export const NotFound = ({

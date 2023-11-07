@@ -1,43 +1,3 @@
-import { faGripVertical, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  SerializeFrom,
-} from "@remix-run/node";
-import { json } from "@remix-run/node";
-import {
-  Outlet,
-  isRouteErrorResponse,
-  useFetcher,
-  useLoaderData,
-  useLocation,
-  useNavigate,
-  useParams,
-  useRouteError,
-} from "@remix-run/react";
-import invariant from "tiny-invariant";
-import {
-  AvatarTitle,
-  Breadcrumbs,
-  CatchContainer,
-  DroppableContainer,
-  ErrorContainer,
-  FlexHeader,
-  FlexList,
-  Link,
-  MaxHeightContainer,
-  MaxWidth,
-  MobileMenu,
-  MobileModal,
-  Navbar,
-  SaveButtons,
-  SongDisplay,
-} from "~/components";
-import { getSetlist } from "~/models/setlist.server";
-import { requireNonSubMember } from "~/session.server";
-import { CSS } from "@dnd-kit/utilities";
-import type { Song } from "@prisma/client";
 import type {
   UniqueIdentifier,
   DragEndEvent,
@@ -59,15 +19,56 @@ import {
   useSensors,
   DragOverlay,
 } from "@dnd-kit/core";
+import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import {
   arrayMove,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
+import { CSS } from "@dnd-kit/utilities";
+import { faGripVertical, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { Song } from "@prisma/client";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  SerializeFrom,
+} from "@remix-run/node";
+import { json } from "@remix-run/node";
+import {
+  Outlet,
+  isRouteErrorResponse,
+  useFetcher,
+  useLoaderData,
+  useLocation,
+  useNavigate,
+  useParams,
+  useRouteError,
+} from "@remix-run/react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import invariant from "tiny-invariant";
+
+import {
+  AvatarTitle,
+  Breadcrumbs,
+  CatchContainer,
+  DroppableContainer,
+  ErrorContainer,
+  FlexHeader,
+  FlexList,
+  Link,
+  MaxHeightContainer,
+  MaxWidth,
+  MobileMenu,
+  MobileModal,
+  Navbar,
+  SaveButtons,
+  SongDisplay,
+} from "~/components";
 import { updateSetPosition, updateSetSongs } from "~/models/set.server";
+import { getSetlist } from "~/models/setlist.server";
+import { requireNonSubMember } from "~/session.server";
 import { coordinateGetter } from "~/utils/dnd";
 import { getSetLength } from "~/utils/setlists";
 

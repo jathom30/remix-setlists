@@ -1,5 +1,18 @@
+import { faBoxOpen } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import {
+  useLoaderData,
+  Link as RemixLink,
+  useLocation,
+  useNavigate,
+  Outlet,
+  useParams,
+  useNavigation,
+} from "@remix-run/react";
+import { useSpinDelay } from "spin-delay";
+
 import {
   MaxHeightContainer,
   FlexList,
@@ -15,18 +28,6 @@ import {
 } from "~/components";
 import { getBands } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
-import {
-  useLoaderData,
-  Link as RemixLink,
-  useLocation,
-  useNavigate,
-  Outlet,
-  useParams,
-  useNavigation,
-} from "@remix-run/react";
-import { useSpinDelay } from "spin-delay";
-import { faBoxOpen } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const meta: MetaFunction = () => [
   {

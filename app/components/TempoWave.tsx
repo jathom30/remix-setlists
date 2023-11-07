@@ -1,5 +1,6 @@
 import { heatColors } from "~/utils/songConstants";
 import { getCoords, getPointsWithCurve } from "~/utils/svg";
+
 import { FlexList } from "./FlexList";
 
 export const TempoWave = ({ tempos }: { tempos: number[] }) => {

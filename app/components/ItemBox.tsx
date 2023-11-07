@@ -1,8 +1,8 @@
 import React from "react";
 
-type ItemBoxProps = {
+interface ItemBoxProps {
   children: React.ReactNode;
-};
+}
 
 export const ItemBox = ({ children }: ItemBoxProps) => {
   return (

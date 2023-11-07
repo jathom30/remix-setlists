@@ -2,6 +2,7 @@ import { faBarcode, faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useFetcher } from "@remix-run/react";
 import { useEffect, useState } from "react";
+
 import { Button } from "./Button";
 import { ErrorMessage } from "./ErrorMessage";
 import { Field } from "./Field";

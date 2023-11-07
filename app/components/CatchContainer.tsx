@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+
 import { NotFound } from "./NotFound";
 import { RestrictedAlert } from "./RestrictedAlert";
 

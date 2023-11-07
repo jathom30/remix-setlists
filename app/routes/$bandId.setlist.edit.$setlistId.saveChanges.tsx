@@ -1,17 +1,18 @@
 import { faPlus, faSave, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { Form, useNavigation } from "@remix-run/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
+import { Form, useNavigation } from "@remix-run/react";
+import { useSpinDelay } from "spin-delay";
 import invariant from "tiny-invariant";
+
 import { Button, FlexHeader, FlexList, Link } from "~/components";
-import { requireNonSubMember } from "~/session.server";
 import {
   getSetlist,
   overwriteSetlist,
   updateSetlist,
 } from "~/models/setlist.server";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useSpinDelay } from "spin-delay";
+import { requireNonSubMember } from "~/session.server";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId, setlistId } = params;

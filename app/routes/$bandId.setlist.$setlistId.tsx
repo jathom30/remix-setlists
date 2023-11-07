@@ -1,8 +1,13 @@
+import {
+  faCompress,
+  faDatabase,
+  faEllipsisV,
+  faExpand,
+  faEye,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import invariant from "tiny-invariant";
-import { getSetlist } from "~/models/setlist.server";
-import { requireUserId } from "~/session.server";
 import {
   Outlet,
   isRouteErrorResponse,
@@ -12,6 +17,11 @@ import {
   useParams,
   useRouteError,
 } from "@remix-run/react";
+import pluralize from "pluralize";
+import { useState } from "react";
+import { Popover } from "react-tiny-popover";
+import invariant from "tiny-invariant";
+
 import {
   AvatarTitle,
   Breadcrumbs,
@@ -32,20 +42,11 @@ import {
   Navbar,
   SongLink,
 } from "~/components";
-import {
-  faCompress,
-  faDatabase,
-  faEllipsisV,
-  faExpand,
-  faEye,
-} from "@fortawesome/free-solid-svg-icons";
-import { getSetLength } from "~/utils/setlists";
-import pluralize from "pluralize";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
-import { Popover } from "react-tiny-popover";
+import { getSetlist } from "~/models/setlist.server";
+import { requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
+import { getSetLength } from "~/utils/setlists";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);

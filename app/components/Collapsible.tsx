@@ -1,14 +1,14 @@
 import { faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { MouseEvent, ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import type { MouseEvent, ReactNode } from "react";
 
-type CollapsibleProps = {
+interface CollapsibleProps {
   children?: ReactNode;
   header?: ReactNode;
   isOpen?: boolean;
   isBordered?: boolean;
-};
+}
 
 export const Collapsible = ({
   children,

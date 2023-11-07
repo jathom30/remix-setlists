@@ -1,5 +1,6 @@
 import { faSignOut } from "@fortawesome/free-solid-svg-icons";
 import { Form } from "@remix-run/react";
+
 import { Button, Divider, FlexList, ItemBox, Label, Link } from "~/components";
 
 export default function UserSettings() {

@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
+
 import type { passwordStrength } from "~/utils/assorted";
+
 import { FlexList } from "./FlexList";
 
 export const PasswordStrength = ({

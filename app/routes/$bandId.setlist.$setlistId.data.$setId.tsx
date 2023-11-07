@@ -1,5 +1,10 @@
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import invariant from "tiny-invariant";
+
 import {
   FlexHeader,
   FlexList,
@@ -11,11 +16,8 @@ import {
   RatioBar,
   TempoWave,
 } from "~/components";
-import invariant from "tiny-invariant";
 import { getSetMetrics } from "~/models/set.server";
-import { useLoaderData } from "@remix-run/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const { setId } = params;

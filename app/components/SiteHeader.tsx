@@ -1,5 +1,6 @@
 import { faSignOut, faUser } from "@fortawesome/free-solid-svg-icons";
 import { Form } from "@remix-run/react";
+
 import { Button, Link } from ".";
 
 export function SiteHeader() {

@@ -1,3 +1,5 @@
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Form,
   isRouteErrorResponse,
@@ -6,10 +8,10 @@ import {
   useNavigation,
   useRouteError,
 } from "@remix-run/react";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
 import type { ChangeEvent } from "react";
 import { useState } from "react";
+import { useSpinDelay } from "spin-delay";
+
 import {
   Button,
   CatchContainer,
@@ -18,13 +20,12 @@ import {
   FlexList,
   Input,
 } from "~/components";
-import { requireUser } from "~/session.server";
-import { validateEmail } from "~/utils";
+import { deleteBand, getBand } from "~/models/band.server";
 import { deleteUserByEmail } from "~/models/user.server";
 import { getUserBands } from "~/models/usersInBands.server";
-import { deleteBand, getBand } from "~/models/band.server";
+import { requireUser } from "~/session.server";
+import { validateEmail } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
-import { useSpinDelay } from "spin-delay";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await requireUser(request);

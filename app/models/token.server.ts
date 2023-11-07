@@ -1,6 +1,7 @@
 import type { Token } from "@prisma/client";
-import { prisma } from "~/db.server";
 import bcrypt from "bcryptjs";
+
+import { prisma } from "~/db.server";
 
 export async function getToken(userId: Token["userId"]) {
   return prisma.token.findUnique({

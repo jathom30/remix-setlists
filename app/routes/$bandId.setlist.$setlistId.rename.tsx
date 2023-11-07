@@ -1,12 +1,13 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
-import invariant from "tiny-invariant";
-import { FlexList, Input, Label, SaveButtons } from "~/components";
-import { requireNonSubMember } from "~/session.server";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
-import { getFields } from "~/utils/form";
-import { getSetlist, updateSetlist } from "~/models/setlist.server";
+import invariant from "tiny-invariant";
+
+import { FlexList, Input, Label, SaveButtons } from "~/components";
 import { ErrorMessage } from "~/components/ErrorMessage";
+import { getSetlist, updateSetlist } from "~/models/setlist.server";
+import { requireNonSubMember } from "~/session.server";
+import { getFields } from "~/utils/form";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { setlistId, bandId } = params;

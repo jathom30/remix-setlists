@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FocusRing } from "@react-aria/focus";
 import type { MouseEvent } from "react";
 import React from "react";
+
 import { buttonKind, buttonSize } from "~/utils/buttonStyles";
 
 export type ButtonKind =
@@ -19,7 +20,7 @@ export type ButtonKind =
   | "active"
   | "disabled";
 
-export type ButtonProps = {
+export interface ButtonProps {
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
   icon?: IconDefinition;
   isDisabled?: boolean;
@@ -35,7 +36,7 @@ export type ButtonProps = {
   isSaving?: boolean;
   size?: "xs" | "sm" | "md" | "lg";
   ariaLabel?: string;
-};
+}
 
 export function Button({
   ariaLabel,

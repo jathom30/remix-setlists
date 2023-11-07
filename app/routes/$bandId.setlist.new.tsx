@@ -1,5 +1,6 @@
-import { Outlet, useLocation, useParams } from "@remix-run/react";
 import type { MetaFunction } from "@remix-run/node";
+import { Outlet, useLocation, useParams } from "@remix-run/react";
+
 import {
   AvatarTitle,
   Breadcrumbs,
