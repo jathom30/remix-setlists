@@ -2,7 +2,7 @@ import type { ActionArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node"
 import { createBand } from "~/models/band.server"
 import { requireUserId } from "~/session.server"
-import { Form, useActionData } from "@remix-run/react";
+import { Form, isRouteErrorResponse, useActionData, useRouteError } from "@remix-run/react";
 import { CatchContainer, ErrorContainer, ErrorMessage, FlexList, Input, SaveButtons } from "~/components";
 
 export async function action({ request }: ActionArgs) {
@@ -35,9 +35,12 @@ export default function NewBand() {
   )
 }
 
-export function CatchBoundary() {
-  return <CatchContainer />
-}
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

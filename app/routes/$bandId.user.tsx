@@ -1,16 +1,16 @@
 import { faPenToSquare, faPlus, faSignOut, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json, redirect } from "@remix-run/node"
-import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSubmit } from "@remix-run/react";
-import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
+import { Form, Outlet, isRouteErrorResponse, useLoaderData, useLocation, useNavigate, useParams, useRouteError, useSubmit } from "@remix-run/react";
+import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { AvatarTitle, Badge, Button, CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar } from "~/components";
 import { getUserWithBands } from "~/models/user.server";
 import { requireUserId } from "~/session.server";
 import { capitalizeFirstLetter } from "~/utils/assorted";
 
-export const meta: MetaFunction = () => ({
+export const meta: V2_MetaFunction = () => ([{
   title: "User settings",
-});
+}]);
 
 export async function loader({ request }: LoaderArgs) {
   const user = await getUserWithBands(request)
@@ -183,9 +183,12 @@ export default function UserRoute() {
   )
 }
 
-export function CatchBoundary() {
-  return <CatchContainer />
-}
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

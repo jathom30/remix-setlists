@@ -1,4 +1,4 @@
-import { Form, useSearchParams, useSubmit } from "@remix-run/react";
+import { Form, isRouteErrorResponse, useRouteError, useSearchParams, useSubmit } from "@remix-run/react";
 import type { ActionArgs } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
 import { redirect } from "@remix-run/node"
@@ -58,10 +58,12 @@ const sortOptions = [
   { label: 'Created: oldest first', value: 'createdAt:asc' },
 ]
 
-export function CatchBoundary() {
-  return <CatchContainer />
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

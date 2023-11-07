@@ -1,4 +1,4 @@
-import type { LoaderArgs, MetaFunction } from "@remix-run/node";
+import type { LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { motion, useAnimation, useInView } from "framer-motion";
 import type { ReactNode } from "react";
@@ -19,9 +19,9 @@ export async function loader({ request }: LoaderArgs) {
   return null
 }
 
-export const meta: MetaFunction = () => ({
+export const meta: V2_MetaFunction = () => ([{
   title: "Welcome!",
-});
+}]);
 
 export default function Landing() {
   return (

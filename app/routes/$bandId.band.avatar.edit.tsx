@@ -1,5 +1,5 @@
 import { faSave } from "@fortawesome/free-solid-svg-icons";
-import { Form, Outlet, useLocation, useNavigate, useNavigation } from "@remix-run/react";
+import { Form, Outlet, isRouteErrorResponse, useLocation, useNavigate, useNavigation, useRouteError } from "@remix-run/react";
 import type { ActionArgs, UploadHandler } from "@remix-run/node";
 import { unstable_composeUploadHandlers, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData, redirect } from "@remix-run/node";
 import { useSpinDelay } from "spin-delay";
@@ -83,10 +83,12 @@ export default function EditBandAvatar() {
   )
 }
 
-export function CatchBoundary() {
-  return <CatchContainer />
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

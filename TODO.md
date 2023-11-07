@@ -1,5 +1,8 @@
 # TODO
 
-Currently working through updating the routing convention to v2
-
-## Issues
+- v2_dev - DONE
+- v2_routeConvention - DONE
+- v2_headers - DONE
+- v2_meta - DONE
+- v2_errorBoundary - DONE
+- v2_normalizeFormMethod - DONE

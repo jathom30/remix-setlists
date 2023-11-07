@@ -109,24 +109,7 @@ export default function ResetPassword() {
   )
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  return (
-    <div className="max-w-lg m-auto mt-8">
-      <FlexList pad={4}>
-        <FontAwesomeIcon icon={faCircleXmark} size="5x" />
-        <h1 className="text-center text-2xl font-bold">Oops...</h1>
-        <ItemBox>
-          <FlexList>
-            <p>It looks like this link is either incorrect or too old.</p>
-            <p>If you'd like to request a new email, <RemixLink className="text-blue-500 underline" to="/forgotPassword">click here</RemixLink>.</p>
-          </FlexList>
-        </ItemBox>
-      </FlexList>
-    </div>
-  )
-}
-
-export function CatchBoundary() {
+export function ErrorBoundary() {
   return (
     <div className="max-w-lg m-auto mt-8">
       <FlexList pad={4}>

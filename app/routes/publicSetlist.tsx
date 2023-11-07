@@ -1,7 +1,7 @@
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-import type { LoaderArgs, MetaFunction, SerializeFrom } from "@remix-run/node";
+import type { LoaderArgs, V2_MetaFunction, SerializeFrom } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData, useLocation } from "@remix-run/react";
+import { isRouteErrorResponse, useLoaderData, useLocation, useRouteError } from "@remix-run/react";
 import pluralize from "pluralize";
 import invariant from "tiny-invariant";
 import { CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MaxWidth, Navbar, Title } from "~/components";
@@ -16,14 +16,14 @@ export async function loader({ request }: LoaderArgs) {
   return json({ setlist })
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
+export const meta: V2_MetaFunction<typeof loader> = ({ data, params }) => {
   if (!data) {
-    return {
+    return [{
       title: "Setlist",
-    }
+    }]
   }
   const { setlist: { name } } = data
-  return { title: name }
+  return [{ title: name }]
 };
 
 export default function PublicSetlist() {
@@ -68,10 +68,12 @@ export default function PublicSetlist() {
   )
 }
 
-export function CatchBoundary() {
-  return <CatchContainer />
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

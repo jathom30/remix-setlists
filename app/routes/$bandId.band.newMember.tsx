@@ -4,7 +4,7 @@ import { Button, CatchContainer, Collapsible, CopyClick, ErrorContainer, FlexLis
 import { requireAdminMember } from "~/session.server";
 import invariant from "tiny-invariant";
 import { getBand, updateBandCode } from "~/models/band.server";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { isRouteErrorResponse, useFetcher, useLoaderData, useRouteError } from "@remix-run/react";
 import { faQrcode } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { QRCode } from 'react-qrcode-logo';
@@ -90,10 +90,12 @@ export default function NewMember() {
   )
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
-}
-
-export function CatchBoundary() {
-  return <CatchContainer />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

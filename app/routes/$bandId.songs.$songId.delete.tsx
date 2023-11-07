@@ -1,6 +1,6 @@
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, isRouteErrorResponse, useLoaderData, useRouteError } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { CatchContainer, ConfirmDelete, ErrorContainer } from "~/components";
 import { deleteSong, getSong } from "~/models/song.server";
@@ -44,9 +44,12 @@ export default function DeleteSong() {
   )
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
-}
-export function CatchBoundary() {
-  return <CatchContainer />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

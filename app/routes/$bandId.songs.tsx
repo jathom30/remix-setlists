@@ -1,9 +1,9 @@
-import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
+import type { LoaderArgs, V2_MetaFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node"
 import invariant from "tiny-invariant";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
-import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
+import { Form, Outlet, isRouteErrorResponse, useLoaderData, useLocation, useNavigate, useParams, useRouteError, useSearchParams, useSubmit } from "@remix-run/react";
 import { AvatarTitle, CatchContainer, CreateNewButton, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SearchInput, SongLink } from "~/components";
 import { faBoxOpen, faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
 import { useMemberRole } from "~/utils";
@@ -12,9 +12,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { sortByLabel } from "~/utils/params";
 import { useState } from "react";
 
-export const meta: MetaFunction = () => ({
+export const meta: V2_MetaFunction = () => ([{
   title: "Songs",
-});
+}]);
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -141,10 +141,12 @@ export default function SongsList() {
   )
 }
 
-export function CatchBoundary() {
-  return <CatchContainer />
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

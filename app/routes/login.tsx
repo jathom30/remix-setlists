@@ -1,6 +1,6 @@
-import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useCatch, useSearchParams } from "@remix-run/react";
+import { Form, Link, isRouteErrorResponse, useActionData, useRouteError, useSearchParams } from "@remix-run/react";
 import * as React from "react";
 import { createUserSession, getUser } from "~/session.server";
 import { generateTokenLink, verifyLogin } from "~/models/user.server";
@@ -70,10 +70,10 @@ export async function action({ request }: ActionArgs) {
   });
 }
 
-export const meta: MetaFunction = () => {
-  return {
+export const meta: V2_MetaFunction = () => {
+  return [{
     title: "Login",
-  };
+  }];
 };
 
 export default function LoginPage() {
@@ -198,9 +198,14 @@ export default function LoginPage() {
   );
 }
 
-export function CatchBoundary() {
-  const caught = useCatch()
-  if (caught.status === 401) {
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  if (error.status === 401) {
     return (
       <div className="h-full">
         <MaxWidth>
@@ -218,11 +223,5 @@ export function CatchBoundary() {
       </div>
     )
   }
-  return <CatchContainer />
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  return (
-    <ErrorContainer error={error} />
-  )
+  return <CatchContainer status={error.status} data={error.data} />
 }

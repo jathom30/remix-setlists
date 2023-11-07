@@ -1,7 +1,7 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Feel, Song } from "@prisma/client";
-import { useFetcher } from "@remix-run/react";
+import { isRouteErrorResponse, useFetcher, useRouteError } from "@remix-run/react";
 import type { ActionArgs, SerializeFrom } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
@@ -77,12 +77,12 @@ export function SongEdit({ song, feels, redirectTo }: { song: SerializeFrom<Song
   )
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  return (
-    <ErrorContainer error={error} />
-  )
-}
-
-export function CatchBoundary() {
-  return <CatchContainer />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

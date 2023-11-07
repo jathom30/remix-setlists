@@ -3,7 +3,7 @@ import { json, redirect } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { CatchContainer, ErrorContainer, FlexList, MaxHeightContainer, MobileModal, MulitSongSelect, Link, SaveButtons, Title, SearchInput } from "~/components";
 import { getSongs } from "~/models/song.server";
-import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
+import { Form, Outlet, isRouteErrorResponse, useLoaderData, useLocation, useNavigate, useParams, useRouteError, useSearchParams, useSubmit } from "@remix-run/react";
 import { createSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
@@ -128,10 +128,12 @@ export default function ManualSetlistCreation() {
   )
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
-}
-
-export function CatchBoundary() {
-  return <CatchContainer />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

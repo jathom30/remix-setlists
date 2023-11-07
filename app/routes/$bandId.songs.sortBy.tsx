@@ -1,4 +1,4 @@
-import { useFetcher, useParams, useSearchParams, useSubmit } from "@remix-run/react";
+import { isRouteErrorResponse, useFetcher, useParams, useRouteError, useSearchParams, useSubmit } from "@remix-run/react";
 import { CatchContainer, ErrorContainer, FlexList, Label, RadioGroup } from "~/components";
 import { sortOptions } from "~/utils/params";
 
@@ -27,10 +27,12 @@ export default function SongsSortBy() {
   )
 }
 
-export function CatchBoundary() {
-  return <CatchContainer />
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

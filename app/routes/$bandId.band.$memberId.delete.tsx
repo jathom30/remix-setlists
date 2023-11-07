@@ -1,4 +1,4 @@
-import { Form, useLoaderData, Link as RemixLink, useParams } from "@remix-run/react";
+import { Form, useLoaderData, Link as RemixLink, useParams, useRouteError, isRouteErrorResponse, } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
@@ -62,12 +62,12 @@ export default function DeleteMember() {
   )
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  return (
-    <ErrorContainer error={error} />
-  )
-}
-
-export function CatchBoundary() {
-  return <CatchContainer />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

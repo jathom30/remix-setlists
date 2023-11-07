@@ -4,7 +4,7 @@ import { json } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { Button, CatchContainer, ErrorContainer, ErrorMessage, FlexList, Input } from "~/components";
 import { deleteBand, getBandName } from "~/models/band.server";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import { Form, isRouteErrorResponse, useActionData, useLoaderData, useRouteError } from "@remix-run/react";
 import type { ChangeEvent } from "react";
 import { useState } from "react";
 import { getFields } from "~/utils/form";
@@ -65,10 +65,12 @@ export default function DeleteBand() {
   )
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
-}
-
-export function CatchBoundary() {
-  return <CatchContainer />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

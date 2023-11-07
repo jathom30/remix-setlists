@@ -1,10 +1,10 @@
 import { Outlet, useLocation, useParams } from "@remix-run/react"
-import type { MetaFunction } from "@remix-run/server-runtime";
+import type { V2_MetaFunction } from "@remix-run/server-runtime";
 import { AvatarTitle, Breadcrumbs, FlexHeader, MaxHeightContainer, MaxWidth, MobileMenu, Navbar } from "~/components"
 
-export const meta: MetaFunction = () => ({
+export const meta: V2_MetaFunction = () => ([{
   title: 'New setlist'
-});
+}]);
 
 const getHeader = (pathname: string) => {
   if (pathname.includes('manual')) {

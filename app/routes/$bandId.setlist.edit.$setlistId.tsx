@@ -2,7 +2,7 @@ import { faGripVertical, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
-import { Outlet, useFetcher, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
+import { Outlet, isRouteErrorResponse, useFetcher, useLoaderData, useLocation, useNavigate, useParams, useRouteError } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { AvatarTitle, Breadcrumbs, CatchContainer, DroppableContainer, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SaveButtons, SongDisplay } from "~/components";
 import { getSetlist } from "~/models/setlist.server";
@@ -10,13 +10,10 @@ import { requireNonSubMember } from "~/session.server";
 import { CSS } from "@dnd-kit/utilities";
 import type { Song } from "@prisma/client";
 import type { UniqueIdentifier, DragEndEvent, DragOverEvent, DragStartEvent, CollisionDetection } from "@dnd-kit/core";
-import { MeasuringStrategy } from "@dnd-kit/core";
-import { closestCenter, pointerWithin, rectIntersection, getFirstCollision, MouseSensor, TouchSensor } from "@dnd-kit/core";
-import { DndContext, KeyboardSensor, useSensor, useSensors, DragOverlay } from "@dnd-kit/core";
+import { closestCenter, pointerWithin, rectIntersection, getFirstCollision, MouseSensor, TouchSensor, MeasuringStrategy, DndContext, KeyboardSensor, useSensor, useSensors, DragOverlay } from "@dnd-kit/core";
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
-import { useCallback, useEffect, useRef } from "react";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { updateSetPosition, updateSetSongs } from "~/models/set.server";
 import { coordinateGetter } from "~/utils/dnd";
 import { getSetLength } from "~/utils/setlists";
@@ -512,9 +509,12 @@ const DraggedSong = ({ isDragging = false, song, listeners }: { isDragging?: boo
   )
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
-}
-export function CatchBoundary() {
-  return <CatchContainer />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

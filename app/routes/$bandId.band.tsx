@@ -1,6 +1,6 @@
-import { Outlet, useLoaderData, useLocation, useNavigate, Link as RemixLink } from "@remix-run/react";
+import { Outlet, useLoaderData, useLocation, useNavigate, Link as RemixLink, useRouteError, isRouteErrorResponse } from "@remix-run/react";
 import { json } from "@remix-run/node"
-import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
+import type { LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { Avatar, AvatarTitle, Badge, CatchContainer, Divider, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar } from "~/components";
 import { getBand } from "~/models/band.server";
@@ -13,9 +13,9 @@ import { getMostRecentFeels } from "~/models/feel.server";
 import pluralize from "pluralize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export const meta: MetaFunction = () => ({
+export const meta: V2_MetaFunction = () => ([{
   title: "Band settings",
-});
+}]);
 
 export async function loader({ request, params }: LoaderArgs) {
   await requireUserId(request)
@@ -185,10 +185,12 @@ export default function BandSettingsPage() {
   )
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
-}
-
-export function CatchBoundary() {
-  return <CatchContainer />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

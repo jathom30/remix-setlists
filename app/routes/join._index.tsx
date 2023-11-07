@@ -1,6 +1,6 @@
-import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import { Form, Link, isRouteErrorResponse, useActionData, useRouteError, useSearchParams } from "@remix-run/react";
 import * as React from "react";
 
 import { getUserId } from "~/session.server";
@@ -85,10 +85,10 @@ export async function action({ request }: ActionArgs) {
   return redirect('verificationSent')
 }
 
-export const meta: MetaFunction = () => {
-  return {
+export const meta: V2_MetaFunction = () => {
+  return [{
     title: "Sign Up",
-  };
+  }];
 };
 
 export default function Join() {
@@ -222,10 +222,12 @@ export default function Join() {
   );
 }
 
-export function CatchBoundary() {
-  return <CatchContainer />
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

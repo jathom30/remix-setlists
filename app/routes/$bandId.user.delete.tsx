@@ -1,4 +1,4 @@
-import { Form, useActionData, useLoaderData, useNavigation } from "@remix-run/react";
+import { Form, isRouteErrorResponse, useActionData, useLoaderData, useNavigation, useRouteError } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/node";
 import type { ChangeEvent } from "react";
@@ -77,9 +77,12 @@ export default function DeleteUser() {
   )
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }
-export function CatchBoundary() {
-  return <CatchContainer />
-} 

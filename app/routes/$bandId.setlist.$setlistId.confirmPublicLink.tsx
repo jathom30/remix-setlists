@@ -1,6 +1,6 @@
 import { faQrcode, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, isRouteErrorResponse, useLoaderData, useRouteError } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
 import { Button, CatchContainer, Collapsible, CopyClick, ErrorContainer, FlexHeader, FlexList, Link, Navbar, SaveButtons, Title } from "~/components";
@@ -113,9 +113,12 @@ export default function ConfirmPublicLink() {
   )
 }
 
-export function CatchBoundary() {
-  return <CatchContainer />
-}
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

@@ -1,9 +1,9 @@
-import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
+import type { LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
-import { Outlet, useLoaderData, useLocation, useNavigate, useParams } from "@remix-run/react";
+import { Outlet, isRouteErrorResponse, useLoaderData, useLocation, useNavigate, useParams, useRouteError } from "@remix-run/react";
 import { AvatarTitle, Breadcrumbs, Button, CatchContainer, Collapsible, CreateNewButton, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SongLink } from "~/components";
 import { faCompress, faDatabase, faEllipsisV, faExpand, faEye } from "@fortawesome/free-solid-svg-icons";
 import { getSetLength } from "~/utils/setlists";
@@ -29,14 +29,14 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ setlist })
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
+export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
-    return {
+    return [{
       title: "Songs",
-    }
+    }]
   }
   const { setlist: { name } } = data
-  return { title: name }
+  return [{ title: name }]
 };
 
 const subRoutes = ['rename', 'edit', 'condensed', 'data', 'delete', 'menu', 'song', 'confirmPublicLink']
@@ -149,10 +149,12 @@ export default function Setlist() {
   )
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
-}
-
-export function CatchBoundary() {
-  return <CatchContainer />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

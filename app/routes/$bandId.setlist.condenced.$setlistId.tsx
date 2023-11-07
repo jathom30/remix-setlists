@@ -1,10 +1,10 @@
-import type { LoaderArgs, MetaFunction } from "@remix-run/server-runtime";
+import type { LoaderArgs, V2_MetaFunction } from "@remix-run/server-runtime";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { AvatarTitle, Breadcrumbs, CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, Label, MaxHeightContainer, MobileMenu, Navbar } from "~/components";
 import { getCondensedSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
-import { useLoaderData, useParams } from "@remix-run/react";
+import { isRouteErrorResponse, useLoaderData, useParams, useRouteError } from "@remix-run/react";
 import pluralize from "pluralize";
 
 export async function loader({ request, params }: LoaderArgs) {
@@ -20,14 +20,14 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ setlist })
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
+export const meta: V2_MetaFunction<typeof loader> = ({ data, params }) => {
   if (!data) {
-    return {
+    return [{
       title: "Songs",
-    }
+    }]
   }
   const { setlist: { name } } = data
-  return { title: name }
+  return [{ title: name }]
 };
 
 export default function CondensedSetlist() {
@@ -81,10 +81,12 @@ export default function CondensedSetlist() {
   )
 }
 
-export function CatchBoundary() {
-  return <CatchContainer />
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }

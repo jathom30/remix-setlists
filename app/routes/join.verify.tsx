@@ -79,25 +79,7 @@ export default function Verifying() {
   )
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  console.log(error)
-  return (
-    <div className="max-w-lg m-auto mt-8">
-      <FlexList pad={4}>
-        <FontAwesomeIcon icon={faCircleXmark} size="5x" />
-        <h1 className="text-center text-2xl font-bold">Oops...</h1>
-        <ItemBox>
-          <FlexList>
-            <p>It looks like this link is either incorrect or too old.</p>
-            <p>If you'd like to request a new email, <Link className="text-blue-500 underline" to="/join/requestVerification">click here</Link>.</p>
-          </FlexList>
-        </ItemBox>
-      </FlexList>
-    </div>
-  )
-}
-
-export function CatchBoundary() {
+export function ErrorBoundary() {
   return (
     <div className="max-w-lg m-auto mt-8">
       <FlexList pad={4}>

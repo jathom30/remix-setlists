@@ -4,7 +4,7 @@ import type { LoaderArgs } from "@remix-run/server-runtime";
 import { getSong } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
 import { getFeels } from "~/models/feel.server";
-import { useLoaderData, useParams } from "@remix-run/react";
+import { isRouteErrorResponse, useLoaderData, useParams, useRouteError } from "@remix-run/react";
 import { SongEdit } from "~/routes/resource.songEdit";
 import { CatchContainer, ErrorContainer } from "~/components";
 
@@ -30,10 +30,12 @@ export default function EditSong() {
   return <SongEdit song={song} feels={feels} redirectTo={`/${bandId}/song/${song.id}`} />
 }
 
-export function CatchBoundary() {
-  return <CatchContainer />
-}
-
-export function ErrorBoundary({ error }: { error: Error }) {
-  return <ErrorContainer error={error} />
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (!isRouteErrorResponse(error)) {
+    return (
+      <ErrorContainer error={error as Error} />
+    )
+  }
+  return <CatchContainer status={error.status} data={error.data} />
 }
