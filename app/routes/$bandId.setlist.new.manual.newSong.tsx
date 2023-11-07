@@ -4,7 +4,7 @@ import { json } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
 import { Navbar, Title } from "~/components";
 import { getFeels } from "~/models/feel.server";
-import { SongNew } from "~/routes/resource/songNew";
+import { SongNew } from "~/routes/$bandId.resource.songNew";
 import { requireNonSubMember } from "~/session.server";
 
 export async function loader({ request, params }: LoaderArgs) {
@@ -17,7 +17,7 @@ export async function loader({ request, params }: LoaderArgs) {
 
 export default function NewSong() {
   const { feels } = useLoaderData<typeof loader>()
-  const { bandId, setlistId } = useParams()
+  const { bandId, setlistId, setId } = useParams()
   return (
     <SongNew
       header={
@@ -26,8 +26,8 @@ export default function NewSong() {
         </Navbar>
       }
       feels={feels}
-      redirectTo={`/${bandId}/setlist/edit/${setlistId}/createSet`}
-      cancelTo={`/${bandId}/setlist/edit/${setlistId}`}
+      redirectTo={`/${bandId}/setlist/edit/${setlistId}/${setId}/addSongs`}
+      cancelTo={`/${bandId}/setlist/edit/${setlistId}/${setId}/addSongs`}
     />
   )
 }

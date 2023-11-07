@@ -14,7 +14,7 @@ import { ErrorMessage } from "./ErrorMessage";
 import type { ChangeEvent } from "react";
 import { useEffect, useState } from "react";
 import { Checkbox } from "./Checkbox";
-import { FeelSelect } from "~/routes/$bandId/resources/FeelSelect";
+import { FeelSelect } from "~/routes/$bandId.resources.FeelSelect";
 import { getTempoColor } from "./TempoIcons";
 import type { handleSongFormData } from "~/models/song.server";
 import { getColor } from "~/utils/tailwindColors";

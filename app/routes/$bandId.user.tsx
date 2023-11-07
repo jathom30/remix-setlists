@@ -1,9 +1,8 @@
 import { faPenToSquare, faPlus, faSignOut, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { json } from "@remix-run/node"
+import { json, redirect } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSubmit } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs, MetaFunction } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
 import { AvatarTitle, Badge, Button, CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar } from "~/components";
 import { getUserWithBands } from "~/models/user.server";
 import { requireUserId } from "~/session.server";

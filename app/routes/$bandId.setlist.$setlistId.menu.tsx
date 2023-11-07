@@ -1,7 +1,6 @@
 import { Form, useParams, useNavigation, useLoaderData } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { Button, FlexList, Link } from "~/components";
 import { cloneSetlist, getSetlist } from "~/models/setlist.server";

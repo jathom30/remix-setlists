@@ -1,6 +1,5 @@
 import type { ChangeEvent } from "react";
-import { useRef } from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button, CatchContainer, ErrorContainer, FlexList } from "~/components";
 
 export default function EditBandAvatarImage() {

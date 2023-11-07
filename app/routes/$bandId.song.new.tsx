@@ -5,7 +5,7 @@ import invariant from "tiny-invariant";
 import { MaxHeightContainer, ErrorContainer, CatchContainer, Breadcrumbs, Navbar, FlexHeader, AvatarTitle, MobileMenu } from "~/components";
 import { requireNonSubMember } from "~/session.server";
 import { getFeels } from '~/models/feel.server';
-import { SongNew } from '~/routes/resource/songNew';
+import { SongNew } from '~/routes/$bandId.resource.songNew';
 
 export async function loader({ request, params }: LoaderArgs) {
   const { bandId } = params

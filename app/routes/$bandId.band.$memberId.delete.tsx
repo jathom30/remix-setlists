@@ -1,7 +1,6 @@
 import { Form, useLoaderData, Link as RemixLink, useParams } from "@remix-run/react";
 import type { ActionArgs, LoaderArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { Button, CatchContainer, ConfirmDelete, ErrorContainer, FlexList } from "~/components";
 import { removeMemberFromBand } from "~/models/usersInBands.server";

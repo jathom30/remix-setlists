@@ -5,7 +5,7 @@ import { getSong } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
 import { getFeels } from "~/models/feel.server";
 import { useLoaderData, useParams } from "@remix-run/react";
-import { SongEdit } from "~/routes/resource/songEdit";
+import { SongEdit } from "~/routes/$bandId.resource.songEdit";
 import { CatchContainer, ErrorContainer } from "~/components";
 
 export async function loader({ request, params }: LoaderArgs) {

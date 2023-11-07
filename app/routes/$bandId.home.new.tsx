@@ -1,6 +1,5 @@
 import type { ActionArgs } from "@remix-run/server-runtime";
-import { json } from "@remix-run/node"
-import { redirect } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node"
 import { createBand } from "~/models/band.server"
 import { requireUserId } from "~/session.server"
 import { Form, useActionData } from "@remix-run/react";
