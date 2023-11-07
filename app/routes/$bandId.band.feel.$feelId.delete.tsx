@@ -1,5 +1,5 @@
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
-import { redirect } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { CatchContainer, ConfirmDelete, ErrorContainer } from "~/components";
@@ -7,7 +7,7 @@ import { deleteFeel, getFeel } from "~/models/feel.server";
 import { requireNonSubMember } from "~/session.server";
 import { Form, isRouteErrorResponse, useLoaderData, useRouteError } from "@remix-run/react";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId, feelId } = params
   invariant(bandId, 'bandId not found')
   invariant(feelId, 'feelId not found')
@@ -22,7 +22,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ feel })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId, feelId } = params
   invariant(bandId, 'bandId not found')
   invariant(feelId, 'feelId not found')

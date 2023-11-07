@@ -1,5 +1,5 @@
 import { Form, useParams, useNavigation, useLoaderData } from "@remix-run/react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { Button, FlexList, Link } from "~/components";
@@ -10,7 +10,7 @@ import { RoleEnum } from "~/utils/enums";
 import { useSpinDelay } from "spin-delay";
 import { faFileSignature, faListOl, faPenToSquare, faShareNodes, faTrash } from "@fortawesome/free-solid-svg-icons";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { setlistId, bandId } = params
   invariant(bandId, 'bandId not found')
   invariant(setlistId, 'setlistId not found')
@@ -23,7 +23,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ setlist })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { setlistId, bandId } = params
   invariant(bandId, 'bandId not found')
   invariant(setlistId, 'setlistId not found')

@@ -1,6 +1,6 @@
 import { faGripVertical, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { ActionArgs, LoaderArgs, SerializeFrom } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs, SerializeFrom } from "@remix-run/node";
 import { json } from '@remix-run/node'
 import { Outlet, isRouteErrorResponse, useFetcher, useLoaderData, useLocation, useNavigate, useParams, useRouteError } from "@remix-run/react";
 import invariant from "tiny-invariant";
@@ -25,7 +25,7 @@ type SetSong = SerializeFrom<{
   song: Song | null;
 }>
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { setlistId, bandId } = params
   invariant(bandId, 'bandId not found')
   invariant(setlistId, 'setlistId not found')
@@ -39,7 +39,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ setlist })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId } = params
   invariant(bandId, 'bandId not found')
   await requireNonSubMember(request, bandId)
@@ -283,7 +283,7 @@ export default function EditSetlist() {
         const newContainers = arrayMove(containers, activeIndex, overIndex);
 
         const formData = { sets: newContainers.join(','), intent: 'sets' }
-        fetcher.submit(formData, { method: 'put', replace: true })
+        fetcher.submit(formData, { method: 'put' })
         return newContainers
       });
       return
@@ -320,12 +320,12 @@ export default function EditSetlist() {
             ),
           }
           const formData = { ...newItems, intent: 'songs' }
-          fetcher.submit(formData, { method: 'put', replace: true })
+          fetcher.submit(formData, { method: 'put' })
           return newItems
         });
       } else {
         const formData = { ...items, intent: 'songs' }
-        fetcher.submit(formData, { method: 'put', replace: true })
+        fetcher.submit(formData, { method: 'put' })
       }
     }
 

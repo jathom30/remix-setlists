@@ -1,4 +1,4 @@
-import type { LoaderArgs, V2_MetaFunction } from "@remix-run/server-runtime";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node"
 import { Form, Outlet, useLoaderData, useLocation, useNavigate, useParams, useSearchParams, useSubmit } from "@remix-run/react";
 import invariant from "tiny-invariant";
@@ -13,11 +13,11 @@ import { capitalizeFirstLetter } from "~/utils/assorted";
 import { requireUserId } from "~/session.server";
 import { useState } from "react";
 
-export const meta: V2_MetaFunction = () => ([{
+export const meta: MetaFunction = () => ([{
   title: "Setlists",
 }]);
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request)
   const bandId = params.bandId
   invariant(bandId, 'bandId not found')

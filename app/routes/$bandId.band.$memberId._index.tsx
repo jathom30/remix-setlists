@@ -1,5 +1,5 @@
 import invariant from "tiny-invariant";
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node"
 import { Button, FlexList, Label, Tabs } from "~/components";
 import { getBand } from "~/models/band.server";
@@ -11,7 +11,7 @@ import { useState } from "react";
 import { updateBandMemberRole } from "~/models/usersInBands.server";
 import { getFields } from "~/utils/form";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId, memberId } = params
   invariant(bandId, 'bandId not found')
   invariant(memberId, 'memberId not found')
@@ -36,7 +36,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ member: memberWithRole, canRemoveAsAdmin })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   await requireUserId(request)
   const { bandId, memberId } = params
   const formData = await request.formData()

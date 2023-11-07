@@ -1,4 +1,4 @@
-import type { LoaderArgs, V2_MetaFunction } from "@remix-run/server-runtime";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { AvatarTitle, Breadcrumbs, CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, Label, MaxHeightContainer, MobileMenu, Navbar } from "~/components";
@@ -7,7 +7,7 @@ import { requireUserId } from "~/session.server";
 import { isRouteErrorResponse, useLoaderData, useParams, useRouteError } from "@remix-run/react";
 import pluralize from "pluralize";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request)
   const { setlistId } = params
   invariant(setlistId, 'setlistId not found')
@@ -20,7 +20,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ setlist })
 }
 
-export const meta: V2_MetaFunction<typeof loader> = ({ data, params }) => {
+export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
   if (!data) {
     return [{
       title: "Songs",

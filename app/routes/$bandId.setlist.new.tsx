@@ -1,8 +1,8 @@
 import { Outlet, useLocation, useParams } from "@remix-run/react"
-import type { V2_MetaFunction } from "@remix-run/server-runtime";
+import type { MetaFunction } from "@remix-run/node";
 import { AvatarTitle, Breadcrumbs, FlexHeader, MaxHeightContainer, MaxWidth, MobileMenu, Navbar } from "~/components"
 
-export const meta: V2_MetaFunction = () => ([{
+export const meta: MetaFunction = () => ([{
   title: 'New setlist'
 }]);
 

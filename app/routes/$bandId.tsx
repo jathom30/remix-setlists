@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/server-runtime";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node"
 import { MainSidebar, MaxHeightContainer } from "~/components"
 import { requireUserId } from "~/session.server"
@@ -8,7 +8,7 @@ import { getMemberRole } from "~/models/usersInBands.server";
 import invariant from "tiny-invariant";
 import { getBandHome, getBands } from "~/models/band.server";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await requireUserId(request)
   const { bandId } = params
   invariant(bandId, 'bandId not found')

@@ -2,7 +2,7 @@ import { faChevronLeft, faEnvelope, faKey } from "@fortawesome/free-solid-svg-ic
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Form, useActionData } from "@remix-run/react"
 import { json } from "@remix-run/node";
-import type { ActionArgs } from "@remix-run/server-runtime"
+import type { ActionFunctionArgs } from "@remix-run/node"
 import { Button, ErrorMessage, Field, FlexList, Input, ItemBox, Link } from "~/components"
 import { validateEmail } from "~/utils"
 import invariant from 'tiny-invariant';
@@ -10,7 +10,7 @@ import { generateTokenLink, getUserByEmail } from '~/models/user.server';
 import { passwordReset } from '~/email/password';
 import { getDomainUrl } from '~/utils/assorted';
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData()
   const email = formData.get('email')
   invariant(process.env.SENDGRID_API_KEY, 'sendgrid api key must be set')

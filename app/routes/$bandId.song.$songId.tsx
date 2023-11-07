@@ -1,7 +1,7 @@
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { Outlet, isRouteErrorResponse, useLoaderData, useLocation, useNavigate, useParams, useRouteError } from "@remix-run/react";
 import { json } from '@remix-run/node'
-import type { LoaderArgs, V2_MetaFunction } from "@remix-run/server-runtime";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { AvatarTitle, Breadcrumbs, CatchContainer, CreateNewButton, ErrorContainer, FlexHeader, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SongDetails } from "~/components";
 import { getSong } from "~/models/song.server";
@@ -9,7 +9,7 @@ import { requireUserId } from "~/session.server";
 import { RoleEnum } from "~/utils/enums";
 import { useMemberRole } from "~/utils";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request)
   const { songId, bandId } = params
   invariant(songId, 'songId not found')
@@ -24,7 +24,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ song, setlists })
 }
 
-export const meta: V2_MetaFunction<typeof loader> = ({ data, params }) => {
+export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
   if (!data) {
     return [{
       title: "Songs",

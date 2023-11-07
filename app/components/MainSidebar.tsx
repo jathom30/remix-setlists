@@ -3,7 +3,7 @@ import { faCheck, faListOl, faMusic, faPlus, faSignOut, faSort, faUser, faUsers 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import type { BandIcon } from "@prisma/client"
 import { Popover } from 'react-tiny-popover'
-import type { SerializeFrom } from "@remix-run/server-runtime"
+import type { SerializeFrom } from "@remix-run/node"
 import { AnimatePresence, motion } from "framer-motion"
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";

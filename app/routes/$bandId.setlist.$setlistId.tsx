@@ -1,4 +1,4 @@
-import type { LoaderArgs, V2_MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { getSetlist } from "~/models/setlist.server";
@@ -14,7 +14,7 @@ import { Popover } from "react-tiny-popover";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request)
 
   const { setlistId, bandId } = params
@@ -29,7 +29,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ setlist })
 }
 
-export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
   if (!data) {
     return [{
       title: "Songs",

@@ -1,7 +1,7 @@
 import { faQrcode, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Form, isRouteErrorResponse, useLoaderData, useRouteError } from "@remix-run/react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
 import { Button, CatchContainer, Collapsible, CopyClick, ErrorContainer, FlexHeader, FlexList, Link, Navbar, SaveButtons, Title } from "~/components";
 import { requireUserId } from "~/session.server";
@@ -12,7 +12,7 @@ import { useState } from "react";
 import { useThemeColor } from "~/hooks";
 import { QRCode } from "react-qrcode-logo";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request)
   const { setlistId, bandId } = params
   invariant(setlistId, 'setlistId not found')
@@ -29,7 +29,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ setlist, ...(setlist.isPublic ? { setlistPublicUrl } : null) })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   await requireUserId(request)
   const { bandId, setlistId } = params
   invariant(bandId, 'bandId not found')

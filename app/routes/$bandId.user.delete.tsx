@@ -1,5 +1,5 @@
 import { Form, isRouteErrorResponse, useActionData, useLoaderData, useNavigation, useRouteError } from "@remix-run/react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import type { ChangeEvent } from "react";
 import { useState } from "react";
@@ -12,12 +12,12 @@ import { deleteBand, getBand } from "~/models/band.server";
 import { RoleEnum } from "~/utils/enums";
 import { useSpinDelay } from "spin-delay";
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const user = await requireUser(request)
   return json({ userEmail: user?.email })
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const user = await requireUser(request)
   const formData = await request.formData()
   const email = formData.get('email')

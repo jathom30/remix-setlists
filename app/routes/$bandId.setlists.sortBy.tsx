@@ -1,11 +1,11 @@
 import { Form, isRouteErrorResponse, useRouteError, useSearchParams, useSubmit } from "@remix-run/react";
-import type { ActionArgs } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { redirect } from "@remix-run/node"
 import { CatchContainer, ErrorContainer, FlexList, Label, RadioGroup } from "~/components";
 import { requireUserId } from "~/session.server";
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   await requireUserId(request)
   const { bandId } = params
   invariant(bandId, 'bandId not found')

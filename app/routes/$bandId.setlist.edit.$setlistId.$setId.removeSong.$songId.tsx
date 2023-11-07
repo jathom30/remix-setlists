@@ -1,12 +1,12 @@
 import { Form, isRouteErrorResponse, useParams, useRouteError } from "@remix-run/react";
-import type { ActionArgs } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { CatchContainer, ConfirmDelete, ErrorContainer } from "~/components";
 import { requireNonSubMember } from "~/session.server";
 import { removeSongFromSet } from "~/models/set.server";
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { songId, setlistId, bandId, setId } = params
   invariant(songId, 'songId not found')
   invariant(setlistId, 'setlistId not found')

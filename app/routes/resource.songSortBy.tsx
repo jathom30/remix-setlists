@@ -1,9 +1,9 @@
-import type { ActionArgs } from "@remix-run/server-runtime";
-import { redirect } from "@remix-run/server-runtime"
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node"
 import invariant from "tiny-invariant"
 import { requireUserId } from "~/session.server"
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   await requireUserId(request)
   const formData = await request.formData()
   const redirectTo = formData.get('redirectTo')?.toString()

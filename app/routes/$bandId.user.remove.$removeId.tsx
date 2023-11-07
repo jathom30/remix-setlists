@@ -1,6 +1,6 @@
 import { Form, Link, useLoaderData, useParams } from "@remix-run/react";
 import { redirect, json } from "@remix-run/node";
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { Button, ConfirmDelete, ErrorContainer, FlexList } from "~/components";
 import { removeMemberFromBand } from "~/models/usersInBands.server";
@@ -8,7 +8,7 @@ import { requireUserId } from "~/session.server";
 import { getBand } from "~/models/band.server";
 import { RoleEnum } from "~/utils/enums";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request)
   const userId = await requireUserId(request)
   const { bandId, removeId } = params
@@ -28,7 +28,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ canRemoveMember })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
   const { removeId, bandId } = params
   invariant(removeId, 'removeId not found')

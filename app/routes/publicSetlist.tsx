@@ -1,5 +1,5 @@
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-import type { LoaderArgs, V2_MetaFunction, SerializeFrom } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction, SerializeFrom } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { isRouteErrorResponse, useLoaderData, useLocation, useRouteError } from "@remix-run/react";
 import pluralize from "pluralize";
@@ -7,7 +7,7 @@ import invariant from "tiny-invariant";
 import { CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, Label, Link, MaxHeightContainer, MaxWidth, Navbar, Title } from "~/components";
 import { getPublicSetlist } from "~/models/setlist.server";
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const urlSearchParams = (new URL(request.url)).searchParams
   const setlistId = urlSearchParams.get('setlistId')
   invariant(setlistId, 'setlistId not found')
@@ -16,7 +16,7 @@ export async function loader({ request }: LoaderArgs) {
   return json({ setlist })
 }
 
-export const meta: V2_MetaFunction<typeof loader> = ({ data, params }) => {
+export const meta: MetaFunction<typeof loader> = ({ data, params }) => {
   if (!data) {
     return [{
       title: "Setlist",

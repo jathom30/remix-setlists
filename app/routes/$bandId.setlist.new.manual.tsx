@@ -1,4 +1,4 @@
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { CatchContainer, ErrorContainer, FlexList, MaxHeightContainer, MobileModal, MulitSongSelect, Link, SaveButtons, Title, SearchInput } from "~/components";
@@ -10,7 +10,7 @@ import { faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
 import { sortByLabel } from "~/utils/params";
 import { useState } from "react";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId } = params
   invariant(bandId)
   await requireNonSubMember(request, bandId)
@@ -37,7 +37,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ songs })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId } = params
   invariant(bandId, 'bandId not found')
   await requireNonSubMember(request, bandId)

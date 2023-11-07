@@ -1,6 +1,6 @@
 import { Form, useActionData } from "@remix-run/react";
 import { json, redirect } from "@remix-run/node";
-import type { ActionArgs } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs } from "@remix-run/node";
 import { FlexList, ItemBox, Label, MaxHeightContainer, SaveButtons, Input, Checkbox, ErrorMessage, Field, RadioGroup } from "~/components";
 import { getFields } from "~/utils/form";
 import invariant from "tiny-invariant";
@@ -13,7 +13,7 @@ type AutoFormType = {
   excludeBallads?: string;
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId } = params
   invariant(bandId, 'bandId not found')
   const formData = await request.formData()

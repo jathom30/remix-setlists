@@ -1,6 +1,6 @@
 import invariant from "tiny-invariant";
 import { json } from '@remix-run/node'
-import type { LoaderArgs } from "@remix-run/server-runtime";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import { getSong } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
 import { getFeels } from "~/models/feel.server";
@@ -8,7 +8,7 @@ import { isRouteErrorResponse, useLoaderData, useParams, useRouteError } from "@
 import { SongEdit } from "~/routes/resource.songEdit";
 import { CatchContainer, ErrorContainer } from "~/components";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { songId, bandId } = params
   invariant(songId, 'songId not found')
   invariant(bandId, 'bandId not found')

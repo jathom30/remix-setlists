@@ -1,5 +1,5 @@
 import { Form, isRouteErrorResponse, useActionData, useLoaderData, useRouteError } from "@remix-run/react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { HexColorPicker } from "react-colorful"
 import { json, redirect } from "@remix-run/node";
 import { CatchContainer, ErrorContainer, ErrorMessage, Field, FlexList, Input, SaveButtons } from "~/components";
@@ -9,7 +9,7 @@ import invariant from "tiny-invariant";
 import { useState } from "react";
 import { contrastColor } from "~/utils/assorted";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId, feelId } = params
   invariant(bandId, 'bandId not found')
   invariant(feelId, 'feelId not found')
@@ -21,7 +21,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ feel })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId, feelId } = params
   invariant(bandId, 'bandId not found')
   invariant(feelId, 'feelId not found')

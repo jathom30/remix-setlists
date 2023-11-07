@@ -1,5 +1,5 @@
 import { Form, useLoaderData, useSearchParams, useSubmit } from "@remix-run/react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node"
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"
 import { json, redirect } from "@remix-run/node"
 import invariant from "tiny-invariant";
 import { FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MulitSongSelect, SaveButtons, SearchInput, Title } from "~/components";
@@ -9,7 +9,7 @@ import { createSet } from "~/models/set.server";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId, setlistId } = params
   invariant(bandId, 'bandId not found')
   invariant(setlistId, 'setlistId not found')
@@ -28,7 +28,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ songs })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { setlistId, bandId } = params
   invariant(bandId, 'bandId not found')
   invariant(setlistId, 'setlistId not found')

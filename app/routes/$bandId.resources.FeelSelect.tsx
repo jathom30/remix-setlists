@@ -1,4 +1,4 @@
-import type { ActionArgs, SerializeFrom } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs, SerializeFrom } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { createFeel } from "~/models/feel.server";
@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { useFetcher, useParams } from "@remix-run/react";
 import { getColor } from "~/utils/tailwindColors";
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId } = params
   invariant(bandId, 'bandId not found')
   await requireNonSubMember(request, bandId)

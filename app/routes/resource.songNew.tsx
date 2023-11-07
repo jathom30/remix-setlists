@@ -1,6 +1,6 @@
 import type { Feel } from "@prisma/client";
 import { isRouteErrorResponse, useFetcher, useParams, useRouteError } from "@remix-run/react";
-import type { ActionArgs, SerializeFrom } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs, SerializeFrom } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { CatchContainer, ErrorContainer, MaxHeightContainer, MaxWidth, SaveButtons, SongForm } from "~/components";
@@ -9,7 +9,7 @@ import { requireNonSubMember } from "~/session.server";
 import type { ReactNode } from "react";
 import { deleteLink, upsertLink } from "~/models/links.server";
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData()
   const bandId = formData.get('bandId')?.toString()
   const redirectTo = formData.get('redirectTo')?.toString()

@@ -1,6 +1,6 @@
 import { isRouteErrorResponse, useLoaderData, useParams, useRouteError } from "@remix-run/react";
-import type { LoaderArgs } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime"
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node"
 import invariant from "tiny-invariant"
 import { CatchContainer, ErrorContainer } from "~/components";
 import { getFeels } from "~/models/feel.server"
@@ -8,7 +8,7 @@ import { getSong } from "~/models/song.server"
 import { SongEdit } from "~/routes/resource.songEdit";
 import { requireNonSubMember } from "~/session.server"
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { songId, bandId } = params
   invariant(songId, 'songId not found')
   invariant(bandId, 'bandId not found')

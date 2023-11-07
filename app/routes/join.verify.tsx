@@ -1,4 +1,4 @@
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { compareToken, getUserById, verifyUser } from "~/models/user.server";
@@ -12,7 +12,7 @@ import { deleteToken } from "~/models/token.server";
 import { decrypt } from "~/utils/encryption.server";
 import { useSpinDelay } from "spin-delay";
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url)
   const urlSearchParams = url.searchParams
   const token = urlSearchParams.get('token')
@@ -35,7 +35,7 @@ export async function loader({ request }: LoaderArgs) {
   return null
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const url = new URL(request.url)
   const urlSearchParams = url.searchParams
   const token = urlSearchParams.get('token')

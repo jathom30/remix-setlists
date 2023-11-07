@@ -1,4 +1,4 @@
-import type { LoaderArgs, V2_MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { motion, useAnimation, useInView } from "framer-motion";
 import type { ReactNode } from "react";
@@ -10,7 +10,7 @@ import dataMetricScreen from '~/assets/mobileSetData.png'
 import membersScreen from '~/assets/mobileMembers.png'
 import songScreen from '~/assets/songSample.png'
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getUserId(request)
   // redirect user if logged in
   if (userId) {
@@ -19,7 +19,7 @@ export async function loader({ request }: LoaderArgs) {
   return null
 }
 
-export const meta: V2_MetaFunction = () => ([{
+export const meta: MetaFunction = () => ([{
   title: "Welcome!",
 }]);
 

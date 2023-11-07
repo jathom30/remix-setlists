@@ -1,5 +1,5 @@
 import type { Song } from "@prisma/client"
-import type { SerializeFrom } from "@remix-run/server-runtime"
+import type { SerializeFrom } from "@remix-run/node"
 import { FlexList } from "./FlexList"
 import { SongDisplay } from "./SongDisplay"
 import { hoverAndFocusContainerStyles } from "~/styleUtils"

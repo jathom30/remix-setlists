@@ -1,6 +1,6 @@
 import { Outlet, useLoaderData, useLocation, useNavigate, Link as RemixLink, useRouteError, isRouteErrorResponse } from "@remix-run/react";
 import { json } from "@remix-run/node"
-import type { LoaderArgs, V2_MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { Avatar, AvatarTitle, Badge, CatchContainer, Divider, ErrorContainer, FeelTag, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar } from "~/components";
 import { getBand } from "~/models/band.server";
@@ -13,11 +13,11 @@ import { getMostRecentFeels } from "~/models/feel.server";
 import pluralize from "pluralize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export const meta: V2_MetaFunction = () => ([{
+export const meta: MetaFunction = () => ([{
   title: "Band settings",
 }]);
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request)
   const bandId = params.bandId
   invariant(bandId, 'bandId not found')

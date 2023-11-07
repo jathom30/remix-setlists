@@ -1,4 +1,4 @@
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect, json } from '@remix-run/node'
 import invariant from "tiny-invariant";
 import { FlexList, Input, Label, SaveButtons } from "~/components";
@@ -8,7 +8,7 @@ import { getFields } from "~/utils/form";
 import { getSetlist, updateSetlist } from "~/models/setlist.server";
 import { ErrorMessage } from "~/components/ErrorMessage";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { setlistId, bandId } = params
   invariant(setlistId, 'setlistId not found')
   invariant(bandId, 'bandId not found')
@@ -22,7 +22,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ setlist })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId, setlistId } = params
   invariant(bandId, 'bandId not found')
   invariant(setlistId, 'setlistId not found')

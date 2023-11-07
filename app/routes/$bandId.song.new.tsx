@@ -1,5 +1,5 @@
 import { json } from '@remix-run/node'
-import type { LoaderArgs, V2_MetaFunction } from "@remix-run/server-runtime";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { isRouteErrorResponse, useLoaderData, useParams, useRouteError } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { MaxHeightContainer, ErrorContainer, CatchContainer, Breadcrumbs, Navbar, FlexHeader, AvatarTitle, MobileMenu } from "~/components";
@@ -7,7 +7,7 @@ import { requireNonSubMember } from "~/session.server";
 import { getFeels } from '~/models/feel.server';
 import { SongNew } from '~/routes/resource.songNew';
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId } = params
   invariant(bandId, 'bandId not found')
   await requireNonSubMember(request, bandId)
@@ -15,7 +15,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ feels })
 }
 
-export const meta: V2_MetaFunction = () => ([{
+export const meta: MetaFunction = () => ([{
   title: 'New song'
 }]);
 

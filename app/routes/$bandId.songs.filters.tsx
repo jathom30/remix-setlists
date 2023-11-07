@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Feel } from "@prisma/client";
 import { json } from "@remix-run/node"
 import { useFetcher, useLoaderData, useLocation, useParams, useSearchParams, useSubmit } from "@remix-run/react";
-import type { LoaderArgs, SerializeFrom } from "@remix-run/server-runtime";
+import type { LoaderFunctionArgs, SerializeFrom } from "@remix-run/node";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import Select from "react-select";
@@ -14,7 +14,7 @@ import { requireUserId } from "~/session.server";
 import { capitalizeFirstLetter } from "~/utils/assorted";
 import { getColor } from "~/utils/tailwindColors";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request)
   const { bandId } = params
   invariant(bandId, 'bandId not found')

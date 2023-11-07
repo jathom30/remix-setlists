@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/server-runtime";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { FlexHeader, FlexList, Label, Link, MaxHeightContainer, Navbar, PieChart, RatioBar, TempoWave } from "~/components";
 import invariant from "tiny-invariant";
@@ -7,7 +7,7 @@ import { useLoaderData } from "@remix-run/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-export async function loader({ params }: LoaderArgs) {
+export async function loader({ params }: LoaderFunctionArgs) {
   const { setId } = params
   invariant(setId, 'setId not found')
   const setMetrics = await getSetMetrics(setId)

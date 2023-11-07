@@ -23,8 +23,18 @@ export const AddBand = ({ onSubmit, onClose }: { onSubmit: () => void; onClose: 
 
   // Close modal when either form has been successfully submitted
   useEffect(() => {
-    const codeSubmittedSuccessfully = codeFetcher.type === "actionRedirect"
-    const newSubmittedSuccessfully = newFetcher.type === "actionRedirect"
+    const codeSubmittedSuccessfully =
+      codeFetcher.state === "loading" &&
+      codeFetcher.formMethod != null &&
+      codeFetcher.formMethod != "GET" &&
+      // If we have no data we must have redirected
+      codeFetcher.data == null;
+    const newSubmittedSuccessfully =
+      newFetcher.state === "loading" &&
+      newFetcher.formMethod != null &&
+      newFetcher.formMethod != "GET" &&
+      // If we have no data we must have redirected
+      newFetcher.data == null;
 
     if (codeSubmittedSuccessfully || newSubmittedSuccessfully) {
       onSubmit()

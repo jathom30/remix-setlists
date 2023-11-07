@@ -1,12 +1,12 @@
 import { faSignOut, faUser } from "@fortawesome/free-solid-svg-icons";
 import { Form, useLoaderData } from "@remix-run/react";
-import type { LoaderArgs } from "@remix-run/server-runtime";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Button, FlexList, Link, TextOverflow } from "~/components";
 import { getUserBands } from "~/models/usersInBands.server";
 import { requireUser } from "~/session.server";
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const user = await requireUser(request)
   const bands = await getUserBands(user.id)
   if (!bands.length) {

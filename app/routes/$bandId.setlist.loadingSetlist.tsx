@@ -1,4 +1,4 @@
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
 import { isRouteErrorResponse, useLoaderData, useParams, useRouteError, useSubmit } from "@remix-run/react";
 import { motion } from "framer-motion";
@@ -8,7 +8,7 @@ import { AvatarTitle, Breadcrumbs, CatchContainer, ErrorContainer, FlexHeader, F
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId } = params
   invariant(bandId, 'bandId not found')
   const url = new URL(request.url)
@@ -24,7 +24,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ setlist })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId } = params
   invariant(bandId, 'bandId not found')
   const url = new URL(request.url)

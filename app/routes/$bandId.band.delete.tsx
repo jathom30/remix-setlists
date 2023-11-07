@@ -1,5 +1,5 @@
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
-import { redirect } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { Button, CatchContainer, ErrorContainer, ErrorMessage, FlexList, Input } from "~/components";
@@ -11,7 +11,7 @@ import { getFields } from "~/utils/form";
 import { requireAdminMember } from "~/session.server";
 import { deleteImage } from "~/models/cloudinary.server";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId } = params
   invariant(bandId, 'bandId not found')
   await requireAdminMember(request, bandId)
@@ -24,7 +24,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ bandName: bandName.name })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId } = params
   invariant(bandId, 'bandId not found')
   await requireAdminMember(request, bandId)

@@ -1,7 +1,7 @@
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { useLoaderData } from "@remix-run/react";
-import type { LoaderArgs } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime"
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node"
 import invariant from "tiny-invariant"
 import { FlexHeader, Link, MaxHeightContainer, Navbar, SongDetails, Title } from "~/components";
 import { getSong } from "~/models/song.server"
@@ -9,7 +9,7 @@ import { requireUserId } from "~/session.server"
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request)
   const { songId, bandId } = params
   invariant(songId, 'songId not found')

@@ -1,6 +1,6 @@
 import { faBoxOpen, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { NavLink, Outlet, useLoaderData, useLocation, useNavigate, useNavigation } from "@remix-run/react";
 import { useSpinDelay } from "spin-delay";
@@ -8,7 +8,7 @@ import { Avatar, Badge, CreateNewButton, FlexHeader, FlexList, Link, Loader, Max
 import { getBands } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request)
   const bands = await getBands(userId)
 

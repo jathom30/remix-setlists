@@ -1,4 +1,4 @@
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Button, CatchContainer, Collapsible, CopyClick, ErrorContainer, FlexList, Label } from "~/components";
 import { requireAdminMember } from "~/session.server";
@@ -11,7 +11,7 @@ import { QRCode } from 'react-qrcode-logo';
 import { getDomainUrl } from "~/utils/assorted";
 import { useThemeColor } from "~/hooks";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const bandId = params.bandId
   invariant(bandId, 'bandId not found')
   await requireAdminMember(request, bandId)
@@ -27,7 +27,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ band, qrCodeAddress })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const bandId = params.bandId
   invariant(bandId, 'bandId not found')
   await requireAdminMember(request, bandId)

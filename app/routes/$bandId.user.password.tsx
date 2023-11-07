@@ -1,5 +1,5 @@
 import { Form, useActionData } from "@remix-run/react";
-import type { ActionArgs } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useState } from "react";
 import invariant from "tiny-invariant";
@@ -8,7 +8,7 @@ import { requireUserId } from "~/session.server";
 import { getPasswordError, passwordStrength } from "~/utils/assorted";
 import { updateUserPassword } from "~/models/user.server";
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const userId = await requireUserId(request)
   const { bandId } = params
   invariant(bandId, 'bandId not found')

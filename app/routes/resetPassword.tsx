@@ -1,7 +1,7 @@
 import { faChevronLeft, faCircleXmark, faKey } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Form, useActionData, useLoaderData, Link as RemixLink, useNavigation } from "@remix-run/react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Button, ErrorMessage, Field, FlexList, Input, ItemBox, Link, PasswordStrength } from "~/components";
 import { compareToken, getUserById, updateUser, updateUserPassword } from "~/models/user.server";
@@ -12,7 +12,7 @@ import { getPasswordError, passwordStrength } from "~/utils/assorted";
 import { decrypt } from "~/utils/encryption.server";
 import { useSpinDelay } from "spin-delay";
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url)
   const urlSearchParams = url.searchParams
   const token = urlSearchParams.get('token')
@@ -33,7 +33,7 @@ export async function loader({ request }: LoaderArgs) {
   return json({ email: user.email })
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const url = new URL(request.url)
   const urlSearchParams = url.searchParams
   const id = urlSearchParams.get('id')

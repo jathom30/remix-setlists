@@ -1,5 +1,5 @@
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node"
 import { Form, useLoaderData, useNavigation, useSearchParams, useSubmit } from "@remix-run/react";
 import { useState } from "react";
@@ -10,7 +10,7 @@ import { addSongsToSet } from "~/models/set.server";
 import { getSongsNotInSetlist } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
 
-export async function loader({ request, params }: LoaderArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId, setlistId } = params
   invariant(bandId, 'bandId not found')
   invariant(setlistId, 'setlistId not found')
@@ -28,7 +28,7 @@ export async function loader({ request, params }: LoaderArgs) {
   return json({ songs })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { setId, bandId, setlistId } = params
   invariant(setId, 'setId not found')
   invariant(bandId, 'bandId not found')

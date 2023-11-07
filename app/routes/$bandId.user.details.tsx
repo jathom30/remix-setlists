@@ -1,5 +1,5 @@
 import { Form, useLoaderData } from "@remix-run/react";
-import type { ActionArgs, LoaderArgs } from "@remix-run/server-runtime";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Field, FlexList, Input, SaveButtons } from "~/components";
 import { requireUser } from "~/session.server";
@@ -7,13 +7,13 @@ import { validateEmail } from "~/utils";
 import { updateUser } from "~/models/user.server";
 import invariant from "tiny-invariant";
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const user = await requireUser(request)
 
   return json({ user })
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const user = await requireUser(request)
   const { bandId } = params
   invariant(bandId, 'bandId not found')

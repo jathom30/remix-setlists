@@ -1,6 +1,6 @@
 import { faSave } from "@fortawesome/free-solid-svg-icons";
 import { Form, Outlet, isRouteErrorResponse, useLocation, useNavigate, useNavigation, useRouteError } from "@remix-run/react";
-import type { ActionArgs, UploadHandler } from "@remix-run/node";
+import type { ActionFunctionArgs, UploadHandler } from "@remix-run/node";
 import { unstable_composeUploadHandlers, unstable_createMemoryUploadHandler, unstable_parseMultipartFormData, redirect } from "@remix-run/node";
 import { useSpinDelay } from "spin-delay";
 import invariant from "tiny-invariant";
@@ -9,7 +9,7 @@ import { updateBandIcon } from "~/models/bandIcon.server";
 import { uploadImage } from "~/models/cloudinary.server";
 import { requireAdminMember } from "~/session.server";
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId } = params
   invariant(bandId, 'bandId not found')
   await requireAdminMember(request, bandId)

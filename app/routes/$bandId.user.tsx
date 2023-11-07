@@ -2,17 +2,17 @@ import { faPenToSquare, faPlus, faSignOut, faTrash } from "@fortawesome/free-sol
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json, redirect } from "@remix-run/node"
 import { Form, Outlet, isRouteErrorResponse, useLoaderData, useLocation, useNavigate, useParams, useRouteError, useSubmit } from "@remix-run/react";
-import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { AvatarTitle, Badge, Button, CatchContainer, Divider, ErrorContainer, FlexHeader, FlexList, ItemBox, Label, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar } from "~/components";
 import { getUserWithBands } from "~/models/user.server";
 import { requireUserId } from "~/session.server";
 import { capitalizeFirstLetter } from "~/utils/assorted";
 
-export const meta: V2_MetaFunction = () => ([{
+export const meta: MetaFunction = () => ([{
   title: "User settings",
 }]);
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUserWithBands(request)
 
   if (!user) {
@@ -21,7 +21,7 @@ export async function loader({ request }: LoaderArgs) {
   return json({ user })
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   await requireUserId(request)
 
   const formData = await request.formData()
