@@ -6,8 +6,7 @@ import { Popover } from 'react-tiny-popover'
 import type { SerializeFrom } from "@remix-run/server-runtime"
 import { AnimatePresence, motion } from "framer-motion"
 import type { ReactNode } from "react";
-import { useEffect } from "react";
-import { useState } from "react"
+import { useEffect, useState } from "react";
 import { useUser } from "~/utils"
 import { Avatar } from "./Avatar"
 import { Badge } from "./Badge"

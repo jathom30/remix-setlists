@@ -4,7 +4,7 @@ import { json } from "@remix-run/server-runtime";
 import invariant from "tiny-invariant";
 import { Navbar, Title } from "~/components";
 import { getFeels } from "~/models/feel.server";
-import { SongNew } from "~/routes/$bandId.resource.songNew";
+import { SongNew } from "~/routes/resource.songNew";
 import { requireNonSubMember } from "~/session.server";
 
 export async function loader({ request, params }: LoaderArgs) {
