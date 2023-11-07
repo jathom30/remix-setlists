@@ -109,6 +109,7 @@ jobs:
           wait-on: http://localhost:8811
         env:
           PORT: 8811
+          MAGIC_LINK_SECRET: "_my_super_secret_"
 
   deploy:
     name: 🚀 Deploy
