@@ -1,37 +1,42 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, isRouteErrorResponse, useLoaderData, useRouteError } from "@remix-run/react";
+import {
+  Form,
+  isRouteErrorResponse,
+  useLoaderData,
+  useRouteError,
+} from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { CatchContainer, ConfirmDelete, ErrorContainer } from "~/components";
 import { deleteSong, getSong } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { songId, bandId } = params
-  invariant(songId, 'songId not found')
-  invariant(bandId, 'bandId not found')
-  await requireNonSubMember(request, bandId)
+  const { songId, bandId } = params;
+  invariant(songId, "songId not found");
+  invariant(bandId, "bandId not found");
+  await requireNonSubMember(request, bandId);
 
-  const response = await getSong(songId, bandId, true)
-  const song = response?.song
+  const response = await getSong(songId, bandId, true);
+  const song = response?.song;
   if (!song) {
-    throw new Response('Song not found', { status: 404 })
+    throw new Response("Song not found", { status: 404 });
   }
-  return json({ song })
+  return json({ song });
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { songId, bandId } = params
-  invariant(songId, 'songId not found')
-  invariant(bandId, 'bandId not found')
-  await requireNonSubMember(request, bandId)
+  const { songId, bandId } = params;
+  invariant(songId, "songId not found");
+  invariant(bandId, "bandId not found");
+  await requireNonSubMember(request, bandId);
 
-  await deleteSong(songId)
-  return redirect(`/${bandId}/songs`)
+  await deleteSong(songId);
+  return redirect(`/${bandId}/songs`);
 }
 
 export default function DeleteSong() {
-  const { song } = useLoaderData<typeof loader>()
+  const { song } = useLoaderData<typeof loader>();
 
   return (
     <Form method="delete">
@@ -41,15 +46,13 @@ export default function DeleteSong() {
         cancelTo=".."
       />
     </Form>
-  )
+  );
 }
 
 export function ErrorBoundary() {
   const error = useRouteError();
   if (!isRouteErrorResponse(error)) {
-    return (
-      <ErrorContainer error={error as Error} />
-    )
+    return <ErrorContainer error={error as Error} />;
   }
-  return <CatchContainer status={error.status} data={error.data} />
+  return <CatchContainer status={error.status} data={error.data} />;
 }

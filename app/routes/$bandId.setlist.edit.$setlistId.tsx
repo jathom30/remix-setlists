@@ -1,17 +1,70 @@
 import { faGripVertical, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { ActionFunctionArgs, LoaderFunctionArgs, SerializeFrom } from "@remix-run/node";
-import { json } from '@remix-run/node'
-import { Outlet, isRouteErrorResponse, useFetcher, useLoaderData, useLocation, useNavigate, useParams, useRouteError } from "@remix-run/react";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  SerializeFrom,
+} from "@remix-run/node";
+import { json } from "@remix-run/node";
+import {
+  Outlet,
+  isRouteErrorResponse,
+  useFetcher,
+  useLoaderData,
+  useLocation,
+  useNavigate,
+  useParams,
+  useRouteError,
+} from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { AvatarTitle, Breadcrumbs, CatchContainer, DroppableContainer, ErrorContainer, FlexHeader, FlexList, Link, MaxHeightContainer, MaxWidth, MobileMenu, MobileModal, Navbar, SaveButtons, SongDisplay } from "~/components";
+import {
+  AvatarTitle,
+  Breadcrumbs,
+  CatchContainer,
+  DroppableContainer,
+  ErrorContainer,
+  FlexHeader,
+  FlexList,
+  Link,
+  MaxHeightContainer,
+  MaxWidth,
+  MobileMenu,
+  MobileModal,
+  Navbar,
+  SaveButtons,
+  SongDisplay,
+} from "~/components";
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
 import { CSS } from "@dnd-kit/utilities";
 import type { Song } from "@prisma/client";
-import type { UniqueIdentifier, DragEndEvent, DragOverEvent, DragStartEvent, CollisionDetection } from "@dnd-kit/core";
-import { closestCenter, pointerWithin, rectIntersection, getFirstCollision, MouseSensor, TouchSensor, MeasuringStrategy, DndContext, KeyboardSensor, useSensor, useSensors, DragOverlay } from "@dnd-kit/core";
-import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import type {
+  UniqueIdentifier,
+  DragEndEvent,
+  DragOverEvent,
+  DragStartEvent,
+  CollisionDetection,
+} from "@dnd-kit/core";
+import {
+  closestCenter,
+  pointerWithin,
+  rectIntersection,
+  getFirstCollision,
+  MouseSensor,
+  TouchSensor,
+  MeasuringStrategy,
+  DndContext,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { restrictToFirstScrollableAncestor } from "@dnd-kit/modifiers";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { updateSetPosition, updateSetSongs } from "~/models/set.server";
@@ -23,84 +76,99 @@ type SetSong = SerializeFrom<{
   positionInSet: number;
   setId: string;
   song: Song | null;
-}>
+}>;
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { setlistId, bandId } = params
-  invariant(bandId, 'bandId not found')
-  invariant(setlistId, 'setlistId not found')
-  await requireNonSubMember(request, bandId)
+  const { setlistId, bandId } = params;
+  invariant(bandId, "bandId not found");
+  invariant(setlistId, "setlistId not found");
+  await requireNonSubMember(request, bandId);
 
-  const setlist = await getSetlist(setlistId)
+  const setlist = await getSetlist(setlistId);
 
   if (!setlist) {
-    throw new Response("Setlist not found", { status: 404 })
+    throw new Response("Setlist not found", { status: 404 });
   }
-  return json({ setlist })
+  return json({ setlist });
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { bandId } = params
-  invariant(bandId, 'bandId not found')
-  await requireNonSubMember(request, bandId)
-  const formData = await request.formData()
+  const { bandId } = params;
+  invariant(bandId, "bandId not found");
+  await requireNonSubMember(request, bandId);
+  const formData = await request.formData();
 
-  const intent = formData.get('intent')?.toString()
+  const intent = formData.get("intent")?.toString();
 
-  if (intent === 'songs') {
-    const entries = Object.fromEntries(formData.entries())
+  if (intent === "songs") {
+    const entries = Object.fromEntries(formData.entries());
     // remove intent from entries before hitting DB
-    const setIds = Object.keys(entries).filter(entryKey => entryKey !== 'intent')
-    const updatedSets = await Promise.all(setIds.map(async (key) => {
-      const songIds = entries[key].toString().split(',')
-      return await updateSetSongs(key, songIds)
-    }))
-    return updatedSets
+    const setIds = Object.keys(entries).filter(
+      (entryKey) => entryKey !== "intent",
+    );
+    const updatedSets = await Promise.all(
+      setIds.map(async (key) => {
+        const songIds = entries[key].toString().split(",");
+        return await updateSetSongs(key, songIds);
+      }),
+    );
+    return updatedSets;
   }
 
-  if (intent === 'sets') {
-    const sets = formData.get('sets')?.toString().split(',')
-    if (!sets) return null
-    const updatedSets = await Promise.all(sets.map(async (setId, i) => {
-      return await updateSetPosition(setId, i)
-    }))
-    return updatedSets
+  if (intent === "sets") {
+    const sets = formData.get("sets")?.toString().split(",");
+    if (!sets) return null;
+    const updatedSets = await Promise.all(
+      sets.map(async (setId, i) => {
+        return await updateSetPosition(setId, i);
+      }),
+    );
+    return updatedSets;
   }
 
-  return null
+  return null;
 }
 
-const subRoutes = ['addSongs', 'newSong', 'removeSong', 'createSet', 'createSong', 'saveChanges', 'confirmCancel']
+const subRoutes = [
+  "addSongs",
+  "newSong",
+  "removeSong",
+  "createSet",
+  "createSong",
+  "saveChanges",
+  "confirmCancel",
+];
 
 type Items = Record<UniqueIdentifier, UniqueIdentifier[]>;
-export const TRASH_ID = 'void';
-const PLACEHOLDER_ID = 'placeholder';
-
+export const TRASH_ID = "void";
+const PLACEHOLDER_ID = "placeholder";
 
 export default function EditSetlist() {
-  const fetcher = useFetcher()
-  const { setlist } = useLoaderData<typeof loader>()
-  const { bandId } = useParams()
-  const { pathname } = useLocation()
-  const navigate = useNavigate()
-  const [isOpenSets, setIsOpenSets] = useState(true)
+  const fetcher = useFetcher();
+  const { setlist } = useLoaderData<typeof loader>();
+  const { bandId } = useParams();
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const [isOpenSets, setIsOpenSets] = useState(true);
 
   const keySets = setlist.sets.reduce((acc, set) => {
     return {
       ...acc,
-      [set.id]: set.songs.map(song => song.songId),
-    }
-  }, {} as Items)
+      [set.id]: set.songs.map((song) => song.songId),
+    };
+  }, {} as Items);
 
   const getLengthOfSet = (setId: UniqueIdentifier) => {
-    const set = setlist.sets.find(set => set.id === setId)
-    if (!set) return
-    return getSetLength(set.songs)
-  }
+    const set = setlist.sets.find((set) => set.id === setId);
+    if (!set) return;
+    return getSetLength(set.songs);
+  };
 
-  const [items, setItems] = useState(keySets)
-  const [containers, setContainers] = useState(Object.keys(keySets) as UniqueIdentifier[])
-  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null)
+  const [items, setItems] = useState(keySets);
+  const [containers, setContainers] = useState(
+    Object.keys(keySets) as UniqueIdentifier[],
+  );
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const lastOverId = useRef<UniqueIdentifier | null>(null);
   const recentlyMovedToNewContainer = useRef(false);
   const isSortingContainer = activeId && containers.includes(activeId);
@@ -120,7 +188,7 @@ export default function EditSetlist() {
         return closestCenter({
           ...args,
           droppableContainers: args.droppableContainers.filter(
-            (container) => container.id in items
+            (container) => container.id in items,
           ),
         });
       }
@@ -130,9 +198,9 @@ export default function EditSetlist() {
       const intersections =
         pointerIntersections.length > 0
           ? // If there are droppables intersecting with the pointer, return those
-          pointerIntersections
+            pointerIntersections
           : rectIntersection(args);
-      let overId = getFirstCollision(intersections, 'id');
+      let overId = getFirstCollision(intersections, "id");
 
       if (overId != null) {
         if (overId === TRASH_ID) {
@@ -152,7 +220,7 @@ export default function EditSetlist() {
               droppableContainers: args.droppableContainers.filter(
                 (container) =>
                   container.id !== overId &&
-                  containerItems.includes(container.id)
+                  containerItems.includes(container.id),
               ),
             })[0]?.id;
           }
@@ -174,7 +242,7 @@ export default function EditSetlist() {
       // If no droppable is matched, return the last match
       return lastOverId.current ? [{ id: lastOverId.current }] : [];
     },
-    [activeId, items]
+    [activeId, items],
   );
 
   const [clonedItems, setClonedItems] = useState<Items | null>(null);
@@ -183,7 +251,7 @@ export default function EditSetlist() {
     useSensor(TouchSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter,
-    })
+    }),
   );
 
   const findContainer = (id: UniqueIdentifier) => {
@@ -246,7 +314,7 @@ export default function EditSetlist() {
             over &&
             active.rect.current.translated &&
             active.rect.current.translated.top >
-            over.rect.top + over.rect.height;
+              over.rect.top + over.rect.height;
 
           const modifier = isBelowOverItem ? 1 : 0;
 
@@ -259,20 +327,20 @@ export default function EditSetlist() {
         return {
           ...items,
           [activeContainer]: items[activeContainer].filter(
-            (item) => item !== active.id
+            (item) => item !== active.id,
           ),
           [overContainer]: [
             ...items[overContainer].slice(0, newIndex),
             items[activeContainer][activeIndex],
             ...items[overContainer].slice(
               newIndex,
-              items[overContainer].length
+              items[overContainer].length,
             ),
           ],
         };
       });
     }
-  }
+  };
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id in items && over?.id) {
@@ -282,11 +350,11 @@ export default function EditSetlist() {
 
         const newContainers = arrayMove(containers, activeIndex, overIndex);
 
-        const formData = { sets: newContainers.join(','), intent: 'sets' }
-        fetcher.submit(formData, { method: 'put' })
-        return newContainers
+        const formData = { sets: newContainers.join(","), intent: "sets" };
+        fetcher.submit(formData, { method: "put" });
+        return newContainers;
       });
-      return
+      return;
     }
 
     const activeContainer = findContainer(active.id);
@@ -316,27 +384,27 @@ export default function EditSetlist() {
             [overContainer]: arrayMove(
               items[overContainer],
               activeIndex,
-              overIndex
+              overIndex,
             ),
-          }
-          const formData = { ...newItems, intent: 'songs' }
-          fetcher.submit(formData, { method: 'put' })
-          return newItems
+          };
+          const formData = { ...newItems, intent: "songs" };
+          fetcher.submit(formData, { method: "put" });
+          return newItems;
         });
       } else {
-        const formData = { ...items, intent: 'songs' }
-        fetcher.submit(formData, { method: 'put' })
+        const formData = { ...items, intent: "songs" };
+        fetcher.submit(formData, { method: "put" });
       }
     }
 
-    setIsOpenSets(true)
+    setIsOpenSets(true);
     setActiveId(null);
-  }
+  };
 
   const getSong = (id: UniqueIdentifier) => {
-    const allSongs = setlist.sets.map(set => set.songs).flat()
-    return allSongs.find(song => song.songId === id)
-  }
+    const allSongs = setlist.sets.map((set) => set.songs).flat();
+    return allSongs.find((song) => song.songId === id);
+  };
 
   return (
     <MaxHeightContainer
@@ -350,11 +418,13 @@ export default function EditSetlist() {
             </FlexHeader>
           </Navbar>
           <Navbar shrink>
-            <Breadcrumbs breadcrumbs={[
-              { label: 'Setlists', to: `/${bandId}/setlists` },
-              { label: setlist.name, to: `/${bandId}/setlist/${setlist.id}` },
-              { label: 'Edit', to: '.' },
-            ]} />
+            <Breadcrumbs
+              breadcrumbs={[
+                { label: "Setlists", to: `/${bandId}/setlists` },
+                { label: setlist.name, to: `/${bandId}/setlist/${setlist.id}` },
+                { label: "Edit", to: "." },
+              ]}
+            />
           </Navbar>
         </>
       }
@@ -367,7 +437,11 @@ export default function EditSetlist() {
               cancelTo="confirmCancel"
             />
           </MaxWidth>
-          <MobileModal isPortal open={subRoutes.some(route => pathname.includes(route))} onClose={() => navigate('.')}>
+          <MobileModal
+            isPortal
+            open={subRoutes.some((route) => pathname.includes(route))}
+            onClose={() => navigate(".")}
+          >
             <Outlet />
           </MobileModal>
         </>
@@ -389,7 +463,11 @@ export default function EditSetlist() {
           onDragEnd={handleDragEnd}
           onDragCancel={onDragCancel}
         >
-          <SortableContext id={setlist.id} items={[...containers, PLACEHOLDER_ID]} strategy={verticalListSortingStrategy}>
+          <SortableContext
+            id={setlist.id}
+            items={[...containers, PLACEHOLDER_ID]}
+            strategy={verticalListSortingStrategy}
+          >
             {containers.map((containerId, i) => (
               <DroppableContainer
                 key={containerId}
@@ -402,8 +480,11 @@ export default function EditSetlist() {
                 length={getLengthOfSet(containerId) || 0}
               >
                 <FlexList gap={2} pad={4}>
-                  <SortableContext items={items[containerId]} strategy={verticalListSortingStrategy}>
-                    {items[containerId]?.map(itemId => (
+                  <SortableContext
+                    items={items[containerId]}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {items[containerId]?.map((itemId) => (
                       <SortableSong
                         key={itemId}
                         id={itemId}
@@ -412,7 +493,12 @@ export default function EditSetlist() {
                     ))}
                     {items[containerId].length === 0 ? (
                       <div className="bg-base-300 rounded">
-                        <FlexList pad={4} direction="row" items="center" justify="center">
+                        <FlexList
+                          pad={4}
+                          direction="row"
+                          items="center"
+                          justify="center"
+                        >
                           <span>This empty set will be deleted upon save</span>
                         </FlexList>
                       </div>
@@ -434,26 +520,42 @@ export default function EditSetlist() {
               />
             ) : null}
             {isSongContainer ? (
-              <SongOverlay song={getSong(activeId || '')} />
+              <SongOverlay song={getSong(activeId || "")} />
             ) : null}
           </DragOverlay>
         </DndContext>
         <FlexList pad={4}>
-          <Link to={`createSet?position=${containers.length}`}>Create new set</Link>
+          <Link to={`createSet?position=${containers.length}`}>
+            Create new set
+          </Link>
         </FlexList>
       </MaxWidth>
     </MaxHeightContainer>
-  )
+  );
 }
 
 const SongOverlay = ({ song }: { song?: SetSong }) => {
-  if (!song) { return null }
-  return (
-    <DraggedSong song={song} />
-  )
-}
+  if (!song) {
+    return null;
+  }
+  return <DraggedSong song={song} />;
+};
 
-const SetOverlay = ({ length, index, id, items, onPointerDown, onPointerUp }: { length: number; index: number; id: UniqueIdentifier; items: UniqueIdentifier[], onPointerDown: () => void, onPointerUp: () => void }) => {
+const SetOverlay = ({
+  length,
+  index,
+  id,
+  items,
+  onPointerDown,
+  onPointerUp,
+}: {
+  length: number;
+  index: number;
+  id: UniqueIdentifier;
+  items: UniqueIdentifier[];
+  onPointerDown: () => void;
+  onPointerUp: () => void;
+}) => {
   return (
     <DroppableContainer
       id={id}
@@ -464,17 +566,23 @@ const SetOverlay = ({ length, index, id, items, onPointerDown, onPointerUp }: { 
       isOpen={false}
       length={length}
     />
-  )
-}
+  );
+};
 
-const SortableSong = ({ id, song }: { id: UniqueIdentifier; song?: SetSong }) => {
+const SortableSong = ({
+  id,
+  song,
+}: {
+  id: UniqueIdentifier;
+  song?: SetSong;
+}) => {
   const {
     attributes,
     isDragging,
     listeners,
     setNodeRef,
     transform,
-    transition
+    transition,
   } = useSortable({ id });
 
   const itemStyle = {
@@ -483,38 +591,59 @@ const SortableSong = ({ id, song }: { id: UniqueIdentifier; song?: SetSong }) =>
     cursor: "default",
   };
 
-  if (!song) { return null }
+  if (!song) {
+    return null;
+  }
 
   return (
     <div style={itemStyle} ref={setNodeRef} {...attributes}>
       <DraggedSong isDragging={isDragging} song={song} listeners={listeners} />
     </div>
-  )
-}
+  );
+};
 
-const DraggedSong = ({ isDragging = false, song, listeners }: { isDragging?: boolean; song: SetSong; listeners?: any }) => {
+const DraggedSong = ({
+  isDragging = false,
+  song,
+  listeners,
+}: {
+  isDragging?: boolean;
+  song: SetSong;
+  listeners?: any;
+}) => {
   return (
-    <div className={`relative overflow-hidden rounded bg-base-100 ${isDragging ? 'bg-base-300' : ''}`}>
+    <div
+      className={`relative overflow-hidden rounded bg-base-100 ${
+        isDragging ? "bg-base-300" : ""
+      }`}
+    >
       <FlexList pad={2} direction="row" items="center">
-        <div className={`btn btn-circle btn-sm cursor-grab`} {...listeners} tabIndex={-1}>
+        <div
+          className={`btn btn-circle btn-sm cursor-grab`}
+          {...listeners}
+          tabIndex={-1}
+        >
           <FontAwesomeIcon icon={faGripVertical} />
         </div>
         {song.song ? <SongDisplay song={song.song} width="half" /> : null}
-        <Link kind="error" size="sm" isRounded to={`${song.setId}/removeSong/${song.songId}`}>
+        <Link
+          kind="error"
+          size="sm"
+          isRounded
+          to={`${song.setId}/removeSong/${song.songId}`}
+        >
           <FontAwesomeIcon icon={faTrash} />
         </Link>
       </FlexList>
       {isDragging ? <div className="absolute inset-0 bg-base-300" /> : null}
     </div>
-  )
-}
+  );
+};
 
 export function ErrorBoundary() {
   const error = useRouteError();
   if (!isRouteErrorResponse(error)) {
-    return (
-      <ErrorContainer error={error as Error} />
-    )
+    return <ErrorContainer error={error as Error} />;
   }
-  return <CatchContainer status={error.status} data={error.data} />
+  return <CatchContainer status={error.status} data={error.data} />;
 }

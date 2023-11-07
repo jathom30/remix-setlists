@@ -8,7 +8,7 @@ export let loader: LoaderFunction = () => {
       short_name: "Setlists",
       name: "Setlists",
       start_url: "/home",
-      backgroundColor: '#000000',
+      backgroundColor: "#000000",
       display: "standalone",
       shortcuts: [
         {
@@ -64,7 +64,7 @@ export let loader: LoaderFunction = () => {
         },
         {
           src: "/icons/safari-pinned-tab.svg",
-          color: '#000000',
+          color: "#000000",
           type: "image/svg",
         },
       ],

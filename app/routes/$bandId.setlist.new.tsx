@@ -1,26 +1,36 @@
-import { Outlet, useLocation, useParams } from "@remix-run/react"
+import { Outlet, useLocation, useParams } from "@remix-run/react";
 import type { MetaFunction } from "@remix-run/node";
-import { AvatarTitle, Breadcrumbs, FlexHeader, MaxHeightContainer, MaxWidth, MobileMenu, Navbar } from "~/components"
+import {
+  AvatarTitle,
+  Breadcrumbs,
+  FlexHeader,
+  MaxHeightContainer,
+  MaxWidth,
+  MobileMenu,
+  Navbar,
+} from "~/components";
 
-export const meta: MetaFunction = () => ([{
-  title: 'New setlist'
-}]);
+export const meta: MetaFunction = () => [
+  {
+    title: "New setlist",
+  },
+];
 
 const getHeader = (pathname: string) => {
-  if (pathname.includes('manual')) {
-    return 'Manual'
+  if (pathname.includes("manual")) {
+    return "Manual";
   }
-  if (pathname.includes('auto')) {
-    return 'Auto-magical'
+  if (pathname.includes("auto")) {
+    return "Auto-magical";
   }
-  return 'New'
-}
+  return "New";
+};
 
 export default function NewSetlist() {
-  const { bandId } = useParams()
-  const { pathname } = useLocation()
+  const { bandId } = useParams();
+  const { pathname } = useLocation();
 
-  const isNewBase = getHeader(pathname) === 'New'
+  const isNewBase = getHeader(pathname) === "New";
   return (
     <MaxHeightContainer
       fullHeight
@@ -33,11 +43,18 @@ export default function NewSetlist() {
             </FlexHeader>
           </Navbar>
           <Navbar shrink>
-            <Breadcrumbs breadcrumbs={[
-              { label: 'Setlists', to: `/${bandId}/setlists` },
-              { label: 'New', to: isNewBase ? '.' : `/${bandId}/setlist/new` },
-              ...(!isNewBase ? [{ label: getHeader(pathname), to: '.' }] : [])
-            ]} />
+            <Breadcrumbs
+              breadcrumbs={[
+                { label: "Setlists", to: `/${bandId}/setlists` },
+                {
+                  label: "New",
+                  to: isNewBase ? "." : `/${bandId}/setlist/new`,
+                },
+                ...(!isNewBase
+                  ? [{ label: getHeader(pathname), to: "." }]
+                  : []),
+              ]}
+            />
           </Navbar>
         </>
       }
@@ -46,5 +63,5 @@ export default function NewSetlist() {
         <Outlet />
       </MaxWidth>
     </MaxHeightContainer>
-  )
+  );
 }

@@ -6,8 +6,8 @@ import { useBandIcon } from "~/utils";
 import { contrastColor } from "~/utils/assorted";
 
 export default function ColorSelect() {
-  const bandIcon = useBandIcon()
-  const [color, setColor] = useState(bandIcon?.icon.backgroundColor || '');
+  const bandIcon = useBandIcon();
+  const [color, setColor] = useState(bandIcon?.icon.backgroundColor || "");
 
   return (
     <FlexList>
@@ -23,15 +23,13 @@ export default function ColorSelect() {
       <input hidden type="hidden" name="color" defaultValue={color} />
       <input hidden type="hidden" name="intent" defaultValue="color" />
     </FlexList>
-  )
+  );
 }
 
 export function ErrorBoundary() {
   const error = useRouteError();
   if (!isRouteErrorResponse(error)) {
-    return (
-      <ErrorContainer error={error as Error} />
-    )
+    return <ErrorContainer error={error as Error} />;
   }
-  return <CatchContainer status={error.status} data={error.data} />
+  return <CatchContainer status={error.status} data={error.data} />;
 }

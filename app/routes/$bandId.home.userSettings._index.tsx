@@ -9,7 +9,9 @@ export default function UserSettings() {
         <FlexList>
           <Form action="/logout" method="post">
             <FlexList>
-              <Button size="md" type="submit" icon={faSignOut}>Sign out</Button>
+              <Button size="md" type="submit" icon={faSignOut}>
+                Sign out
+              </Button>
             </FlexList>
           </Form>
         </FlexList>
@@ -21,12 +23,17 @@ export default function UserSettings() {
           <ItemBox>
             <FlexList>
               <span className="font-bold">Delete your account</span>
-              <p className="text-sm text-text-subdued">Deleting this account is a perminant action and cannot be undone.</p>
-              <Link to="delete" kind="error">Delete account</Link>
+              <p className="text-sm text-text-subdued">
+                Deleting this account is a perminant action and cannot be
+                undone.
+              </p>
+              <Link to="delete" kind="error">
+                Delete account
+              </Link>
             </FlexList>
           </ItemBox>
         </FlexList>
       </FlexList>
     </>
-  )
+  );
 }

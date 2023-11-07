@@ -3,18 +3,15 @@ module.exports = {
   content: ["./app/**/*.{ts,tsx,jsx,js}"],
   theme: {
     fontFamily: {
-      'sans': ['Poppins', 'sans-serif'],
+      sans: ["Poppins", "sans-serif"],
     },
     extend: {
       borderWidth: {
-        1: '1px'
+        1: "1px",
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-    require('daisyui'),
-  ],
+  plugins: [require("@tailwindcss/typography"), require("daisyui")],
   // daisyUI config (optional)
   daisyui: {
     styled: true,

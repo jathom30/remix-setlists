@@ -1,32 +1,32 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node"
-import { MainSidebar, MaxHeightContainer } from "~/components"
-import { requireUserId } from "~/session.server"
-import { Outlet, useLoaderData } from "@remix-run/react"
+import { json } from "@remix-run/node";
+import { MainSidebar, MaxHeightContainer } from "~/components";
+import { requireUserId } from "~/session.server";
+import { Outlet, useLoaderData } from "@remix-run/react";
 
 import { getMemberRole } from "~/models/usersInBands.server";
 import invariant from "tiny-invariant";
 import { getBandHome, getBands } from "~/models/band.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const userId = await requireUserId(request)
-  const { bandId } = params
-  invariant(bandId, 'bandId not found')
+  const userId = await requireUserId(request);
+  const { bandId } = params;
+  invariant(bandId, "bandId not found");
   const [band, memberRole, bands] = await Promise.all([
-    getBandHome(bandId), getMemberRole(bandId, userId), getBands(userId)
-  ])
+    getBandHome(bandId),
+    getMemberRole(bandId, userId),
+    getBands(userId),
+  ]);
   // used in useMemberRole hook in child routes
-  return json({ band, memberRole, bands })
+  return json({ band, memberRole, bands });
 }
 
 export default function BandRoute() {
-  const { memberRole, band, bands } = useLoaderData<typeof loader>()
+  const { memberRole, band, bands } = useLoaderData<typeof loader>();
 
   return (
     <MaxHeightContainer
-      footer={
-        <div id="menu-portal" aria-hidden />
-      }
+      footer={<div id="menu-portal" aria-hidden />}
       fullHeight
     >
       <div className="h-full sm:flex">
@@ -42,5 +42,5 @@ export default function BandRoute() {
         </div>
       </div>
     </MaxHeightContainer>
-  )
+  );
 }

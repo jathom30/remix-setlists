@@ -8,25 +8,23 @@ async function seed() {
   const email = "rachel@remix.run";
 
   // cleanup the existing database
-  await prisma.user.delete({ where: { email } }).catch(() => {
-
-  })
+  await prisma.user.delete({ where: { email } }).catch(() => {});
 
   const hashedPassword = await bcrypt.hash("racheliscool", 10);
 
-  const bandIconBackgroundColor = `#000000`
+  const bandIconBackgroundColor = `#000000`;
   const band = await prisma.band.create({
     data: {
-      name: 'Starter Band',
-      code: '123ABC',
+      name: "Starter Band",
+      code: "123ABC",
       icon: {
         create: {
           backgroundColor: bandIconBackgroundColor,
-          textColor: contrastColor(bandIconBackgroundColor)
-        }
-      }
+          textColor: contrastColor(bandIconBackgroundColor),
+        },
+      },
     },
-  })
+  });
 
   await prisma.user.create({
     data: {
@@ -36,103 +34,103 @@ async function seed() {
           hash: hashedPassword,
         },
       },
-      name: 'Rachel',
+      name: "Rachel",
       verified: true,
       bands: {
         // created band above, here created connection between band and user
         create: [
           {
-            role: 'ADMIN',
+            role: "ADMIN",
             band: {
               connect: {
                 id: band.id,
-              }
+              },
             },
-            bandName: band.name
-          }
-        ]
-      }
+            bandName: band.name,
+          },
+        ],
+      },
     },
   });
 
   const setlist = await prisma.setlist.create({
     data: {
-      name: 'My First Setlist',
-      bandId: band.id
-    }
-  })
+      name: "My First Setlist",
+      bandId: band.id,
+    },
+  });
 
   const set = await prisma.set.create({
     data: {
       setlistId: setlist.id,
-      positionInSetlist: 0
-    }
-  })
+      positionInSetlist: 0,
+    },
+  });
   const songOne = await prisma.song.create({
     data: {
-      name: 'Song One',
+      name: "Song One",
       length: 3,
-      keyLetter: 'Db',
+      keyLetter: "Db",
       isMinor: true,
       tempo: 2,
-      position: 'opener',
-      rank: 'include',
+      position: "opener",
+      rank: "include",
       sets: {
-        create: [{
-          positionInSet: 0,
-          set: {
-            connect: { id: set.id }
-          }
-        }]
+        create: [
+          {
+            positionInSet: 0,
+            set: {
+              connect: { id: set.id },
+            },
+          },
+        ],
       },
       bandId: band.id,
-    }
-  })
+    },
+  });
   await prisma.song.create({
     data: {
-      name: 'Song Two',
+      name: "Song Two",
       length: 4,
       tempo: 3,
-      position: 'closer',
-      rank: 'no_preference',
+      position: "closer",
+      rank: "no_preference",
       sets: {
-        create: [{
-          positionInSet: 1,
-          set: {
-            connect: { id: set.id }
-          }
-        }]
+        create: [
+          {
+            positionInSet: 1,
+            set: {
+              connect: { id: set.id },
+            },
+          },
+        ],
       },
       bandId: band.id,
       isCover: true,
-    }
-  })
+    },
+  });
 
   await prisma.feel.create({
     data: {
-      label: 'Swing',
-      color: '#2a9d8f',
+      label: "Swing",
+      color: "#2a9d8f",
       bandId: band.id,
       songs: {
-        connect: [
-          { id: songOne.id }
-        ]
-      }
-    }
-  })
+        connect: [{ id: songOne.id }],
+      },
+    },
+  });
 
   await prisma.feel.create({
     data: {
-      label: 'Rock',
-      color: '#080808',
+      label: "Rock",
+      color: "#080808",
       bandId: band.id,
       songs: {
-        connect: [
-          { id: songOne.id }
-        ]
-      }
-    }
-  })
+        connect: [{ id: songOne.id }],
+      },
+    },
+  });
 
   console.log(`Database has been seeded. 🌱`);
 }
@@ -145,4 +143,3 @@ seed()
   .finally(async () => {
     await prisma.$disconnect();
   });
-

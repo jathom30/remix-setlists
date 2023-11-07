@@ -17,7 +17,7 @@ const DEFAULT_REDIRECT = "/";
  */
 export function safeRedirect(
   to: FormDataEntryValue | string | null | undefined,
-  defaultRedirect: string = DEFAULT_REDIRECT
+  defaultRedirect: string = DEFAULT_REDIRECT,
 ) {
   if (!to || typeof to !== "string") {
     return defaultRedirect;
@@ -60,22 +60,22 @@ export function useOptionalUser(): User | undefined {
 }
 
 function isMemberRole(role: any): role is RoleEnum {
-  return role && typeof role === 'string'
+  return role && typeof role === "string";
 }
 
 export function useMemberRole(): RoleEnum {
-  const data = useMatchesData('routes/$bandId')
+  const data = useMatchesData("routes/$bandId");
   if (!data || !isMemberRole(data.memberRole)) {
-    return RoleEnum.SUB
+    return RoleEnum.SUB;
   }
-  return data.memberRole
+  return data.memberRole;
 }
 
 export function useUser(): User {
   const maybeUser = useOptionalUser();
   if (!maybeUser) {
     throw new Error(
-      "No user found in root loader, but user is required by useUser. If user is optional, try useOptionalUser instead."
+      "No user found in root loader, but user is required by useUser. If user is optional, try useOptionalUser instead.",
     );
   }
   return maybeUser;
@@ -85,13 +85,19 @@ export function validateEmail(email: unknown): email is string {
   return typeof email === "string" && email.length > 3 && email.includes("@");
 }
 
-const isBand = (data: any): data is { band: { icon: SerializeFrom<BandIcon>; name: string } } => {
-  return data?.band?.icon as BandIcon !== undefined
-}
+const isBand = (
+  data: any,
+): data is { band: { icon: SerializeFrom<BandIcon>; name: string } } => {
+  return (data?.band?.icon as BandIcon) !== undefined;
+};
 
 export function useBandIcon() {
-  const data = useMatchesData('routes/$bandId')
-  if (!data) { return }
-  if (!isBand(data)) { return }
-  return { icon: data.band.icon, bandName: data.band.name }
+  const data = useMatchesData("routes/$bandId");
+  if (!data) {
+    return;
+  }
+  if (!isBand(data)) {
+    return;
+  }
+  return { icon: data.band.icon, bandName: data.band.name };
 }

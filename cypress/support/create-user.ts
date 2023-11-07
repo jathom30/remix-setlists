@@ -20,8 +20,8 @@ async function createAndLogin(email: string) {
     throw new Error("All test emails must end in @example.com");
   }
 
-  const user = await createUser(email, "myreallystrongpassword", 'Test user');
-  await verifyUser(user.id)
+  const user = await createUser(email, "myreallystrongpassword", "Test user");
+  await verifyUser(user.id);
 
   const response = await createUserSession({
     request: new Request("test://test"),
@@ -42,7 +42,7 @@ async function createAndLogin(email: string) {
 <cookie>
   ${parsedCookie.__session}
 </cookie>
-  `.trim()
+  `.trim(),
   );
 }
 

@@ -9,10 +9,12 @@ export default function AvatarBase() {
       <Navbar>
         <FlexHeader>
           <Title>Band icon</Title>
-          <Link kind="ghost" to=".."><FontAwesomeIcon icon={faTimes} /></Link>
+          <Link kind="ghost" to="..">
+            <FontAwesomeIcon icon={faTimes} />
+          </Link>
         </FlexHeader>
       </Navbar>
       <Outlet />
     </div>
-  )
+  );
 }

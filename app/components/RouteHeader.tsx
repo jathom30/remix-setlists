@@ -1,11 +1,21 @@
-import { useNavigation } from "@remix-run/react"
-import type { ReactNode } from "react"
+import { useNavigation } from "@remix-run/react";
+import type { ReactNode } from "react";
 import { useSpinDelay } from "spin-delay";
-import { Spinner } from "./Spinner"
+import { Spinner } from "./Spinner";
 
-export const RouteHeader = ({ action, desktopAction, mobileChildren, desktopChildren }: { desktopAction?: ReactNode; mobileChildren?: ReactNode; desktopChildren?: ReactNode; action?: ReactNode }) => {
-  const navigation = useNavigation()
-  const isTransitioning = useSpinDelay(navigation.state !== 'idle')
+export const RouteHeader = ({
+  action,
+  desktopAction,
+  mobileChildren,
+  desktopChildren,
+}: {
+  desktopAction?: ReactNode;
+  mobileChildren?: ReactNode;
+  desktopChildren?: ReactNode;
+  action?: ReactNode;
+}) => {
+  const navigation = useNavigation();
+  const isTransitioning = useSpinDelay(navigation.state !== "idle");
   return (
     <>
       <div className="bg-slate-400 h-14 flex p-2 items-center justify-between w-full sm:hidden">
@@ -23,5 +33,5 @@ export const RouteHeader = ({ action, desktopAction, mobileChildren, desktopChil
         {desktopAction}
       </div>
     </>
-  )
-}
+  );
+};

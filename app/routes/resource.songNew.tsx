@@ -1,68 +1,87 @@
 import type { Feel } from "@prisma/client";
-import { isRouteErrorResponse, useFetcher, useParams, useRouteError } from "@remix-run/react";
+import {
+  isRouteErrorResponse,
+  useFetcher,
+  useParams,
+  useRouteError,
+} from "@remix-run/react";
 import type { ActionFunctionArgs, SerializeFrom } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { CatchContainer, ErrorContainer, MaxHeightContainer, MaxWidth, SaveButtons, SongForm } from "~/components";
+import {
+  CatchContainer,
+  ErrorContainer,
+  MaxHeightContainer,
+  MaxWidth,
+  SaveButtons,
+  SongForm,
+} from "~/components";
 import { createSong, handleSongFormData } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
 import type { ReactNode } from "react";
 import { deleteLink, upsertLink } from "~/models/links.server";
 
 export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData()
-  const bandId = formData.get('bandId')?.toString()
-  const redirectTo = formData.get('redirectTo')?.toString()
-  invariant(bandId, 'bandId not found')
+  const formData = await request.formData();
+  const bandId = formData.get("bandId")?.toString();
+  const redirectTo = formData.get("redirectTo")?.toString();
+  invariant(bandId, "bandId not found");
 
-  await requireNonSubMember(request, bandId)
+  await requireNonSubMember(request, bandId);
 
-  const { formFields, errors, validFeels, links, deletedLinks } = handleSongFormData(formData)
+  const { formFields, errors, validFeels, links, deletedLinks } =
+    handleSongFormData(formData);
 
   if (errors) {
-    return json({ errors })
+    return json({ errors });
   }
-  const song = await createSong(bandId, formFields, validFeels)
+  const song = await createSong(bandId, formFields, validFeels);
 
   await Promise.all([
-    ...links.map(async link => {
-      return await upsertLink({ href: link.href, songId: song.id }, link.id)
+    ...links.map(async (link) => {
+      return await upsertLink({ href: link.href, songId: song.id }, link.id);
     }),
-    ...(deletedLinks.length > 0 ? deletedLinks.map(async deletedId => {
-      return await deleteLink(deletedId)
-    }) : [])
-  ])
-
+    ...(deletedLinks.length > 0
+      ? deletedLinks.map(async (deletedId) => {
+          return await deleteLink(deletedId);
+        })
+      : []),
+  ]);
 
   if (!redirectTo) {
-    return redirect(`/${bandId}/song/${song.id}`)
+    return redirect(`/${bandId}/song/${song.id}`);
   }
-  return redirect(redirectTo)
+  return redirect(redirectTo);
 }
 
-export function SongNew({ feels, header, redirectTo, cancelTo }: { feels: SerializeFrom<Feel>[]; redirectTo?: string; cancelTo: string; header?: ReactNode }) {
-  const fetcher = useFetcher<typeof action>()
-  const { bandId } = useParams()
+export function SongNew({
+  feels,
+  header,
+  redirectTo,
+  cancelTo,
+}: {
+  feels: SerializeFrom<Feel>[];
+  redirectTo?: string;
+  cancelTo: string;
+  header?: ReactNode;
+}) {
+  const fetcher = useFetcher<typeof action>();
+  const { bandId } = useParams();
 
   return (
     <fetcher.Form method="post" action="/resource/songNew">
       <MaxHeightContainer
         fullHeight
         header={header}
-        footer={
-          <SaveButtons
-            saveLabel="Create song"
-            cancelTo={cancelTo}
-          />
-        }
+        footer={<SaveButtons saveLabel="Create song" cancelTo={cancelTo} />}
       >
         <MaxWidth>
           <div className="bg-base-200">
             <SongForm
               feels={feels}
               song={{
-                position: 'other',
-                rank: 'no_preference'
+                position: "other",
+                rank: "no_preference",
               }}
               errors={fetcher.data?.errors}
             />
@@ -72,15 +91,13 @@ export function SongNew({ feels, header, redirectTo, cancelTo }: { feels: Serial
         </MaxWidth>
       </MaxHeightContainer>
     </fetcher.Form>
-  )
+  );
 }
 
 export function ErrorBoundary() {
   const error = useRouteError();
   if (!isRouteErrorResponse(error)) {
-    return (
-      <ErrorContainer error={error as Error} />
-    )
+    return <ErrorContainer error={error as Error} />;
   }
-  return <CatchContainer status={error.status} data={error.data} />
+  return <CatchContainer status={error.status} data={error.data} />;
 }

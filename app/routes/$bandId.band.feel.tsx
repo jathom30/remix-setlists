@@ -9,10 +9,12 @@ export default function BandFeels() {
       <Navbar>
         <FlexHeader>
           <Title>Feels</Title>
-          <Link to=".." kind="ghost" isRounded><FontAwesomeIcon icon={faTimes} /></Link>
+          <Link to=".." kind="ghost" isRounded>
+            <FontAwesomeIcon icon={faTimes} />
+          </Link>
         </FlexHeader>
       </Navbar>
       <Outlet />
     </div>
-  )
+  );
 }

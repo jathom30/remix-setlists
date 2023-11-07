@@ -1,16 +1,41 @@
-import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, isRouteErrorResponse, useActionData, useRouteError, useSearchParams } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  isRouteErrorResponse,
+  useActionData,
+  useRouteError,
+  useSearchParams,
+} from "@remix-run/react";
 import * as React from "react";
 
 import { getUserId } from "~/session.server";
 
-import { createUser, generateTokenLink, getUserByEmail } from "~/models/user.server";
+import {
+  createUser,
+  generateTokenLink,
+  getUserByEmail,
+} from "~/models/user.server";
 import { validateEmail } from "~/utils";
-import invariant from 'tiny-invariant';
-import { Button, CatchContainer, ErrorContainer, FlexList, PasswordStrength } from '~/components';
-import { verifyAccount } from '~/email/verify';
-import { getDomainUrl, getPasswordError, passwordStrength } from "~/utils/assorted";
+import invariant from "tiny-invariant";
+import {
+  Button,
+  CatchContainer,
+  ErrorContainer,
+  FlexList,
+  PasswordStrength,
+} from "~/components";
+import { verifyAccount } from "~/email/verify";
+import {
+  getDomainUrl,
+  getPasswordError,
+  passwordStrength,
+} from "~/utils/assorted";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getUserId(request);
@@ -24,41 +49,44 @@ export async function action({ request }: ActionFunctionArgs) {
   const password = formData.get("password");
   const name = formData.get("name");
   // const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
-  invariant(process.env.SENDGRID_API_KEY, 'sendgrid api key must be set')
+  invariant(process.env.SENDGRID_API_KEY, "sendgrid api key must be set");
 
   if (!validateEmail(email)) {
     return json(
       { errors: { email: "Email is invalid", password: null, name: null } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (typeof password !== "string" || password.length === 0) {
     return json(
       { errors: { email: null, password: "Password is required", name: null } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (typeof name !== "string" || name.length === 0) {
     return json(
       { errors: { email: null, password: null, name: "Name is required" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
-  const { tests } = passwordStrength(password)
-  const passwordError = getPasswordError(tests)
+  const { tests } = passwordStrength(password);
+  const passwordError = getPasswordError(tests);
 
   if (passwordError) {
-    return json({
-      errors: {
-        email: null,
-        password: passwordError,
-        name: null,
+    return json(
+      {
+        errors: {
+          email: null,
+          password: passwordError,
+          name: null,
+        },
+        success: false,
       },
-      success: false
-    }, { status: 400 })
+      { status: 400 },
+    );
   }
 
   const existingUser = await getUserByEmail(email);
@@ -68,27 +96,29 @@ export async function action({ request }: ActionFunctionArgs) {
         errors: {
           email: "A user already exists with this email",
           password: null,
-          name: null
+          name: null,
         },
         success: false,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   await createUser(email, password, name);
-  const domainUrl = getDomainUrl(request)
+  const domainUrl = getDomainUrl(request);
   // send email
-  const magicLink = await generateTokenLink(email, 'join/verify', domainUrl);
-  verifyAccount(email, magicLink)
+  const magicLink = await generateTokenLink(email, "join/verify", domainUrl);
+  verifyAccount(email, magicLink);
 
-  return redirect('verificationSent')
+  return redirect("verificationSent");
 }
 
 export const meta: MetaFunction = () => {
-  return [{
-    title: "Sign Up",
-  }];
+  return [
+    {
+      title: "Sign Up",
+    },
+  ];
 };
 
 export default function Join() {
@@ -98,9 +128,9 @@ export default function Join() {
   const nameRef = React.useRef<HTMLInputElement>(null);
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
-  const [password, setPassword] = React.useState('')
+  const [password, setPassword] = React.useState("");
 
-  const { tests, strength } = passwordStrength(password)
+  const { tests, strength } = passwordStrength(password);
 
   React.useEffect(() => {
     if (actionData?.errors?.email) {
@@ -115,10 +145,7 @@ export default function Join() {
       <FlexList pad={4}>
         <Form method="post" className="space-y-6">
           <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="name" className="block text-sm font-medium">
               Name
             </label>
             <div className="mt-1">
@@ -142,10 +169,7 @@ export default function Join() {
           </div>
 
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="email" className="block text-sm font-medium">
               Email address
             </label>
             <div className="mt-1">
@@ -169,10 +193,7 @@ export default function Join() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium"
-            >
+            <label htmlFor="password" className="block text-sm font-medium">
               Password
             </label>
             <div className="mt-1">
@@ -181,7 +202,7 @@ export default function Join() {
                 ref={passwordRef}
                 name="password"
                 type="password"
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
                 aria-invalid={actionData?.errors?.password ? true : undefined}
                 aria-describedby="password-error"
@@ -200,7 +221,9 @@ export default function Join() {
 
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <FlexList>
-            <Button type="submit" kind="primary">Create Account</Button>
+            <Button type="submit" kind="primary">
+              Create Account
+            </Button>
           </FlexList>
           <div className="flex items-center justify-center">
             <div className="text-center text-sm">
@@ -225,9 +248,7 @@ export default function Join() {
 export function ErrorBoundary() {
   const error = useRouteError();
   if (!isRouteErrorResponse(error)) {
-    return (
-      <ErrorContainer error={error as Error} />
-    )
+    return <ErrorContainer error={error as Error} />;
   }
-  return <CatchContainer status={error.status} data={error.data} />
+  return <CatchContainer status={error.status} data={error.data} />;
 }

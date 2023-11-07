@@ -1,53 +1,84 @@
-import { Form, useLoaderData, Link as RemixLink, useParams, useRouteError, isRouteErrorResponse, } from "@remix-run/react";
+import {
+  Form,
+  useLoaderData,
+  Link as RemixLink,
+  useParams,
+  useRouteError,
+  isRouteErrorResponse,
+} from "@remix-run/react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { Button, CatchContainer, ConfirmDelete, ErrorContainer, FlexList } from "~/components";
+import {
+  Button,
+  CatchContainer,
+  ConfirmDelete,
+  ErrorContainer,
+  FlexList,
+} from "~/components";
 import { removeMemberFromBand } from "~/models/usersInBands.server";
 import { requireAdminMember, requireNonSubMember } from "~/session.server";
 import { getBand } from "~/models/band.server";
 import { RoleEnum } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const { memberId, bandId } = params
-  invariant(memberId, 'memberId not found')
-  invariant(bandId, 'bandId not found')
-  const userId = await requireAdminMember(request, bandId)
-  const band = await getBand(bandId)
+  const { memberId, bandId } = params;
+  invariant(memberId, "memberId not found");
+  invariant(bandId, "bandId not found");
+  const userId = await requireAdminMember(request, bandId);
+  const band = await getBand(bandId);
   if (!band) {
-    throw new Response("Band not found", { status: 404 })
+    throw new Response("Band not found", { status: 404 });
   }
 
   // cannot remove self from band if user if the only member
-  const canRemoveMember = band.members.reduce((total, member) => total += member.role as unknown as RoleEnum === RoleEnum.ADMIN ? 1 : 0, 0) > (userId === memberId ? 1 : 0)
+  const canRemoveMember =
+    band.members.reduce(
+      (total, member) =>
+        (total +=
+          (member.role as unknown as RoleEnum) === RoleEnum.ADMIN ? 1 : 0),
+      0,
+    ) > (userId === memberId ? 1 : 0);
 
-  return json({ canRemoveMember })
+  return json({ canRemoveMember });
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { memberId, bandId } = params
-  invariant(memberId, 'memberId not found')
-  invariant(bandId, 'bandId not found')
-  await requireNonSubMember(request, bandId)
+  const { memberId, bandId } = params;
+  invariant(memberId, "memberId not found");
+  invariant(bandId, "bandId not found");
+  await requireNonSubMember(request, bandId);
 
-  await removeMemberFromBand(bandId, memberId)
-  return redirect(`/${bandId}/band`)
+  await removeMemberFromBand(bandId, memberId);
+  return redirect(`/${bandId}/band`);
 }
 
 export default function DeleteMember() {
-  const { canRemoveMember } = useLoaderData<typeof loader>()
-  const { bandId } = useParams()
+  const { canRemoveMember } = useLoaderData<typeof loader>();
+  const { bandId } = useParams();
 
   if (!canRemoveMember) {
     return (
       <FlexList pad={4} gap={2}>
         <p className="text-danger text-sm">
-          You are the only admin. Make at least one other member an Admin before removing yourself.
+          You are the only admin. Make at least one other member an Admin before
+          removing yourself.
         </p>
-        <p className="text-sm text-error">If you would rather delete this band, you can do so <RemixLink className="underline font-bold" to={`/${bandId}/band/delete`}>here</RemixLink>.</p>
-        <Button isDisabled kind="warning">Remove member</Button>
+        <p className="text-sm text-error">
+          If you would rather delete this band, you can do so{" "}
+          <RemixLink
+            className="underline font-bold"
+            to={`/${bandId}/band/delete`}
+          >
+            here
+          </RemixLink>
+          .
+        </p>
+        <Button isDisabled kind="warning">
+          Remove member
+        </Button>
       </FlexList>
-    )
+    );
   }
 
   return (
@@ -59,15 +90,13 @@ export default function DeleteMember() {
         cancelTo=".."
       />
     </Form>
-  )
+  );
 }
 
 export function ErrorBoundary() {
   const error = useRouteError();
   if (!isRouteErrorResponse(error)) {
-    return (
-      <ErrorContainer error={error as Error} />
-    )
+    return <ErrorContainer error={error as Error} />;
   }
-  return <CatchContainer status={error.status} data={error.data} />
+  return <CatchContainer status={error.status} data={error.data} />;
 }

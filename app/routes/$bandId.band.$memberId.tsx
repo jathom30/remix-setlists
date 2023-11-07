@@ -9,10 +9,12 @@ export default function MemberId() {
       <Navbar>
         <FlexHeader>
           <Title>Member details</Title>
-          <Link to=".." kind="ghost" isRounded><FontAwesomeIcon icon={faTimes} /></Link>
+          <Link to=".." kind="ghost" isRounded>
+            <FontAwesomeIcon icon={faTimes} />
+          </Link>
         </FlexHeader>
       </Navbar>
       <Outlet />
     </div>
-  )
+  );
 }

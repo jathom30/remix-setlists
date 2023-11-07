@@ -9,10 +9,12 @@ export default function UserSettingsPage() {
       <Navbar>
         <FlexHeader>
           <Title>User settings</Title>
-          <Link to=".." kind="ghost" aria-label="back"><FontAwesomeIcon icon={faTimes} /></Link>
+          <Link to=".." kind="ghost" aria-label="back">
+            <FontAwesomeIcon icon={faTimes} />
+          </Link>
         </FlexHeader>
       </Navbar>
       <Outlet />
     </FlexList>
-  )
+  );
 }

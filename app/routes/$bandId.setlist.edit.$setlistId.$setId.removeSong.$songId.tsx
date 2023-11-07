@@ -1,4 +1,9 @@
-import { Form, isRouteErrorResponse, useParams, useRouteError } from "@remix-run/react";
+import {
+  Form,
+  isRouteErrorResponse,
+  useParams,
+  useRouteError,
+} from "@remix-run/react";
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
@@ -7,19 +12,19 @@ import { requireNonSubMember } from "~/session.server";
 import { removeSongFromSet } from "~/models/set.server";
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { songId, setlistId, bandId, setId } = params
-  invariant(songId, 'songId not found')
-  invariant(setlistId, 'setlistId not found')
-  invariant(bandId, 'bandId not found')
-  invariant(setId, 'setId not found')
-  await requireNonSubMember(request, bandId)
+  const { songId, setlistId, bandId, setId } = params;
+  invariant(songId, "songId not found");
+  invariant(setlistId, "setlistId not found");
+  invariant(bandId, "bandId not found");
+  invariant(setId, "setId not found");
+  await requireNonSubMember(request, bandId);
 
-  await removeSongFromSet(setId, songId)
-  return redirect(`/${bandId}/setlist/loadingSetlist?setlistId=${setlistId}`)
+  await removeSongFromSet(setId, songId);
+  return redirect(`/${bandId}/setlist/loadingSetlist?setlistId=${setlistId}`);
 }
 
 export default function RemoveSongFromSetlist() {
-  const { bandId, setlistId } = useParams()
+  const { bandId, setlistId } = useParams();
   return (
     <Form method="put">
       <ConfirmDelete
@@ -29,15 +34,13 @@ export default function RemoveSongFromSetlist() {
         cancelTo={`/${bandId}/setlist/edit/${setlistId}`}
       />
     </Form>
-  )
+  );
 }
 
 export function ErrorBoundary() {
   const error = useRouteError();
   if (!isRouteErrorResponse(error)) {
-    return (
-      <ErrorContainer error={error as Error} />
-    )
+    return <ErrorContainer error={error as Error} />;
   }
-  return <CatchContainer status={error.status} data={error.data} />
+  return <CatchContainer status={error.status} data={error.data} />;
 }

@@ -7,12 +7,12 @@ import { updateBandIcon } from "~/models/bandIcon.server";
 import { requireAdminMember } from "~/session.server";
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { bandId } = params
-  invariant(bandId, 'bandId not found')
-  await requireAdminMember(request, bandId)
+  const { bandId } = params;
+  invariant(bandId, "bandId not found");
+  await requireAdminMember(request, bandId);
 
-  await updateBandIcon(bandId, { path: null })
-  return redirect(`/${bandId}/band/avatar`)
+  await updateBandIcon(bandId, { path: null });
+  return redirect(`/${bandId}/band/avatar`);
 }
 
 export default function DeleteBandAvatar() {
@@ -25,5 +25,5 @@ export default function DeleteBandAvatar() {
         cancelTo=".."
       />
     </Form>
-  )
+  );
 }

@@ -10,35 +10,45 @@ import { getSongSetlists } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  await requireUserId(request)
-  const { songId, bandId } = params
-  invariant(songId, 'songId not found')
-  invariant(bandId, 'bandId not found')
+  await requireUserId(request);
+  const { songId, bandId } = params;
+  invariant(songId, "songId not found");
+  invariant(bandId, "bandId not found");
 
-  const setlists = await getSongSetlists(songId)
+  const setlists = await getSongSetlists(songId);
 
-  return json({ setlists })
+  return json({ setlists });
 }
 
 export default function Setlists() {
-  const { bandId } = useParams()
-  const { setlists } = useLoaderData<typeof loader>()
-
+  const { bandId } = useParams();
+  const { setlists } = useLoaderData<typeof loader>();
 
   return (
     <FlexList gap={0}>
       <Navbar>
         <FlexHeader>
           <Title>Song's setlists</Title>
-          <Link isRounded to=".." kind="ghost"><FontAwesomeIcon icon={faTimes} /></Link>
+          <Link isRounded to=".." kind="ghost">
+            <FontAwesomeIcon icon={faTimes} />
+          </Link>
         </FlexHeader>
       </Navbar>
       <FlexList pad={4}>
-        <p>This song was found in the following {pluralize('setlist', setlists.length)}:</p>
-        {setlists.map(setlist => (
-          <Link isOutline key={setlist.id} to={`/${bandId}/setlist/${setlist.id}`}>{setlist.name}</Link>
+        <p>
+          This song was found in the following{" "}
+          {pluralize("setlist", setlists.length)}:
+        </p>
+        {setlists.map((setlist) => (
+          <Link
+            isOutline
+            key={setlist.id}
+            to={`/${bandId}/setlist/${setlist.id}`}
+          >
+            {setlist.name}
+          </Link>
         ))}
       </FlexList>
     </FlexList>
-  )
+  );
 }

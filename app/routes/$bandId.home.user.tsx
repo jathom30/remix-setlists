@@ -7,16 +7,16 @@ import { getUserBands } from "~/models/usersInBands.server";
 import { requireUser } from "~/session.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const user = await requireUser(request)
-  const bands = await getUserBands(user.id)
+  const user = await requireUser(request);
+  const bands = await getUserBands(user.id);
   if (!bands.length) {
-    return json({ user, bandId: null })
+    return json({ user, bandId: null });
   }
-  return json({ user, bandId: bands[0].bandId })
+  return json({ user, bandId: bands[0].bandId });
 }
 
 export default function User() {
-  const { user, bandId } = useLoaderData<typeof loader>()
+  const { user, bandId } = useLoaderData<typeof loader>();
   return (
     <FlexList pad={4}>
       <div className="flex flex-col items-baseline">
@@ -26,13 +26,17 @@ export default function User() {
         </TextOverflow>
       </div>
       {bandId ? (
-        <Link to={`/${bandId}/user`} icon={faUser} kind="secondary">User settings</Link>
+        <Link to={`/${bandId}/user`} icon={faUser} kind="secondary">
+          User settings
+        </Link>
       ) : null}
       <Form method="post" action="/logout">
         <FlexList>
-          <Button type="submit" icon={faSignOut}>Sign out</Button>
+          <Button type="submit" icon={faSignOut}>
+            Sign out
+          </Button>
         </FlexList>
       </Form>
     </FlexList>
-  )
+  );
 }

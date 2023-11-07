@@ -1,1 +1,1 @@
-export * from './useThemeColor'
+export * from "./useThemeColor";

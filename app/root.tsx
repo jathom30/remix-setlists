@@ -1,4 +1,8 @@
-import type { LinksFunction, LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import type {
+  LinksFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Links,
@@ -8,7 +12,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { themeChange } from 'theme-change'
+import { themeChange } from "theme-change";
 
 import stylesheet from "~/tailwind.css";
 import { getUser } from "./session.server";
@@ -17,20 +21,23 @@ import { useEffect } from "react";
 
 export const links: LinksFunction = () => {
   return [
-    { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-    { rel: 'preconnect', href: 'https://fonts.gstatic.com' },
-    { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Fascinate&family=Poppins:wght@100;400;700&display=swap' },
+    { rel: "preconnect", href: "https://fonts.googleapis.com" },
+    { rel: "preconnect", href: "https://fonts.gstatic.com" },
+    {
+      rel: "stylesheet",
+      href: "https://fonts.googleapis.com/css2?family=Fascinate&family=Poppins:wght@100;400;700&display=swap",
+    },
     { rel: "stylesheet", href: stylesheet },
   ];
 };
 
-export const meta: MetaFunction = () => ([
+export const meta: MetaFunction = () => [
   {
     charset: "utf-8",
     title: "Setlists",
-    viewport: "width=device-width,initial-scale=1, viewport-fit=cover"
+    viewport: "width=device-width,initial-scale=1, viewport-fit=cover",
   },
-]);
+];
 
 export async function loader({ request }: LoaderFunctionArgs) {
   return json({
@@ -40,9 +47,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function App() {
   useEffect(() => {
-    themeChange(false)
+    themeChange(false);
     // 👆 false parameter is required for react project
-  })
+  });
   return (
     <html lang="en" className="h-full bg-base-300">
       <head>
@@ -60,4 +67,3 @@ export default function App() {
     </html>
   );
 }
-
