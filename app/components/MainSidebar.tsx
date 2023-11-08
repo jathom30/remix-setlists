@@ -19,14 +19,13 @@ import {
   Link as RemixLink,
   useParams,
   Form,
+  useFetcher,
 } from "@remix-run/react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Popover } from "react-tiny-popover";
-import resolveConfig from "tailwindcss/resolveConfig";
 
-import tailwindConfig from "tailwind.config";
 import { useUser } from "~/utils";
 
 import { AddBand } from "./AddBand";
@@ -39,6 +38,7 @@ import { Modal } from "./Modal";
 import { TextOverflow } from "./TextOverflow";
 
 interface MainSidebarProps {
+  openState: string
   band: SerializeFrom<{
     name: string;
     icon: BandIcon | null;
@@ -54,33 +54,22 @@ interface MainSidebarProps {
   }>[];
 }
 
-export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
+export const MainSidebar = ({ band, memberRole, bands, openState }: MainSidebarProps) => {
   const user = useUser();
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isUserOpen, setIsUserOpen] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const state = isOpen ? "open" : "closed";
-  const { pathname } = useLocation();
-  const fullConfig = resolveConfig(tailwindConfig);
-  const screens = fullConfig.theme?.screens as
-    | Record<string, string>
-    | undefined;
-  const mediumBreakpoint = parseInt(screens?.md || "768px");
 
-  useEffect(() => {
-    const handleIsOpen = () => setIsOpen(window.innerWidth > mediumBreakpoint);
-    window.addEventListener("resize", handleIsOpen);
-    handleIsOpen();
-    return () => window.removeEventListener("resize", handleIsOpen);
-  }, [mediumBreakpoint]);
+  const { pathname } = useLocation();
 
   const isActive = pathname.split("/")[2].includes("user");
+
+  const fetcher = useFetcher()
 
   return (
     <AnimatePresence initial={false}>
       <motion.aside
-        animate={state}
+        animate={openState}
         variants={{
           open: { width: "100%" },
           closed: { width: 80 },
@@ -112,7 +101,7 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
             >
               <BandOption
                 band={band}
-                isCollapsed={!isOpen}
+                isCollapsed={openState === 'closed'}
                 memberRole={memberRole}
               >
                 <FontAwesomeIcon icon={faSort} />
@@ -122,19 +111,19 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
         </div>
 
         <div className="flex flex-col h-full p-2 gap-4">
-          <div className="relative h-4">
+          <fetcher.Form method="post" action="/resource/user-settings" className="relative h-4">
             <div className="absolute -right-6 z-20">
-              <Button onClick={() => setIsOpen(prev => !prev)} size="sm" isRounded kind="active" ariaLabel="Toggle sidebar">
-                <FontAwesomeIcon icon={isOpen ? faChevronLeft : faChevronRight} />
+              <Button type="submit" name="sidebar-state" value={openState === 'open' ? 'closed' : 'open'} size="sm" isRounded kind="active" ariaLabel="Toggle sidebar">
+                <FontAwesomeIcon icon={openState === 'open' ? faChevronLeft : faChevronRight} />
               </Button>
             </div>
-          </div>
+          </fetcher.Form>
           <div className="flex gap-4 h-full justify-between flex-col">
             <ul className="menu p-2 rounded-box">
               <li>
                 <SideBarLink
                   to="setlists"
-                  isOpen={isOpen}
+                  isOpen={openState === 'open'}
                   label="Setlists"
                   icon={faListOl}
                 />
@@ -142,7 +131,7 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
               <li>
                 <SideBarLink
                   to="songs"
-                  isOpen={isOpen}
+                  isOpen={openState === 'open'}
                   label="Songs"
                   icon={faMusic}
                 />
@@ -152,7 +141,7 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
               <li>
                 <SideBarLink
                   to="band"
-                  isOpen={isOpen}
+                  isOpen={openState === 'open'}
                   label="Band settings"
                   icon={faUsers}
                 />
@@ -206,10 +195,10 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
                 <FlexList
                   direction="row"
                   items="center"
-                  justify={isOpen ? "start" : "center"}
+                  justify={openState === 'open' ? "start" : "center"}
                 >
                   <FontAwesomeIcon icon={faUser} />
-                  {isOpen ? (
+                  {openState === 'open' ? (
                     <>
                       <div className="flex flex-col items-baseline">
                         <TextOverflow>{user.name}</TextOverflow>
