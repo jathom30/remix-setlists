@@ -22,8 +22,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await userPrefs.parse(cookieHeader)) || {};
-  console.log(cookie)
-  let sideMenuPref = ''
+  // default to open if cookie is not yet set
+  let sideMenuPref = 'open'
   if (cookie && typeof cookie === 'object' && 'sideMenu' in cookie) {
     sideMenuPref = cookie.sideMenu.toString()
   }

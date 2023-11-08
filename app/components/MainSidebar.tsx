@@ -179,7 +179,7 @@ export const MainSidebar = ({ band, memberRole, bands, openState }: MainSidebarP
                   </Button>
                 </FlexList>
               </Form>
-              <span className="text-xs text-slate-400 text-right pt-2">
+              <span className="text-xs text-slate-400p text-right pt-2">
                 v0.1.0
               </span>
             </ul>
