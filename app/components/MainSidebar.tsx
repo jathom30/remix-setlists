@@ -1,6 +1,8 @@
 import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import {
   faCheck,
+  faChevronLeft,
+  faChevronRight,
   faListOl,
   faMusic,
   faPlus,
@@ -33,7 +35,6 @@ import { Badge } from "./Badge";
 import { Button } from "./Button";
 import { Divider } from "./Divider";
 import { FlexList } from "./FlexList";
-import { MaxHeightContainer } from "./MaxHeightContainer";
 import { Modal } from "./Modal";
 import { TextOverflow } from "./TextOverflow";
 
@@ -84,115 +85,51 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
           open: { width: "100%" },
           closed: { width: 80 },
         }}
-        className="h-full bg-base-100 w-full max-w-xs flex shadow-lg z-10 overflow-hidden"
+        className="h-full bg-base-100 w-full max-w-xs flex flex-col shadow-lg z-10"
       >
-        <MaxHeightContainer
-          header={
-            <div className="p-2">
-              <Popover
-                isOpen={isPopupOpen}
-                positions={["right"]}
-                padding={16}
-                onClickOutside={() => setIsPopupOpen(false)}
-                content={
-                  <div className="mt-2">
-                    <BandSelectPopup
-                      bands={bands}
-                      onSelect={() => setIsPopupOpen(false)}
-                      onShowNew={() => {
-                        setIsPopupOpen(false);
-                        setShowCreateMenu(true);
-                      }}
-                    />
-                  </div>
-                }
-              >
-                <button
-                  className="btn btn-block btn-outline h-auto p-2 hover:btn-accent"
-                  onClick={() => setIsPopupOpen(!isPopupOpen)}
-                >
-                  <BandOption
-                    band={band}
-                    isCollapsed={!isOpen}
-                    memberRole={memberRole}
-                  >
-                    <FontAwesomeIcon icon={faSort} />
-                  </BandOption>
-                </button>
-              </Popover>
-            </div>
-          }
-          footer={
-            <Popover
-              isOpen={isUserOpen}
-              positions={["right"]}
-              padding={8}
-              onClickOutside={() => setIsUserOpen(false)}
-              content={
-                <ul className="menu bg-base-100 p-2 rounded shadow-xl mb-4">
-                  <div className="flex flex-col items-baseline p-2">
-                    <TextOverflow>{user.name}</TextOverflow>
-                    <TextOverflow>
-                      <span className="text-sm text-slate-400">
-                        {user.email}
-                      </span>
-                    </TextOverflow>
-                  </div>
-                  <li>
-                    <RemixLink onClick={() => setIsUserOpen(false)} to="user">
-                      <FontAwesomeIcon icon={faUser} />
-                      User settings
-                    </RemixLink>
-                  </li>
-                  <Divider />
-                  <Form method="post" action="/logout" className="p-0">
-                    <FlexList>
-                      <Button type="submit" icon={faSignOut}>
-                        Sign out
-                      </Button>
-                    </FlexList>
-                  </Form>
-                  <span className="text-xs text-slate-400 text-right pt-2">
-                    v0.1.0
-                  </span>
-                </ul>
-              }
-            >
-              <div className="p-2">
-                <button
-                  className={`btn btn-block btn-outline h-auto p-4 ${
-                    isActive ? "active" : ""
-                  }`}
-                  onClick={() => setIsUserOpen(!isUserOpen)}
-                >
-                  <div className="w-full">
-                    <FlexList
-                      direction="row"
-                      items="center"
-                      justify={isOpen ? "start" : "center"}
-                    >
-                      <FontAwesomeIcon icon={faUser} />
-                      {isOpen ? (
-                        <>
-                          <div className="flex flex-col items-baseline">
-                            <TextOverflow>{user.name}</TextOverflow>
-                            <TextOverflow>
-                              <span className="text-sm text-slate-400">
-                                {user.email}
-                              </span>
-                            </TextOverflow>
-                          </div>
-                          <FontAwesomeIcon icon={faSort} />
-                        </>
-                      ) : null}
-                    </FlexList>
-                  </div>
-                </button>
+        <div className="p-2">
+          <Popover
+            isOpen={isPopupOpen}
+            positions={["right"]}
+            padding={16}
+            onClickOutside={() => setIsPopupOpen(false)}
+            content={
+              <div className="mt-2">
+                <BandSelectPopup
+                  bands={bands}
+                  onSelect={() => setIsPopupOpen(false)}
+                  onShowNew={() => {
+                    setIsPopupOpen(false);
+                    setShowCreateMenu(true);
+                  }}
+                />
               </div>
-            </Popover>
-          }
-        >
-          <div className="flex flex-col h-full p-2 gap-4 justify-between">
+            }
+          >
+            <button
+              className="btn btn-block btn-outline h-auto p-2 hover:btn-accent"
+              onClick={() => setIsPopupOpen(!isPopupOpen)}
+            >
+              <BandOption
+                band={band}
+                isCollapsed={!isOpen}
+                memberRole={memberRole}
+              >
+                <FontAwesomeIcon icon={faSort} />
+              </BandOption>
+            </button>
+          </Popover>
+        </div>
+
+        <div className="flex flex-col h-full p-2 gap-4">
+          <div className="relative h-4">
+            <div className="absolute -right-6 z-20">
+              <Button onClick={() => setIsOpen(prev => !prev)} size="sm" isRounded kind="active" ariaLabel="Toggle sidebar">
+                <FontAwesomeIcon icon={isOpen ? faChevronLeft : faChevronRight} />
+              </Button>
+            </div>
+          </div>
+          <div className="flex gap-4 h-full justify-between flex-col">
             <ul className="menu p-2 rounded-box">
               <li>
                 <SideBarLink
@@ -222,7 +159,74 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
               </li>
             </ul>
           </div>
-        </MaxHeightContainer>
+        </div>
+
+        <Popover
+          isOpen={isUserOpen}
+          positions={["right"]}
+          padding={8}
+          onClickOutside={() => setIsUserOpen(false)}
+          content={
+            <ul className="menu bg-base-100 p-2 rounded shadow-xl mb-4">
+              <div className="flex flex-col items-baseline p-2">
+                <TextOverflow>{user.name}</TextOverflow>
+                <TextOverflow>
+                  <span className="text-sm text-slate-400">
+                    {user.email}
+                  </span>
+                </TextOverflow>
+              </div>
+              <li>
+                <RemixLink onClick={() => setIsUserOpen(false)} to="user">
+                  <FontAwesomeIcon icon={faUser} />
+                  User settings
+                </RemixLink>
+              </li>
+              <Divider />
+              <Form method="post" action="/logout" className="p-0">
+                <FlexList>
+                  <Button type="submit" icon={faSignOut}>
+                    Sign out
+                  </Button>
+                </FlexList>
+              </Form>
+              <span className="text-xs text-slate-400 text-right pt-2">
+                v0.1.0
+              </span>
+            </ul>
+          }
+        >
+          <div className="p-2">
+            <button
+              className={`btn btn-block btn-outline h-auto p-4 ${isActive ? "active" : ""
+                }`}
+              onClick={() => setIsUserOpen(!isUserOpen)}
+            >
+              <div className="w-full">
+                <FlexList
+                  direction="row"
+                  items="center"
+                  justify={isOpen ? "start" : "center"}
+                >
+                  <FontAwesomeIcon icon={faUser} />
+                  {isOpen ? (
+                    <>
+                      <div className="flex flex-col items-baseline">
+                        <TextOverflow>{user.name}</TextOverflow>
+                        <TextOverflow>
+                          <span className="text-sm text-slate-400">
+                            {user.email}
+                          </span>
+                        </TextOverflow>
+                      </div>
+                      <FontAwesomeIcon icon={faSort} />
+                    </>
+                  ) : null}
+                </FlexList>
+              </div>
+            </button>
+          </div>
+        </Popover>
         <Modal
           open={showCreateMenu}
           onClose={() => setShowCreateMenu(false)}
@@ -234,7 +238,7 @@ export const MainSidebar = ({ band, memberRole, bands }: MainSidebarProps) => {
           />
         </Modal>
       </motion.aside>
-    </AnimatePresence>
+    </AnimatePresence >
   );
 };
 
