@@ -5,8 +5,10 @@ import invariant from "tiny-invariant";
 
 import { MainSidebar, MaxHeightContainer } from "~/components";
 import { getBandHome, getBands } from "~/models/band.server";
+import { userPrefs } from "~/models/cookies.server";
 import { getMemberRole } from "~/models/usersInBands.server";
 import { requireUserId } from "~/session.server";
+
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
@@ -17,12 +19,21 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     getMemberRole(bandId, userId),
     getBands(userId),
   ]);
+
+  const cookieHeader = request.headers.get("Cookie");
+  const cookie = (await userPrefs.parse(cookieHeader)) || {};
+  // default to open if cookie is not yet set
+  let sideMenuPref = 'open'
+  if (cookie && typeof cookie === 'object' && 'sideMenu' in cookie) {
+    sideMenuPref = cookie.sideMenu.toString()
+  }
+
   // used in useMemberRole hook in child routes
-  return json({ band, memberRole, bands });
+  return json({ band, memberRole, bands, sideMenuPref });
 }
 
 export default function BandRoute() {
-  const { memberRole, band, bands } = useLoaderData<typeof loader>();
+  const { memberRole, band, bands, sideMenuPref } = useLoaderData<typeof loader>();
 
   return (
     <MaxHeightContainer
@@ -31,7 +42,7 @@ export default function BandRoute() {
     >
       <div className="h-full sm:flex">
         <div className="hidden sm:block sm:h-full">
-          <MainSidebar band={band} memberRole={memberRole} bands={bands} />
+          <MainSidebar band={band} memberRole={memberRole} bands={bands} openState={sideMenuPref} />
         </div>
 
         <div className="h-full sm:hidden">
