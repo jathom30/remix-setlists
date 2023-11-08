@@ -1,8 +1,4 @@
-import type {
-  LinksFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/node";
+import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Links,
@@ -32,14 +28,6 @@ export const links: LinksFunction = () => {
   ];
 };
 
-export const meta: MetaFunction = () => [
-  {
-    charset: "utf-8",
-    title: "Setlists",
-    viewport: "width=device-width,initial-scale=1, viewport-fit=cover",
-  },
-];
-
 export async function loader({ request }: LoaderFunctionArgs) {
   return json({
     user: await getUser(request),
@@ -54,6 +42,12 @@ export default function App() {
   return (
     <html lang="en" className="h-full bg-base-300">
       <head>
+        <meta title="Setlists" />
+        <meta charSet="utf-8" />
+        <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1, viewport-fit=cover"
+        />
         <Meta />
         <link rel="manifest" href="/resources/manifest.webmanifest" />
         <Links />
