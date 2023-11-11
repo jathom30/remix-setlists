@@ -1,4 +1,4 @@
-import { faInfoCircle, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faExpand, faInfoCircle, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type {
   Feel,
@@ -19,11 +19,14 @@ import { RoleEnum, setlistAutoGenImportanceEnums } from "~/utils/enums";
 import { Button } from "./Button";
 import { Divider } from "./Divider";
 import { FeelTag } from "./FeelTag";
+import { FlexHeader } from "./FlexHeader";
 import { FlexList } from "./FlexList";
 import { ItemBox } from "./ItemBox";
 import { Label } from "./Label";
 import { Link } from "./Link";
+import { MobileModal } from "./MobileModal";
 import { Modal } from "./Modal";
+import { Navbar } from "./Navbar";
 import { SongSettingsInfo } from "./SongSettingsInfo";
 import { TempoIcons } from "./TempoIcons";
 
@@ -40,6 +43,7 @@ export const SongDetails = ({
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
   const [showSettingsInfo, setShowSettingsInfo] = useState(false);
+  const [showNotesModal, setShowNotesModal] = useState(false)
 
   const visibleSetlists = setlists?.filter((setlist) => !setlist.editedFromId);
   return (
@@ -93,7 +97,14 @@ export const SongDetails = ({
         <Divider />
 
         <FlexList gap={2}>
-          <Label>Notes/Lyrics</Label>
+          <FlexHeader>
+            <Label>Notes/Lyrics</Label>
+            {song.note?.length ? (
+              <Button onClick={() => setShowNotesModal(true)}>
+                <FontAwesomeIcon icon={faExpand} />
+              </Button>
+            ) : null}
+          </FlexHeader>
           <ItemBox>
             <FlexList gap={2}>
               {!song.note ? (
@@ -155,7 +166,7 @@ export const SongDetails = ({
               <span>
                 {
                   setlistAutoGenImportanceEnums[
-                    song.rank as keyof typeof setlistAutoGenImportanceEnums
+                  song.rank as keyof typeof setlistAutoGenImportanceEnums
                   ]
                 }
               </span>
@@ -192,6 +203,21 @@ export const SongDetails = ({
       >
         <SongSettingsInfo onClose={() => setShowSettingsInfo(false)} />
       </Modal>
+      <MobileModal isPortal onClose={() => setShowNotesModal(false)} open={showNotesModal}>
+        <Navbar>
+          <FlexHeader>
+            <Label>{song.name}</Label>
+            <Button isRounded kind="ghost" onClick={() => setShowNotesModal(false)}>
+              <FontAwesomeIcon icon={faTimes} />
+            </Button>
+          </FlexHeader>
+        </Navbar>
+        <FlexList pad={4}>
+          {song.note
+            ?.split("\n")
+            .map((section, i) => <p key={i}>{section}</p>)}
+        </FlexList>
+      </MobileModal>
     </>
   );
 };
