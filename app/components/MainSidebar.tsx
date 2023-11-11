@@ -111,15 +111,16 @@ export const MainSidebar = ({ band, memberRole, bands, openState }: MainSidebarP
         </div>
 
         <div className="flex flex-col h-full p-2 gap-4">
-          <fetcher.Form method="post" action="/resource/user-settings" className="relative h-4">
-            <div className="absolute -right-6 z-20">
-              <Button type="submit" name="sidebar-state" value={openState === 'open' ? 'closed' : 'open'} size="sm" isRounded kind="active" ariaLabel="Toggle sidebar">
-                <FontAwesomeIcon icon={openState === 'open' ? faChevronLeft : faChevronRight} />
-              </Button>
-            </div>
-          </fetcher.Form>
           <div className="flex gap-4 h-full justify-between flex-col">
             <ul className="menu p-2 rounded-box">
+              <fetcher.Form method="post" action="/resource/user-settings" className="flex flex-col pb-4">
+                <Button type="submit" name="sidebar-state" value={openState === 'open' ? 'closed' : 'open'} size="sm" kind="active" ariaLabel="Toggle sidebar">
+                  <FlexList direction="row">
+                    <FontAwesomeIcon icon={openState === 'open' ? faChevronLeft : faChevronRight} />
+                    {openState === 'open' ? <span>Collapse</span> : null}
+                  </FlexList>
+                </Button>
+              </fetcher.Form>
               <li>
                 <SideBarLink
                   to="setlists"

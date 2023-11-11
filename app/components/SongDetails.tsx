@@ -24,7 +24,6 @@ import { FlexList } from "./FlexList";
 import { ItemBox } from "./ItemBox";
 import { Label } from "./Label";
 import { Link } from "./Link";
-import { MobileModal } from "./MobileModal";
 import { Modal } from "./Modal";
 import { Navbar } from "./Navbar";
 import { SongSettingsInfo } from "./SongSettingsInfo";
@@ -203,7 +202,7 @@ export const SongDetails = ({
       >
         <SongSettingsInfo onClose={() => setShowSettingsInfo(false)} />
       </Modal>
-      <MobileModal isPortal onClose={() => setShowNotesModal(false)} open={showNotesModal}>
+      <Modal isPortal onClose={() => setShowNotesModal(false)} open={showNotesModal}>
         <Navbar>
           <FlexHeader>
             <Label>{song.name}</Label>
@@ -217,7 +216,7 @@ export const SongDetails = ({
             ?.split("\n")
             .map((section, i) => <p key={i}>{section}</p>)}
         </FlexList>
-      </MobileModal>
+      </Modal>
     </>
   );
 };
