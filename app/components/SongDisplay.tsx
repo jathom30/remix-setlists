@@ -38,7 +38,7 @@ export const SongDisplay = ({
           ) : null}
         </FlexList>
         <span className="text-xs text-text-subdued whitespace-nowrap">
-          {new Date(song.updatedAt).toLocaleDateString("en-us", {
+          {new Date(song?.updatedAt).toLocaleDateString("en-us", {
             month: "numeric",
             day: "numeric",
             year: "2-digit",

@@ -56,9 +56,9 @@ export const SetlistLink = ({
 
   const updatedAt = () => {
     const [mostRecentSetlist] = setlist.sets.sort(
-      (a, b) => Date.parse(a.updatedAt) - Date.parse(b.updatedAt),
+      (a, b) => Date.parse(a?.updatedAt) - Date.parse(b?.updatedAt),
     );
-    return new Date(mostRecentSetlist.updatedAt).toDateString();
+    return new Date(mostRecentSetlist?.updatedAt).toDateString();
   };
 
   return (
