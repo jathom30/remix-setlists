@@ -1,6 +1,6 @@
 {
   "exclude": ["./cypress", "./cypress.config.ts"],
-  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx", "tailwind.config.js"],
+  "include": ["env.d.ts", "**/*.ts", "**/*.tsx", "postcss.config.js", "tailwind.config.js"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2019"],
     "types": ["vitest/globals"],
@@ -8,7 +8,7 @@
     "esModuleInterop": true,
     "jsx": "react-jsx",
     "module": "CommonJS",
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "target": "ES2019",
     "strict": true,
