@@ -49,8 +49,8 @@ export async function action({ request }: ActionFunctionArgs) {
     }),
     ...(deletedLinks.length > 0
       ? deletedLinks.map(async (deletedId) => {
-          return await deleteLink(deletedId);
-        })
+        return await deleteLink(deletedId);
+      })
       : []),
   ]);
 
@@ -58,7 +58,7 @@ export async function action({ request }: ActionFunctionArgs) {
   return redirect(redirectTo);
 }
 
-export function SongEdit({
+export default function SongEdit({
   song,
   feels,
   redirectTo,

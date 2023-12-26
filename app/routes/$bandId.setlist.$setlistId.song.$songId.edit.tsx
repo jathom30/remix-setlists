@@ -11,7 +11,7 @@ import invariant from "tiny-invariant";
 import { CatchContainer, ErrorContainer } from "~/components";
 import { getFeels } from "~/models/feel.server";
 import { getSong } from "~/models/song.server";
-import { SongEdit } from "~/routes/resource.songEdit";
+import SongEdit from "~/routes/resource.songEdit";
 import { requireNonSubMember } from "~/session.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {

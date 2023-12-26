@@ -61,8 +61,8 @@ export default function App() {
         <Outlet />
         <div id="modal-portal" />
         <ScrollRestoration />
-        <LiveReload />
         <Scripts />
+        <LiveReload />
       </body>
     </html>
   );

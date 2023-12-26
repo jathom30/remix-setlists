@@ -4,8 +4,8 @@
   "sideEffects": false,
   "version": "0.1.0",
   "scripts": {
-    "dev": "remix vite:dev",
-    "build": "remix vite:build",
+    "dev": "vite dev",
+    "build": "vite build && vite build --ssr",
     "format": "prettier --write .",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "setup": "prisma generate && prisma migrate deploy && prisma db seed",

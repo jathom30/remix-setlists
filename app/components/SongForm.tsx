@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 
 import type { handleSongFormData } from "~/models/song.server";
-import { FeelSelect } from "~/routes/$bandId.resources.FeelSelect";
 import { useMatchesData } from "~/utils";
 import { positionEnums, setlistAutoGenImportanceEnums } from "~/utils/enums";
 import { keyLetters, majorMinorOptions } from "~/utils/songConstants";
@@ -23,6 +22,7 @@ import { Checkbox } from "./Checkbox";
 import { Divider } from "./Divider";
 import { ErrorMessage } from "./ErrorMessage";
 import { ExternalLinksInputs } from "./ExternalLinksInputs";
+import { FeelSelect } from "./FeelSelect";
 import { Field } from "./Field";
 import { FlexHeader } from "./FlexHeader";
 import { FlexList } from "./FlexList";
