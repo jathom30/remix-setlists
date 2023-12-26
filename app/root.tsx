@@ -1,5 +1,5 @@
 import { config } from "@fortawesome/fontawesome-svg-core";
-import faStylesheet from '@fortawesome/fontawesome-svg-core/styles.css';
+import '@fortawesome/fontawesome-svg-core/styles.css';
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
@@ -13,7 +13,7 @@ import {
 import { useEffect } from "react";
 import { themeChange } from "theme-change";
 
-import stylesheet from "~/tailwind.css";
+import "~/tailwind.css";
 
 import { getUser } from "./session.server";
 // Prevent fontawesome from dynamically adding its css since we are going to include it manually
@@ -28,8 +28,8 @@ export const links: LinksFunction = () => {
       rel: "stylesheet",
       href: "https://fonts.googleapis.com/css2?family=Fascinate&family=Poppins:wght@100;400;700&display=swap",
     },
-    { rel: "stylesheet", href: faStylesheet },
-    { rel: "stylesheet", href: stylesheet },
+    // { rel: "stylesheet", href: faStylesheet },
+    // { rel: "stylesheet", href: stylesheet },
   ];
 };
 
@@ -61,8 +61,8 @@ export default function App() {
         <Outlet />
         <div id="modal-portal" />
         <ScrollRestoration />
-        <Scripts />
         <LiveReload />
+        <Scripts />
       </body>
     </html>
   );
