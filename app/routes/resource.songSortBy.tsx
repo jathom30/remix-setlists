@@ -1,8 +1,8 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { userPrefs } from "~/models/cookies.server";
 
+import { userPrefs } from "~/models/cookies.server";
 import { requireUserId } from "~/session.server";
 
 export async function action({ request }: ActionFunctionArgs) {

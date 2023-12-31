@@ -19,7 +19,7 @@ import {
 import { userPrefs } from "~/models/cookies.server";
 import { requireUserId } from "~/session.server";
 
-export async function loader({request, params}: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
   const { bandId } = params;
   invariant(bandId, "bandId not found");
@@ -53,7 +53,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await userPrefs.parse(cookieHeader)) || {};
   cookie.setlistSort = sort;
-
 
   return redirect(`/${bandId}/setlists?${searchParams.toString()}`, {
     headers: {

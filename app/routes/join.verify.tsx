@@ -16,7 +16,6 @@ import { createUserSession } from "~/session.server";
 import { safeRedirect } from "~/utils";
 import { decrypt } from "~/utils/encryption.server";
 
-
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const urlSearchParams = url.searchParams;

@@ -1,5 +1,5 @@
 import { config } from "@fortawesome/fontawesome-svg-core";
-import faStylesheet from '@fortawesome/fontawesome-svg-core/styles.css';
+import faStylesheet from "@fortawesome/fontawesome-svg-core/styles.css";
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
@@ -18,7 +18,6 @@ import stylesheet from "~/tailwind.css";
 import { getUser } from "./session.server";
 // Prevent fontawesome from dynamically adding its css since we are going to include it manually
 config.autoAddCss = false;
-
 
 export const links: LinksFunction = () => {
   return [

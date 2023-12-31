@@ -30,7 +30,6 @@ import { getSetlist, updateSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { getDomainUrl } from "~/utils/assorted";
 
-
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
   const { setlistId, bandId } = params;

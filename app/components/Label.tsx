@@ -30,10 +30,12 @@ export const Label = ({
       }`}
     >
       {children}
-      {required ? <>
+      {required ? (
+        <>
           {" "}
           <span className="font-normal">[Required]</span>
-        </> : null}
+        </>
+      ) : null}
     </span>
   );
 };

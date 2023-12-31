@@ -18,7 +18,6 @@ import {
 } from "~/components";
 import { getSetMetrics } from "~/models/set.server";
 
-
 export async function loader({ params }: LoaderFunctionArgs) {
   const { setId } = params;
   invariant(setId, "setId not found");

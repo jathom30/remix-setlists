@@ -33,7 +33,6 @@ import { getSongs } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
 import { sortByLabel } from "~/utils/params";
 
-
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId } = params;
   invariant(bandId);

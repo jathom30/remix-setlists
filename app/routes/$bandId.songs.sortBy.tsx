@@ -1,4 +1,5 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   isRouteErrorResponse,
   useFetcher,
@@ -21,7 +22,7 @@ import { userPrefs } from "~/models/cookies.server";
 import { requireUserId } from "~/session.server";
 import { sortOptions } from "~/utils/params";
 
-export async function loader({request, params}: LoaderFunctionArgs) {
+export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
   const { bandId } = params;
   invariant(bandId, "bandId not found");

@@ -119,10 +119,10 @@ export async function createSong(
       bandId,
       ...(feelIds.length
         ? {
-          feels: {
-            connect: feelIds.map((feelId) => ({ id: feelId })),
-          },
-        }
+            feels: {
+              connect: feelIds.map((feelId) => ({ id: feelId })),
+            },
+          }
         : {}),
     },
   });
@@ -203,7 +203,6 @@ export const handleSongFormData = (formData: FormData) => {
       if (typeof entry[1] !== "string") {
         throw new Response("Invalid external links", { status: 401 });
       }
-
 
       // remove http from string so it gets saved without it and doesn't mess with UI
       const webAddress = entry[1]

@@ -40,7 +40,6 @@ import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { sortByLabel } from "~/utils/params";
 
-
 export const meta: MetaFunction = () => [
   {
     title: "Songs",
@@ -65,7 +64,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const cookie = (await userPrefs.parse(cookieHeader)) || {};
 
   if (cookie && typeof cookie === "object" && "songSort" in cookie) {
-    sort = String(cookie.songSort)
+    sort = String(cookie.songSort);
   }
 
   const songParams = {
@@ -100,7 +99,7 @@ export default function SongsList() {
 
   const hasSongs = songs.length;
 
-  const sortBy = sortByLabel(sort || 'name:asc');
+  const sortBy = sortByLabel(sort || "name:asc");
 
   const handleClearQuery = () => {
     setQuery("");

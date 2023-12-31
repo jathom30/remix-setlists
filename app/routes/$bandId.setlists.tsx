@@ -37,7 +37,6 @@ import { capitalizeFirstLetter } from "~/utils/assorted";
 import { RoleEnum } from "~/utils/enums";
 import { getSortFromParam } from "~/utils/params";
 
-
 export const meta: MetaFunction = () => [
   {
     title: "Setlists",
@@ -61,14 +60,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const cookie = (await userPrefs.parse(cookieHeader)) || {};
 
   if (cookie && typeof cookie === "object" && "setlistSort" in cookie) {
-    sort = String(cookie.setlistSort)
+    sort = String(cookie.setlistSort);
   }
 
   const filterParams = {
     ...(q ? { q } : null),
     ...(sort ? { sort } : null),
   };
-
 
   const setlists = await getSetlists(bandId, filterParams);
   return json({
