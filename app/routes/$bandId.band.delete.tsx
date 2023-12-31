@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { redirect , json } from "@remix-run/node";
+import { redirect, json } from "@remix-run/node";
 import {
   Form,
   isRouteErrorResponse,

@@ -29,13 +29,13 @@ import {
   SearchInput,
   SetlistLink,
 } from "~/components";
+import { userPrefs } from "~/models/cookies.server";
 import { getSetlists } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { capitalizeFirstLetter } from "~/utils/assorted";
 import { RoleEnum } from "~/utils/enums";
 import { getSortFromParam } from "~/utils/params";
-
 
 export const meta: MetaFunction = () => [
   {
@@ -51,9 +51,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const urlSearchParams = new URL(request.url).searchParams;
   const q = urlSearchParams.get("query");
   const intent = urlSearchParams.get("intent");
-  const sort = urlSearchParams.get("sort");
+  let sort = urlSearchParams.get("sort");
   if (intent === "clear") {
     urlSearchParams.delete("query");
+  }
+
+  const cookieHeader = request.headers.get("Cookie");
+  const cookie = (await userPrefs.parse(cookieHeader)) || {};
+
+  if (cookie && typeof cookie === "object" && "setlistSort" in cookie) {
+    sort = String(cookie.setlistSort);
   }
 
   const filterParams = {
@@ -64,13 +71,14 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const setlists = await getSetlists(bandId, filterParams);
   return json({
     setlists: setlists.filter((setlist) => !setlist.editedFromId),
+    sort,
   });
 }
 
 const subRoutes = ["sortBy", "filters"];
 
 export default function SetlistsRoute() {
-  const { setlists } = useLoaderData<typeof loader>();
+  const { setlists, sort: serverSort } = useLoaderData<typeof loader>();
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
   const [searchParams, setSearchParams] = useSearchParams();
@@ -83,7 +91,7 @@ export default function SetlistsRoute() {
   const hasSetlists = setlists.length;
 
   const sortByLabel = () => {
-    const sortObject = getSortFromParam(searchParams.get("sort") ?? undefined);
+    const sortObject = getSortFromParam(serverSort ?? undefined);
     const [entry] = Object.entries(sortObject);
     // probably not the best solution, but removes At from createdAt and updatedAt keys
     const sort = capitalizeFirstLetter(entry[0]).replace("At", "");

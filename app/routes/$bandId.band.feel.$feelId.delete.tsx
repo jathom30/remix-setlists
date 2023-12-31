@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { redirect , json } from "@remix-run/node";
+import { redirect, json } from "@remix-run/node";
 import {
   Form,
   isRouteErrorResponse,
@@ -11,7 +11,6 @@ import invariant from "tiny-invariant";
 import { CatchContainer, ConfirmDelete, ErrorContainer } from "~/components";
 import { deleteFeel, getFeel } from "~/models/feel.server";
 import { requireNonSubMember } from "~/session.server";
-
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId, feelId } = params;

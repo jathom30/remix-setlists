@@ -49,7 +49,12 @@ export function useMatchesData(
 }
 
 function isUser(user: unknown): user is User {
-  return Boolean(user && typeof user === "object" && 'email' in user && typeof user.email === "string");
+  return Boolean(
+    user &&
+      typeof user === "object" &&
+      "email" in user &&
+      typeof user.email === "string",
+  );
 }
 
 export function useOptionalUser(): User | undefined {
@@ -89,8 +94,8 @@ export function validateEmail(email: unknown): email is string {
 const isBand = (
   data: unknown,
 ): data is { band: { icon: SerializeFrom<BandIcon>; name: string } } => {
-  const bandData = data && typeof data === 'object' && 'band' in data
-  return Boolean(bandData)
+  const bandData = data && typeof data === "object" && "band" in data;
+  return Boolean(bandData);
 };
 
 export function useBandIcon() {

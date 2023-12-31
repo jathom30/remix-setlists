@@ -46,7 +46,6 @@ import { requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 
-
 export const meta: MetaFunction = () => [
   {
     title: "Band settings",

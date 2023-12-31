@@ -1,4 +1,9 @@
-import { faExpand, faInfoCircle, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExpand,
+  faInfoCircle,
+  faTimes,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type {
   Feel,
@@ -29,7 +34,6 @@ import { Navbar } from "./Navbar";
 import { SongSettingsInfo } from "./SongSettingsInfo";
 import { TempoIcons } from "./TempoIcons";
 
-
 export const SongDetails = ({
   song,
   setlists,
@@ -42,7 +46,7 @@ export const SongDetails = ({
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
   const [showSettingsInfo, setShowSettingsInfo] = useState(false);
-  const [showNotesModal, setShowNotesModal] = useState(false)
+  const [showNotesModal, setShowNotesModal] = useState(false);
 
   const visibleSetlists = setlists?.filter((setlist) => !setlist.editedFromId);
   return (
@@ -165,7 +169,7 @@ export const SongDetails = ({
               <span>
                 {
                   setlistAutoGenImportanceEnums[
-                  song.rank as keyof typeof setlistAutoGenImportanceEnums
+                    song.rank as keyof typeof setlistAutoGenImportanceEnums
                   ]
                 }
               </span>
@@ -202,19 +206,25 @@ export const SongDetails = ({
       >
         <SongSettingsInfo onClose={() => setShowSettingsInfo(false)} />
       </Modal>
-      <Modal isPortal onClose={() => setShowNotesModal(false)} open={showNotesModal}>
+      <Modal
+        isPortal
+        onClose={() => setShowNotesModal(false)}
+        open={showNotesModal}
+      >
         <Navbar>
           <FlexHeader>
             <Label>{song.name}</Label>
-            <Button isRounded kind="ghost" onClick={() => setShowNotesModal(false)}>
+            <Button
+              isRounded
+              kind="ghost"
+              onClick={() => setShowNotesModal(false)}
+            >
               <FontAwesomeIcon icon={faTimes} />
             </Button>
           </FlexHeader>
         </Navbar>
         <FlexList pad={4}>
-          {song.note
-            ?.split("\n")
-            .map((section, i) => <p key={i}>{section}</p>)}
+          {song.note?.split("\n").map((section, i) => <p key={i}>{section}</p>)}
         </FlexList>
       </Modal>
     </>

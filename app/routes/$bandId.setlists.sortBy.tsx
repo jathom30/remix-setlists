@@ -1,10 +1,10 @@
-import type { ActionFunctionArgs } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Form,
   isRouteErrorResponse,
+  useLoaderData,
   useRouteError,
-  useSearchParams,
   useSubmit,
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
@@ -16,7 +16,20 @@ import {
   Label,
   RadioGroup,
 } from "~/components";
+import { userPrefs } from "~/models/cookies.server";
 import { requireUserId } from "~/session.server";
+
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  await requireUserId(request);
+  const { bandId } = params;
+  invariant(bandId, "bandId not found");
+
+  const cookieHeader = request.headers.get("Cookie");
+  const cookie = (await userPrefs.parse(cookieHeader)) || {};
+  const sort = String(cookie.setlistSort) || "name:asc";
+
+  return json({ sort });
+}
 
 export async function action({ request, params }: ActionFunctionArgs) {
   await requireUserId(request);
@@ -37,11 +50,19 @@ export async function action({ request, params }: ActionFunctionArgs) {
   searchParams.delete("sort");
   searchParams.append("sort", sort);
 
-  return redirect(`/${bandId}/setlists?${searchParams.toString()}`);
+  const cookieHeader = request.headers.get("Cookie");
+  const cookie = (await userPrefs.parse(cookieHeader)) || {};
+  cookie.setlistSort = sort;
+
+  return redirect(`/${bandId}/setlists?${searchParams.toString()}`, {
+    headers: {
+      "Set-Cookie": await userPrefs.serialize(cookie),
+    },
+  });
 }
 
 export default function SetlistsSortBy() {
-  const [params] = useSearchParams();
+  const { sort } = useLoaderData<typeof loader>();
   const submit = useSubmit();
   return (
     <Form method="put" onChange={(e) => submit(e.currentTarget)}>
@@ -52,10 +73,7 @@ export default function SetlistsSortBy() {
           direction="col"
           gap={0}
           options={sortOptions}
-          isChecked={(val) => {
-            const sort = params.get("sort");
-            return val === (sort ?? "name:asc");
-          }}
+          isChecked={(val) => val === (sort ?? "name:asc")}
         />
       </FlexList>
     </Form>

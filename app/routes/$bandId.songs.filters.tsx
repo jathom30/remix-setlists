@@ -144,11 +144,11 @@ export default function SongsFilters() {
                   borderColor: border,
                   ...(isFocused
                     ? {
-                      outline: 2,
-                      outlineStyle: "solid",
-                      outlineColor: border,
-                      outlineOffset: 2,
-                    }
+                        outline: 2,
+                        outlineStyle: "solid",
+                        outlineColor: border,
+                        outlineOffset: 2,
+                      }
                     : null),
                   "&:hover": {
                     borderColor: baseContent,

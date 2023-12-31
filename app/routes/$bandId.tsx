@@ -9,7 +9,6 @@ import { userPrefs } from "~/models/cookies.server";
 import { getMemberRole } from "~/models/usersInBands.server";
 import { requireUserId } from "~/session.server";
 
-
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
   const { bandId } = params;
@@ -23,9 +22,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await userPrefs.parse(cookieHeader)) || {};
   // default to open if cookie is not yet set
-  let sideMenuPref = 'open'
-  if (cookie && typeof cookie === 'object' && 'sideMenu' in cookie) {
-    sideMenuPref = cookie.sideMenu.toString()
+  let sideMenuPref = "open";
+  if (cookie && typeof cookie === "object" && "sideMenu" in cookie) {
+    sideMenuPref = cookie.sideMenu.toString();
   }
 
   // used in useMemberRole hook in child routes
@@ -33,7 +32,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function BandRoute() {
-  const { memberRole, band, bands, sideMenuPref } = useLoaderData<typeof loader>();
+  const { memberRole, band, bands, sideMenuPref } =
+    useLoaderData<typeof loader>();
 
   return (
     <MaxHeightContainer
@@ -42,7 +42,12 @@ export default function BandRoute() {
     >
       <div className="h-full sm:flex">
         <div className="hidden sm:block sm:h-full">
-          <MainSidebar band={band} memberRole={memberRole} bands={bands} openState={sideMenuPref} />
+          <MainSidebar
+            band={band}
+            memberRole={memberRole}
+            bands={bands}
+            openState={sideMenuPref}
+          />
         </div>
 
         <div className="h-full sm:hidden">

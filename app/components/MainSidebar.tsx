@@ -38,7 +38,7 @@ import { Modal } from "./Modal";
 import { TextOverflow } from "./TextOverflow";
 
 interface MainSidebarProps {
-  openState: string
+  openState: string;
   band: SerializeFrom<{
     name: string;
     icon: BandIcon | null;
@@ -54,7 +54,12 @@ interface MainSidebarProps {
   }>[];
 }
 
-export const MainSidebar = ({ band, memberRole, bands, openState }: MainSidebarProps) => {
+export const MainSidebar = ({
+  band,
+  memberRole,
+  bands,
+  openState,
+}: MainSidebarProps) => {
   const user = useUser();
   const [showCreateMenu, setShowCreateMenu] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -64,7 +69,7 @@ export const MainSidebar = ({ band, memberRole, bands, openState }: MainSidebarP
 
   const isActive = pathname.split("/")[2].includes("user");
 
-  const fetcher = useFetcher()
+  const fetcher = useFetcher();
 
   return (
     <AnimatePresence initial={false}>
@@ -101,7 +106,7 @@ export const MainSidebar = ({ band, memberRole, bands, openState }: MainSidebarP
             >
               <BandOption
                 band={band}
-                isCollapsed={openState === 'closed'}
+                isCollapsed={openState === "closed"}
                 memberRole={memberRole}
               >
                 <FontAwesomeIcon icon={faSort} />
@@ -113,18 +118,33 @@ export const MainSidebar = ({ band, memberRole, bands, openState }: MainSidebarP
         <div className="flex flex-col h-full p-2 gap-4">
           <div className="flex gap-4 h-full justify-between flex-col">
             <ul className="menu p-2 rounded-box">
-              <fetcher.Form method="post" action="/resource/user-settings" className="flex flex-col pb-4">
-                <Button type="submit" name="sidebar-state" value={openState === 'open' ? 'closed' : 'open'} size="sm" kind="active" ariaLabel="Toggle sidebar">
+              <fetcher.Form
+                method="post"
+                action="/resource/user-settings"
+                className="flex flex-col pb-4"
+              >
+                <Button
+                  type="submit"
+                  name="sidebar-state"
+                  value={openState === "open" ? "closed" : "open"}
+                  size="sm"
+                  kind="active"
+                  ariaLabel="Toggle sidebar"
+                >
                   <FlexList direction="row">
-                    <FontAwesomeIcon icon={openState === 'open' ? faChevronLeft : faChevronRight} />
-                    {openState === 'open' ? <span>Collapse</span> : null}
+                    <FontAwesomeIcon
+                      icon={
+                        openState === "open" ? faChevronLeft : faChevronRight
+                      }
+                    />
+                    {openState === "open" ? <span>Collapse</span> : null}
                   </FlexList>
                 </Button>
               </fetcher.Form>
               <li>
                 <SideBarLink
                   to="setlists"
-                  isOpen={openState === 'open'}
+                  isOpen={openState === "open"}
                   label="Setlists"
                   icon={faListOl}
                 />
@@ -132,7 +152,7 @@ export const MainSidebar = ({ band, memberRole, bands, openState }: MainSidebarP
               <li>
                 <SideBarLink
                   to="songs"
-                  isOpen={openState === 'open'}
+                  isOpen={openState === "open"}
                   label="Songs"
                   icon={faMusic}
                 />
@@ -142,7 +162,7 @@ export const MainSidebar = ({ band, memberRole, bands, openState }: MainSidebarP
               <li>
                 <SideBarLink
                   to="band"
-                  isOpen={openState === 'open'}
+                  isOpen={openState === "open"}
                   label="Band settings"
                   icon={faUsers}
                 />
@@ -161,9 +181,7 @@ export const MainSidebar = ({ band, memberRole, bands, openState }: MainSidebarP
               <div className="flex flex-col items-baseline p-2">
                 <TextOverflow>{user.name}</TextOverflow>
                 <TextOverflow>
-                  <span className="text-sm text-slate-400">
-                    {user.email}
-                  </span>
+                  <span className="text-sm text-slate-400">{user.email}</span>
                 </TextOverflow>
               </div>
               <li>
@@ -188,18 +206,19 @@ export const MainSidebar = ({ band, memberRole, bands, openState }: MainSidebarP
         >
           <div className="p-2">
             <button
-              className={`btn btn-block btn-outline h-auto p-4 ${isActive ? "active" : ""
-                }`}
+              className={`btn btn-block btn-outline h-auto p-4 ${
+                isActive ? "active" : ""
+              }`}
               onClick={() => setIsUserOpen(!isUserOpen)}
             >
               <div className="w-full">
                 <FlexList
                   direction="row"
                   items="center"
-                  justify={openState === 'open' ? "start" : "center"}
+                  justify={openState === "open" ? "start" : "center"}
                 >
                   <FontAwesomeIcon icon={faUser} />
-                  {openState === 'open' ? (
+                  {openState === "open" ? (
                     <>
                       <div className="flex flex-col items-baseline">
                         <TextOverflow>{user.name}</TextOverflow>
@@ -228,7 +247,7 @@ export const MainSidebar = ({ band, memberRole, bands, openState }: MainSidebarP
           />
         </Modal>
       </motion.aside>
-    </AnimatePresence >
+    </AnimatePresence>
   );
 };
 
