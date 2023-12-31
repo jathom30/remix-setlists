@@ -33,6 +33,7 @@ import {
   SearchInput,
   SongLink,
 } from "~/components";
+import { userPrefs } from "~/models/cookies.server";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
@@ -54,11 +55,18 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const q = url.searchParams.get("query");
 
-  const sort = url.searchParams.get("sort");
+  let sort = url.searchParams.get("sort");
   const feelParams = url.searchParams.getAll("feels");
   const tempoParams = url.searchParams.getAll("tempos");
   const isCoverParam = url.searchParams.get("isCover");
   const positionParams = url.searchParams.getAll("positions");
+
+  const cookieHeader = request.headers.get("Cookie");
+  const cookie = (await userPrefs.parse(cookieHeader)) || {};
+
+  if (cookie && typeof cookie === "object" && "songSort" in cookie) {
+    sort = String(cookie.songSort)
+  }
 
   const songParams = {
     ...(q ? { q } : null),
@@ -71,13 +79,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const songs = await getSongs(bandId, songParams);
 
-  return json({ songs });
+  return json({ songs, sort });
 }
 
 const subRoutes = ["sortBy", "filters"];
 
 export default function SongsList() {
-  const { songs } = useLoaderData<typeof loader>();
+  const { songs, sort } = useLoaderData<typeof loader>();
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
   const submit = useSubmit();
@@ -92,7 +100,7 @@ export default function SongsList() {
 
   const hasSongs = songs.length;
 
-  const sortBy = sortByLabel(searchParams);
+  const sortBy = sortByLabel(sort || 'name:asc');
 
   const handleClearQuery = () => {
     setQuery("");

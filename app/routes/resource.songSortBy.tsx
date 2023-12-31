@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
+import { userPrefs } from "~/models/cookies.server";
 
 import { requireUserId } from "~/session.server";
 
@@ -23,5 +24,13 @@ export async function action({ request }: ActionFunctionArgs) {
   searchParams.delete("sort");
   searchParams.append("sort", sort);
 
-  return redirect(`${redirectTo}?${searchParams.toString()}`);
+  const cookieHeader = request.headers.get("Cookie");
+  const cookie = (await userPrefs.parse(cookieHeader)) || {};
+  cookie.songSort = sort;
+
+  return redirect(`${redirectTo}?${searchParams.toString()}`, {
+    headers: {
+      "Set-Cookie": await userPrefs.serialize(cookie),
+    },
+  });
 }

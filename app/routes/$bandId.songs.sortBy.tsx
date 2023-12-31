@@ -1,11 +1,14 @@
+import { LoaderFunctionArgs, json } from "@remix-run/node";
 import {
   isRouteErrorResponse,
   useFetcher,
+  useLoaderData,
   useParams,
   useRouteError,
   useSearchParams,
   useSubmit,
 } from "@remix-run/react";
+import invariant from "tiny-invariant";
 
 import {
   CatchContainer,
@@ -14,9 +17,24 @@ import {
   Label,
   RadioGroup,
 } from "~/components";
+import { userPrefs } from "~/models/cookies.server";
+import { requireUserId } from "~/session.server";
 import { sortOptions } from "~/utils/params";
 
+export async function loader({request, params}: LoaderFunctionArgs) {
+  await requireUserId(request);
+  const { bandId } = params;
+  invariant(bandId, "bandId not found");
+
+  const cookieHeader = request.headers.get("Cookie");
+  const cookie = (await userPrefs.parse(cookieHeader)) || {};
+  const sort = String(cookie.songSort) || "name:asc";
+
+  return json({ sort });
+}
+
 export default function SongsSortBy() {
+  const { sort } = useLoaderData<typeof loader>();
   const fetcher = useFetcher();
   const [params] = useSearchParams();
   const { bandId } = useParams();
@@ -34,10 +52,7 @@ export default function SongsSortBy() {
           direction="col"
           gap={0}
           options={sortOptions}
-          isChecked={(val) => {
-            const sort = params.get("sort");
-            return val === (sort ?? "name:asc");
-          }}
+          isChecked={(val) => val === (sort ?? "name:asc")}
         />
         <input
           hidden
