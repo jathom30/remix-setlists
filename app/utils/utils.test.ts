@@ -132,6 +132,9 @@ describe("Param utils", () => {
   });
 
   test("Sort by label", () => {
+    const searchParams = new URLSearchParams();
+    searchParams.set("sort", "name:asc");
+    expect(sortByLabel(searchParams)).toBe("Name A-Z");
     expect(sortByLabel("name:asc")).toBe("Name A-Z");
     expect(sortByLabel("name:desc")).toBe("Name Z-A");
     expect(sortByLabel("tempo:asc")).toBe("Tempo slow-fast");

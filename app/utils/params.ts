@@ -8,8 +8,15 @@ export const getSortFromParam = (sortParam?: string) => {
   return orderBy;
 };
 
-export const sortByLabel = (sortBy: string) => {
-  const sortObject = getSortFromParam(sortBy ?? undefined);
+export const sortByLabel = (sortBy: string | URLSearchParams) => {
+  let sortString = "";
+  if (typeof sortBy === "string") {
+    sortString = sortBy;
+  }
+  if (sortBy instanceof URLSearchParams) {
+    sortString = sortBy.get("sort") ?? "";
+  }
+  const sortObject = getSortFromParam(sortString ?? undefined);
   const [entry] = Object.entries(sortObject);
   // probably not the best solution, but removes At from createdAt and updatedAt keys
   const sort = capitalizeFirstLetter(entry[0]).replace("At", "");
