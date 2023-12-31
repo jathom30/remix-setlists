@@ -13,6 +13,7 @@ import {
   updateSetlist,
 } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
+import { emitter } from "~/utils/emitter.server";
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId, setlistId } = params;
@@ -37,6 +38,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   // on overwrite, update OG setlist to match cloned setlist, then delete clone and redirect to OG
   if (intent === "overwrite") {
     const updatedSetlistId = await overwriteSetlist(clonedSetlist.id);
+    emitter.emit(`setlist:${updatedSetlistId}`);
     return redirect(`/${bandId}/setlist/${updatedSetlistId}`);
   }
   return null;

@@ -11,7 +11,6 @@ import { json } from "@remix-run/node";
 import {
   Outlet,
   isRouteErrorResponse,
-  useLoaderData,
   useLocation,
   useNavigate,
   useParams,
@@ -42,6 +41,7 @@ import {
   Navbar,
   SongLink,
 } from "~/components";
+import { useLiveLoader } from "~/hooks";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
@@ -92,7 +92,7 @@ export default function Setlist() {
   const role = useMemberRole();
   const isSub = role === RoleEnum.SUB;
   const [showTooltip, setShowTooltip] = useState(false);
-  const { setlist } = useLoaderData<typeof loader>();
+  const { setlist } = useLiveLoader<typeof loader>();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { bandId } = useParams();
