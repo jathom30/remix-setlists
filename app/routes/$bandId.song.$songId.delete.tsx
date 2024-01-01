@@ -11,6 +11,7 @@ import invariant from "tiny-invariant";
 import { CatchContainer, ConfirmDelete, ErrorContainer } from "~/components";
 import { deleteSong, getSong } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
+import { emitter } from "~/utils/emitter.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { songId, bandId } = params;
@@ -33,6 +34,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   await requireNonSubMember(request, bandId);
 
   await deleteSong(songId);
+  emitter.emit("songs");
   return redirect(`/${bandId}/songs`);
 }
 

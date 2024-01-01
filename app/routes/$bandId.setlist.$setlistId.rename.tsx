@@ -7,6 +7,7 @@ import { FlexList, Input, Label, SaveButtons } from "~/components";
 import { ErrorMessage } from "~/components/ErrorMessage";
 import { getSetlist, updateSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
+import { emitter } from "~/utils/emitter.server";
 import { getFields } from "~/utils/form";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -43,6 +44,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   await updateSetlist(setlistId, fields);
+  emitter.emit("setlists");
   return redirect(`/${bandId}/setlist/${setlistId}`);
 }
 

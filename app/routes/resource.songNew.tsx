@@ -21,6 +21,7 @@ import {
 import { deleteLink, upsertLink } from "~/models/links.server";
 import { createSong, handleSongFormData } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
+import { emitter } from "~/utils/emitter.server";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -49,6 +50,7 @@ export async function action({ request }: ActionFunctionArgs) {
       : []),
   ]);
 
+  emitter.emit("songs");
   if (!redirectTo) {
     return redirect(`/${bandId}/song/${song.id}`);
   }

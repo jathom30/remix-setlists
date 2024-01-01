@@ -6,7 +6,6 @@ import {
   Form,
   Outlet,
   isRouteErrorResponse,
-  useLoaderData,
   useLocation,
   useNavigate,
   useParams,
@@ -15,6 +14,7 @@ import {
   useSubmit,
 } from "@remix-run/react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import invariant from "tiny-invariant";
 
 import {
@@ -33,12 +33,14 @@ import {
   SearchInput,
   SongLink,
 } from "~/components";
+import { useLiveLoader } from "~/hooks";
 import { userPrefs } from "~/models/cookies.server";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { sortByLabel } from "~/utils/params";
+import { getColor } from "~/utils/tailwindColors";
 
 export const meta: MetaFunction = () => [
   {
@@ -84,7 +86,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 const subRoutes = ["sortBy", "filters"];
 
 export default function SongsList() {
-  const { songs, sort } = useLoaderData<typeof loader>();
+  const showToast = () => {
+    toast("Songs updated!", {
+      duration: 2000,
+      style: {
+        backgroundColor: getColor("success"),
+        color: getColor("success-content"),
+      },
+    });
+  };
+  const { songs, sort } = useLiveLoader<typeof loader>(showToast);
+
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
   const submit = useSubmit();

@@ -5,7 +5,6 @@ import { json } from "@remix-run/node";
 import {
   Form,
   Outlet,
-  useLoaderData,
   useLocation,
   useNavigate,
   useParams,
@@ -13,6 +12,7 @@ import {
   useSubmit,
 } from "@remix-run/react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import invariant from "tiny-invariant";
 
 import {
@@ -29,6 +29,7 @@ import {
   SearchInput,
   SetlistLink,
 } from "~/components";
+import { useLiveLoader } from "~/hooks";
 import { userPrefs } from "~/models/cookies.server";
 import { getSetlists } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
@@ -36,6 +37,7 @@ import { useMemberRole } from "~/utils";
 import { capitalizeFirstLetter } from "~/utils/assorted";
 import { RoleEnum } from "~/utils/enums";
 import { getSortFromParam } from "~/utils/params";
+import { getColor } from "~/utils/tailwindColors";
 
 export const meta: MetaFunction = () => [
   {
@@ -78,7 +80,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 const subRoutes = ["sortBy", "filters"];
 
 export default function SetlistsRoute() {
-  const { setlists, sort: serverSort } = useLoaderData<typeof loader>();
+  const showToast = () => {
+    toast("Setlists updated!", {
+      duration: 2000,
+      style: {
+        backgroundColor: getColor("success"),
+        color: getColor("success-content"),
+      },
+    });
+  };
+  const { setlists, sort: serverSort } =
+    useLiveLoader<typeof loader>(showToast);
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
   const [searchParams, setSearchParams] = useSearchParams();

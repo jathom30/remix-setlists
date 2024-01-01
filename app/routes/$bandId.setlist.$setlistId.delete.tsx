@@ -6,6 +6,7 @@ import invariant from "tiny-invariant";
 import { ConfirmDelete, ErrorContainer } from "~/components";
 import { deleteSetlist } from "~/models/setlist.server";
 import { requireNonSubMember } from "~/session.server";
+import { emitter } from "~/utils/emitter.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId } = params;
@@ -21,6 +22,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   await requireNonSubMember(request, bandId);
 
   await deleteSetlist(setlistId);
+  emitter.emit("setlists");
   return redirect(`/${bandId}/setlists`);
 }
 
