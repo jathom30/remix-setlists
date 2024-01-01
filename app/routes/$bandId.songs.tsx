@@ -6,7 +6,6 @@ import {
   Form,
   Outlet,
   isRouteErrorResponse,
-  useLoaderData,
   useLocation,
   useNavigate,
   useParams,
@@ -33,6 +32,7 @@ import {
   SearchInput,
   SongLink,
 } from "~/components";
+import { useLiveLoader } from "~/hooks";
 import { userPrefs } from "~/models/cookies.server";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
@@ -84,7 +84,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 const subRoutes = ["sortBy", "filters"];
 
 export default function SongsList() {
-  const { songs, sort } = useLoaderData<typeof loader>();
+  const { songs, sort } = useLiveLoader<typeof loader>();
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
   const submit = useSubmit();

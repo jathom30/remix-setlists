@@ -5,7 +5,6 @@ import { json } from "@remix-run/node";
 import {
   Form,
   Outlet,
-  useLoaderData,
   useLocation,
   useNavigate,
   useParams,
@@ -29,6 +28,7 @@ import {
   SearchInput,
   SetlistLink,
 } from "~/components";
+import { useLiveLoader } from "~/hooks";
 import { userPrefs } from "~/models/cookies.server";
 import { getSetlists } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
@@ -78,7 +78,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 const subRoutes = ["sortBy", "filters"];
 
 export default function SetlistsRoute() {
-  const { setlists, sort: serverSort } = useLoaderData<typeof loader>();
+  const { setlists, sort: serverSort } = useLiveLoader<typeof loader>();
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
   const [searchParams, setSearchParams] = useSearchParams();

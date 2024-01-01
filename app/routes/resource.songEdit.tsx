@@ -24,6 +24,7 @@ import {
 import { deleteLink, upsertLink } from "~/models/links.server";
 import { handleSongFormData, updateSong } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
+import { emitter } from "~/utils/emitter.server";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -55,6 +56,7 @@ export async function action({ request }: ActionFunctionArgs) {
   ]);
 
   await updateSong(songId, formFields, validFeels);
+  emitter.emit("songs");
   return redirect(redirectTo);
 }
 

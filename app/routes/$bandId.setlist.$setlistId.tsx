@@ -98,9 +98,7 @@ export default function Setlist() {
     });
   };
 
-  const {
-    useLoaderData: { setlist },
-  } = useLiveLoader<typeof loader>(showToast);
+  const { setlist } = useLiveLoader<typeof loader>(showToast);
   const { pathname } = react.useLocation();
   const navigate = react.useNavigate();
   const { bandId } = react.useParams();

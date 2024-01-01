@@ -20,7 +20,5 @@ export function useLiveLoader<T>(onUpdate?: () => void) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- "we know better" — Moishi
   }, [data]);
 
-  return {
-    useLoaderData: useLoaderData<T>(),
-  };
+  return useLoaderData<T>();
 }
