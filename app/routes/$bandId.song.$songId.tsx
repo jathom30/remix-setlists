@@ -4,12 +4,12 @@ import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import {
   Outlet,
   isRouteErrorResponse,
-  useLoaderData,
   useLocation,
   useNavigate,
   useParams,
   useRouteError,
 } from "@remix-run/react";
+import toast from "react-hot-toast";
 import invariant from "tiny-invariant";
 
 import {
@@ -27,10 +27,12 @@ import {
   Navbar,
   SongDetails,
 } from "~/components";
+import { useLiveLoader } from "~/hooks";
 import { getSong } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
+import { getColor } from "~/utils/tailwindColors";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
@@ -62,7 +64,16 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export default function SongDetailsRoute() {
-  const { song, setlists } = useLoaderData<typeof loader>();
+  const showToast = () => {
+    toast("Song updated!", {
+      duration: 2000,
+      style: {
+        backgroundColor: getColor("success"),
+        color: getColor("success-content"),
+      },
+    });
+  };
+  const { song, setlists } = useLiveLoader<typeof loader>(showToast);
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
   const { pathname } = useLocation();

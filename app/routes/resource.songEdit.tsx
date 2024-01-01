@@ -57,6 +57,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   await updateSong(songId, formFields, validFeels);
   emitter.emit("songs");
+  emitter.emit(`song:${songId}`);
   return redirect(redirectTo);
 }
 
