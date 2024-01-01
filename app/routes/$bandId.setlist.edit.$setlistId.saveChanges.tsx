@@ -32,6 +32,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   // on new, remove editedFromId and redirect to rename setlist page
   if (intent === "new") {
     await updateSetlist(setlistId, { editedFromId: null });
+    emitter.emit(`setlists`);
     return redirect(`/${bandId}/setlist/${setlistId}/rename`);
   }
 
@@ -39,6 +40,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (intent === "overwrite") {
     const updatedSetlistId = await overwriteSetlist(clonedSetlist.id);
     emitter.emit(`setlist:${updatedSetlistId}`);
+    emitter.emit(`setlists`);
     return redirect(`/${bandId}/setlist/${updatedSetlistId}`);
   }
   return null;
