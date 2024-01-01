@@ -8,16 +8,10 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import {
-  Outlet,
-  isRouteErrorResponse,
-  useLocation,
-  useNavigate,
-  useParams,
-  useRouteError,
-} from "@remix-run/react";
+import * as react from "@remix-run/react";
 import pluralize from "pluralize";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Popover } from "react-tiny-popover";
 import invariant from "tiny-invariant";
 
@@ -47,6 +41,7 @@ import { requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { getSetLength } from "~/utils/setlists";
+import { getColor } from "~/utils/tailwindColors";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
@@ -92,10 +87,23 @@ export default function Setlist() {
   const role = useMemberRole();
   const isSub = role === RoleEnum.SUB;
   const [showTooltip, setShowTooltip] = useState(false);
-  const { setlist } = useLiveLoader<typeof loader>();
-  const { pathname } = useLocation();
-  const navigate = useNavigate();
-  const { bandId } = useParams();
+
+  const showToast = () => {
+    toast("Setlist updated!", {
+      duration: 2000,
+      style: {
+        backgroundColor: getColor("success"),
+        color: getColor("success-content"),
+      },
+    });
+  };
+
+  const {
+    useLoaderData: { setlist },
+  } = useLiveLoader<typeof loader>(showToast);
+  const { pathname } = react.useLocation();
+  const navigate = react.useNavigate();
+  const { bandId } = react.useParams();
   const setKeyDefaults = setlist.sets.reduce(
     (acc, set) => ({ ...acc, [set.id]: true }),
     {} as Record<string, boolean>,
@@ -116,6 +124,7 @@ export default function Setlist() {
       fullHeight
       header={
         <>
+          {/* <ToastContainer /> */}
           <Navbar>
             <FlexHeader>
               <FlexList direction="row" gap={2} items="center">
@@ -182,7 +191,7 @@ export default function Setlist() {
             open={subRoutes.some((route) => pathname.includes(route))}
             onClose={() => navigate(".")}
           >
-            <Outlet />
+            <react.Outlet />
           </MobileModal>
         </>
       }
@@ -246,8 +255,8 @@ export default function Setlist() {
 }
 
 export function ErrorBoundary() {
-  const error = useRouteError();
-  if (!isRouteErrorResponse(error)) {
+  const error = react.useRouteError();
+  if (!react.isRouteErrorResponse(error)) {
     return <ErrorContainer error={error as Error} />;
   }
   return <CatchContainer status={error.status} data={error.data} />;

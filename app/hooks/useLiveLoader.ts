@@ -6,7 +6,7 @@ import {
 import { useEffect } from "react";
 import { useEventSource } from "remix-utils/sse/react";
 
-export function useLiveLoader<T>() {
+export function useLiveLoader<T>(onUpdate?: () => void) {
   const path = useResolvedPath("./stream");
   const data = useEventSource(path.pathname);
 
@@ -14,8 +14,14 @@ export function useLiveLoader<T>() {
 
   useEffect(() => {
     revalidate();
+    if (typeof data === "string") {
+      console.log(data);
+      onUpdate?.();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- "we know better" — Moishi
   }, [data]);
 
-  return useLoaderData<T>();
+  return {
+    useLoaderData: useLoaderData<T>(),
+  };
 }

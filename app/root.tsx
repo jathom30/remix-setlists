@@ -11,6 +11,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 import { themeChange } from "theme-change";
 
 import stylesheet from "~/tailwind.css";
@@ -57,6 +58,7 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full">
+        <Toaster />
         <Outlet />
         <div id="modal-portal" />
         <ScrollRestoration />
