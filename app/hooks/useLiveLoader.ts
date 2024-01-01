@@ -15,7 +15,6 @@ export function useLiveLoader<T>(onUpdate?: () => void) {
   useEffect(() => {
     revalidate();
     if (typeof data === "string") {
-      console.log(data);
       onUpdate?.();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- "we know better" — Moishi
