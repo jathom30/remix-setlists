@@ -11,7 +11,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import { useEffect } from "react";
-import { Toaster } from "react-hot-toast";
+import { Toast, ToastBar, Toaster, useToaster } from "react-hot-toast";
 import { themeChange } from "theme-change";
 
 import stylesheet from "~/tailwind.css";
@@ -44,6 +44,19 @@ export default function App() {
     themeChange(false);
     // 👆 false parameter is required for react project
   });
+
+  const { toasts } = useToaster();
+
+  // a unique array of toasts based on messages
+  // This is a bit of a hack. For some reason the server is double firing toasts.
+  // This is a quick fix to only show one message instead of a duplicate.
+  const uniqueToasts = toasts.reduce((unique: Toast[], toast) => {
+    if (!unique.some((u) => u.message === toast.message)) {
+      unique.push(toast);
+    }
+    return unique;
+  }, []);
+
   return (
     <html lang="en" className="h-full bg-base-300">
       <head>
@@ -58,7 +71,12 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full">
-        <Toaster />
+        <Toaster>
+          {(t) => {
+            if (uniqueToasts.every((u) => u.id !== t.id)) return <></>;
+            return <ToastBar toast={t} />;
+          }}
+        </Toaster>
         <Outlet />
         <div id="modal-portal" />
         <ScrollRestoration />
