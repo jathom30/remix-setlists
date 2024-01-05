@@ -28,6 +28,7 @@ import {
 } from "~/components";
 import { getBands } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
+import { useFeatureFlags } from "~/utils";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
@@ -42,6 +43,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
 const subRoutes = ["new", "existing", "menu", "user", "delete"];
 
 export default function Home() {
+  const { rebranding } = useFeatureFlags();
+  if (rebranding) {
+    return <>This is a test</>;
+  }
+  return <HomeOld />;
+}
+
+const HomeOld = () => {
   const { bands } = useLoaderData<typeof loader>();
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -127,4 +136,4 @@ export default function Home() {
       )}
     </MaxHeightContainer>
   );
-}
+};
