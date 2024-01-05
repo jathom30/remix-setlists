@@ -6,9 +6,16 @@ export const featureFlagKeys = ["rebranding", "updateMarketingRoute"] as const;
 export type FeatureFlagKey = (typeof featureFlagKeys)[number];
 
 export async function getFeatureFlags(user: User | null) {
-  invariant(process.env.CONFIG_CAT_API_KEY, "CONFIG_CAT_API_KEY must be set");
+  const isProd = process.env.NODE_ENV === "production";
+
+  const configCatKey = isProd
+    ? process.env.CONFIG_CAT_PRODUCTION_API_KEY
+    : process.env.CONFIG_CAT_DEV_API_KEY;
+
+  // TODO use isProd
+  invariant(configCatKey, "Config Cat API key must be set");
   const configCatClient = configCat.getClient(
-    process.env.CONFIG_CAT_API_KEY,
+    configCatKey,
     configCat.PollingMode.AutoPoll,
   );
   const allFlags = await configCatClient.getAllValuesAsync({
