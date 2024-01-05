@@ -36,11 +36,10 @@ export const links: LinksFunction = () => {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  return json({
-    user: await getUser(request),
-    // loading the feature flags here so that they are available to all routes via useFeatureFlags
-    featureFlags: await getFeatureFlags(),
-  });
+  const user = await getUser(request);
+  // loading the feature flags here so that they are available to all routes via useFeatureFlags
+  const featureFlags = await getFeatureFlags(user);
+  return json({ user, featureFlags });
 }
 
 export default function AppWithProviders() {
