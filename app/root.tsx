@@ -42,11 +42,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json({ user, featureFlags });
 }
 
-export default function AppWithProviders() {
-  return <App />;
-}
-
-export function App() {
+export default function App() {
   useEffect(() => {
     themeChange(false);
     // 👆 false parameter is required for react project
