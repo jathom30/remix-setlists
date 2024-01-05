@@ -17,6 +17,8 @@ import { themeChange } from "theme-change";
 import stylesheet from "~/tailwind.css";
 
 import { getUser } from "./session.server";
+import { getFeatureFlags } from "./utils/featureflags.server";
+
 // Prevent fontawesome from dynamically adding its css since we are going to include it manually
 config.autoAddCss = false;
 
@@ -34,9 +36,10 @@ export const links: LinksFunction = () => {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  return json({
-    user: await getUser(request),
-  });
+  const user = await getUser(request);
+  // loading the feature flags here so that they are available to all routes via useFeatureFlags
+  const featureFlags = await getFeatureFlags(user);
+  return json({ user, featureFlags });
 }
 
 export default function App() {
