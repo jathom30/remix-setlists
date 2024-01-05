@@ -1,8 +1,8 @@
 import { faSignOut, faUser } from "@fortawesome/free-solid-svg-icons";
 import { LoaderFunctionArgs, json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 
-import { FlexList, Link } from "~/components";
+import { Button, FlexList, Link } from "~/components";
 import { getUserBands } from "~/models/usersInBands.server";
 import { requireUserId } from "~/session.server";
 
@@ -21,9 +21,11 @@ export default function User() {
           User
         </Link>
       ) : null}
-      <Link to="/logout" icon={faSignOut}>
-        Sign Out
-      </Link>
+      <Form className="flex flex-col" action="/logout" method="post">
+        <Button icon={faSignOut} type="submit">
+          Logout
+        </Button>
+      </Form>
     </FlexList>
   );
 }
