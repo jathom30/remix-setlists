@@ -109,7 +109,7 @@ export default function Home() {
               <NavLink
                 to={`/${band.id}/setlists`}
                 key={band.id}
-                className="bg-base-100 rounded hover:bg-base-200"
+                className="bg-muted rounded hover:bg-accent"
               >
                 <FlexList direction="row" pad={4} items="center">
                   <Avatar size="lg" icon={band.icon} bandName={band.name} />

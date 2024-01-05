@@ -9,14 +9,18 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
-import { useEffect } from "react";
 import { Toast, ToastBar, Toaster, useToaster } from "react-hot-toast";
-import { themeChange } from "theme-change";
+import {
+  PreventFlashOnWrongTheme,
+  ThemeProvider,
+  useTheme,
+} from "remix-themes";
 
-import stylesheet from "~/tailwind.css";
+import globalStylesheet from "~/globals.css";
 
-import { getUser } from "./session.server";
+import { getUser, themeSessionResolver } from "./session.server";
 // Prevent fontawesome from dynamically adding its css since we are going to include it manually
 config.autoAddCss = false;
 
@@ -28,23 +32,30 @@ export const links: LinksFunction = () => {
       rel: "stylesheet",
       href: "https://fonts.googleapis.com/css2?family=Fascinate&family=Poppins:wght@100;400;700&display=swap",
     },
+    { rel: "stylesheet", href: globalStylesheet },
     { rel: "stylesheet", href: faStylesheet },
-    { rel: "stylesheet", href: stylesheet },
   ];
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  const { getTheme } = await themeSessionResolver(request);
   return json({
     user: await getUser(request),
+    theme: getTheme(),
   });
 }
 
-export default function App() {
-  useEffect(() => {
-    themeChange(false);
-    // 👆 false parameter is required for react project
-  });
+export default function AppWithProviders() {
+  const { theme } = useLoaderData<typeof loader>();
+  return (
+    <ThemeProvider specifiedTheme={theme} themeAction="/resource/set-theme">
+      <App />
+    </ThemeProvider>
+  );
+}
 
+export function App() {
+  const [theme] = useTheme();
   const { toasts } = useToaster();
 
   // a unique array of toasts based on messages
@@ -58,7 +69,7 @@ export default function App() {
   }, []);
 
   return (
-    <html lang="en" className="h-full bg-base-300">
+    <html lang="en" className="h-full bg-background">
       <head>
         <meta title="Setlists" />
         <meta charSet="utf-8" />
@@ -67,6 +78,7 @@ export default function App() {
           content="width=device-width,initial-scale=1, viewport-fit=cover"
         />
         <Meta />
+        <PreventFlashOnWrongTheme ssrTheme={Boolean(theme)} />
         <link rel="manifest" href="/resources/manifest.webmanifest" />
         <Links />
       </head>

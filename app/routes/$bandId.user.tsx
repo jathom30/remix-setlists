@@ -22,6 +22,7 @@ import {
   useRouteError,
   useSubmit,
 } from "@remix-run/react";
+import { Theme, useTheme } from "remix-themes";
 
 import {
   AvatarTitle,
@@ -41,9 +42,16 @@ import {
   MobileModal,
   Navbar,
 } from "~/components";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { getUserWithBands } from "~/models/user.server";
 import { requireUserId } from "~/session.server";
-import { capitalizeFirstLetter } from "~/utils/assorted";
 
 export const meta: MetaFunction = () => [
   {
@@ -77,42 +85,15 @@ export async function action({ request }: ActionFunctionArgs) {
 
 const subRoutes = ["details", "password", "delete", "remove", "addBand"];
 
-const themes = [
-  "cupcake",
-  "bumblebee",
-  "emerald",
-  "corporate",
-  "synthwave",
-  "retro",
-  "cyberpunk",
-  "valentine",
-  "halloween",
-  "garden",
-  "forest",
-  "aqua",
-  "lofi",
-  "pastel",
-  "fantasy",
-  "wireframe",
-  "black",
-  "luxury",
-  "dracula",
-  "cmyk",
-  "autumn",
-  "business",
-  "acid",
-  "lemonade",
-  "night",
-  "coffee",
-  "winter",
-].sort();
-
 export default function UserRoute() {
   const { user } = useLoaderData<typeof loader>();
   const { pathname } = useLocation();
   const { bandId } = useParams();
   const navigate = useNavigate();
   const submit = useSubmit();
+
+  const [theme, setTheme] = useTheme();
+
   return (
     <MaxHeightContainer
       fullHeight
@@ -149,20 +130,21 @@ export default function UserRoute() {
         <FlexList pad={4}>
           <FlexList gap={2}>
             <Label>Theme</Label>
-            <select
+            <Select
               name="theme"
-              className="select select-bordered w-full"
-              data-choose-theme
+              value={String(theme)}
+              onValueChange={(t) => setTheme(t as Theme)}
             >
-              <option value="">Default</option>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-              {themes.map((theme) => (
-                <option key={theme} value={theme}>
-                  {capitalizeFirstLetter(theme)}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a theme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value={Theme.LIGHT}>Light</SelectItem>
+                  <SelectItem value={Theme.DARK}>Dark</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </FlexList>
           <FlexList gap={2}>
             <FlexHeader>

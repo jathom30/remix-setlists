@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 
 import { contrastColor } from "~/utils/assorted";
 
+import { Badge } from "./ui/badge";
+
 export const FeelTag = ({
   feel,
   children,
@@ -14,16 +16,14 @@ export const FeelTag = ({
   fullWidth?: boolean;
 }) => {
   return (
-    <span
-      className={`badge badge-lg border-none whitespace-nowrap ${
-        fullWidth ? "w-full" : ""
-      }`}
+    <Badge
+      className={`whitespace-nowrap ${fullWidth ? "w-full" : ""}`}
       style={{
         backgroundColor: feel.color || "",
         color: contrastColor(feel.color || ""),
       }}
     >
       {feel.label} {children}
-    </span>
+    </Badge>
   );
 };

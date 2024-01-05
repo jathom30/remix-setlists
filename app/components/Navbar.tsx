@@ -9,7 +9,7 @@ export const Navbar = ({
 }) => {
   return (
     <div
-      className={`navbar bg-base-100 shadow-lg border-b border-base-300 ${
+      className={`flex items-center w-full min-h-[4rem] p-2 bg-background shadow-lg border-b border-border ${
         shrink ? "min-h-[2.5rem] py-1" : ""
       }`}
     >
