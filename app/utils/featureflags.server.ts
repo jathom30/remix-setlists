@@ -2,10 +2,7 @@ import { User } from "@prisma/client";
 import * as configCat from "configcat-js-ssr";
 import invariant from "tiny-invariant";
 
-export const featureFlagKeys = [
-  "rebranding",
-  "isMyFirstFeatureEnabled",
-] as const;
+export const featureFlagKeys = ["rebranding", "updateMarketingRoute"] as const;
 export type FeatureFlagKey = (typeof featureFlagKeys)[number];
 
 export async function getFeatureFlags(user: User | null) {
