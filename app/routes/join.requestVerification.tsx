@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json, redirect } from "@remix-run/node";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import { HoneypotInputs } from "remix-utils/honeypot/react";
 
 import {
   Button,
@@ -18,6 +19,7 @@ import { generateTokenLink, getUserByEmail } from "~/models/user.server";
 import { getUser } from "~/session.server";
 import { validateEmail } from "~/utils";
 import { getDomainUrl } from "~/utils/assorted";
+import { honeypot } from "~/utils/honeypot.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const urlSearchParams = new URL(request.url).searchParams;
@@ -29,6 +31,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
+  try {
+    honeypot.check(formData);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw json({ message: error.message }, { status: 400 });
+    }
+  }
   const email = formData.get("email");
 
   if (!validateEmail(email)) {
@@ -71,6 +80,7 @@ export default function RequestVerification() {
       </p>
       <ItemBox>
         <Form method="put">
+          <HoneypotInputs />
           <FlexList>
             <Field name="email" label="Email">
               <Input
