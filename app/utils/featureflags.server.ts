@@ -12,7 +12,6 @@ export async function getFeatureFlags(user: User | null) {
     ? process.env.CONFIG_CAT_PRODUCTION_API_KEY
     : process.env.CONFIG_CAT_DEV_API_KEY;
 
-  // TODO use isProd
   invariant(configCatKey, "Config Cat API key must be set");
   const configCatClient = configCat.getClient(
     configCatKey,

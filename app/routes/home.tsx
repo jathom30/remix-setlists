@@ -45,10 +45,14 @@ const subRoutes = ["new", "existing", "menu", "user", "delete"];
 export default function Home() {
   const { rebranding } = useFeatureFlags();
   if (rebranding) {
-    return <>This is a test</>;
+    return <HomeNew />;
   }
   return <HomeOld />;
 }
+
+const HomeNew = () => {
+  return <>New home</>;
+};
 
 const HomeOld = () => {
   const { bands } = useLoaderData<typeof loader>();

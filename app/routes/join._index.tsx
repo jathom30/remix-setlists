@@ -13,6 +13,7 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import * as React from "react";
+import { HoneypotInputs } from "remix-utils/honeypot/react";
 import invariant from "tiny-invariant";
 
 import {
@@ -35,6 +36,7 @@ import {
   getPasswordError,
   passwordStrength,
 } from "~/utils/assorted";
+import { honeypot } from "~/utils/honeypot.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getUserId(request);
@@ -44,6 +46,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
+  try {
+    honeypot.check(formData);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw json({ message: error.message }, { status: 400 });
+    }
+  }
   const email = formData.get("email");
   const password = formData.get("password");
   const name = formData.get("name");
@@ -143,6 +152,7 @@ export default function Join() {
     <div className="h-full">
       <FlexList pad={4}>
         <Form method="post" className="space-y-6">
+          <HoneypotInputs />
           <div>
             <label htmlFor="name" className="block text-sm font-medium">
               Name

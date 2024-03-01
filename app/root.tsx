@@ -9,15 +9,18 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 import { useEffect } from "react";
 import { Toast, ToastBar, Toaster, useToaster } from "react-hot-toast";
+import { HoneypotProvider } from "remix-utils/honeypot/react";
 import { themeChange } from "theme-change";
 
 import stylesheet from "~/tailwind.css";
 
 import { getUser } from "./session.server";
 import { getFeatureFlags } from "./utils/featureflags.server";
+import { honeypot } from "./utils/honeypot.server";
 
 // Prevent fontawesome from dynamically adding its css since we are going to include it manually
 config.autoAddCss = false;
@@ -39,10 +42,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUser(request);
   // loading the feature flags here so that they are available to all routes via useFeatureFlags
   const featureFlags = await getFeatureFlags(user);
-  return json({ user, featureFlags });
+  return json({
+    user,
+    featureFlags,
+    honeyportInputProps: honeypot.getInputProps(),
+  });
 }
 
 export default function App() {
+  const { honeyportInputProps } = useLoaderData<typeof loader>();
   useEffect(() => {
     themeChange(false);
     // 👆 false parameter is required for react project
@@ -80,7 +88,9 @@ export default function App() {
             return <ToastBar toast={t} />;
           }}
         </Toaster>
-        <Outlet />
+        <HoneypotProvider {...honeyportInputProps}>
+          <Outlet />
+        </HoneypotProvider>
         <div id="modal-portal" />
         <ScrollRestoration />
         <Scripts />

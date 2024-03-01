@@ -15,6 +15,7 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import * as React from "react";
+import { HoneypotInputs } from "remix-utils/honeypot/react";
 
 import {
   CatchContainer,
@@ -30,6 +31,7 @@ import { generateTokenLink, verifyLogin } from "~/models/user.server";
 import { createUserSession, getUser } from "~/session.server";
 import { safeRedirect, validateEmail } from "~/utils";
 import { getDomainUrl } from "~/utils/assorted";
+import { honeypot } from "~/utils/honeypot.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUser(request);
@@ -40,6 +42,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
+  try {
+    honeypot.check(formData);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw json({ message: error.message }, { status: 400 });
+    }
+  }
   const email = formData.get("email");
   const password = formData.get("password");
   const redirectTo = safeRedirect(formData.get("redirectTo"), "/home");
@@ -117,6 +126,7 @@ export default function LoginPage() {
     <div className="flex min-h-full flex-col justify-center">
       <div className="mx-auto w-full max-w-md px-8">
         <Form method="post" className="space-y-6">
+          <HoneypotInputs />
           <div>
             <label htmlFor="email" className="block text-sm font-medium">
               Email address
