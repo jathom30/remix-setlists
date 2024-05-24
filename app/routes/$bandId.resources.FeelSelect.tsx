@@ -65,7 +65,7 @@ export const FeelSelect = ({
   const handleCreateFeel = (newFeel: string) => {
     fetcher.submit(
       { newFeel },
-      { method: "post", action: `${bandId}/resources/FeelSelect` },
+      { method: "post", action: `/${bandId}/resources/FeelSelect` },
     );
   };
   return (
