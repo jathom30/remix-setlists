@@ -16,7 +16,7 @@ import { Toast, ToastBar, Toaster, useToaster } from "react-hot-toast";
 import { HoneypotProvider } from "remix-utils/honeypot/react";
 import { themeChange } from "theme-change";
 
-import stylesheet from "~/tailwind.css";
+import stylesheet from "~/globals.css";
 
 import { getUser } from "./session.server";
 import { getFeatureFlags } from "./utils/featureflags.server";
@@ -69,7 +69,7 @@ export default function App() {
   }, []);
 
   return (
-    <html lang="en" className="h-full bg-base-300">
+    <html lang="en" className="h-full">
       <head>
         <meta title="Setlists" />
         <meta charSet="utf-8" />

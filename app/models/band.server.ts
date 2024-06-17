@@ -17,8 +17,8 @@ export async function getBands(userId: User["id"]) {
       name: true,
       icon: true,
       members: {
-        where: { userId },
-        select: { role: true },
+        // where: { userId },
+        select: { role: true, userId: true },
       },
     },
   });
