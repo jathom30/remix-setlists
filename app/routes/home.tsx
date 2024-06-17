@@ -66,10 +66,6 @@ export default function Home() {
 const HomeNew = () => {
   const { bands } = useLoaderData<typeof loader>();
   const user = useUser();
-  // const { pathname } = useLocation();
-  // const navigate = useNavigate();
-  // const navigation = useNavigation();
-  // const isSubmitting = useSpinDelay(navigation.state !== "idle");
 
   const hasNoBands = bands.length === 0;
   return (
@@ -98,7 +94,7 @@ const HomeNew = () => {
             <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to="user">User Settings</Link>
+              <Link to="/user-settings">User Settings</Link>
             </DropdownMenuItem>
             <form method="post" action="/logout">
               <DropdownMenuItem asChild className="w-full">
@@ -114,7 +110,10 @@ const HomeNew = () => {
           <NavLink to="new">
             <Card className="hover:bg-accent hover:text-accent-foreground">
               <CardHeader className="flex-row gap-4 items-center flex-wrap">
-                <H3>Create New</H3>
+                <H3>
+                  <FontAwesomeIcon icon={faAdd} className="mr-2" />
+                  Create New
+                </H3>
                 <div className="flex-grow" />
                 <Small>
                   You have no bands. Click here to create or add a band to your
