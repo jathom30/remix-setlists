@@ -1,18 +1,21 @@
+import { getInputProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
 import { faPlusCircle, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Link,
-  useFetcher,
   useLoaderData,
   json,
   redirect,
+  Form,
+  useActionData,
+  useNavigation,
 } from "@remix-run/react";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
 } from "@remix-run/server-runtime";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 
 import { Badge } from "@/components/ui/badge";
@@ -42,34 +45,37 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { FlexList, MaxWidth } from "~/components";
-import { H1, H4, P } from "~/components/typography";
-import { createBand, updateBandByCode } from "~/models/band.server";
+import { H1, H4, P, Muted } from "~/components/typography";
 import {
+  createBand,
+  deleteBand,
+  getBand,
+  updateBandByCode,
+} from "~/models/band.server";
+import {
+  deleteUserById,
   getUserWithBands,
   updateUser,
   updateUserPassword,
 } from "~/models/user.server";
-import { removeMemberFromBand } from "~/models/usersInBands.server";
+import {
+  getUserBands,
+  removeMemberFromBand,
+} from "~/models/usersInBands.server";
 import { requireUserId } from "~/session.server";
+import { RoleEnum } from "~/utils/enums";
 
 const IntentEnums = z.enum([
   "user-details",
   "user-password",
   "leave-band",
   "new-band",
+  "add-band",
+  "delete-account",
 ]);
 
 const UserDetailsSchema = z
@@ -87,6 +93,40 @@ const UserPasswordSchema = z
     intent: z.literal("user-password"),
   })
   .superRefine((data, ctx) => {
+    const containsNumber = /\d/.test(data.password);
+    const containsUppercase = /[A-Z]/.test(data.password);
+    const containsLowercase = /[a-z]/.test(data.password);
+    const containsSpecialChar = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/.test(
+      data.password,
+    );
+    if (!containsNumber) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Password must contain a number.",
+        path: ["password"],
+      });
+    }
+    if (!containsUppercase) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Password must contain an uppercase letter. ",
+        path: ["password"],
+      });
+    }
+    if (!containsLowercase) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Password must contain a lowercase letter. ",
+        path: ["password"],
+      });
+    }
+    if (!containsSpecialChar) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Password must contain a special character. ",
+        path: ["password"],
+      });
+    }
     if (data.password !== data.password_confirm) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -103,9 +143,25 @@ const RemoveMemberFromBandSchema = z
   })
   .required();
 
+const NewBandSchema = z
+  .object({
+    band_name: z.string().min(1),
+  })
+  .required();
+
+const AddBandSchema = z.object({
+  band_code: z.coerce
+    .string()
+    .length(5, "Band code must be exactly 5 characters."),
+});
+
+const DeleteAccountSchema = z.object({
+  user_id: z.string(),
+  intent: z.literal("delete-account"),
+});
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUserWithBands(request);
-
   if (!user) {
     throw new Response("User not found", { status: 404 });
   }
@@ -115,63 +171,109 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export async function action({ request }: ActionFunctionArgs) {
   const userId = await requireUserId(request);
   const formData = await request.formData();
-  const userName = formData.get("user_name");
-  const email = formData.get("user_email");
-  const password = formData.get("password");
-  const passwordConfirm = formData.get("password_confirm");
-  const bandId = formData.get("band_id");
-  const bandName = formData.get("band_name");
-  const bandCode = formData.get("band_code");
-  const isNewBand = formData.get("is_new") === "true";
   const intent = formData.get("intent");
 
   if (intent === IntentEnums.Enum["user-details"]) {
-    const parsedData = UserDetailsSchema.parse({
-      user_name: userName,
-      user_email: email,
-      intent,
+    const submission = parseWithZod(formData, { schema: UserDetailsSchema });
+    if (submission.status !== "success") {
+      return submission.reply();
+    }
+    const user = await updateUser(userId, {
+      name: submission.value.user_name,
+      email: submission.value.user_email,
     });
-
-    await updateUser(userId, {
-      name: parsedData.user_name,
-      email: parsedData.user_email,
-    });
-    return json({ success: true });
+    if ("error" in user) {
+      return submission.reply({
+        formErrors: ["An error occurred while updating the user."],
+      });
+    }
+    return submission;
   }
 
   if (intent === IntentEnums.Enum["user-password"]) {
-    const parsedData = UserPasswordSchema.parse({
-      password: password,
-      password_confirm: passwordConfirm,
-      intent,
-    });
-
-    await updateUserPassword(userId, parsedData.password);
-    return json({ success: true });
+    const submission = parseWithZod(formData, { schema: UserPasswordSchema });
+    if (submission.status !== "success") {
+      return submission.reply();
+    }
+    const user = await updateUserPassword(userId, submission.value.password);
+    if ("error" in user) {
+      return submission.reply({
+        formErrors: ["An error occurred while updating the password."],
+      });
+    }
+    return submission;
   }
 
   if (intent === IntentEnums.Enum["leave-band"]) {
-    const parsedData = RemoveMemberFromBandSchema.parse({
-      band_id: bandId,
-      intent,
+    const submission = parseWithZod(formData, {
+      schema: RemoveMemberFromBandSchema,
     });
-    await removeMemberFromBand(parsedData.band_id, userId);
-    return json({ success: true });
+    if (submission.status !== "success") {
+      return submission.reply();
+    }
+    const band = await removeMemberFromBand(submission.value.band_id, userId);
+    if ("error" in band) {
+      return submission.reply({
+        formErrors: ["An error occurred while leaving the band."],
+      });
+    }
+    return submission;
   }
 
   if (intent === IntentEnums.Enum["new-band"]) {
-    if (isNewBand) {
-      const parsedData = NewBandSchema.parse({ band_name: bandName });
-      const band = await createBand({ name: parsedData.band_name }, userId);
-      return redirect(`/${band.id}/setlists`);
-    } else {
-      const parsedData = AddBandSchema.parse({ band_code: bandCode });
-      const band = await updateBandByCode(parsedData.band_code, userId);
-      if ("error" in band) {
-        return json(band);
-      }
-      return redirect(`/${band.id}/setlists`);
+    const submission = parseWithZod(formData, { schema: NewBandSchema });
+    if (submission.status !== "success") {
+      return submission.reply();
     }
+    const band = await createBand({ name: submission.value.band_name }, userId);
+    if ("error" in band) {
+      return submission.reply({
+        formErrors: ["An error occurred while creating the band."],
+      });
+    }
+    return redirect(`/${band.id}/setlists`);
+  }
+
+  if (intent === IntentEnums.Enum["add-band"]) {
+    const submission = parseWithZod(formData, { schema: AddBandSchema });
+    if (submission.status !== "success") {
+      return submission.reply();
+    }
+    const band = await updateBandByCode(submission.value.band_code, userId);
+    if ("error" in band) {
+      return submission.reply({
+        fieldErrors: { band_code: [band.error] },
+      });
+    }
+    return redirect(`/${band.id}/setlists`);
+  }
+
+  if (intent === IntentEnums.Enum["delete-account"]) {
+    const submission = parseWithZod(formData, { schema: DeleteAccountSchema });
+    if (submission.status !== "success") {
+      return submission.reply();
+    }
+    const userBands = await getUserBands(submission.value.user_id);
+    await Promise.all(
+      userBands.map(async (userBand) => {
+        const band = await getBand(userBand.bandId);
+        if (!band) return null;
+        // if user is only member in the band, delete band
+        const userIsOnlyMember = band?.members.every(
+          (member) => member.userId === userId,
+        );
+        // if other members, but no other Admins, delete band
+        const userIsOnlyAdmin = band.members
+          .filter((member) => member.userId !== userId)
+          .every((member) => member.role !== RoleEnum.ADMIN);
+        if (userIsOnlyMember || userIsOnlyAdmin) {
+          return await deleteBand(band.id);
+        }
+      }),
+    );
+
+    await deleteUserById(submission.value.user_id);
+    return redirect("/login");
   }
 
   return null;
@@ -179,43 +281,6 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function UserSettings() {
   const { user } = useLoaderData<typeof loader>();
-
-  // User Details Form
-  const userDetailsForm = useForm<z.infer<typeof UserDetailsSchema>>({
-    resolver: zodResolver(UserDetailsSchema),
-    defaultValues: {
-      user_name: user.name || "",
-      user_email: user.email,
-      intent: IntentEnums.Enum["user-details"],
-    },
-  });
-
-  const userDetailsFetcher = useFetcher({
-    key: IntentEnums.Enum["user-details"],
-  });
-
-  const onUserSettingsSubmit = (data: z.infer<typeof UserDetailsSchema>) => {
-    userDetailsFetcher.submit(data, { method: "put" });
-  };
-
-  // User Password Form
-  const userPasswordForm = useForm<z.infer<typeof UserPasswordSchema>>({
-    resolver: zodResolver(UserPasswordSchema),
-    defaultValues: {
-      password: "",
-      password_confirm: "",
-      intent: IntentEnums.Enum["user-password"],
-    },
-  });
-
-  const userPasswordFetcher = useFetcher({
-    key: IntentEnums.Enum["user-password"],
-  });
-
-  const onUserPasswordSubmit = (data: z.infer<typeof UserPasswordSchema>) => {
-    userPasswordFetcher.submit(data, { method: "put" });
-  };
-
   return (
     <div>
       <div className="sticky border-b top-0 z-10 bg-background inset-x-0 flex items-center justify-between p-2 gap-2">
@@ -234,7 +299,7 @@ export default function UserSettings() {
             >
               {user.name
                 ?.split(" ")
-                .map((n) => n[0].toUpperCase())
+                .map((n) => n[0]?.toUpperCase())
                 .join(" ")}
             </Button>
           </DropdownMenuTrigger>
@@ -283,60 +348,11 @@ export default function UserSettings() {
               Feel free to update your details as needed.
             </CardDescription>
           </CardHeader>
-          <Form {...userDetailsForm}>
-            <form onSubmit={userDetailsForm.handleSubmit(onUserSettingsSubmit)}>
-              <CardContent className="flex flex-col gap-4">
-                <FormField
-                  control={userDetailsForm.control}
-                  name="user_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="User name" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        This is the public name that will be displayed in your
-                        bands.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={userDetailsForm.control}
-                  name="user_email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Email" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Updating your email address will cause you to reverify
-                        your account via an emailed link. You will not lose any
-                        data.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-              <CardFooter className="flex justify-end gap-2">
-                <input
-                  hidden
-                  type="hidden"
-                  name="intent"
-                  defaultValue={IntentEnums.Enum["user-details"]}
-                />
-                <Button variant="ghost" onClick={() => userDetailsForm.reset()}>
-                  Cancel
-                </Button>
-                <Button type="submit">Save Changes</Button>
-              </CardFooter>
-            </form>
-          </Form>
+          <CardFooter>
+            <UserDetailsDialog
+              user={{ name: user.name || "", email: user.email }}
+            />
+          </CardFooter>
         </Card>
 
         {/* Password */}
@@ -347,69 +363,9 @@ export default function UserSettings() {
               We will never ask you for your password. Change it at anytime.
             </CardDescription>
           </CardHeader>
-          <Form {...userPasswordForm}>
-            <form
-              onSubmit={userPasswordForm.handleSubmit(onUserPasswordSubmit)}
-            >
-              <CardContent className="flex flex-col gap-4">
-                <FormField
-                  control={userPasswordForm.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Password"
-                          {...field}
-                          type="password"
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Passwords must be at least 8 characters long.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={userPasswordForm.control}
-                  name="password_confirm"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Password"
-                          {...field}
-                          type="password"
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Confirm your password by re-entering it.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-              <CardFooter className="flex justify-end gap-2">
-                <input
-                  hidden
-                  type="hidden"
-                  name="intent"
-                  defaultValue={IntentEnums.Enum["user-password"]}
-                />
-                <Button
-                  variant="ghost"
-                  onClick={() => userPasswordForm.reset()}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">Update Password</Button>
-              </CardFooter>
-            </form>
-          </Form>
+          <CardFooter>
+            <UpdatePasswordDialog />
+          </CardFooter>
         </Card>
 
         {/* Band list */}
@@ -417,13 +373,13 @@ export default function UserSettings() {
           <CardHeader>
             <FlexList direction="row" items="center" justify="between" gap={2}>
               <H4>Associated Bands</H4>
-              <AddBand />
+              <AddBandDialog />
             </FlexList>
             <CardDescription>
               You can be associated with any number of bands.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-2">
             {user.bands.map((band) => (
               <Card key={band.bandId}>
                 <CardHeader className="p-2">
@@ -434,7 +390,7 @@ export default function UserSettings() {
                     {band.role === "ADMIN" ? (
                       <Button variant="ghost">Edit</Button>
                     ) : null}
-                    <RemoveSelfFromBand band={band} />
+                    <RemoveSelfFromBandDialog band={band} />
                   </FlexList>
                 </CardHeader>
               </Card>
@@ -477,64 +433,130 @@ export default function UserSettings() {
               Deleting your account is permanent and cannot be undone.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-end">
-            <Button variant="destructive" className="w-full sm:w-auto">
-              Delete Account
-            </Button>
-          </CardContent>
+          <CardFooter>
+            <DeleteAccountDialog userId={user.id} />
+          </CardFooter>
         </Card>
       </MaxWidth>
     </div>
   );
 }
 
-const BandFormSchema = z
-  .object({
-    is_new: z.boolean(),
-    band_name: z.string(),
-    band_code: z.string(),
-    intent: z.literal(IntentEnums.Enum["new-band"]),
-  })
-  .superRefine((data) => {
-    if (data.is_new) {
-      NewBandSchema.parse({ band_name: data.band_name });
-    } else {
-      AddBandSchema.parse({ band_code: data.band_code });
-    }
-  });
+const UserDetailsDialog = ({
+  user,
+}: {
+  user: { name: string; email: string };
+}) => {
+  const actionData = useActionData<typeof action>();
+  const navigation = useNavigation();
+  const [open, setOpen] = useState(false);
+  const lastResult =
+    actionData && !("success" in actionData) && navigation.state === "idle"
+      ? actionData
+      : null;
 
-const NewBandSchema = z
-  .object({
-    band_name: z.string().min(1),
-  })
-  .required();
-
-const AddBandSchema = z
-  .object({
-    band_code: z.coerce
-      .string()
-      .length(5, "Band code must be exactly 5 characters."),
-  })
-  .required();
-
-const AddBand = () => {
-  const fetcher = useFetcher<typeof action>({
-    key: IntentEnums.Enum["new-band"],
-  });
-
-  const form = useForm({
-    resolver: zodResolver(BandFormSchema),
-    defaultValues: {
-      is_new: false,
-      band_name: "",
-      band_code: "",
-      intent: IntentEnums.Enum["new-band"],
+  const [form, fields] = useForm({
+    lastResult,
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: UserDetailsSchema });
     },
+    defaultValue: {
+      user_name: user.name,
+      user_email: user.email,
+      intent: IntentEnums.Enum["user-details"],
+    },
+    shouldValidate: "onBlur",
+    shouldRevalidate: "onInput",
   });
 
-  const onSubmit = (data: z.infer<typeof BandFormSchema>) => {
-    fetcher.submit(data, { method: "put" });
-  };
+  useEffect(() => {
+    if (lastResult?.status === "success") {
+      setOpen(false);
+    }
+  }, [lastResult?.status]);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline">Update Details</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Update your details?</DialogTitle>
+          <DialogDescription>
+            Feel free to update your details as needed.
+          </DialogDescription>
+        </DialogHeader>
+        <Form method="post" id={form.id} onSubmit={form.onSubmit} noValidate>
+          <div>
+            <Label htmlFor={fields.user_name.id}>Name</Label>
+            <Input
+              {...getInputProps(fields.user_name, { type: "text" })}
+              placeholder="User name"
+            />
+            <Muted>
+              This is the public name that will be displayed in your bands.
+            </Muted>
+            <div
+              id={fields.user_name.errorId}
+              className="text-sm text-destructive"
+            >
+              {fields.user_name.errors}
+            </div>
+          </div>
+          <div>
+            <Label htmlFor={fields.user_email.id}>Email</Label>
+            <Input
+              {...getInputProps(fields.user_email, { type: "email" })}
+              placeholder="Email"
+            />
+            <Muted>
+              Updating your email address will cause you to reverify your
+              account via an emailed link. You will not lose any data.
+            </Muted>
+            <div
+              id={fields.user_email.errorId}
+              className="text-sm text-destructive"
+            >
+              {fields.user_email.errors}
+            </div>
+          </div>
+          <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
+          <DialogFooter className="pt-4">
+            <Button type="submit">Update Details</Button>
+          </DialogFooter>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const AddBandDialog = () => {
+  const actionData = useActionData<typeof action>();
+  const navigation = useNavigation();
+  const lastResult =
+    actionData && !("success" in actionData) && navigation.state === "idle"
+      ? actionData
+      : null;
+  const [isNew, setIsNew] = useState(false);
+
+  const [newBandForm, newBandFields] = useForm({
+    lastResult,
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: NewBandSchema });
+    },
+    shouldValidate: "onBlur",
+    shouldRevalidate: "onInput",
+  });
+
+  const [addBandForm, addBandFields] = useForm({
+    lastResult,
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: AddBandSchema });
+    },
+    shouldValidate: "onBlur",
+    shouldRevalidate: "onInput",
+  });
 
   return (
     <Dialog>
@@ -551,72 +573,33 @@ const AddBand = () => {
             You can either create a new band or join an existing one.
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="is_new"
-              render={({ field }) => (
-                <FlexList direction="row" items="center" gap={2} pad={{ b: 2 }}>
-                  <Switch
-                    id="band-toggle"
-                    checked={field.value}
-                    onCheckedChange={(checked) => {
-                      field.onChange(checked);
-                      if (checked) {
-                        form.setValue("band_code", "");
-                      } else {
-                        form.setValue("band_name", "");
-                      }
-                    }}
-                  />
-                  <Label htmlFor="band-toggle">Create New Band</Label>
-                </FlexList>
-              )}
-            />
-            {form.watch("is_new") ? (
-              <FormField
-                control={form.control}
-                name="band_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Band Name</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Band Name"
-                        {...field}
-                        disabled={!form.watch("is_new")}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Create your new band here.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+
+        <FlexList direction="row" items="center" gap={2} pad={{ b: 2 }}>
+          <Label htmlFor="band-toggle">Add Self to Band</Label>
+          <Switch id="band-toggle" checked={isNew} onCheckedChange={setIsNew} />
+          <Label htmlFor="band-toggle">Create New Band</Label>
+        </FlexList>
+        {isNew ? (
+          <Form
+            method="post"
+            id={newBandForm.id}
+            onSubmit={newBandForm.onSubmit}
+            noValidate
+          >
+            <div>
+              <Label htmlFor={newBandFields.band_name.id}>Band Name</Label>
+              <Input
+                {...getInputProps(newBandFields.band_name, { type: "text" })}
+                placeholder="New band name"
               />
-            ) : (
-              <FormField
-                control={form.control}
-                name="band_code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Band Code</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Band Code"
-                        {...field}
-                        disabled={form.watch("is_new")}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Ask your band's admin for the code to join.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+              <Muted>Create a band with a custom name.</Muted>
+              <div
+                id={newBandFields.band_name.errorId}
+                className="text-sm text-destructive"
+              >
+                {newBandFields.band_name.errors}
+              </div>
+            </div>
             <input
               hidden
               type="hidden"
@@ -624,22 +607,159 @@ const AddBand = () => {
               value={IntentEnums.Enum["new-band"]}
             />
             <DialogFooter className="pt-4">
-              <Button type="submit">
-                {form.watch("is_new") ? "Create Band" : "Add Band"}
+              <Button type="submit" disabled={navigation.state !== "idle"}>
+                {navigation.state === "idle"
+                  ? "Create New Band"
+                  : "Creating Band..."}
               </Button>
             </DialogFooter>
-          </form>
+          </Form>
+        ) : (
+          <Form
+            method="post"
+            id={addBandForm.id}
+            onSubmit={addBandForm.onSubmit}
+            noValidate
+          >
+            <div>
+              <Label htmlFor={addBandFields.band_code.id}>Band Code</Label>
+              <Input
+                {...getInputProps(addBandFields.band_code, { type: "text" })}
+                placeholder="New band name"
+              />
+              <Muted>
+                Add a band code here and be instantly granted access to that
+                band.
+              </Muted>
+              <div
+                id={addBandFields.band_code.errorId}
+                className="text-sm text-destructive"
+              >
+                {addBandFields.band_code.errors}
+              </div>
+            </div>
+            <input
+              hidden
+              type="hidden"
+              name="intent"
+              value={IntentEnums.Enum["add-band"]}
+            />
+            <DialogFooter className="pt-4">
+              <Button type="submit" disabled={navigation.state !== "idle"}>
+                {navigation.state === "idle" ? "Add Band" : "Adding..."}
+              </Button>
+            </DialogFooter>
+          </Form>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const UpdatePasswordDialog = () => {
+  const actionData = useActionData<typeof action>();
+  const [open, setOpen] = useState(false);
+  const navigation = useNavigation();
+  const lastResult =
+    actionData && !("success" in actionData) && navigation.state === "idle"
+      ? actionData
+      : null;
+
+  useEffect(() => {
+    if (lastResult?.status === "success") {
+      setOpen(false);
+    }
+  }, [lastResult?.status]);
+
+  const [form, fields] = useForm({
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: UserPasswordSchema });
+    },
+    defaultValue: {
+      password: "",
+      password_confirm: "",
+      intent: IntentEnums.Enum["user-password"],
+    },
+    shouldValidate: "onBlur",
+    shouldRevalidate: "onInput",
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline">Update Password</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Update your password?</DialogTitle>
+          <DialogDescription>
+            Please do not share your password with anyone.
+          </DialogDescription>
+        </DialogHeader>
+        <Form method="post" id={form.id} onSubmit={form.onSubmit} noValidate>
+          <div>
+            <Label htmlFor={fields.password.id}>Password</Label>
+            <Input
+              {...getInputProps(fields.password, { type: "password" })}
+              placeholder="Password"
+            />
+            <Muted>A complicated password is a good password.</Muted>
+            <div
+              id={fields.password.errorId}
+              className="text-sm text-destructive"
+            >
+              {fields.password.errors}
+            </div>
+          </div>
+          <div>
+            <Label htmlFor={fields.password_confirm.id}>Confirm Password</Label>
+            <Input
+              {...getInputProps(fields.password_confirm, { type: "password" })}
+              placeholder="Confirm password"
+            />
+            <div
+              id={fields.password_confirm.errorId}
+              className="text-sm text-destructive"
+            >
+              {fields.password_confirm.errors}
+            </div>
+          </div>
+
+          <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
+          <DialogFooter className="pt-4">
+            <Button type="submit">Update Password</Button>
+          </DialogFooter>
         </Form>
       </DialogContent>
     </Dialog>
   );
 };
 
-const RemoveSelfFromBand = ({
+const RemoveSelfFromBandDialog = ({
   band,
 }: {
   band: { userId: string; bandName: string; bandId: string; role: string };
 }) => {
+  const actionData = useActionData<typeof action>();
+  const navigation = useNavigation();
+  const lastResult =
+    actionData && !("success" in actionData) && navigation.state === "idle"
+      ? actionData
+      : null;
+
+  const [form, fields] = useForm({
+    lastResult,
+    defaultValue: {
+      band_id: band.bandId,
+      intent: IntentEnums.Enum["leave-band"],
+    },
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: RemoveMemberFromBandSchema });
+    },
+    shouldValidate: "onBlur",
+    shouldRevalidate: "onInput",
+  });
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -653,20 +773,61 @@ const RemoveSelfFromBand = ({
             access to any of its songs and setlists.
           </DialogDescription>
         </DialogHeader>
-        <form method="post">
-          <input hidden type="hidden" name="band_id" value={band.bandId} />
+        <Form method="post" id={form.id} onSubmit={form.onSubmit} noValidate>
           <input
             hidden
-            type="hidden"
-            name="intent"
-            value={IntentEnums.Enum["leave-band"]}
+            {...getInputProps(fields.band_id, { type: "hidden" })}
           />
+          <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
           <DialogFooter>
             <Button type="submit" variant="destructive">
               Leave Band
             </Button>
           </DialogFooter>
-        </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const DeleteAccountDialog = ({ userId }: { userId: string }) => {
+  const [form, fields] = useForm({
+    defaultValue: {
+      user_id: userId,
+      intent: IntentEnums.Enum["delete-account"],
+    },
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: DeleteAccountSchema });
+    },
+    shouldValidate: "onBlur",
+    shouldRevalidate: "onInput",
+  });
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="destructive">Delete Account</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Delete your account?</DialogTitle>
+          <DialogDescription>
+            This action is permanent and cannot be undone. Are you sure you want
+            to delete your account?
+          </DialogDescription>
+        </DialogHeader>
+        <Form method="post" id={form.id} onSubmit={form.onSubmit} noValidate>
+          <input
+            hidden
+            {...getInputProps(fields.user_id, { type: "hidden" })}
+          />
+          <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
+          {fields.intent.errors}
+          {fields.user_id.errors}
+          <DialogFooter>
+            <Button variant="destructive">Delete Account</Button>
+          </DialogFooter>
+        </Form>
       </DialogContent>
     </Dialog>
   );
