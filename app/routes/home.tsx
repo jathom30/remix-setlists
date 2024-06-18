@@ -17,14 +17,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Avatar as OgAvatar,
   Badge as OgBadge,
   CreateNewButton,
@@ -39,6 +31,7 @@ import {
   Title,
 } from "~/components";
 import { H1, H3, Small } from "~/components/typography";
+import { UserAvatarMenu } from "~/components/user-avatar-menu";
 import { getBands } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { useFeatureFlags, useUser } from "~/utils";
@@ -77,32 +70,7 @@ const HomeNew = () => {
             Add Band
           </Link>
         </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="overflow-hidden rounded-full"
-            >
-              {user.name
-                ?.split(" ")
-                .map((n) => n[0].toUpperCase())
-                .join(" ")}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to="/user-settings">User Settings</Link>
-            </DropdownMenuItem>
-            <form method="post" action="/logout">
-              <DropdownMenuItem asChild className="w-full">
-                <button type="submit">Logout</button>
-              </DropdownMenuItem>
-            </form>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <UserAvatarMenu />
       </div>
       <MaxWidth className="p-2 space-y-2">
         <H1>Your Bands</H1>

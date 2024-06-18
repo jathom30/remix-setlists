@@ -1,9 +1,11 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
+import { Outlet } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import { MainSidebar, MaxHeightContainer } from "~/components";
+import { Header } from "~/components";
+import { MainNavSheet } from "~/components/main-nav-sheet";
+import { UserAvatarMenu } from "~/components/user-avatar-menu";
 import { getBandHome, getBands } from "~/models/band.server";
 import { userPrefs } from "~/models/cookies.server";
 import { getMemberRole } from "~/models/usersInBands.server";
@@ -32,31 +34,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 }
 
 export default function BandRoute() {
-  const { memberRole, band, bands, sideMenuPref } =
-    useLoaderData<typeof loader>();
-
   return (
-    <MaxHeightContainer
-      footer={<div id="menu-portal" aria-hidden />}
-      fullHeight
-    >
-      <div className="h-full sm:flex">
-        <div className="hidden sm:block sm:h-full">
-          <MainSidebar
-            band={band}
-            memberRole={memberRole}
-            bands={bands}
-            openState={sideMenuPref}
-          />
-        </div>
-
-        <div className="h-full sm:hidden">
-          <Outlet />
-        </div>
-        <div className="hidden sm:block sm:w-full sm:overflow-auto">
-          <Outlet />
-        </div>
+    <div>
+      <div className="p-2 border-b sticky top-0 inset-x-0">
+        <Header>
+          <div className="sm:hidden">
+            <MainNavSheet />
+          </div>
+          <UserAvatarMenu />
+        </Header>
       </div>
-    </MaxHeightContainer>
+      <Outlet />
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 import { getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { faPlusCircle, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faPlusCircle, faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Link,
@@ -37,19 +37,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { FlexList, MaxWidth } from "~/components";
 import { H1, H4, P, Muted } from "~/components/typography";
+import { UserAvatarMenu } from "~/components/user-avatar-menu";
 import {
   createBand,
   deleteBand,
@@ -286,36 +279,11 @@ export default function UserSettings() {
       <div className="sticky border-b top-0 z-10 bg-background inset-x-0 flex items-center justify-between p-2 gap-2">
         <Button variant="ghost" size="sm" asChild>
           <Link to="/home">
-            <FontAwesomeIcon icon={faUsers} className="mr-2" />
+            <FontAwesomeIcon icon={faHome} className="pr-2" />
             My Bands
           </Link>
         </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="overflow-hidden rounded-full"
-            >
-              {user.name
-                ?.split(" ")
-                .map((n) => n[0]?.toUpperCase())
-                .join(" ")}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to="/user-settings">User Settings</Link>
-            </DropdownMenuItem>
-            <form method="post" action="/logout">
-              <DropdownMenuItem asChild className="w-full">
-                <button type="submit">Logout</button>
-              </DropdownMenuItem>
-            </form>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <UserAvatarMenu />
       </div>
       <MaxWidth className="p-2 space-y-2">
         <H1>User Settings</H1>
@@ -388,7 +356,9 @@ export default function UserSettings() {
                     <Badge variant="outline">{band.role}</Badge>
                     <div className="flex-grow" />
                     {band.role === "ADMIN" ? (
-                      <Button variant="ghost">Edit</Button>
+                      <Button variant="ghost" asChild>
+                        <Link to={`/${band.bandId}/band`}>Edit</Link>
+                      </Button>
                     ) : null}
                     <RemoveSelfFromBandDialog band={band} />
                   </FlexList>
