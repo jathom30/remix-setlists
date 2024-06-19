@@ -36,7 +36,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export default function BandRoute() {
   return (
     <div className="bg-muted/40 h-full">
-      <div className="p-2 border-b sticky top-0 inset-x-0 bg-background">
+      <div className="p-2 border-b sticky top-0 inset-x-0 z-10 bg-background">
         <Header>
           <div className="sm:hidden">
             <MainNavSheet />

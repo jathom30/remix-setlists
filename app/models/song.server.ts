@@ -1,5 +1,6 @@
 import type { Band, Feel, Setlist, Song } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/server-runtime";
+import { z } from "zod";
 
 import { prisma } from "~/db.server";
 import { getFields } from "~/utils/form";
@@ -73,6 +74,34 @@ export async function getSongName(songId: Song["id"]) {
   });
 }
 
+export const EditSongSchema = z.object({
+  name: z.string().min(1),
+  length: z.coerce.number().min(1).default(3),
+  keyLetter: z.string().min(1).max(2).default("C"),
+  isMinor: z
+    .string()
+    .transform((val) => val === "true")
+    .pipe(z.boolean()),
+  tempo: z.coerce.number().min(1).max(320).default(120),
+  feels: z.array(z.string()),
+  author: z.string().nullish(),
+  note: z.string().nullish(),
+  links: z.array(
+    z
+      .string()
+      .refine(
+        (value) =>
+          /^(https?):\/\/(?=.*\.[a-z]{2,})[^\s$.?#].[^\s]*$/i.test(value),
+        {
+          message: "Please enter a valid URL",
+        },
+      ),
+  ),
+  position: z.enum(["opener", "closer", "other"]).default("other"),
+  rank: z.enum(["exclude", "no_preference"]).default("no_preference"),
+  isCover: z.boolean().default(false),
+});
+
 export async function updateSong(
   songId: Song["id"],
   song: Omit<Song, "id" | "updatedAt" | "createdAt">,
@@ -94,6 +123,54 @@ export async function updateSong(
     where: { id: songId },
     data: {
       ...song,
+      feels: {
+        disconnect: removedFeels.map((feel) => ({ id: feel })),
+        connect: newFeels.map((feel) => ({ id: feel })),
+      },
+    },
+  });
+}
+
+export async function updateSongWithLinksAndFeels(
+  songId: Song["id"],
+  song: z.infer<typeof EditSongSchema>,
+) {
+  // remove all links from song
+  await prisma.link.deleteMany({
+    where: {
+      songId,
+    },
+  });
+
+  // update feels
+  const currentFeelIds = (
+    await prisma.song.findUnique({
+      where: { id: songId },
+      include: { feels: { select: { id: true } } },
+    })
+  )?.feels.map((feel) => feel.id);
+
+  const newFeels =
+    song.feels.filter((feelId) => !currentFeelIds?.includes(feelId)) || [];
+  const removedFeels =
+    currentFeelIds?.filter((feelId) => !song.feels.includes(feelId)) || [];
+
+  return prisma.song.update({
+    where: { id: songId },
+    data: {
+      name: song.name,
+      length: song.length,
+      keyLetter: song.keyLetter,
+      isMinor: song.isMinor,
+      tempo: song.tempo,
+      position: song.position,
+      rank: song.rank,
+      note: song.note,
+      author: song.author,
+      // add links back to song
+      links: {
+        create: song.links.map((link) => ({ href: link })),
+      },
       feels: {
         disconnect: removedFeels.map((feel) => ({ id: feel })),
         connect: newFeels.map((feel) => ({ id: feel })),

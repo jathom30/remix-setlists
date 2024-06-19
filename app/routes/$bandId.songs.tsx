@@ -1,4 +1,9 @@
-import { faBoxOpen, faFilter, faSort } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBoxOpen,
+  faChevronRight,
+  faFilter,
+  faSort,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
@@ -7,6 +12,7 @@ import {
   Outlet,
   isRouteErrorResponse,
   useLocation,
+  useMatches,
   useNavigate,
   useParams,
   useRouteError,
@@ -16,7 +22,15 @@ import {
 import { useState } from "react";
 import toast from "react-hot-toast";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import {
   AvatarTitle,
   CatchContainer,
@@ -88,13 +102,98 @@ const subRoutes = ["sortBy", "filters"];
 export default function SongsRoute() {
   const { rebranding } = useFeatureFlags();
   if (rebranding) {
-    return (
-      <MaxWidth>
-        <Outlet />
-      </MaxWidth>
-    );
+    return <SongsNew />;
   }
   return <SongsListOld />;
+}
+
+const SongDetailMatchSchema = z.object({
+  data: z.object({
+    song: z.object({
+      id: z.string(),
+      name: z.string(),
+    }),
+  }),
+  pathname: z.string(),
+});
+
+const getSongMatch = (matches: ReturnType<typeof useMatches>) => {
+  const songMatch = matches.find((match) => {
+    const safeParse = SongDetailMatchSchema.safeParse(match);
+    return safeParse.success;
+  });
+  if (!songMatch) {
+    return null;
+  }
+  return SongDetailMatchSchema.parse(songMatch);
+};
+
+function SongsNew() {
+  const { bandId } = useParams();
+  const matches = useMatches();
+  const { pathname } = useLocation();
+
+  const songMatch = getSongMatch(matches);
+  const isEditRoute = songMatch?.pathname.includes("edit");
+  const isCreateRoute = pathname.includes("new");
+
+  return (
+    <MaxWidth>
+      <Breadcrumb className="p-2 pb-0">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to={`/${bandId}/songs`}>Songs</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          {songMatch ? (
+            <>
+              <BreadcrumbSeparator>
+                <FontAwesomeIcon icon={faChevronRight} />
+              </BreadcrumbSeparator>
+
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link to={`/${bandId}/songs/${songMatch.data.song.id}`}>
+                    {songMatch.data.song.name}
+                  </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            </>
+          ) : null}
+          {songMatch && isEditRoute ? (
+            <>
+              <BreadcrumbSeparator>
+                <FontAwesomeIcon icon={faChevronRight} />
+              </BreadcrumbSeparator>
+
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link to={`/${bandId}/songs/${songMatch.data.song.id}/edit`}>
+                    Edit
+                  </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            </>
+          ) : null}
+          {isCreateRoute ? (
+            <>
+              <BreadcrumbSeparator>
+                <FontAwesomeIcon icon={faChevronRight} />
+              </BreadcrumbSeparator>
+
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link to={`/${bandId}/songs/new`}>Create Song</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            </>
+          ) : null}
+        </BreadcrumbList>
+      </Breadcrumb>
+      <Outlet />
+    </MaxWidth>
+  );
 }
 
 function SongsListOld() {

@@ -146,13 +146,13 @@ export default function SongPage() {
               <FlexList direction="row" wrap>
                 {song.feels?.map((feel) => (
                   <P key={feel.id}>
-                    <FlexList direction="row" items="center" gap={1}>
-                      <div
+                    <span className="flex flex-row items-center gap-1">
+                      <span
                         className="w-4 h-4 rounded-full"
                         style={{ background: feel.color || undefined }}
                       />
                       {feel.label}
-                    </FlexList>
+                    </span>
                   </P>
                 ))}
               </FlexList>

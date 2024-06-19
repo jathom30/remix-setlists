@@ -121,7 +121,7 @@ model SongsInSets {
 model Song {
   id        String  @id @default(cuid())
   name      String
-  length    Int
+  length    Float
   isCover   Boolean @default(false)
   author    String?
   note      String?

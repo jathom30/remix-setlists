@@ -1,8 +1,5 @@
 import { getInputProps, useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { faCheck, faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Feel } from "@prisma/client";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -10,9 +7,13 @@ import {
   json,
   redirect,
 } from "@remix-run/node";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
-import { Jsonify } from "@remix-run/server-runtime/dist/jsonify";
-import { useState } from "react";
+import {
+  Form,
+  Link,
+  useActionData,
+  useLoaderData,
+  useParams,
+} from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -24,20 +25,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
@@ -49,8 +38,8 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import { FlexList } from "~/components";
+import { MultiSelectFeel } from "~/components/multi-select-feel";
 import { H1, Muted } from "~/components/typography";
 import { getBandWithFeels } from "~/models/band.server";
 import { createSongWithFeels } from "~/models/song.server";
@@ -80,7 +69,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
   await requireNonSubMember(request, bandId);
   const formData = await request.formData();
   const submission = parseWithZod(formData, { schema: CreateSongSchema });
-  console.log(submission);
   if (submission.status !== "success") {
     return submission.reply();
   }
@@ -122,6 +110,7 @@ const CreateSongSchema = z.object({
 });
 
 export default function CreateSongRoute() {
+  const { bandId } = useParams();
   const lastResult = useActionData<typeof action>();
   const {
     band: { feels, name },
@@ -419,86 +408,14 @@ export default function CreateSongRoute() {
               </FlexList>
             </CardContent>
           </Card>
-          <Button type="submit">Create Song</Button>
+          <div className="flex flex-col gap-2 justify-start sm:pb-8 sm:flex-row-reverse">
+            <Button type="submit">Create Song</Button>
+            <Button variant="ghost" asChild>
+              <Link to={`/${bandId}/songs`}>Cancel</Link>
+            </Button>
+          </div>
         </div>
       </Form>
     </div>
   );
 }
-
-const MultiSelectFeel = ({
-  feels,
-  values,
-  onChange,
-}: {
-  feels: Jsonify<Feel>[];
-  values: string[];
-  onChange: (value: string[]) => void;
-}) => {
-  const [query, setQuery] = useState("");
-
-  const displayValue = values.length
-    ? values
-        .map((val) => feels.find((feel) => feel.id === val)?.label)
-        .join(", ")
-    : "Select feel...";
-
-  const filteredFeels = feels.filter((feel) =>
-    feel.label.toLowerCase().includes(query.toLowerCase()),
-  );
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          className={`justify-between font-normal ${
-            values.length ? "" : "text-muted-foreground"
-          }`}
-        >
-          {displayValue}
-          <FontAwesomeIcon
-            icon={faChevronDown}
-            className="ml-2 h-3 w-3 shrink-0 opacity-50"
-          />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="p-0">
-        <Command>
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search feels..."
-            className=" focus-visible:ring-inset focus-visible:ring-0"
-          />
-          <CommandList>
-            <CommandEmpty>No feels found.</CommandEmpty>
-            <CommandGroup>
-              {filteredFeels.map((feel) => (
-                <CommandItem
-                  key={feel.id}
-                  value={feel.id}
-                  onSelect={(currentValue) => {
-                    const newValues = values.includes(currentValue)
-                      ? values.filter((val) => val !== currentValue)
-                      : [...values, currentValue];
-                    onChange(newValues);
-                  }}
-                >
-                  <FontAwesomeIcon
-                    icon={faCheck}
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      values.includes(feel.id) ? "opacity-100" : "opacity-0",
-                    )}
-                  />
-                  {feel.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  );
-};
