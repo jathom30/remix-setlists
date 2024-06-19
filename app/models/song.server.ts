@@ -22,8 +22,8 @@ export async function getSongs(bandId: Band["id"], params?: SongParams) {
   if (!band) {
     throw new Response("Band not found", { status: 404 });
   }
-  const coversOnly = params?.isCover;
-  const originalsOnly = typeof params?.isCover === "boolean" && !params.isCover;
+  // const coversOnly = params?.isCover;
+  // const originalsOnly = typeof params?.isCover === "boolean" && !params.isCover;
   const orderBy = getSortFromParam(params?.sort);
   return prisma.song.findMany({
     where: {
@@ -31,15 +31,15 @@ export async function getSongs(bandId: Band["id"], params?: SongParams) {
       name: {
         contains: params?.q,
       },
-      ...(coversOnly ? { author: { not: band.name } } : null),
-      ...(originalsOnly ? { author: { equals: band.name } } : null),
-      ...(params?.feels?.length
-        ? { feels: { some: { id: { in: params?.feels } } } }
-        : null),
-      ...(params?.tempos?.length ? { tempo: { in: params.tempos } } : null),
-      ...(params?.positions?.length
-        ? { position: { in: params.positions } }
-        : null),
+      // ...(coversOnly ? { author: { not: band.name } } : null),
+      // ...(originalsOnly ? { author: { equals: band.name } } : null),
+      // ...(params?.feels?.length
+      //   ? { feels: { some: { id: { in: params?.feels } } } }
+      //   : null),
+      // ...(params?.tempos?.length ? { tempo: { in: params.tempos } } : null),
+      // ...(params?.positions?.length
+      //   ? { position: { in: params.positions } }
+      //   : null),
     },
     orderBy,
   });

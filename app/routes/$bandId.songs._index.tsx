@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Song } from "@prisma/client";
 import { LoaderFunctionArgs, SerializeFrom, json } from "@remix-run/node";
 import { Link, MetaFunction, useSearchParams } from "@remix-run/react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import invariant from "tiny-invariant";
 
@@ -75,10 +76,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const q = url.searchParams.get("query");
 
   let sort = url.searchParams.get("sort");
-  const feelParams = url.searchParams.getAll("feels");
-  const tempoParams = url.searchParams.getAll("tempos");
-  const isCoverParam = url.searchParams.get("isCover");
-  const positionParams = url.searchParams.getAll("positions");
+  // const feelParams = url.searchParams.getAll("feels");
+  // const tempoParams = url.searchParams.getAll("tempos");
+  // const isCoverParam = url.searchParams.get("isCover");
+  // const positionParams = url.searchParams.getAll("positions");
 
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await userPrefs.parse(cookieHeader)) || {};
@@ -90,14 +91,15 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const songParams = {
     ...(q ? { q } : null),
     ...(sort ? { sort } : null),
-    feels: feelParams,
-    tempos: tempoParams.map((tempo) => parseInt(tempo)),
-    ...(isCoverParam ? { isCover: isCoverParam === "true" } : null),
-    positions: positionParams,
+    // feels: feelParams,
+    // tempos: tempoParams.map((tempo) => parseInt(tempo)),
+    // ...(isCoverParam ? { isCover: isCoverParam === "true" } : null),
+    // positions: positionParams,
   };
 
   const songs = await getSongs(bandId, songParams);
-
+  cookie.songSort = sort;
+  await userPrefs.serialize(cookie);
   return json({ songs, sort });
 }
 
@@ -125,6 +127,14 @@ function SongsListNew() {
       return prev;
     });
   };
+
+  const setSort = (value: string) => {
+    setSearchParams((prev) => {
+      prev.set("sort", value);
+      return prev;
+    });
+  };
+
   return (
     <div className="p-2 space-y-2">
       <FlexList direction="row" items="center" justify="between" gap={2}>
@@ -151,7 +161,7 @@ function SongsListNew() {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
-        <SortSetlists value={sort || ""} onChange={console.log} />
+        <SortSetlists value={sort || "updatedAt:desc"} onChange={setSort} />
       </FlexList>
 
       {songs.length ? (
@@ -238,16 +248,16 @@ const SongContainer = ({ song }: { song: SerializeFrom<Song> }) => {
 const sortOptions = [
   {
     label: "Updated: Newest first",
-    value: "updated-desc",
+    value: "updatedAt:desc",
     icon: faArrowUpWideShort,
   },
   {
     label: "Updated: Oldest first",
-    value: "updated-asc",
+    value: "updatedAt:asc",
     icon: faArrowDownWideShort,
   },
-  { label: "Name: A-Z", value: "name-asc", icon: faArrowUpAZ },
-  { label: "Name: Z-A", value: "name-desc", icon: faArrowUpZA },
+  { label: "Name: A-Z", value: "name:asc", icon: faArrowUpAZ },
+  { label: "Name: Z-A", value: "name:desc", icon: faArrowUpZA },
 ];
 
 const SortSetlists = ({
@@ -257,6 +267,7 @@ const SortSetlists = ({
   value: string;
   onChange: (val: string) => void;
 }) => {
+  const [open, setOpen] = useState(false);
   return (
     <div>
       <div className="hidden sm:block">
@@ -270,10 +281,7 @@ const SortSetlists = ({
             <DropdownMenuLabel>Setlist Sort</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuRadioGroup
-                defaultValue={value}
-                onValueChange={onChange}
-              >
+              <DropdownMenuRadioGroup value={value} onValueChange={onChange}>
                 {sortOptions.map(({ label, value: val, icon }) => (
                   <DropdownMenuRadioItem key={val} value={val}>
                     <FontAwesomeIcon icon={icon} className="mr-2" />
@@ -286,7 +294,7 @@ const SortSetlists = ({
         </DropdownMenu>
       </div>
       <div className="sm:hidden">
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline">
               <FontAwesomeIcon icon={faSort} />
@@ -296,7 +304,13 @@ const SortSetlists = ({
             <SheetHeader>
               <SheetTitle>Setlist Sort</SheetTitle>
               <SheetDescription>
-                <RadioGroup defaultValue={value} onValueChange={onChange}>
+                <RadioGroup
+                  value={value}
+                  onValueChange={(val) => {
+                    onChange(val);
+                    setOpen(false);
+                  }}
+                >
                   <FlexList gap={0}>
                     {sortOptions.map(({ label, value: val, icon }) => (
                       <div
