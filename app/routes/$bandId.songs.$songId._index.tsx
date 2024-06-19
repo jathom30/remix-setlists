@@ -1,4 +1,9 @@
-import { faMaximize, faMinimize } from "@fortawesome/free-solid-svg-icons";
+import {
+  faMaximize,
+  faMinimize,
+  faPencil,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   type LoaderFunctionArgs,
@@ -6,7 +11,7 @@ import {
   ActionFunctionArgs,
   redirect,
 } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, Link, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 
@@ -102,7 +107,15 @@ export default function SongPage() {
 
   return (
     <div className="p-2 space-y-2">
-      <H1>Song Details</H1>
+      <FlexList direction="row" justify="between" items="center">
+        <H1>Song Details</H1>
+        <Button asChild>
+          <Link to="edit">
+            <FontAwesomeIcon icon={faPencil} className="mr-2" />
+            Edit Song
+          </Link>
+        </Button>
+      </FlexList>
       <Card>
         <CardHeader>
           <CardTitle>{song.name}</CardTitle>
@@ -167,7 +180,7 @@ export default function SongPage() {
             {expandNotes ? (
               splitNote.map((note, i) => <P key={i}>{note}</P>)
             ) : (
-              <ScrollArea className=" h-24">
+              <ScrollArea className="p-2 h-24">
                 {splitNote.map((note, i) => (
                   <P key={i}>{note}</P>
                 ))}
@@ -238,7 +251,10 @@ const DeleteSongDialog = () => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">Delete Song</Button>
+        <Button variant="destructive">
+          <FontAwesomeIcon icon={faTrash} className="mr-2" />
+          Delete Song
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

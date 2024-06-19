@@ -6,6 +6,7 @@ import {
   faBackwardStep,
   faForwardStep,
   faMagnifyingGlass,
+  faPlusCircle,
   faSort,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -126,7 +127,15 @@ function SongsListNew() {
   };
   return (
     <div className="p-2 space-y-2">
-      <H1>Songs</H1>
+      <FlexList direction="row" items="center" justify="between" gap={2}>
+        <H1>Songs</H1>
+        <Button asChild>
+          <Link to="new">
+            <FontAwesomeIcon icon={faPlusCircle} className="mr-2" />
+            Create Song
+          </Link>
+        </Button>
+      </FlexList>
 
       <FlexList direction="row" items="center" justify="end" gap={2}>
         <div className="relative ml-auto flex-1 md:grow-0">
