@@ -62,8 +62,8 @@ const HomeNew = () => {
 
   const hasNoBands = bands.length === 0;
   return (
-    <div>
-      <div className="sticky top-0 bg-background inset-x-0 flex items-center justify-end p-2 gap-2">
+    <div className="bg-muted/40 h-full">
+      <div className="sticky border-b top-0 z-10 bg-background inset-x-0 flex items-center justify-end p-2 gap-2">
         <Button size="sm" asChild>
           <Link to="new">
             <FontAwesomeIcon icon={faAdd} className="mr-2" />

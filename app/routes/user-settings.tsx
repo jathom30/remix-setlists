@@ -275,7 +275,7 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function UserSettings() {
   const { user } = useLoaderData<typeof loader>();
   return (
-    <div>
+    <div className="bg-muted/40">
       <div className="sticky border-b top-0 z-10 bg-background inset-x-0 flex items-center justify-between p-2 gap-2">
         <Button variant="ghost" size="sm" asChild>
           <Link to="/home">

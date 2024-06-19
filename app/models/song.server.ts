@@ -128,6 +128,27 @@ export async function createSong(
   });
 }
 
+export async function createSongWithFeels(
+  bandId: Band["id"],
+  song: Omit<Song, "id" | "updatedAt" | "createdAt" | "bandId"> & {
+    feels: Feel["id"][];
+    links?: string[];
+  },
+) {
+  return prisma.song.create({
+    data: {
+      ...song,
+      bandId,
+      links: {
+        create: song.links?.map((link) => ({ href: link })),
+      },
+      feels: {
+        connect: song.feels.map((feelId) => ({ id: feelId })),
+      },
+    },
+  });
+}
+
 export async function deleteSong(songId: Song["id"]) {
   return prisma.song.delete({
     where: { id: songId },

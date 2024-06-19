@@ -37,7 +37,7 @@ import { useLiveLoader } from "~/hooks";
 import { userPrefs } from "~/models/cookies.server";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
-import { useMemberRole } from "~/utils";
+import { useFeatureFlags, useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { sortByLabel } from "~/utils/params";
 import { getColor } from "~/utils/tailwindColors";
@@ -85,7 +85,19 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
 const subRoutes = ["sortBy", "filters"];
 
-export default function SongsList() {
+export default function SongsRoute() {
+  const { rebranding } = useFeatureFlags();
+  if (rebranding) {
+    return (
+      <MaxWidth>
+        <Outlet />
+      </MaxWidth>
+    );
+  }
+  return <SongsListOld />;
+}
+
+function SongsListOld() {
   const showToast = () => {
     toast("Songs updated!", {
       duration: 2000,

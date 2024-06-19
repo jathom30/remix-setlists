@@ -41,6 +41,13 @@ export async function getBand(bandId: Band["id"]) {
   });
 }
 
+export async function getBandWithFeels(bandId: Band["id"]) {
+  return await prisma.band.findUnique({
+    where: { id: bandId },
+    include: { feels: true },
+  });
+}
+
 export async function getBandName(bandId: Band["id"]) {
   return await prisma.band.findUnique({
     where: { id: bandId },

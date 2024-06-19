@@ -181,7 +181,7 @@ function SetlistsNew() {
         ) : (
           <Card>
             <CardHeader>
-              <CardTitle>No setlists Found</CardTitle>
+              <CardTitle>No Setlists Found</CardTitle>
               <CardDescription>
                 {query
                   ? "We couldn't find any setlists matching your search."
