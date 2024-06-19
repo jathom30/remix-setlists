@@ -47,12 +47,9 @@ export async function getSongs(bandId: Band["id"], params?: SongParams) {
 // ! not sure if this is a hack or not. making sure selected song belongs to selected band
 export async function getSong(
   songId: Song["id"],
-  bandId: Song["bandId"],
+  bandId: Band["id"],
   includeSets?: boolean,
 ) {
-  if (!bandId) {
-    return;
-  }
   const song = await prisma.band.findUnique({
     where: { id: bandId },
     select: {
@@ -66,10 +63,7 @@ export async function getSong(
       },
     },
   });
-  if (!song) {
-    return;
-  }
-  return { song: song?.song[0], setlists: song.setlists };
+  return { song: song?.song[0], setlists: song?.setlists };
 }
 
 export async function getSongName(songId: Song["id"]) {

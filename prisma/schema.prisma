@@ -127,7 +127,7 @@ model Song {
   note      String?
   keyLetter String?
   isMinor   Boolean @default(false)
-  tempo     Int
+  tempo     Int?
   position  String
   rank      String
   feels     Feel[]

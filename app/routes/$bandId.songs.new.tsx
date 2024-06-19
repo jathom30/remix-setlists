@@ -90,7 +90,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     note: submission.value.note || null,
   });
 
-  return redirect(`/${bandId}/song/${song.id}`);
+  return redirect(`/${bandId}/songs/${song.id}`);
 }
 
 const CreateSongSchema = z.object({
