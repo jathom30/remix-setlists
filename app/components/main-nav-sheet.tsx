@@ -7,6 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useParams } from "@remix-run/react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,9 +23,10 @@ import { FlexList } from "./FlexList";
 
 export const MainNavSheet = () => {
   const { bandId } = useParams();
+  const [open, setOpen] = useState(false);
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button size="icon" variant="ghost">
           <FontAwesomeIcon icon={faBars} />
@@ -44,17 +46,20 @@ export const MainNavSheet = () => {
           {bandId ? (
             <>
               <Button size="sm" variant="ghost" asChild>
-                <Link to={`/${bandId}/setlists`}>
+                <Link to={`/${bandId}/setlists`} onClick={() => setOpen(false)}>
                   <FontAwesomeIcon icon={faList} className="pr-2" /> Setlists
                 </Link>
               </Button>
               <Button size="sm" variant="ghost" asChild>
-                <Link to={`/${bandId}/songs`}>
+                <Link to={`/${bandId}/songs`} onClick={() => setOpen(false)}>
                   <FontAwesomeIcon icon={faMusic} className="pr-2" /> Songs
                 </Link>
               </Button>
               <Button size="sm" variant="ghost" asChild>
-                <Link to={`/${bandId}/band`}>
+                <Link
+                  to={`/${bandId}/band-settings`}
+                  onClick={() => setOpen(false)}
+                >
                   <FontAwesomeIcon icon={faUsers} className="pr-2" /> Band
                   Settings
                 </Link>

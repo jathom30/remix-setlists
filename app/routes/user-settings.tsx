@@ -316,6 +316,16 @@ export default function UserSettings() {
               Feel free to update your details as needed.
             </CardDescription>
           </CardHeader>
+          <CardContent className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Name</Label>
+              <P>{user.name}</P>
+            </div>
+            <div>
+              <Label>Email</Label>
+              <P>{user.email}</P>
+            </div>
+          </CardContent>
           <CardFooter>
             <UserDetailsDialog
               user={{ name: user.name || "", email: user.email }}
