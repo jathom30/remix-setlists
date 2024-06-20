@@ -51,7 +51,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Avatar, FlexList } from "~/components";
-import { H1, P, Small } from "~/components/typography";
+import { H1, P, Small, Large } from "~/components/typography";
 import {
   deleteBand,
   getBand,
@@ -111,7 +111,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const feels = await getMostRecentFeels(bandId);
 
   const domainUrl = getDomainUrl(request);
-  const qrCodeAddress = `${domainUrl}/add-band?code=${band.code}`;
+  const qrCodeAddress = `${domainUrl}/home/add-band/existing?code=${band.code}`;
 
   return json({ band, members: augmentedMembers, feels, qrCodeAddress });
 }
@@ -521,7 +521,10 @@ const DeleteMemberDialog = ({
 };
 
 const AddMemberDialog = () => {
-  const { qrCodeAddress } = useLoaderData<typeof loader>();
+  const {
+    qrCodeAddress,
+    band: { code },
+  } = useLoaderData<typeof loader>();
   const [showSuccess, setShowSuccess] = useState(false);
 
   const onCopy = (textToCopy: string) => {
@@ -552,8 +555,9 @@ const AddMemberDialog = () => {
               className="ml-2"
             />
           </Button>
-          <FlexList items="center">
+          <FlexList items="center" gap={0}>
             <QRCode value={qrCodeAddress} />
+            <Large>{code}</Large>
           </FlexList>
           <Form method="put">
             <FlexList>

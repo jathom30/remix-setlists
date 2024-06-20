@@ -68,6 +68,7 @@ const HomeNew = () => {
   const { pathname } = useLocation();
   const isAddBandRoute = pathname.includes("add-band");
   const isNewBandRoute = isAddBandRoute && pathname.includes("new");
+  const isExistingBandRoute = isAddBandRoute && pathname.includes("existing");
   return (
     <div className="bg-muted/40 h-full">
       <div className="sticky border-b top-0 z-10 bg-background inset-x-0 flex items-center justify-end p-2 gap-2">
@@ -109,6 +110,19 @@ const HomeNew = () => {
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
                     <Link to="/home/add-band/new">New</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+            {isExistingBandRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <FontAwesomeIcon icon={faChevronRight} />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/home/add-band/existing">Join</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </>
