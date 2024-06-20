@@ -1,4 +1,9 @@
-import { faAdd, faBoxOpen, faUser } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAdd,
+  faBoxOpen,
+  faChevronRight,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
@@ -12,10 +17,14 @@ import {
 } from "@remix-run/react";
 import { useSpinDelay } from "spin-delay";
 
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader } from "@/components/ui/card";
 import {
   Avatar as OgAvatar,
   Badge as OgBadge,
@@ -30,11 +39,10 @@ import {
   Navbar,
   Title,
 } from "~/components";
-import { H1, H3, Small } from "~/components/typography";
 import { UserAvatarMenu } from "~/components/user-avatar-menu";
 import { getBands } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
-import { useFeatureFlags, useUser } from "~/utils";
+import { useFeatureFlags } from "~/utils";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUserId(request);
@@ -57,68 +65,57 @@ export default function Home() {
 }
 
 const HomeNew = () => {
-  const { bands } = useLoaderData<typeof loader>();
-  const user = useUser();
-
-  const hasNoBands = bands.length === 0;
+  const { pathname } = useLocation();
+  const isAddBandRoute = pathname.includes("add-band");
+  const isNewBandRoute = isAddBandRoute && pathname.includes("new");
   return (
     <div className="bg-muted/40 h-full">
       <div className="sticky border-b top-0 z-10 bg-background inset-x-0 flex items-center justify-end p-2 gap-2">
         <Button size="sm" asChild>
-          <Link to="new">
+          <Link to="add-band">
             <FontAwesomeIcon icon={faAdd} className="mr-2" />
             Add Band
           </Link>
         </Button>
         <UserAvatarMenu />
       </div>
-      <MaxWidth className="p-2 space-y-2">
-        <H1>Your Bands</H1>
-        {hasNoBands ? (
-          <NavLink to="new">
-            <Card className="hover:bg-accent hover:text-accent-foreground">
-              <CardHeader className="flex-row gap-4 items-center flex-wrap">
-                <H3>
-                  <FontAwesomeIcon icon={faAdd} className="mr-2" />
-                  Create New
-                </H3>
-                <div className="flex-grow" />
-                <Small>
-                  You have no bands. Click here to create or add a band to your
-                  account.
-                </Small>
-              </CardHeader>
-            </Card>
-          </NavLink>
-        ) : (
-          <div className="grid sm:grid-cols-2 gap-2 sm:gap-4">
-            {bands.map((band) => (
-              <NavLink to={`/${band.id}/setlists`} key={band.id}>
-                <Card className="hover:bg-accent hover:text-accent-foreground">
-                  <CardHeader className="flex-row gap-4 flex-wrap">
-                    {band.icon?.path ? (
-                      <Avatar>
-                        <AvatarImage src={band.icon.path} alt={band.name} />
-                      </Avatar>
-                    ) : null}
-                    <H3>{band.name}</H3>
-                    <div className="flex-grow" />
-                    <Badge variant="outline">
-                      {
-                        band.members.find((member) => member.userId === user.id)
-                          ?.role
-                      }
-                    </Badge>
-                    <Badge variant="secondary">
-                      {band.members.length}{" "}
-                      {band.members.length === 1 ? "Member" : "Members"}
-                    </Badge>
-                  </CardHeader>
-                </Card>
-              </NavLink>
-            ))}
-          </div>
-        )}
+      <MaxWidth>
+        <Breadcrumb className="p-2 pb-0">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/home">Bands</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            {isAddBandRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <FontAwesomeIcon icon={faChevronRight} />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/home/add-band">Add Band</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+            {isNewBandRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <FontAwesomeIcon icon={faChevronRight} />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/home/add-band/new">New</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+          </BreadcrumbList>
+        </Breadcrumb>
+        <Outlet />
       </MaxWidth>
     </div>
   );

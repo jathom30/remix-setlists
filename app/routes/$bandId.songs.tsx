@@ -143,6 +143,22 @@ function SongsNew() {
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
+              <Link to={`/home`}>Bands</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <FontAwesomeIcon icon={faChevronRight} />
+          </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to={`/${bandId}`}>Band</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>
+            <FontAwesomeIcon icon={faChevronRight} />
+          </BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
               <Link to={`/${bandId}/songs`}>Songs</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>

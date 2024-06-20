@@ -204,7 +204,7 @@ export default function BandSettings() {
       <Card>
         <CardHeader>
           <FlexList direction="row" items="center" justify="between">
-            <CardTitle>General Settings</CardTitle>
+            <CardTitle>Details</CardTitle>
             <Button variant="outline" asChild>
               <Link to="edit">Edit</Link>
             </Button>
@@ -400,10 +400,10 @@ const DeleteFeelDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete this Band?</DialogTitle>
+          <DialogTitle>Delete this Feel?</DialogTitle>
           <DialogDescription>
             This action is permanent and cannot be undone. Are you sure you want
-            to delete this band?
+            to delete this feel?
           </DialogDescription>
         </DialogHeader>
         <Form method="post" id={form.id} onSubmit={form.onSubmit} noValidate>
@@ -418,7 +418,7 @@ const DeleteFeelDialog = ({
           <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
           {fields.intent.errors}
           <DialogFooter>
-            <Button variant="destructive">Delete Band</Button>
+            <Button variant="destructive">Delete Feel</Button>
           </DialogFooter>
         </Form>
       </DialogContent>
