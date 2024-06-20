@@ -58,6 +58,14 @@ export async function getSetlists(
   return setlists;
 }
 
+export async function getRecentSetlists(bandId: Band["id"]) {
+  return prisma.setlist.findMany({
+    where: { bandId },
+    orderBy: { updatedAt: "desc" },
+    take: 5,
+  });
+}
+
 export async function getSetlist(setlistId: Setlist["id"]) {
   return prisma.setlist.findUnique({
     where: { id: setlistId },

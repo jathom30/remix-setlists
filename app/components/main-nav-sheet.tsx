@@ -1,12 +1,12 @@
+import { Link, useLocation, useParams } from "@remix-run/react";
 import {
-  faBars,
-  faHome,
-  faList,
-  faMusic,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link, useParams } from "@remix-run/react";
+  AudioLines,
+  Boxes,
+  LayoutDashboard,
+  List,
+  Menu,
+  Settings,
+} from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -23,45 +23,55 @@ import { FlexList } from "./FlexList";
 
 export const MainNavSheet = () => {
   const { bandId } = useParams();
+  const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
+
+  const isActive = (path: string) =>
+    pathname.includes(path) ? "secondary" : "ghost";
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button size="icon" variant="ghost">
-          <FontAwesomeIcon icon={faBars} />
+          <Menu />
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom">
+      <SheetContent side="left">
         <SheetHeader>
           <SheetTitle>Setlists.pro</SheetTitle>
           <SheetDescription></SheetDescription>
         </SheetHeader>
         <FlexList gap={0}>
-          <Button size="sm" variant="ghost" asChild>
+          <Button size="sm" variant={isActive("home")} asChild>
             <Link to="/home">
-              <FontAwesomeIcon icon={faHome} className="pr-2" /> Home
+              <Boxes className="pr-2" /> Bands
             </Link>
           </Button>
           {bandId ? (
             <>
-              <Button size="sm" variant="ghost" asChild>
+              <Button size="sm" variant={isActive(bandId)} asChild>
+                <Link to={`/${bandId}`} onClick={() => setOpen(false)}>
+                  <LayoutDashboard className="pr-2" />
+                  Dashboard
+                </Link>
+              </Button>
+              <Button size="sm" variant={isActive("setlists")} asChild>
                 <Link to={`/${bandId}/setlists`} onClick={() => setOpen(false)}>
-                  <FontAwesomeIcon icon={faList} className="pr-2" /> Setlists
+                  <List className="pr-2" />
+                  Setlists
                 </Link>
               </Button>
-              <Button size="sm" variant="ghost" asChild>
+              <Button size="sm" variant={isActive("songs")} asChild>
                 <Link to={`/${bandId}/songs`} onClick={() => setOpen(false)}>
-                  <FontAwesomeIcon icon={faMusic} className="pr-2" /> Songs
+                  <AudioLines className="pr-2" /> Songs
                 </Link>
               </Button>
-              <Button size="sm" variant="ghost" asChild>
+              <Button size="sm" variant={isActive("band-settings")} asChild>
                 <Link
                   to={`/${bandId}/band-settings`}
                   onClick={() => setOpen(false)}
                 >
-                  <FontAwesomeIcon icon={faUsers} className="pr-2" /> Band
-                  Settings
+                  <Settings className="pr-2" /> Band Settings
                 </Link>
               </Button>
             </>

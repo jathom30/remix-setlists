@@ -48,7 +48,7 @@ export default function Home() {
       ) : (
         <div className="grid sm:grid-cols-2 gap-2 sm:gap-4">
           {bands.map((band) => (
-            <NavLink to={`/${band.id}/setlists`} key={band.id}>
+            <NavLink to={`/${band.id}`} key={band.id}>
               <Card className="hover:bg-accent hover:text-accent-foreground">
                 <CardHeader className="flex-row gap-4 flex-wrap">
                   {band.icon?.path ? (

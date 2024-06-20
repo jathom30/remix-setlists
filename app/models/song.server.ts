@@ -45,6 +45,14 @@ export async function getSongs(bandId: Band["id"], params?: SongParams) {
   });
 }
 
+export async function getRecentSongs(bandId: Band["id"]) {
+  return prisma.song.findMany({
+    where: { bandId },
+    orderBy: { updatedAt: "desc" },
+    take: 5,
+  });
+}
+
 // ! not sure if this is a hack or not. making sure selected song belongs to selected band
 export async function getSong(
   songId: Song["id"],

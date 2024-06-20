@@ -3,21 +3,17 @@ import {
   faArrowUpAZ,
   faArrowUpWideShort,
   faArrowUpZA,
-  faBackwardStep,
-  faForwardStep,
   faMagnifyingGlass,
   faPlusCircle,
   faSort,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Song } from "@prisma/client";
-import { LoaderFunctionArgs, SerializeFrom, json } from "@remix-run/node";
+import { LoaderFunctionArgs, json } from "@remix-run/node";
 import { Link, MetaFunction, useSearchParams } from "@remix-run/react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import invariant from "tiny-invariant";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -47,14 +43,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { FlexList } from "~/components";
-import { H1, Large, Muted, P, Small } from "~/components/typography";
+import { SongContainer } from "~/components/song-container";
+import { H1 } from "~/components/typography";
 import { useLiveLoader } from "~/hooks";
 import { userPrefs } from "~/models/cookies.server";
 import { getSongs } from "~/models/song.server";
@@ -171,7 +162,7 @@ function SongsListNew() {
       </FlexList>
 
       {songs.length ? (
-        <FlexList gap={2}>
+        <FlexList gap={1}>
           {songs.map((song) => (
             <Link key={song.id} to={song.id}>
               <SongContainer song={song} />
@@ -204,52 +195,6 @@ function SongsListNew() {
     </div>
   );
 }
-
-const SongContainer = ({ song }: { song: SerializeFrom<Song> }) => {
-  const positionIcon =
-    {
-      opener: faBackwardStep,
-      closer: faForwardStep,
-    }[song.position] || null;
-  const positionText =
-    {
-      opener:
-        "This song is marked as an opener when automatically generating setlists.",
-      closer:
-        "This song is marked as a closer when automatically generating setlists.",
-    }[song.position] || "";
-  return (
-    <Card className="p-2">
-      <FlexList direction="row" items="center" justify="between" gap={2}>
-        <Large>{song.name}</Large>
-        <FlexList direction="row" items="center" gap={2}>
-          <Muted>{song.tempo} BPM</Muted>
-          <Muted>{song.length} minutes</Muted>
-        </FlexList>
-      </FlexList>
-      <FlexList direction="row" items="center" justify="between" gap={2}>
-        <Small>{song.author}</Small>
-        <FlexList direction="row" gap={2} items="center">
-          {positionIcon ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <FontAwesomeIcon icon={positionIcon} />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <P>{positionText}</P>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : null}
-          <Badge variant="outline">
-            {song.keyLetter} {song.isMinor ? "Minor" : "Major"}
-          </Badge>
-        </FlexList>
-      </FlexList>
-    </Card>
-  );
-};
 
 const sortOptions = [
   {

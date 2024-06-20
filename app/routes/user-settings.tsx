@@ -1,7 +1,5 @@
 import { getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { faPlusCircle, faHome } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   Link,
   useLoaderData,
@@ -15,6 +13,7 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
 } from "@remix-run/server-runtime";
+import { Boxes, CirclePlus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -224,7 +223,7 @@ export async function action({ request }: ActionFunctionArgs) {
         formErrors: ["An error occurred while creating the band."],
       });
     }
-    return redirect(`/${band.id}/setlists`);
+    return redirect(`/${band.id}`);
   }
 
   if (intent === IntentEnums.Enum["add-band"]) {
@@ -238,7 +237,7 @@ export async function action({ request }: ActionFunctionArgs) {
         fieldErrors: { band_code: [band.error] },
       });
     }
-    return redirect(`/${band.id}/setlists`);
+    return redirect(`/${band.id}`);
   }
 
   if (intent === IntentEnums.Enum["delete-account"]) {
@@ -279,7 +278,7 @@ export default function UserSettings() {
       <div className="sticky border-b top-0 z-10 bg-background inset-x-0 flex items-center justify-between p-2 gap-2">
         <Button variant="ghost" size="sm" asChild>
           <Link to="/home">
-            <FontAwesomeIcon icon={faHome} className="pr-2" />
+            <Boxes className="pr-2" />
             My Bands
           </Link>
         </Button>
@@ -367,7 +366,7 @@ export default function UserSettings() {
                     <div className="flex-grow" />
                     {band.role === "ADMIN" ? (
                       <Button variant="ghost" asChild>
-                        <Link to={`/${band.bandId}/band`}>Edit</Link>
+                        <Link to={`/${band.bandId}/band-settings`}>Edit</Link>
                       </Button>
                     ) : null}
                     <RemoveSelfFromBandDialog band={band} />
@@ -542,7 +541,7 @@ const AddBandDialog = () => {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline">
-          <FontAwesomeIcon icon={faPlusCircle} className="mr-2" />
+          <CirclePlus className="mr-2" />
           Add Band
         </Button>
       </DialogTrigger>

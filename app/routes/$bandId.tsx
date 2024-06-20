@@ -1,9 +1,24 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Outlet } from "@remix-run/react";
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useMatches,
+  useParams,
+} from "@remix-run/react";
+import { ChevronRight } from "lucide-react";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
-import { Header } from "~/components";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Header, MaxWidth } from "~/components";
 import { MainNavSheet } from "~/components/main-nav-sheet";
 import { UserAvatarMenu } from "~/components/user-avatar-menu";
 import { getBandHome, getBands } from "~/models/band.server";
@@ -33,7 +48,71 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({ band, memberRole, bands, sideMenuPref });
 }
 
+const BandSchema = z.object({
+  data: z.object({
+    band: z.object({
+      name: z.string(),
+    }),
+  }),
+});
+
+const getBandMatch = (matches: ReturnType<typeof useMatches>) => {
+  const bandMatch = matches.find((match) => {
+    const safeParse = BandSchema.safeParse(match);
+    return safeParse.success;
+  });
+  if (!bandMatch) {
+    return null;
+  }
+  return BandSchema.parse(bandMatch);
+};
+
+const SongDetailMatchSchema = z.object({
+  data: z.object({
+    song: z.object({
+      id: z.string(),
+      name: z.string(),
+    }),
+  }),
+  pathname: z.string(),
+});
+
+const getSongMatch = (matches: ReturnType<typeof useMatches>) => {
+  const songMatch = matches.find((match) => {
+    const safeParse = SongDetailMatchSchema.safeParse(match);
+    return safeParse.success;
+  });
+  if (!songMatch) {
+    return null;
+  }
+  return SongDetailMatchSchema.parse(songMatch);
+};
+
 export default function BandRoute() {
+  const { bandId, memberId } = useParams();
+  const { pathname } = useLocation();
+  const matches = useMatches();
+  const bandMatch = getBandMatch(matches);
+
+  // base routes
+  const isBandRoute = Boolean(bandId);
+  // setlist routes
+  const isSetlistsRoute = isBandRoute && pathname.includes("setlists");
+
+  // songs routes
+  const isSongsRoute = isBandRoute && pathname.includes("songs");
+  const songMatch = getSongMatch(matches);
+  const isEditSongRoute =
+    isSongsRoute && songMatch && songMatch.pathname.includes("edit");
+  const isCreateSongRoute = isSongsRoute && pathname.includes("new");
+
+  // band settings routes
+  const isBandSettingsRoute = isBandRoute && pathname.includes("band-settings");
+  const isEditBandSettingsRoute =
+    isBandSettingsRoute && pathname.includes("edit");
+  const isMembersRoute =
+    isBandSettingsRoute && memberId && pathname.includes("members");
+
   return (
     <div className="bg-muted/40 h-full">
       <div className="p-2 border-b sticky top-0 inset-x-0 z-10 bg-background">
@@ -44,7 +123,156 @@ export default function BandRoute() {
           <UserAvatarMenu />
         </Header>
       </div>
-      <Outlet />
+      <MaxWidth>
+        <Breadcrumb className="p-2 pb-0">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to="/home">Bands</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+
+            {isBandRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}`}>
+                      {bandMatch?.data.band.name || "Dashboard"}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+
+            {isSetlistsRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/setlists`}>Setlists</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+
+            {isSongsRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/songs`}>Songs</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+
+            {songMatch ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/songs/${songMatch.data.song.id}`}>
+                      {songMatch.data.song.name}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+
+            {isEditSongRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link
+                      to={`/${bandId}/songs/${songMatch.data.song.id}/edit`}
+                    >
+                      Edit
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+
+            {isCreateSongRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/songs/new`}>Create Song</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+
+            {isBandSettingsRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/band-settings`}>Settings</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+
+            {isEditBandSettingsRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/band-settings/edit`}>
+                      Edit Details
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+
+            {isMembersRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/band-settings/members/${memberId}`}>
+                      Member Role
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+          </BreadcrumbList>
+        </Breadcrumb>
+        <Outlet />
+      </MaxWidth>
     </div>
   );
 }
