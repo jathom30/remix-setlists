@@ -59,6 +59,8 @@ import { useLiveLoader } from "~/hooks";
 import { userPrefs } from "~/models/cookies.server";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
+import { useMemberRole } from "~/utils";
+import { RoleEnum } from "~/utils/enums";
 import { getColor } from "~/utils/tailwindColors";
 
 export const meta: MetaFunction = () => [
@@ -118,6 +120,8 @@ function SongsListNew() {
     });
   };
   const { songs, sort } = useLiveLoader<typeof loader>(showToast);
+  const memberRole = useMemberRole();
+  const isSub = memberRole === RoleEnum.SUB;
 
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("query") ?? "";
@@ -139,12 +143,14 @@ function SongsListNew() {
     <div className="p-2 space-y-2">
       <FlexList direction="row" items="center" justify="between" gap={2}>
         <H1>Songs</H1>
-        <Button asChild>
-          <Link to="new">
-            <FontAwesomeIcon icon={faPlusCircle} className="mr-2" />
-            Create Song
-          </Link>
-        </Button>
+        {!isSub ? (
+          <Button asChild>
+            <Link to="new">
+              <FontAwesomeIcon icon={faPlusCircle} className="mr-2" />
+              Create Song
+            </Link>
+          </Button>
+        ) : null}
       </FlexList>
 
       <FlexList direction="row" items="center" justify="end" gap={2}>
@@ -187,11 +193,11 @@ function SongsListNew() {
               <Button onClick={() => setQuery("")} variant="secondary">
                 Clear search
               </Button>
-            ) : (
+            ) : !isSub ? (
               <Button asChild>
                 <Link to="new">Create your first song here</Link>
               </Button>
-            )}
+            ) : null}
           </CardFooter>
         </Card>
       )}

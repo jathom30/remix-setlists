@@ -5,6 +5,7 @@ import {
   faArrowUpZA,
   faBoxOpen,
   faMagnifyingGlass,
+  faPlusCircle,
   faSort,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -136,6 +137,8 @@ function SetlistsNew() {
     });
   };
   const { setlists, sort } = useLiveLoader<typeof loader>(showToast);
+  const memberRole = useMemberRole();
+  const isSub = memberRole === RoleEnum.SUB;
 
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("query") ?? "";
@@ -149,7 +152,17 @@ function SetlistsNew() {
   return (
     <MaxWidth>
       <div className="p-2 space-y-2">
-        <H1>Setlists</H1>
+        <FlexList direction="row" items="center" justify="between" gap={2}>
+          <H1>Setlists</H1>
+          {!isSub ? (
+            <Button asChild>
+              <Link to="new">
+                <FontAwesomeIcon icon={faPlusCircle} className="mr-2" />
+                Create Setlist
+              </Link>
+            </Button>
+          ) : null}
+        </FlexList>
 
         <FlexList direction="row" items="center" justify="end" gap={2}>
           <div className="relative ml-auto flex-1 md:grow-0">
@@ -193,11 +206,11 @@ function SetlistsNew() {
                 <Button onClick={() => setQuery("")} variant="secondary">
                   Clear search
                 </Button>
-              ) : (
+              ) : !isSub ? (
                 <Button asChild>
                   <Link to=".">Create your first setlist here</Link>
                 </Button>
-              )}
+              ) : null}
             </CardFooter>
           </Card>
         )}

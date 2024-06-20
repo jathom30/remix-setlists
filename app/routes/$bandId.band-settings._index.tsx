@@ -66,6 +66,7 @@ import {
   requireUser,
   requireUserId,
 } from "~/session.server";
+import { useMemberRole, useUser } from "~/utils";
 import { getDomainUrl } from "~/utils/assorted";
 import { RoleEnum } from "~/utils/enums";
 
@@ -197,6 +198,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function BandSettings() {
   const { band, members, feels } = useLoaderData<typeof loader>();
+  const user = useUser();
+  const memberRole = useMemberRole();
+  const isAdmin = memberRole === RoleEnum.ADMIN;
+  const isSub = memberRole === RoleEnum.SUB;
 
   return (
     <div className="p-2 space-y-2">
@@ -205,9 +210,11 @@ export default function BandSettings() {
         <CardHeader>
           <FlexList direction="row" items="center" justify="between">
             <CardTitle>Details</CardTitle>
-            <Button variant="outline" asChild>
-              <Link to="edit">Edit</Link>
-            </Button>
+            {isAdmin ? (
+              <Button variant="outline" asChild>
+                <Link to="edit">Edit</Link>
+              </Button>
+            ) : null}
           </FlexList>
           <CardDescription>
             Created on {new Date(band.createdAt).toLocaleDateString()}
@@ -228,7 +235,7 @@ export default function BandSettings() {
         <CardHeader>
           <FlexList direction="row" items="center" justify="between">
             <CardTitle>Members</CardTitle>
-            <AddMemberDialog />
+            {isAdmin ? <AddMemberDialog /> : null}
           </FlexList>
           <CardDescription>Manage the members of your band.</CardDescription>
         </CardHeader>
@@ -245,7 +252,9 @@ export default function BandSettings() {
                   <P>{member.name}</P>
                   <Badge variant="secondary">{member.role}</Badge>
                 </FlexList>
-                <MemberSettings bandId={band.id} memberId={member.id} />
+                {isAdmin || member.id === user.id ? (
+                  <MemberSettings bandId={band.id} memberId={member.id} />
+                ) : null}
               </FlexList>
             ))}
           </FlexList>
@@ -255,7 +264,7 @@ export default function BandSettings() {
         <CardHeader>
           <FlexList direction="row" items="center" justify="between">
             <CardTitle>Feels</CardTitle>
-            <Button variant="outline">Add Feel</Button>
+            {!isSub ? <Button variant="outline">Add Feel</Button> : null}
           </FlexList>
           <CardDescription>
             These are the feels that your band has created. Update and add to
@@ -278,19 +287,21 @@ export default function BandSettings() {
           </FlexList>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Danger Zone</CardTitle>
-          <CardDescription>
-            Deleting this band is a perminant action and cannot be undone. It
-            will remove all songs, setlists, and other data associated with this
-            band.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <DeleteBandDialog bandId={band.id} />
-        </CardFooter>
-      </Card>
+      {isAdmin ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Danger Zone</CardTitle>
+            <CardDescription>
+              Deleting this band is a perminant action and cannot be undone. It
+              will remove all songs, setlists, and other data associated with
+              this band.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <DeleteBandDialog bandId={band.id} />
+          </CardFooter>
+        </Card>
+      ) : null}
     </div>
   );
 }
