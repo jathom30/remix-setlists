@@ -1,7 +1,8 @@
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Outlet, useLocation } from "@remix-run/react";
+import { Outlet, useLocation, useMatches } from "@remix-run/react";
 import { Link, useParams } from "react-router-dom";
+import { z } from "zod";
 
 import {
   Breadcrumb,
@@ -12,10 +13,31 @@ import {
 } from "@/components/ui/breadcrumb";
 import { MaxWidth } from "~/components";
 
+const BandSchema = z.object({
+  data: z.object({
+    band: z.object({
+      name: z.string(),
+    }),
+  }),
+});
+
+const getBandMatch = (matches: ReturnType<typeof useMatches>) => {
+  const bandMatch = matches.find((match) => {
+    const safeParse = BandSchema.safeParse(match);
+    return safeParse.success;
+  });
+  if (!bandMatch) {
+    return null;
+  }
+  return BandSchema.parse(bandMatch);
+};
+
 export default function BandSettings() {
   const { bandId } = useParams();
   const { pathname } = useLocation();
+  const matches = useMatches();
 
+  const bandMatch = getBandMatch(matches);
   const isEditRoute = pathname.includes("edit");
   return (
     <MaxWidth>
@@ -31,7 +53,9 @@ export default function BandSettings() {
           </BreadcrumbSeparator>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to={`/${bandId}`}>Band</Link>
+              <Link to={`/${bandId}`}>
+                {bandMatch?.data.band.name || "Current band"}
+              </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator>

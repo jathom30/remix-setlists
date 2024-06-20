@@ -128,11 +128,32 @@ const getSongMatch = (matches: ReturnType<typeof useMatches>) => {
   return SongDetailMatchSchema.parse(songMatch);
 };
 
+const BandSchema = z.object({
+  data: z.object({
+    band: z.object({
+      name: z.string(),
+    }),
+  }),
+});
+
+const getBandMatch = (matches: ReturnType<typeof useMatches>) => {
+  const bandMatch = matches.find((match) => {
+    const safeParse = BandSchema.safeParse(match);
+    return safeParse.success;
+  });
+  if (!bandMatch) {
+    return null;
+  }
+  return BandSchema.parse(bandMatch);
+};
+
 function SongsNew() {
   const { bandId } = useParams();
   const matches = useMatches();
   const { pathname } = useLocation();
 
+  const bandMatch = getBandMatch(matches);
+  console.log(bandMatch);
   const songMatch = getSongMatch(matches);
   const isEditRoute = songMatch?.pathname.includes("edit");
   const isCreateRoute = pathname.includes("new");
@@ -151,7 +172,9 @@ function SongsNew() {
           </BreadcrumbSeparator>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link to={`/${bandId}`}>Band</Link>
+              <Link to={`/${bandId}`}>
+                {bandMatch?.data.band.name || "Current band"}
+              </Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator>
