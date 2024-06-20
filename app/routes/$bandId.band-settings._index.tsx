@@ -74,6 +74,7 @@ const IntentSchema = z.enum([
   "delete-band",
   "delete-feel",
   "remove-member",
+  "member-role",
   "generate-code",
 ]);
 
@@ -458,7 +459,7 @@ const MemberSettings = ({
         <DropdownMenuItem asChild>
           <Link to={`members/${memberId}`}>
             <FontAwesomeIcon icon={faPenToSquare} className="mr-2" />
-            Edit
+            Adjust Role
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setShowDeleteModal(true)}>

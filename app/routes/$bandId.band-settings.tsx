@@ -33,12 +33,13 @@ const getBandMatch = (matches: ReturnType<typeof useMatches>) => {
 };
 
 export default function BandSettings() {
-  const { bandId } = useParams();
+  const { bandId, memberId } = useParams();
   const { pathname } = useLocation();
   const matches = useMatches();
 
   const bandMatch = getBandMatch(matches);
   const isEditRoute = pathname.includes("edit");
+  const isMembersRoute = memberId && pathname.includes("members");
   return (
     <MaxWidth>
       <Breadcrumb className="p-2 pb-0">
@@ -75,6 +76,21 @@ export default function BandSettings() {
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link to={`/${bandId}/band-settings/edit`}>Edit Details</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            </>
+          ) : null}
+          {isMembersRoute ? (
+            <>
+              <BreadcrumbSeparator>
+                <FontAwesomeIcon icon={faChevronRight} />
+              </BreadcrumbSeparator>
+
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link to={`/${bandId}/band-settings/members/${memberId}`}>
+                    Member Role
+                  </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </>
