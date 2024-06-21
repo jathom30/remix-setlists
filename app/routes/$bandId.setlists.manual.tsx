@@ -76,7 +76,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   )?.[1];
   const setlist = await createMultiSetSetlist(bandId, sets, name);
 
-  return redirect(`/${bandId}/setlist/${setlist.id}`);
+  return redirect(`/${bandId}/setlists/${setlist.id}`);
 }
 
 export default function ManualCreateSetlist() {
@@ -205,7 +205,7 @@ export default function ManualCreateSetlist() {
               </Droppable>
             </div>
           </ResizablePanel>
-          <ResizableHandle withHandle className=" bg-inherit" />
+          <ResizableHandle withHandle className="bg-inherit" />
           <ResizablePanel defaultSize={40}>
             <Card className="h-full px-2 rounded-b-none flex flex-col gap-2 overflow-auto">
               <div className="pt-2 sticky space-y-2 top-0 inset-x-0 bg-card">
@@ -221,49 +221,47 @@ export default function ManualCreateSetlist() {
                   />
                 </div>
                 <Separator />
-                <Droppable
-                  droppableId={DroppableIdEnums.Enum["available-songs"]}
-                >
-                  {(dropProvided, dropSnapshot) => (
-                    <div
-                      className="h-full"
-                      ref={dropProvided.innerRef}
-                      {...dropProvided.droppableProps}
-                    >
-                      {filteredSongs.map((song, songIndex) => (
-                        <Draggable
-                          draggableId={song.id}
-                          key={song.id}
-                          index={songIndex}
-                        >
-                          {(dragprovided) => (
-                            <div
-                              className="py-1"
-                              ref={dragprovided.innerRef}
-                              {...dragprovided.dragHandleProps}
-                              {...dragprovided.draggableProps}
-                            >
-                              <SongContainer song={song} />
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {filteredSongs.length === 0 ? (
-                        <Card
-                          className={`outline-dashed outline-border flex items-center justify-center  border-none h-full ${
-                            dropSnapshot.isDraggingOver ? "outline-primary" : ""
-                          }`}
-                        >
-                          <CardDescription className="text-center">
-                            No songs found
-                          </CardDescription>
-                        </Card>
-                      ) : null}
-                      {dropProvided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
               </div>
+              <Droppable droppableId={DroppableIdEnums.Enum["available-songs"]}>
+                {(dropProvided, dropSnapshot) => (
+                  <div
+                    className="h-full"
+                    ref={dropProvided.innerRef}
+                    {...dropProvided.droppableProps}
+                  >
+                    {filteredSongs.map((song, songIndex) => (
+                      <Draggable
+                        draggableId={song.id}
+                        key={song.id}
+                        index={songIndex}
+                      >
+                        {(dragprovided) => (
+                          <div
+                            className="py-1"
+                            ref={dragprovided.innerRef}
+                            {...dragprovided.dragHandleProps}
+                            {...dragprovided.draggableProps}
+                          >
+                            <SongContainer song={song} />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {filteredSongs.length === 0 ? (
+                      <Card
+                        className={`outline-dashed outline-border flex items-center justify-center  border-none h-full ${
+                          dropSnapshot.isDraggingOver ? "outline-primary" : ""
+                        }`}
+                      >
+                        <CardDescription className="text-center">
+                          No songs found
+                        </CardDescription>
+                      </Card>
+                    ) : null}
+                    {dropProvided.placeholder}
+                  </div>
+                )}
+              </Droppable>
             </Card>
           </ResizablePanel>
         </ResizablePanelGroup>
