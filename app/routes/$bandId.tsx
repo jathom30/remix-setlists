@@ -56,17 +56,6 @@ const BandSchema = z.object({
   }),
 });
 
-const getBandMatch = (matches: ReturnType<typeof useMatches>) => {
-  const bandMatch = matches.find((match) => {
-    const safeParse = BandSchema.safeParse(match);
-    return safeParse.success;
-  });
-  if (!bandMatch) {
-    return null;
-  }
-  return BandSchema.parse(bandMatch);
-};
-
 const SongDetailMatchSchema = z.object({
   data: z.object({
     song: z.object({
@@ -77,22 +66,35 @@ const SongDetailMatchSchema = z.object({
   pathname: z.string(),
 });
 
-const getSongMatch = (matches: ReturnType<typeof useMatches>) => {
-  const songMatch = matches.find((match) => {
-    const safeParse = SongDetailMatchSchema.safeParse(match);
+const SetlistDetailMatchSchema = z.object({
+  data: z.object({
+    setlist: z.object({
+      id: z.string(),
+      name: z.string(),
+    }),
+  }),
+  pathname: z.string(),
+});
+
+const getMatch = <Z extends z.ZodTypeAny>(
+  matches: ReturnType<typeof useMatches>,
+  schema: Z,
+) => {
+  const match = matches.find((match) => {
+    const safeParse = schema.safeParse(match);
     return safeParse.success;
   });
-  if (!songMatch) {
+  if (!match) {
     return null;
   }
-  return SongDetailMatchSchema.parse(songMatch);
+  return schema.parse(match);
 };
 
 export default function BandRoute() {
-  const { bandId, memberId } = useParams();
+  const { bandId, memberId, setlistId } = useParams();
   const { pathname } = useLocation();
   const matches = useMatches();
-  const bandMatch = getBandMatch(matches);
+  const bandMatch = getMatch(matches, BandSchema);
 
   // base routes
   const isBandRoute = Boolean(bandId);
@@ -102,10 +104,12 @@ export default function BandRoute() {
   const isCreateSetlistsRoute = isSetlistsRoute && pathname.includes("new");
   const isManualCreateSetlistRoute =
     isSetlistsRoute && pathname.includes("manual");
+  const setlistMatch = getMatch(matches, SetlistDetailMatchSchema);
+  const isSetlistDetailRoute = isSetlistsRoute && Boolean(setlistId);
 
   // songs routes
   const isSongsRoute = isBandRoute && pathname.includes("songs");
-  const songMatch = getSongMatch(matches);
+  const songMatch = getMatch(matches, SongDetailMatchSchema);
   const isEditSongRoute =
     isSongsRoute && songMatch && songMatch.pathname.includes("edit");
   const isCreateSongRoute = isSongsRoute && pathname.includes("new");
@@ -161,6 +165,21 @@ export default function BandRoute() {
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
                     <Link to={`/${bandId}/setlists`}>Setlists</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+            {isSetlistDetailRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/setlists/${setlistId}`}>
+                      {setlistMatch.data.setlist.name}
+                    </Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </>

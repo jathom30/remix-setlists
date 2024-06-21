@@ -180,6 +180,29 @@ export async function updateSetlist(
   });
 }
 
+export async function updateMultiSetSetlist(
+  setlistId: Setlist["id"],
+  sets: Song["id"][][],
+) {
+  return await prisma.setlist.update({
+    where: { id: setlistId },
+    data: {
+      sets: {
+        deleteMany: {},
+        create: sets.map((set, i) => ({
+          positionInSetlist: i,
+          songs: {
+            create: set.map((songId, index) => ({
+              songId,
+              positionInSet: index,
+            })),
+          },
+        })),
+      },
+    },
+  });
+}
+
 export async function deleteSetlist(setlistId: Setlist["id"]) {
   return prisma.setlist.delete({
     where: { id: setlistId },

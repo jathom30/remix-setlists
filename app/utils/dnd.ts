@@ -216,3 +216,15 @@ export const onDragEnd = (
     }, {});
   };
 };
+
+export const compareSets = (original: TSet, updated: TSet): boolean => {
+  const isUpdated = (songIdsSetA: string[], songIdsSetB: string[]) => {
+    return JSON.stringify(songIdsSetA) !== JSON.stringify(songIdsSetB);
+  };
+
+  return Object.keys(updated).some((setId) => {
+    const current = updated[setId].map((song) => song.id);
+    const old = original[setId].map((song) => song.id);
+    return isUpdated(current, old);
+  });
+};

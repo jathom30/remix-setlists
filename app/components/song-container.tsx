@@ -22,10 +22,8 @@ export const SongContainer = ({ song }: { song: SerializeFrom<Song> }) => {
     }[song.position] || null;
   const positionText =
     {
-      opener:
-        "This song is marked as an opener when automatically generating setlists.",
-      closer:
-        "This song is marked as a closer when automatically generating setlists.",
+      opener: "Marked as opener",
+      closer: "Marked as closer",
     }[song.position] || "";
   return (
     <Card className="p-1 px-2">
