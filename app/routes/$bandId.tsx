@@ -96,8 +96,12 @@ export default function BandRoute() {
 
   // base routes
   const isBandRoute = Boolean(bandId);
+
   // setlist routes
   const isSetlistsRoute = isBandRoute && pathname.includes("setlists");
+  const isCreateSetlistsRoute = isSetlistsRoute && pathname.includes("new");
+  const isManualCreateSetlistRoute =
+    isSetlistsRoute && pathname.includes("manual");
 
   // songs routes
   const isSongsRoute = isBandRoute && pathname.includes("songs");
@@ -161,6 +165,43 @@ export default function BandRoute() {
                 </BreadcrumbItem>
               </>
             ) : null}
+            {isCreateSetlistsRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/setlists/new`}>Create</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+
+            {isManualCreateSetlistRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/setlists/new`}>Create</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/setlists/manual`}>Manual</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
 
             {isSongsRoute ? (
               <>
@@ -218,7 +259,7 @@ export default function BandRoute() {
 
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/songs/new`}>Create Song</Link>
+                    <Link to={`/${bandId}/songs/new`}>Create</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </>

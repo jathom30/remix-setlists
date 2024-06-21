@@ -33,6 +33,30 @@ export async function createSetlist(bandId: Band["id"], songIds: Song["id"][]) {
   });
 }
 
+export async function createMultiSetSetlist(
+  bandId: Band["id"],
+  sets: Song["id"][][],
+  setlistName?: string,
+) {
+  return await prisma.setlist.create({
+    data: {
+      name: setlistName || "Temp name",
+      bandId,
+      sets: {
+        create: sets.map((set, i) => ({
+          positionInSetlist: i,
+          songs: {
+            create: set.map((songId, index) => ({
+              songId,
+              positionInSet: index,
+            })),
+          },
+        })),
+      },
+    },
+  });
+}
+
 export async function getSetlists(
   bandId: Band["id"],
   params?: { q?: string; sort?: string },
