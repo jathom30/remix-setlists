@@ -121,7 +121,7 @@ export default function ManualCreateSetlist() {
   return (
     <div
       ref={containerRef}
-      className={`gap-2 flex flex-col`}
+      className="gap-2 flex flex-col"
       style={{
         height: `calc(100svh - ${top}px)`,
       }}
@@ -249,7 +249,7 @@ export default function ManualCreateSetlist() {
                     ))}
                     {filteredSongs.length === 0 ? (
                       <Card
-                        className={`outline-dashed outline-border flex items-center justify-center  border-none h-full ${
+                        className={`outline-dashed outline-border flex items-center justify-center border-none h-5/6 ${
                           dropSnapshot.isDraggingOver ? "outline-primary" : ""
                         }`}
                       >

@@ -23,7 +23,9 @@ import {
   ExternalLink,
   Link,
   Pencil,
+  Search,
   Trash,
+  X,
 } from "lucide-react";
 import { ReactNode, useEffect, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
@@ -52,6 +54,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import { Separator } from "@/components/ui/separator";
+import {
   Sheet,
   SheetClose,
   SheetContent,
@@ -62,6 +70,7 @@ import {
 import { FlexList } from "~/components";
 import { SongContainer } from "~/components/song-container";
 import { H1 } from "~/components/typography";
+import { useContainerHeight } from "~/hooks/use-container-height";
 import {
   copySetlist,
   deleteSetlist,
@@ -70,6 +79,7 @@ import {
   updateSetlist,
   updateSetlistName,
 } from "~/models/setlist.server";
+import { getSongsNotInSetlist } from "~/models/song.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { getDomainUrl } from "~/utils/assorted";
 import { DroppableIdEnums, TSet, compareSets, onDragEnd } from "~/utils/dnd";
@@ -83,6 +93,9 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!setlist) {
     throw new Response("Setlist not found", { status: 404 });
   }
+
+  const availableSongs = await getSongsNotInSetlist(bandId, setlistId);
+
   const domainUrl = getDomainUrl(request);
   const setlistLink = `${domainUrl}/${setlist.bandId}/setlists/${setlist.id}`;
 
@@ -93,6 +106,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     setlist,
     setlistLink,
+    availableSongs,
     ...(setlist.isPublic ? { setlistPublicUrl } : {}),
   });
 }
@@ -250,8 +264,10 @@ const FetcherDataSchema = z.object({
 });
 
 export default function SetlistPage() {
-  const { setlist } = useLoaderData<typeof loader>();
+  const { setlist, availableSongs } = useLoaderData<typeof loader>();
   const fetcher = useFetcher({ key: `setlist-${setlist.id}` });
+  const [showAvailableSongs, setShowAvailableSongs] = useState(false);
+  const [query, setQuery] = useState("");
 
   const defaultSets = setlist.sets.reduce((acc: TSet, set) => {
     const setSongs = set.songs
@@ -260,7 +276,13 @@ export default function SetlistPage() {
     acc[set.id] = setSongs;
     return acc;
   }, {} as TSet);
-  const [sets, setSets] = useState<TSet>(defaultSets);
+  const [sets, setSets] = useState<TSet>({
+    ...defaultSets,
+    [DroppableIdEnums.Enum["available-songs"]]: availableSongs,
+  });
+  const filteredSongs = sets[DroppableIdEnums.Enum["available-songs"]].filter(
+    (song) => song.name.toLowerCase().includes(query.toLowerCase()),
+  );
 
   // update sets when fetcher is done
   useEffect(() => {
@@ -311,36 +333,66 @@ export default function SetlistPage() {
     setIsChangedSetlist(false);
   };
 
+  const { containerRef, top } = useContainerHeight();
+
   return (
-    <div className="p-2 space-y-2">
+    <div
+      ref={containerRef}
+      style={{
+        height: `calc(100svh - ${top}px)`,
+      }}
+      className="gap-2 flex flex-col"
+    >
       <FlexList direction="row" items="center" gap={2} justify="between">
-        <H1>{setlist.name}</H1>
-        <SetlistActions />
+        <div className="p-2 pb-0">
+          <H1>{setlist.name}</H1>
+        </div>
+        <SetlistActions
+          showAvailableSongs={showAvailableSongs}
+          onShowAvailableSongChange={setShowAvailableSongs}
+        />
       </FlexList>
       <DragDropContext key={setlist.id} onDragEnd={handleDragEnd}>
-        {Object.entries(sets)
-          .filter(
-            ([setId]) => setId !== DroppableIdEnums.Enum["available-songs"],
-          )
-          .map(([setId, set], index) => (
-            <div key={setId} className="pb-4">
-              <Droppable droppableId={setId}>
+        <ResizableContainer
+          show={showAvailableSongs}
+          availableSongs={
+            <Card className="h-full px-2 rounded-b-none flex flex-col gap-2 overflow-auto">
+              <div className="pt-2 sticky space-y-2 top-0 inset-x-0 bg-card">
+                <FlexList
+                  direction="row"
+                  items="center"
+                  gap={2}
+                  justify="between"
+                >
+                  <CardDescription>Available Songs</CardDescription>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowAvailableSongs(false)}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </FlexList>
+                <div className="relative ml-auto flex-1 md:grow-0">
+                  <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Search..."
+                    className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                </div>
+                <Separator />
+              </div>
+              <Droppable droppableId={DroppableIdEnums.Enum["available-songs"]}>
                 {(dropProvided, dropSnapshot) => (
                   <div
+                    className="h-full"
                     ref={dropProvided.innerRef}
                     {...dropProvided.droppableProps}
-                    className={
-                      dropSnapshot.isDraggingOver
-                        ? "outline outline-primary outline-offset-2 rounded bg-card"
-                        : ""
-                    }
                   >
-                    <Label
-                      className={dropSnapshot.isDraggingOver ? "font-bold" : ""}
-                    >
-                      Set {index + 1}
-                    </Label>
-                    {set.map((song, songIndex) => (
+                    {filteredSongs.map((song, songIndex) => (
                       <Draggable
                         draggableId={song.id}
                         key={song.id}
@@ -358,30 +410,96 @@ export default function SetlistPage() {
                         )}
                       </Draggable>
                     ))}
+                    {filteredSongs.length === 0 ? (
+                      <Card
+                        className={`outline-dashed outline-border flex items-center justify-center  border-none h-5/6 ${
+                          dropSnapshot.isDraggingOver ? "outline-primary" : ""
+                        }`}
+                      >
+                        <CardDescription className="text-center">
+                          No songs found
+                        </CardDescription>
+                      </Card>
+                    ) : null}
                     {dropProvided.placeholder}
                   </div>
                 )}
               </Droppable>
-            </div>
-          ))}
-        <Droppable droppableId={DroppableIdEnums.Enum["new-set"]}>
-          {(dropProvided, dropSnapshot) => (
-            <div ref={dropProvided.innerRef} {...dropProvided.droppableProps}>
-              <Card
-                className={`outline-dashed outline-border  border-none ${
-                  dropSnapshot.isDraggingOver ? "outline-primary" : ""
-                }`}
-              >
-                <CardHeader>
-                  <CardDescription className="text-center">
-                    Drop songs here to create a new set
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-              {dropProvided.placeholder}
-            </div>
-          )}
-        </Droppable>
+            </Card>
+          }
+        >
+          <div className="h-full p-2 rounded-b-none flex flex-col gap-2 overflow-auto">
+            {Object.entries(sets)
+              .filter(
+                ([setId]) => setId !== DroppableIdEnums.Enum["available-songs"],
+              )
+              .map(([setId, set], index) => (
+                <div key={setId} className="pb-4">
+                  <Droppable droppableId={setId}>
+                    {(dropProvided, dropSnapshot) => (
+                      <div
+                        ref={dropProvided.innerRef}
+                        {...dropProvided.droppableProps}
+                        className={
+                          dropSnapshot.isDraggingOver
+                            ? "outline outline-primary outline-offset-2 rounded bg-card"
+                            : ""
+                        }
+                      >
+                        <Label
+                          className={
+                            dropSnapshot.isDraggingOver ? "font-bold" : ""
+                          }
+                        >
+                          Set {index + 1}
+                        </Label>
+                        {set.map((song, songIndex) => (
+                          <Draggable
+                            draggableId={song.id}
+                            key={song.id}
+                            index={songIndex}
+                          >
+                            {(dragprovided) => (
+                              <div
+                                className="py-1"
+                                ref={dragprovided.innerRef}
+                                {...dragprovided.dragHandleProps}
+                                {...dragprovided.draggableProps}
+                              >
+                                <SongContainer song={song} />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {dropProvided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </div>
+              ))}
+            <Droppable droppableId={DroppableIdEnums.Enum["new-set"]}>
+              {(dropProvided, dropSnapshot) => (
+                <div
+                  ref={dropProvided.innerRef}
+                  {...dropProvided.droppableProps}
+                >
+                  <Card
+                    className={`outline-dashed outline-border  border-none ${
+                      dropSnapshot.isDraggingOver ? "outline-primary" : ""
+                    }`}
+                  >
+                    <CardHeader>
+                      <CardDescription className="text-center">
+                        Drop songs here to create a new set
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                  {dropProvided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </div>
+        </ResizableContainer>
       </DragDropContext>
       {isChangedSetlist ? (
         <div className="sticky bottom-2 inset-x-0 bg-card">
@@ -389,7 +507,7 @@ export default function SetlistPage() {
             <FlexList>
               <Button onClick={onSubmit}>Save Changes?</Button>
               <Button
-                variant="ghost"
+                variant="outline"
                 onClick={() => {
                   setSets(defaultSets);
                   setIsChangedSetlist(false);
@@ -405,7 +523,13 @@ export default function SetlistPage() {
   );
 }
 
-const SetlistActions = () => {
+const SetlistActions = ({
+  showAvailableSongs,
+  onShowAvailableSongChange,
+}: {
+  showAvailableSongs: boolean;
+  onShowAvailableSongChange: (show: boolean) => void;
+}) => {
   const { setlist, setlistLink } = useLoaderData<typeof loader>();
   const [showEditName, setShowEditName] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -428,9 +552,11 @@ const SetlistActions = () => {
             <DropdownMenuLabel>Setlist Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onShowAvailableSongChange(!showAvailableSongs)}
+              >
                 <AudioLines className="h-4 w-4 mr-2" />
-                Add Songs
+                {showAvailableSongs ? "Hide Available Song Panel" : "Add Songs"}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setShowEditName(true)}>
                 <Pencil className="h-4 w-4 mr-2" />
@@ -469,9 +595,14 @@ const SetlistActions = () => {
             </SheetHeader>
             <FlexList gap={0}>
               <SheetClose asChild>
-                <Button variant="ghost">
+                <Button
+                  variant="ghost"
+                  onClick={() => onShowAvailableSongChange(!showAvailableSongs)}
+                >
                   <AudioLines className="h-4 w-4 mr-2" />
-                  Add Songs
+                  {showAvailableSongs
+                    ? "Hide Available Song Panel"
+                    : "Add Songs"}
                 </Button>
               </SheetClose>
               <SheetClose asChild>
@@ -751,6 +882,7 @@ const CreatePublicLinkForm = ({ children }: { children: ReactNode }) => {
     </Form>
   );
 };
+
 const RemovePublicLinkForm = ({ children }: { children: ReactNode }) => {
   const [form, fields] = useForm({
     id: IntentSchema.Enum["remove-public-link"],
@@ -771,5 +903,24 @@ const RemovePublicLinkForm = ({ children }: { children: ReactNode }) => {
       <Input {...getInputProps(fields.intent, { type: "hidden" })} />
       {children}
     </Form>
+  );
+};
+
+const ResizableContainer = ({
+  show,
+  children,
+  availableSongs,
+}: {
+  show: boolean;
+  children: ReactNode;
+  availableSongs: ReactNode;
+}) => {
+  if (!show) return children;
+  return (
+    <ResizablePanelGroup direction="vertical">
+      <ResizablePanel>{children}</ResizablePanel>
+      <ResizableHandle withHandle className="bg-inherit" />
+      <ResizablePanel defaultSize={40}>{availableSongs}</ResizablePanel>
+    </ResizablePanelGroup>
   );
 };
