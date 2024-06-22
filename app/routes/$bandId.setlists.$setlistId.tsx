@@ -125,10 +125,12 @@ const FormSchema = z.object({
   intent: z.literal(IntentSchema.Enum["update-setlist"]),
 });
 
-const SetlistNameSchema = z.object({
-  setlist_name: z.string().min(1),
-  intent: z.literal(IntentSchema.Enum["update-name"]),
-});
+const SetlistNameSchema = z
+  .object({
+    setlist_name: z.string().min(1),
+    intent: z.literal(IntentSchema.Enum["update-name"]),
+  })
+  .required();
 
 const DeleteSetlistSchema = z.object({
   intent: z.literal(IntentSchema.Enum["delete-setlist"]),

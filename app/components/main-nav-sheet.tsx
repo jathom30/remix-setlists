@@ -29,6 +29,12 @@ export const MainNavSheet = () => {
   const isActive = (path: string) =>
     pathname.includes(path) ? "secondary" : "ghost";
 
+  const isDashboardRoute =
+    bandId &&
+    ["setlists", "songs", "band-settings"].every(
+      (route) => !pathname.includes(route),
+    );
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
@@ -49,7 +55,11 @@ export const MainNavSheet = () => {
           </Button>
           {bandId ? (
             <>
-              <Button size="sm" variant={isActive(bandId)} asChild>
+              <Button
+                size="sm"
+                variant={isDashboardRoute ? "secondary" : "ghost"}
+                asChild
+              >
                 <Link to={`/${bandId}`} onClick={() => setOpen(false)}>
                   <LayoutDashboard className="pr-2" />
                   Dashboard
