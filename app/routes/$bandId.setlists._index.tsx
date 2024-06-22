@@ -1,4 +1,5 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { Setlist, Song } from "@prisma/client";
+import { LoaderFunctionArgs, SerializeFrom, json } from "@remix-run/node";
 import { Link, useSearchParams } from "@remix-run/react";
 import {
   ArrowDown01,
@@ -6,6 +7,7 @@ import {
   ArrowDownUp,
   ArrowUp01,
   ArrowUpAZ,
+  Eye,
   Plus,
   Search,
 } from "lucide-react";
@@ -41,8 +43,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { FlexList, SetlistLink } from "~/components";
-import { H1 } from "~/components/typography";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { FlexList } from "~/components";
+import { H1, Large, Muted, P, Small } from "~/components/typography";
 import { useLiveLoader } from "~/hooks";
 import { userPrefs } from "~/models/cookies.server";
 import { getSetlists } from "~/models/setlist.server";
@@ -137,11 +145,14 @@ export default function Setlists() {
       {setlists.length ? (
         <FlexList gap={2}>
           {setlists.map((setlist) => (
-            <SetlistLink
-              key={setlist.id}
-              setlist={setlist}
-              publicRemark="You can remove the public link by clicking on this setlist's settings."
-            />
+            <Link to={setlist.id} key={setlist.id}>
+              <SetlistContainer setlist={setlist} />
+            </Link>
+            // <SetlistLink
+            //   key={setlist.id}
+            //   setlist={setlist}
+            //   publicRemark="You can remove the public link by clicking on this setlist's settings."
+            // />
           ))}
         </FlexList>
       ) : (
@@ -170,6 +181,50 @@ export default function Setlists() {
     </div>
   );
 }
+
+const SetlistContainer = ({
+  setlist,
+}: {
+  setlist: SerializeFrom<
+    Setlist & {
+      sets: {
+        updatedAt: string;
+        songs: { song: { length: Song["length"] } | null }[];
+      }[];
+    }
+  >;
+}) => {
+  return (
+    <Card className="p-1 px-2">
+      <FlexList direction="row" items="center" justify="between" gap={2}>
+        <Large>{setlist.name}</Large>
+        <FlexList direction="row" items="center" gap={2}>
+          <Muted>
+            {setlist.sets.length} {setlist.sets.length === 1 ? "Set" : "Sets"}
+          </Muted>
+        </FlexList>
+      </FlexList>
+      <FlexList direction="row" items="center" justify="between" gap={2}>
+        <Small>{new Date(setlist.updatedAt).toLocaleDateString()}</Small>
+        <FlexList direction="row" gap={2} items="center">
+          {setlist.isPublic ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Eye className="w-4 h-4" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <P>This setlist is publically available to view</P>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : null}
+        </FlexList>
+      </FlexList>
+    </Card>
+  );
+};
+
 const sortOptions = [
   {
     label: "Updated: Newest first",
