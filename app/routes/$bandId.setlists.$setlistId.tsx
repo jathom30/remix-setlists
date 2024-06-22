@@ -121,9 +121,11 @@ const IntentSchema = z.enum([
 ]);
 
 const FormSchema = z.object({
-  sets: z.record(z.string()),
+  sets: z.string(),
   intent: z.literal(IntentSchema.Enum["update-setlist"]),
 });
+
+const ActionSetSchema = z.record(z.array(z.string()));
 
 const SetlistNameSchema = z
   .object({
@@ -161,10 +163,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     if (submission.status !== "success") {
       return submission.reply();
     }
-    // string array is serialized as comma separated string onSubmit
-    const sets = Object.entries(submission.value.sets).map(([, songIds]) =>
-      songIds.split(","),
-    );
+    const parsedSets = ActionSetSchema.parse(JSON.parse(submission.value.sets));
+    const sets = Object.values(parsedSets);
     const updatedSetlist = await updateMultiSetSetlist(setlistId, sets);
     return json({ updatedSetlist });
   }
@@ -273,7 +273,7 @@ export default function SetlistPage() {
 
   const defaultSets = setlist.sets.reduce((acc: TSet, set) => {
     const setSongs = set.songs
-      .filter((song) => Boolean(song) && Boolean(song.song))
+      ?.filter((song) => Boolean(song) && Boolean(song.song))
       .map((song) => song.song) as SerializeFrom<Song>[];
     acc[set.id] = setSongs;
     return acc;
@@ -282,9 +282,10 @@ export default function SetlistPage() {
     ...defaultSets,
     [DroppableIdEnums.Enum["available-songs"]]: availableSongs,
   });
-  const filteredSongs = sets[DroppableIdEnums.Enum["available-songs"]].filter(
-    (song) => song.name.toLowerCase().includes(query.toLowerCase()),
-  );
+  const filteredSongs =
+    sets[DroppableIdEnums.Enum["available-songs"]]?.filter((song) =>
+      song.name.toLowerCase().includes(query.toLowerCase()),
+    ) || [];
 
   // update sets when fetcher is done
   useEffect(() => {
@@ -328,10 +329,12 @@ export default function SetlistPage() {
     );
 
     const formData = {
-      sets: reducedSets,
+      sets: JSON.stringify(reducedSets),
       intent: "update-setlist",
     };
-    fetcher.submit(formData, { method: "post" });
+    fetcher.submit(formData, {
+      method: "post",
+    });
     setIsChangedSetlist(false);
   };
 
@@ -394,7 +397,7 @@ export default function SetlistPage() {
                     ref={dropProvided.innerRef}
                     {...dropProvided.droppableProps}
                   >
-                    {filteredSongs.map((song, songIndex) => (
+                    {filteredSongs?.map((song, songIndex) => (
                       <Draggable
                         draggableId={song.id}
                         key={song.id}
@@ -412,7 +415,7 @@ export default function SetlistPage() {
                         )}
                       </Draggable>
                     ))}
-                    {filteredSongs.length === 0 ? (
+                    {filteredSongs?.length === 0 ? (
                       <Card
                         className={`outline-dashed outline-border flex items-center justify-center  border-none h-5/6 ${
                           dropSnapshot.isDraggingOver ? "outline-primary" : ""
@@ -455,7 +458,7 @@ export default function SetlistPage() {
                         >
                           Set {index + 1}
                         </Label>
-                        {set.map((song, songIndex) => (
+                        {set?.map((song, songIndex) => (
                           <Draggable
                             draggableId={song.id}
                             key={song.id}
@@ -506,9 +509,9 @@ export default function SetlistPage() {
       {isChangedSetlist ? (
         <div className="sticky bottom-2 inset-x-0 bg-card">
           <Card className="p-2">
-            <FlexList>
-              <Button onClick={onSubmit}>Save Changes?</Button>
+            <FlexList direction="row" gap={2}>
               <Button
+                className="w-full"
                 variant="outline"
                 onClick={() => {
                   setSets(defaultSets);
@@ -516,6 +519,9 @@ export default function SetlistPage() {
                 }}
               >
                 Revert
+              </Button>
+              <Button className="w-full" onClick={onSubmit}>
+                Save Changes?
               </Button>
             </FlexList>
           </Card>

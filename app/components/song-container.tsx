@@ -17,8 +17,8 @@ import { Large, Muted, P, Small } from "./typography";
 export const SongContainer = ({ song }: { song: SerializeFrom<Song> }) => {
   const positionIcon =
     {
-      opener: <ChevronFirst />,
-      closer: <ChevronLast />,
+      opener: <ChevronFirst className="h-4 w-4" />,
+      closer: <ChevronLast className="h-4 w-4" />,
     }[song.position] || null;
   const positionText =
     {

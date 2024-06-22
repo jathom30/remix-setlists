@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FlexList } from "~/components";
+import { SetlistContainer } from "~/components/setlist-container";
 import { SongContainer } from "~/components/song-container";
 import { H1, P } from "~/components/typography";
 import { getBand } from "~/models/band.server";
@@ -73,12 +74,13 @@ export default function BandId() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {setlists.map((setlist) => (
-            <div key={setlist.id}>
-              <p>{setlist.name}</p>
-              <p>{setlist.updatedAt}</p>
-            </div>
-          ))}
+          <FlexList gap={1}>
+            {setlists.map((setlist) => (
+              <Link key={setlist.id} to={`setlists/${setlist.id}`}>
+                <SetlistContainer setlist={setlist} />
+              </Link>
+            ))}
+          </FlexList>
           {setlists.length === 0 ? (
             <div className="text-center">
               <P>This band has no setlists yet.</P>

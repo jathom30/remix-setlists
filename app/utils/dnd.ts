@@ -223,8 +223,8 @@ export const compareSets = (original: TSet, updated: TSet): boolean => {
   };
 
   return Object.keys(updated).some((setId) => {
-    const current = updated[setId].map((song) => song.id);
-    const old = original[setId].map((song) => song.id);
+    const current = updated[setId]?.map((song) => song.id);
+    const old = original[setId]?.map((song) => song.id);
     return isUpdated(current, old);
   });
 };
