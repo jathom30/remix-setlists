@@ -1,6 +1,7 @@
 import { Song } from "@prisma/client";
 import { SerializeFrom } from "@remix-run/node";
 import { ChevronFirst, ChevronLast } from "lucide-react";
+import { ReactNode } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -26,7 +27,7 @@ export const SongContainer = ({ song }: { song: SerializeFrom<Song> }) => {
       closer: "Marked as closer",
     }[song.position] || "";
   return (
-    <Card className="p-1 px-2">
+    <div className="flex-grow">
       <FlexList direction="row" items="center" justify="between" gap={2}>
         <Large>{song.name}</Large>
         <FlexList direction="row" items="center" gap={2}>
@@ -52,6 +53,13 @@ export const SongContainer = ({ song }: { song: SerializeFrom<Song> }) => {
           </Badge>
         </FlexList>
       </FlexList>
-    </Card>
+    </div>
   );
 };
+
+export const SongContainerCard = ({ children }: { children: ReactNode }) => (
+  <Card className="p-1 px-2">{children}</Card>
+);
+
+SongContainer.Card = SongContainerCard;
+SongContainer.Song = SongContainer;

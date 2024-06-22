@@ -14,16 +14,28 @@ import {
   json,
   redirect,
 } from "@remix-run/node";
-import { Form, useFetcher, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  useFetcher,
+  useLoaderData,
+  useParams,
+} from "@remix-run/react";
 import {
   AudioLines,
   Check,
+  CircleMinus,
   Copy,
   EllipsisVertical,
   ExternalLink,
-  Link,
+  Link as LinkIcon,
+  Maximize,
+  MicVocal,
+  Minimize,
   Pencil,
+  Replace,
   Search,
+  Shrink,
   Trash,
   X,
 } from "lucide-react";
@@ -33,7 +45,13 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -58,6 +76,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
@@ -69,7 +88,7 @@ import {
 } from "@/components/ui/sheet";
 import { FlexList } from "~/components";
 import { SongContainer } from "~/components/song-container";
-import { H1 } from "~/components/typography";
+import { H1, P } from "~/components/typography";
 import { useContainerHeight } from "~/hooks/use-container-height";
 import {
   copySetlist,
@@ -348,10 +367,14 @@ export default function SetlistPage() {
       }}
       className="gap-2 flex flex-col"
     >
-      <FlexList direction="row" items="center" gap={2} justify="between">
-        <div className="p-2 pb-0">
-          <H1>{setlist.name}</H1>
-        </div>
+      <FlexList
+        direction="row"
+        items="center"
+        pad={{ x: 2, t: 2 }}
+        gap={2}
+        justify="between"
+      >
+        <H1>{setlist.name}</H1>
         <SetlistActions
           showAvailableSongs={showAvailableSongs}
           onShowAvailableSongChange={setShowAvailableSongs}
@@ -397,7 +420,7 @@ export default function SetlistPage() {
                     ref={dropProvided.innerRef}
                     {...dropProvided.droppableProps}
                   >
-                    {filteredSongs?.map((song, songIndex) => (
+                    {filteredSongs.map((song, songIndex) => (
                       <Draggable
                         draggableId={song.id}
                         key={song.id}
@@ -410,12 +433,14 @@ export default function SetlistPage() {
                             {...dragprovided.dragHandleProps}
                             {...dragprovided.draggableProps}
                           >
-                            <SongContainer song={song} />
+                            <SongContainer.Song.Card>
+                              <SongContainer.Song.Song song={song} />
+                            </SongContainer.Song.Card>
                           </div>
                         )}
                       </Draggable>
                     ))}
-                    {filteredSongs?.length === 0 ? (
+                    {filteredSongs.length === 0 ? (
                       <Card
                         className={`outline-dashed outline-border flex items-center justify-center  border-none h-5/6 ${
                           dropSnapshot.isDraggingOver ? "outline-primary" : ""
@@ -471,7 +496,21 @@ export default function SetlistPage() {
                                 {...dragprovided.dragHandleProps}
                                 {...dragprovided.draggableProps}
                               >
-                                <SongContainer song={song} />
+                                <SongContainer.Card>
+                                  <FlexList
+                                    direction="row"
+                                    items="center"
+                                    gap={2}
+                                  >
+                                    <SongContainer.Song song={song} />
+                                    <SongActions
+                                      song={song}
+                                      onRemove={() => {
+                                        console.log({ setId, songId: song.id });
+                                      }}
+                                    />
+                                  </FlexList>
+                                </SongContainer.Card>
                               </div>
                             )}
                           </Draggable>
@@ -571,12 +610,18 @@ const SetlistActions = ({
                 Edit Name
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onCopy(setlistLink)}>
-                <Link className="h-4 w-4 mr-2" />
+                <LinkIcon className="h-4 w-4 mr-2" />
                 Copy Link
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setShowPublicLink(true)}>
                 <ExternalLink className="h-4 w-4 mr-2" />
                 {setlist.isPublic ? "View Public Link" : "Create Public Link"}
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="condensed">
+                  <Shrink className="h-4 w-4 mr-2" />
+                  Condensed View
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setShowClone(true)}>
                 <Copy className="h-4 w-4 mr-2" />
@@ -621,7 +666,7 @@ const SetlistActions = ({
               </SheetClose>
               <SheetClose asChild>
                 <Button variant="ghost" onClick={() => onCopy(setlistLink)}>
-                  <Link className="h-4 w-4 mr-2" />
+                  <LinkIcon className="h-4 w-4 mr-2" />
                   Copy Link
                 </Button>
               </SheetClose>
@@ -629,6 +674,14 @@ const SetlistActions = ({
                 <Button variant="ghost" onClick={() => setShowPublicLink(true)}>
                   <ExternalLink className="h-4 w-4 mr-2" />
                   {setlist.isPublic ? "View Public Link" : "Create Public Link"}
+                </Button>
+              </SheetClose>
+              <SheetClose asChild>
+                <Button variant="ghost" asChild>
+                  <Link to="condensed">
+                    <Shrink className="h-4 w-4 mr-2" />
+                    Condensed View
+                  </Link>
                 </Button>
               </SheetClose>
               <SheetClose asChild>
@@ -930,5 +983,197 @@ const ResizableContainer = ({
       <ResizableHandle withHandle className="bg-inherit" />
       <ResizablePanel defaultSize={40}>{availableSongs}</ResizablePanel>
     </ResizablePanelGroup>
+  );
+};
+
+const SongActions = ({
+  song,
+  onRemove,
+}: {
+  song: SerializeFrom<Song>;
+  onRemove: () => void;
+}) => {
+  const { setlistId } = useParams();
+  const [showDetails, setShowDetails] = useState(false);
+  return (
+    <div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <EllipsisVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Song Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem onClick={() => setShowDetails(true)}>
+              <MicVocal className="h-4 w-4 mr-2" />
+              Details
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                to={{
+                  pathname: `/${song.bandId}/songs/${song.id}/edit`,
+                  search: `?redirectTo=${`/${song.bandId}/setlists/${setlistId}`}`,
+                }}
+              >
+                <Pencil className="h-4 w-4 mr-2" />
+                Edit
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Replace className="h-4 w-4 mr-2" />
+              Swap
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onRemove}>
+              <CircleMinus className="h-4 w-4 mr-2" />
+              Remove
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <SongDetailsSheet
+        song={song}
+        open={showDetails}
+        onOpenChange={setShowDetails}
+      />
+    </div>
+  );
+};
+
+const SongDetailsSheet = ({
+  song,
+  open,
+  onOpenChange,
+}: {
+  song: SerializeFrom<Song>;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) => {
+  const { setlistId } = useParams();
+  const [expandNotes, setExpandNotes] = useState(false);
+
+  const splitNote = song.note?.split("\n");
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="bottom">
+        <div className="space-y-2 max-h-[70vh] overflow-auto">
+          <div className="sticky top-0 bg-card p-2 pt-4">
+            <FlexList direction="row" justify="between" items="center">
+              <H1>Song Details</H1>
+              <Button asChild>
+                <Link
+                  to={{
+                    pathname: `/${song.bandId}/songs/${song.id}/edit`,
+                    search: `?redirectTo=${`/${song.bandId}/setlists/${setlistId}`}`,
+                  }}
+                >
+                  <Pencil className="w-4 h-4 mr-2" />
+                  Edit Song
+                </Link>
+              </Button>
+            </FlexList>
+          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>{song.name}</CardTitle>
+              <CardDescription>{song.author}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label>Length</Label>
+                  <P>
+                    {song.length} {song.length === 1 ? "minute" : "minutes"}
+                  </P>
+                </div>
+                <div>
+                  <Label>Key</Label>
+                  <P>
+                    {song.keyLetter} {song.isMinor ? "Minor" : "Major"}
+                  </P>
+                </div>
+                <div>
+                  <Label>Tempo</Label>
+                  <P>{song.tempo} BPM</P>
+                </div>
+              </div>
+              {/* {song.feels.length ? (
+            <div className="pt-4">
+              <Label>Feels</Label>
+              <FlexList direction="row" wrap>
+                {song.feels?.map((feel) => (
+                  <P key={feel.id}>
+                    <span className="flex flex-row items-center gap-1">
+                      <span
+                        className="w-4 h-4 rounded-full"
+                        style={{ background: feel.color || undefined }}
+                      />
+                      {feel.label}
+                    </span>
+                  </P>
+                ))}
+              </FlexList>
+            </div>
+          ) : null} */}
+            </CardContent>
+          </Card>
+          {splitNote?.length ? (
+            <Card>
+              <CardHeader>
+                <FlexList direction="row" justify="between" items="center">
+                  <CardTitle>Lyrics/Notes</CardTitle>
+                  <Button
+                    onClick={() => setExpandNotes((prev) => !prev)}
+                    variant="ghost"
+                    title={
+                      expandNotes
+                        ? "Collapse note section"
+                        : "Expand note section"
+                    }
+                  >
+                    {expandNotes ? (
+                      <Maximize className="w-4 h-4" />
+                    ) : (
+                      <Minimize className="w-4 h-4" />
+                    )}
+                  </Button>
+                </FlexList>
+              </CardHeader>
+              <CardContent>
+                {expandNotes ? (
+                  splitNote.map((note, i) => <P key={i}>{note}</P>)
+                ) : (
+                  <ScrollArea className="p-2 h-24">
+                    {splitNote.map((note, i) => (
+                      <P key={i}>{note}</P>
+                    ))}
+                  </ScrollArea>
+                )}
+              </CardContent>
+            </Card>
+          ) : null}
+          {/* {song.links?.length ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Links</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <FlexList items="start">
+              {song.links.map((link) => (
+                <Button asChild variant="link" key={link.id}>
+                  <a href={link.href} target="_blank" rel="noreferrer">
+                    {link.href}
+                  </a>
+                </Button>
+              ))}
+            </FlexList>
+          </CardContent>
+        </Card>
+      ) : null} */}
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 };

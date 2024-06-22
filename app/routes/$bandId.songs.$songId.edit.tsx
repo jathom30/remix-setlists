@@ -66,6 +66,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
   invariant(bandId, "bandId is required");
   invariant(songId, "songId is required");
 
+  const searchParams = new URL(request.url).searchParams;
+  const redirectTo = searchParams.get("redirectTo");
+
   const formData = await request.formData();
   const submission = parseWithZod(formData, { schema: EditSongSchema });
 
@@ -75,6 +78,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const song = await updateSongWithLinksAndFeels(songId, submission.value);
   if (!song) {
     throw new Response("Song not found", { status: 404 });
+  }
+  if (redirectTo) {
+    return redirect(redirectTo);
   }
   return redirect(`/${bandId}/songs/${songId}`);
 }

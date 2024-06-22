@@ -106,6 +106,8 @@ export default function BandRoute() {
     isSetlistsRoute && pathname.includes("manual");
   const setlistMatch = getMatch(matches, SetlistDetailMatchSchema);
   const isSetlistDetailRoute = isSetlistsRoute && Boolean(setlistId);
+  const isCondensedSetlistRoute =
+    isSetlistDetailRoute && pathname.includes("condensed");
 
   // songs routes
   const isSongsRoute = isBandRoute && pathname.includes("songs");
@@ -179,6 +181,21 @@ export default function BandRoute() {
                   <BreadcrumbLink asChild>
                     <Link to={`/${bandId}/setlists/${setlistId}`}>
                       {setlistMatch.data.setlist.name}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+            {isCondensedSetlistRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/setlists/${setlistId}/condensed`}>
+                      Condensed
                     </Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
