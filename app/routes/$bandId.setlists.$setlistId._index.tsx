@@ -86,7 +86,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { FlexList } from "~/components";
+import { FlexList, MaxWidth } from "~/components";
 import { SongContainer } from "~/components/song-container";
 import { H1, P } from "~/components/typography";
 import { useContainerHeight } from "~/hooks/use-container-height";
@@ -137,6 +137,7 @@ const IntentSchema = z.enum([
   "clone-setlist",
   "create-public-link",
   "remove-public-link",
+  "remove-song",
 ]);
 
 const FormSchema = z.object({
@@ -288,6 +289,10 @@ export default function SetlistPage() {
   const { setlist, availableSongs } = useLoaderData<typeof loader>();
   const fetcher = useFetcher({ key: `setlist-${setlist.id}` });
   const [showAvailableSongs, setShowAvailableSongs] = useState(false);
+  const [songToSwap, setSongToSwap] = useState<{
+    setId: string;
+    songId: string;
+  }>();
   const [query, setQuery] = useState("");
 
   const defaultSets = setlist.sets.reduce((acc: TSet, set) => {
@@ -333,6 +338,63 @@ export default function SetlistPage() {
       const updatedSets = onDragEnd(drop, sets)(prev);
       setIsChangedSetlist(compareSets(defaultSets, updatedSets));
       return updatedSets;
+    });
+  };
+
+  const handleSwapSong = (newSong: SerializeFrom<Song>) => {
+    setSets((prev) => {
+      const updatedSets = { ...prev };
+      if (!songToSwap) return updatedSets;
+      const { setId, songId } = songToSwap;
+      const removedSong = updatedSets[setId].find((song) => song.id === songId);
+      if (!removedSong) return updatedSets;
+      const updatedSet = updatedSets[setId].map((song) => {
+        if (song.id === songId) {
+          return newSong;
+        }
+        return song;
+      });
+      updatedSets[setId] = updatedSet;
+      const updatedAvailableSongs = updatedSets[
+        DroppableIdEnums.Enum["available-songs"]
+      ].filter((song) => song.id !== newSong.id);
+      updatedSets[DroppableIdEnums.Enum["available-songs"]] = [
+        ...updatedAvailableSongs,
+        removedSong,
+      ];
+      setIsChangedSetlist(true);
+      return updatedSets;
+    });
+    setSongToSwap(undefined);
+  };
+
+  const handleRemoveSong = (setId: string, songId: string) => {
+    setSets((prev) => {
+      const updatedSets = { ...prev };
+      const updatedSet = updatedSets[setId].filter(
+        (song) => song.id !== songId,
+      );
+      // add song to available songs
+      const song = sets[setId]?.find((song) => song.id === songId);
+      if (!song) return updatedSets;
+      updatedSets[DroppableIdEnums.Enum["available-songs"]] = [
+        ...updatedSets[DroppableIdEnums.Enum["available-songs"]],
+        song,
+      ];
+      updatedSets[setId] = updatedSet;
+      setIsChangedSetlist(compareSets(defaultSets, updatedSets));
+      return Object.keys(updatedSets).reduce((acc: TSet, key) => {
+        // remove empty sets
+        // but keep the "available songs" set and "new" set
+        if (
+          updatedSets[key].length === 0 &&
+          key !== DroppableIdEnums.Enum["available-songs"] &&
+          key !== DroppableIdEnums.Enum["new-set"]
+        )
+          return acc;
+        acc[key] = updatedSets[key];
+        return acc;
+      }, {});
     });
   };
 
@@ -505,9 +567,15 @@ export default function SetlistPage() {
                                     <SongContainer.Song song={song} />
                                     <SongActions
                                       song={song}
-                                      onRemove={() => {
-                                        console.log({ setId, songId: song.id });
-                                      }}
+                                      onSwap={() =>
+                                        setSongToSwap({
+                                          setId,
+                                          songId: song.id,
+                                        })
+                                      }
+                                      onRemove={() =>
+                                        handleRemoveSong(setId, song.id)
+                                      }
                                     />
                                   </FlexList>
                                 </SongContainer.Card>
@@ -544,6 +612,12 @@ export default function SetlistPage() {
             </Droppable>
           </div>
         </ResizableContainer>
+        <SongSwapSheet
+          open={Boolean(songToSwap)}
+          onSubmit={handleSwapSong}
+          onOpenChange={() => setSongToSwap(undefined)}
+          availableSongs={sets[DroppableIdEnums.Enum["available-songs"]] || []}
+        />
       </DragDropContext>
       {isChangedSetlist ? (
         <div className="sticky bottom-2 inset-x-0 bg-card">
@@ -989,9 +1063,11 @@ const ResizableContainer = ({
 const SongActions = ({
   song,
   onRemove,
+  onSwap,
 }: {
   song: SerializeFrom<Song>;
   onRemove: () => void;
+  onSwap: () => void;
 }) => {
   const { setlistId } = useParams();
   const [showDetails, setShowDetails] = useState(false);
@@ -1022,7 +1098,7 @@ const SongActions = ({
                 Edit
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={onSwap}>
               <Replace className="h-4 w-4 mr-2" />
               Swap
             </DropdownMenuItem>
@@ -1058,48 +1134,49 @@ const SongDetailsSheet = ({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom">
-        <div className="space-y-2 max-h-[70vh] overflow-auto">
-          <div className="sticky top-0 bg-card p-2 pt-4">
-            <FlexList direction="row" justify="between" items="center">
-              <H1>Song Details</H1>
-              <Button asChild>
-                <Link
-                  to={{
-                    pathname: `/${song.bandId}/songs/${song.id}/edit`,
-                    search: `?redirectTo=${`/${song.bandId}/setlists/${setlistId}`}`,
-                  }}
-                >
-                  <Pencil className="w-4 h-4 mr-2" />
-                  Edit Song
-                </Link>
-              </Button>
-            </FlexList>
-          </div>
-          <Card>
-            <CardHeader>
-              <CardTitle>{song.name}</CardTitle>
-              <CardDescription>{song.author}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label>Length</Label>
-                  <P>
-                    {song.length} {song.length === 1 ? "minute" : "minutes"}
-                  </P>
+        <MaxWidth>
+          <div className="space-y-2 max-h-[70vh] overflow-auto">
+            <div className="sticky top-0 bg-card p-2 pt-4">
+              <FlexList direction="row" justify="between" items="center">
+                <H1>Song Details</H1>
+                <Button asChild>
+                  <Link
+                    to={{
+                      pathname: `/${song.bandId}/songs/${song.id}/edit`,
+                      search: `?redirectTo=${`/${song.bandId}/setlists/${setlistId}`}`,
+                    }}
+                  >
+                    <Pencil className="w-4 h-4 mr-2" />
+                    Edit Song
+                  </Link>
+                </Button>
+              </FlexList>
+            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>{song.name}</CardTitle>
+                <CardDescription>{song.author}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label>Length</Label>
+                    <P>
+                      {song.length} {song.length === 1 ? "minute" : "minutes"}
+                    </P>
+                  </div>
+                  <div>
+                    <Label>Key</Label>
+                    <P>
+                      {song.keyLetter} {song.isMinor ? "Minor" : "Major"}
+                    </P>
+                  </div>
+                  <div>
+                    <Label>Tempo</Label>
+                    <P>{song.tempo} BPM</P>
+                  </div>
                 </div>
-                <div>
-                  <Label>Key</Label>
-                  <P>
-                    {song.keyLetter} {song.isMinor ? "Minor" : "Major"}
-                  </P>
-                </div>
-                <div>
-                  <Label>Tempo</Label>
-                  <P>{song.tempo} BPM</P>
-                </div>
-              </div>
-              {/* {song.feels.length ? (
+                {/* {song.feels.length ? (
             <div className="pt-4">
               <Label>Feels</Label>
               <FlexList direction="row" wrap>
@@ -1117,44 +1194,44 @@ const SongDetailsSheet = ({
               </FlexList>
             </div>
           ) : null} */}
-            </CardContent>
-          </Card>
-          {splitNote?.length ? (
-            <Card>
-              <CardHeader>
-                <FlexList direction="row" justify="between" items="center">
-                  <CardTitle>Lyrics/Notes</CardTitle>
-                  <Button
-                    onClick={() => setExpandNotes((prev) => !prev)}
-                    variant="ghost"
-                    title={
-                      expandNotes
-                        ? "Collapse note section"
-                        : "Expand note section"
-                    }
-                  >
-                    {expandNotes ? (
-                      <Maximize className="w-4 h-4" />
-                    ) : (
-                      <Minimize className="w-4 h-4" />
-                    )}
-                  </Button>
-                </FlexList>
-              </CardHeader>
-              <CardContent>
-                {expandNotes ? (
-                  splitNote.map((note, i) => <P key={i}>{note}</P>)
-                ) : (
-                  <ScrollArea className="p-2 h-24">
-                    {splitNote.map((note, i) => (
-                      <P key={i}>{note}</P>
-                    ))}
-                  </ScrollArea>
-                )}
               </CardContent>
             </Card>
-          ) : null}
-          {/* {song.links?.length ? (
+            {splitNote?.length ? (
+              <Card>
+                <CardHeader>
+                  <FlexList direction="row" justify="between" items="center">
+                    <CardTitle>Lyrics/Notes</CardTitle>
+                    <Button
+                      onClick={() => setExpandNotes((prev) => !prev)}
+                      variant="ghost"
+                      title={
+                        expandNotes
+                          ? "Collapse note section"
+                          : "Expand note section"
+                      }
+                    >
+                      {expandNotes ? (
+                        <Maximize className="w-4 h-4" />
+                      ) : (
+                        <Minimize className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </FlexList>
+                </CardHeader>
+                <CardContent>
+                  {expandNotes ? (
+                    splitNote.map((note, i) => <P key={i}>{note}</P>)
+                  ) : (
+                    <ScrollArea className="p-2 h-24">
+                      {splitNote.map((note, i) => (
+                        <P key={i}>{note}</P>
+                      ))}
+                    </ScrollArea>
+                  )}
+                </CardContent>
+              </Card>
+            ) : null}
+            {/* {song.links?.length ? (
         <Card>
           <CardHeader>
             <CardTitle>Links</CardTitle>
@@ -1172,7 +1249,65 @@ const SongDetailsSheet = ({
           </CardContent>
         </Card>
       ) : null} */}
+          </div>
+        </MaxWidth>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
+const SongSwapSheet = ({
+  availableSongs,
+  onSubmit,
+  onOpenChange,
+  open,
+}: {
+  availableSongs: SerializeFrom<Song>[];
+  onSubmit: (newSongId: SerializeFrom<Song>) => void;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+}) => {
+  const [query, setQuery] = useState("");
+  const filteredSongs = availableSongs.filter((song) =>
+    song.name.toLowerCase().includes(query.toLowerCase()),
+  );
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="space-y-2" side="bottom">
+        <div className="pt-2 sticky space-y-2 top-0 inset-x-0 bg-card">
+          <FlexList direction="row" items="center" gap={2} justify="between">
+            <CardDescription>Available Songs</CardDescription>
+          </FlexList>
+          <div className="relative ml-auto flex-1 md:grow-0">
+            <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search..."
+              className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+          <Separator />
         </div>
+        {filteredSongs.map((song) => (
+          <button
+            className="w-full"
+            key={song.id}
+            onClick={() => onSubmit(song)}
+          >
+            <SongContainer.Song.Card key={song.id}>
+              <SongContainer.Song.Song song={song} />
+            </SongContainer.Song.Card>
+          </button>
+        ))}
+        {filteredSongs.length === 0 ? (
+          <Card className="outline-dashed outline-border flex items-center justify-center  border-none h-12">
+            <CardDescription className="text-center">
+              No songs found
+            </CardDescription>
+          </Card>
+        ) : null}
       </SheetContent>
     </Sheet>
   );
