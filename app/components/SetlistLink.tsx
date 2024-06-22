@@ -63,7 +63,7 @@ export const SetlistLink = ({
 
   return (
     <Link
-      to={`/${bandId}/setlist/${setlist.id}`}
+      to={`/${bandId}/setlists/${setlist.id}`}
       prefetch="intent"
       state={pathname}
       className={hoverAndFocusContainerStyles}

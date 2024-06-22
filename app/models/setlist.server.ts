@@ -200,6 +200,14 @@ export async function updateMultiSetSetlist(
         })),
       },
     },
+    include: {
+      sets: {
+        include: {
+          songs: { include: { song: true }, orderBy: { positionInSet: "asc" } },
+        },
+        orderBy: { positionInSetlist: "asc" },
+      },
+    },
   });
 }
 
@@ -314,6 +322,29 @@ export async function cloneSetlist(setlistId: Setlist["id"]) {
   });
 }
 
+export const copySetlist = async (setlistId: Setlist["id"]) => {
+  const originalSetlist = await getSetlist(setlistId);
+  if (!originalSetlist) {
+    throw new Response("Original setlist not found", { status: 404 });
+  }
+  return await prisma.setlist.create({
+    data: {
+      name: `${originalSetlist.name} (clone)`,
+      bandId: originalSetlist.bandId,
+      sets: {
+        create: originalSetlist.sets.map((set) => ({
+          songs: {
+            create: set.songs.map((song) => ({
+              songId: song.songId,
+              positionInSet: song.positionInSet,
+            })),
+          },
+        })),
+      },
+    },
+  });
+};
+
 export async function overwriteSetlist(clonedSetlistId: string) {
   const clonedSetlist = await getSetlist(clonedSetlistId);
   if (!clonedSetlist?.editedFromId) {
@@ -342,4 +373,14 @@ export async function overwriteSetlist(clonedSetlistId: string) {
   // delete cloned setlist
   await deleteSetlist(clonedSetlistId);
   return originalSetlist?.id;
+}
+
+export async function updateSetlistName(
+  setlistId: Setlist["id"],
+  name: Setlist["name"],
+) {
+  return await prisma.setlist.update({
+    where: { id: setlistId },
+    data: { name },
+  });
 }
