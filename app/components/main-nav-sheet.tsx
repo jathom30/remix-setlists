@@ -9,7 +9,9 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -18,10 +20,17 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { TBandSchema } from "~/routes/$bandId";
 
 import { FlexList } from "./FlexList";
 
-export const MainNavSheet = () => {
+export const MainNavSheet = ({
+  band,
+  role,
+}: {
+  band?: TBandSchema["data"]["band"];
+  role?: TBandSchema["data"]["memberRole"];
+}) => {
   const { bandId } = useParams();
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
@@ -44,8 +53,12 @@ export const MainNavSheet = () => {
       </SheetTrigger>
       <SheetContent side="left">
         <SheetHeader>
-          <SheetTitle>Setlists.pro</SheetTitle>
-          <SheetDescription></SheetDescription>
+          <SheetTitle>{band?.name || "setlists.pro"}</SheetTitle>
+          <SheetDescription>
+            You are {role === "ADMIN" ? "an" : "a"}{" "}
+            <Badge variant="outline">{role}</Badge> in this band
+          </SheetDescription>
+          <Separator />
         </SheetHeader>
         <FlexList gap={0}>
           <Button size="sm" variant={isActive("home")} asChild>

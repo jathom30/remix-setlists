@@ -52,9 +52,15 @@ const BandSchema = z.object({
   data: z.object({
     band: z.object({
       name: z.string(),
+      icon: z.object({
+        path: z.string().nullable(),
+      }),
     }),
+    memberRole: z.string(),
   }),
 });
+
+export type TBandSchema = z.infer<typeof BandSchema>;
 
 const SongDetailMatchSchema = z.object({
   data: z.object({
@@ -129,7 +135,10 @@ export default function BandRoute() {
       <div className="p-2 border-b sticky top-0 inset-x-0 z-10 bg-background">
         <Header>
           <div className="sm:hidden">
-            <MainNavSheet />
+            <MainNavSheet
+              band={bandMatch?.data?.band}
+              role={bandMatch?.data?.memberRole}
+            />
           </div>
           <UserAvatarMenu />
         </Header>

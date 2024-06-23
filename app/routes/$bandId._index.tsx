@@ -4,6 +4,7 @@ import { Boxes, Settings } from "lucide-react";
 import { useEffect } from "react";
 import invariant from "tiny-invariant";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { FlexList } from "~/components";
 import { SetlistContainer } from "~/components/setlist-container";
 import { SongContainer } from "~/components/song-container";
@@ -20,7 +22,7 @@ import { getBand } from "~/models/band.server";
 import { getRecentSetlists } from "~/models/setlist.server";
 import { getRecentSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
-import { useFeatureFlags } from "~/utils";
+import { useFeatureFlags, useUser } from "~/utils";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
@@ -48,6 +50,7 @@ const useRedirectHome = () => {
 export default function BandId() {
   useRedirectHome();
   const { setlists, songs, band } = useLoaderData<typeof loader>();
+  const user = useUser();
   return (
     <div className="p-2 space-y-2">
       <H1>Band Home</H1>
@@ -58,6 +61,14 @@ export default function BandId() {
             <P>Created on {new Date(band.createdAt).toLocaleDateString()}</P>
           </CardDescription>
         </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-2 items-start">
+            <Label>Your Role within the band</Label>
+            <Badge variant="secondary">
+              {band.members.find((member) => member.userId === user.id)?.role}
+            </Badge>
+          </div>
+        </CardContent>
       </Card>
       <Card>
         <CardHeader>
