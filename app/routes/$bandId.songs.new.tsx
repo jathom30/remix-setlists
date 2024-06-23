@@ -25,6 +25,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -73,9 +74,18 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return submission.reply();
   }
   const song = await createSongWithFeels(bandId, {
-    ...submission.value,
+    feels: submission.value.feels,
+    links: submission.value.links,
+    isCover: submission.value.isCover,
+    isMinor: submission.value.isMinor,
+    keyLetter: submission.value.keyLetter,
+    length: submission.value.length,
+    name: submission.value.name,
+    position: submission.value.position,
+    rank: submission.value.rank,
     author: submission.value.author || null,
     note: submission.value.note || null,
+    tempo: submission.value.showTempo ? submission.value.tempo : null,
   });
 
   return redirect(`/${bandId}/songs/${song.id}`);
@@ -107,6 +117,7 @@ const CreateSongSchema = z.object({
   position: z.enum(["opener", "closer", "other"]).default("other"),
   rank: z.enum(["exclude", "no_preference"]).default("no_preference"),
   isCover: z.boolean().default(false),
+  showTempo: z.coerce.boolean().default(false),
 });
 
 export default function CreateSongRoute() {
@@ -134,12 +145,14 @@ export default function CreateSongRoute() {
       position: "other",
       rank: "no_preference",
       isCover: false,
+      showTempo: false,
     },
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
   });
   const tempoControl = useInputControl(fields.tempo);
   const feelControl = useInputControl(fields.feels);
+  const showTempo = useInputControl(fields.showTempo);
   const links = fields.links.getFieldList();
 
   return (
@@ -223,38 +236,54 @@ export default function CreateSongRoute() {
                   </Select>
                 </FlexList>
               </div>
-              <FlexList gap={2}>
-                <Label>Tempo</Label>
-                <Input
-                  placeholder="Tempo"
-                  type="number"
-                  value={tempoControl.value}
-                  onChange={(e) => tempoControl.change(e.target.value)}
-                  onFocus={tempoControl.focus}
-                  onBlur={tempoControl.blur}
-                  max={320}
-                  min={1}
-                  step={1}
-                />
-                <Slider
-                  name={fields.tempo.name}
-                  value={[Number(tempoControl.value)]}
-                  onValueChange={(val) => {
-                    tempoControl.change(String(val[0]));
-                  }}
-                  onFocus={tempoControl.focus}
-                  onBlur={tempoControl.blur}
-                  min={1}
-                  max={320}
-                  step={1}
-                />
-                <div
-                  id={fields.tempo.errorId}
-                  className="text-sm text-destructive"
-                >
-                  {fields.tempo.errors}
-                </div>
-              </FlexList>
+              <div className="py-4 space-y-2">
+                <FlexList direction="row" gap={2} items="center">
+                  <Checkbox
+                    id="show-tempo"
+                    checked={showTempo.value === "true"}
+                    onCheckedChange={(checked) =>
+                      showTempo.change(checked ? "true" : "")
+                    }
+                    onFocus={showTempo.focus}
+                    onBlur={showTempo.blur}
+                  />
+                  <Label htmlFor="show-tempo">Add tempo</Label>
+                </FlexList>
+                {showTempo.value ? (
+                  <FlexList gap={2}>
+                    <Label>Tempo</Label>
+                    <Input
+                      placeholder="Tempo"
+                      type="number"
+                      value={tempoControl.value}
+                      onChange={(e) => tempoControl.change(e.target.value)}
+                      onFocus={tempoControl.focus}
+                      onBlur={tempoControl.blur}
+                      max={320}
+                      min={1}
+                      step={1}
+                    />
+                    <Slider
+                      name={fields.tempo.name}
+                      value={[Number(tempoControl.value)]}
+                      onValueChange={(val) => {
+                        tempoControl.change(String(val[0]));
+                      }}
+                      onFocus={tempoControl.focus}
+                      onBlur={tempoControl.blur}
+                      min={1}
+                      max={320}
+                      step={1}
+                    />
+                    <div
+                      id={fields.tempo.errorId}
+                      className="text-sm text-destructive"
+                    >
+                      {fields.tempo.errors}
+                    </div>
+                  </FlexList>
+                ) : null}
+              </div>
               <FlexList gap={2}>
                 <Label>Feels</Label>
                 <MultiSelectFeel

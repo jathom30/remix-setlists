@@ -42,6 +42,7 @@ export const MainNavSheet = ({
     bandId &&
     ["setlists", "songs", "band-settings"].every(
       (route) => !pathname.includes(route),
+      ``,
     );
 
   return (

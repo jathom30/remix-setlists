@@ -58,13 +58,13 @@ export default function Home() {
                   ) : null}
                   <H3>{band.name}</H3>
                   <div className="flex-grow" />
-                  <Badge variant="outline">
+                  <Badge variant="secondary">
                     {
                       band.members.find((member) => member.userId === user.id)
                         ?.role
                     }
                   </Badge>
-                  <Badge variant="secondary">
+                  <Badge variant="outline">
                     {band.members.length}{" "}
                     {band.members.length === 1 ? "Member" : "Members"}
                   </Badge>

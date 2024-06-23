@@ -31,7 +31,7 @@ export const SongContainer = ({ song }: { song: SerializeFrom<Song> }) => {
       <FlexList direction="row" items="center" justify="between" gap={2}>
         <Large>{song.name}</Large>
         <FlexList direction="row" items="center" gap={2}>
-          <Muted>{song.tempo} BPM</Muted>
+          {song.tempo ? <Muted>{song.tempo} BPM</Muted> : null}
           <Muted>{song.length} minutes</Muted>
         </FlexList>
       </FlexList>

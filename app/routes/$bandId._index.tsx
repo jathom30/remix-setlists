@@ -13,11 +13,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { FlexList } from "~/components";
 import { SetlistContainer } from "~/components/setlist-container";
 import { SongContainer } from "~/components/song-container";
-import { H1, P } from "~/components/typography";
+import { H1, Small, P } from "~/components/typography";
 import { getBand } from "~/models/band.server";
 import { getRecentSetlists } from "~/models/setlist.server";
 import { getRecentSongs } from "~/models/song.server";
@@ -61,13 +60,14 @@ export default function BandId() {
             <P>Created on {new Date(band.createdAt).toLocaleDateString()}</P>
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-2 items-start">
-            <Label>Your Role within the band</Label>
-            <Badge variant="secondary">
-              {band.members.find((member) => member.userId === user.id)?.role}
-            </Badge>
-          </div>
+        <CardContent className="flex flex-col items-start gap-2">
+          <Badge variant="secondary">
+            {band.members.find((member) => member.userId === user.id)?.role}
+          </Badge>
+          <Small>
+            {band.members.length}{" "}
+            {band.members.length === 1 ? "member" : "members"}
+          </Small>
         </CardContent>
       </Card>
       <Card>

@@ -137,7 +137,7 @@ export default function SongPage() {
             </div>
             <div>
               <Label>Tempo</Label>
-              <P>{song.tempo} BPM</P>
+              <P>{song.tempo ? `${song.tempo} BPM` : "--"}</P>
             </div>
           </div>
           {song.feels.length ? (

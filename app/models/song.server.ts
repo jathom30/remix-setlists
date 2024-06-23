@@ -108,6 +108,7 @@ export const EditSongSchema = z.object({
   position: z.enum(["opener", "closer", "other"]).default("other"),
   rank: z.enum(["exclude", "no_preference"]).default("no_preference"),
   isCover: z.boolean().default(false),
+  showTempo: z.coerce.boolean().default(false),
 });
 
 export async function updateSong(
@@ -170,7 +171,7 @@ export async function updateSongWithLinksAndFeels(
       length: song.length,
       keyLetter: song.keyLetter,
       isMinor: song.isMinor,
-      tempo: song.tempo,
+      tempo: song.showTempo ? song.tempo : null,
       position: song.position,
       rank: song.rank,
       note: song.note,
