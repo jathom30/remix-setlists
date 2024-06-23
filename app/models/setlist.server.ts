@@ -2,7 +2,7 @@ import type { Band, Setlist, Song } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 import { getSortFromParam } from "~/utils/params";
-import type { SetlistSettings } from "~/utils/setlists";
+import type { SetlistSettings, TAutoSetlist } from "~/utils/setlists";
 import {
   createRandomSetsByPosition,
   setOfLength,
@@ -257,7 +257,6 @@ export async function createSetlistAuto(
       bandId,
     },
   });
-  // const setlistId = setlist.id
   // get all songs filtered based on filter params
   const params = {
     ...(noBallads ? { tempos: [2, 3, 4, 5] } : null),
@@ -295,6 +294,91 @@ export async function createSetlistAuto(
   });
 
   return setlist.id;
+}
+
+export async function createAutoSetlist(
+  bandId: Band["id"],
+  params: TAutoSetlist,
+) {
+  const {
+    artistPreference,
+    excludeBallads,
+    name,
+    numSets,
+    setLength,
+    wildCard,
+  } = params;
+  // create default setlist to attach sets to
+  const setlist = await prisma.setlist.create({
+    data: {
+      name,
+      bandId,
+    },
+  });
+  const bandName = await prisma.band.findUnique({
+    where: { id: bandId },
+    select: { name: true },
+  });
+  if (!bandName) {
+    throw new Response("Band not found", { status: 404 });
+  }
+
+  // get all songs (filtered by params if no wild card)
+  const songs = await prisma.song.findMany({
+    where: {
+      bandId,
+      ...(wildCard
+        ? {}
+        : {
+            author:
+              artistPreference === "no-covers"
+                ? {
+                    equals: bandName.name,
+                  }
+                : artistPreference === "covers"
+                ? {
+                    not: {
+                      equals: bandName.name,
+                    },
+                  }
+                : {},
+            tempo: excludeBallads
+              ? {
+                  gte: 80,
+                }
+              : {},
+          }),
+    },
+  });
+  // if wild card, include all songs. Otherwise, exclude songs with rank "exclude"
+  const availableSongs = songs.filter((song) =>
+    wildCard ? true : song.rank !== "exclude",
+  );
+  // split songs into sets by position so each desired set has an even distribution of openers and closers
+  const setsByPosition = createRandomSetsByPosition(availableSongs, numSets);
+
+  // trim above sets to desired minute length and sort songs so sets start with openers and end with closers
+  const setsByLength = Object.keys(setsByPosition).reduce(
+    (sets: Record<string, Song[]>, key) => ({
+      ...sets,
+      [key]: setOfLength(setsByPosition[key], setLength),
+    }),
+    {},
+  );
+
+  // sort by position
+  const sortedByPosition = sortSetsByPosition(setsByLength);
+
+  // create sets in db
+  Object.values(sortedByPosition).forEach(async (songs, i) => {
+    await createSet(
+      setlist.id,
+      songs.map((song) => song.id),
+      i,
+    );
+  });
+
+  return setlist;
 }
 
 // cloned setlist is created when editing

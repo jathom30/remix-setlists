@@ -104,6 +104,7 @@ export default function BandRoute() {
   const isCreateSetlistsRoute = isSetlistsRoute && pathname.includes("new");
   const isManualCreateSetlistRoute =
     isSetlistsRoute && pathname.includes("manual");
+  const isAutoCreateSetlistRoute = isSetlistsRoute && pathname.includes("auto");
   const setlistMatch = getMatch(matches, SetlistDetailMatchSchema);
   const isSetlistDetailRoute = isSetlistsRoute && Boolean(setlistId);
   const isCondensedSetlistRoute =
@@ -234,6 +235,29 @@ export default function BandRoute() {
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
                     <Link to={`/${bandId}/setlists/manual`}>Manual</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+            {isAutoCreateSetlistRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/setlists/new`}>Create</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/setlists/auto`}>Auto</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </>

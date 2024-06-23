@@ -1,5 +1,6 @@
 import type { Song, SongsInSets } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/node";
+import { z } from "zod";
 
 export interface SetlistFilters {
   noCovers: boolean;
@@ -88,7 +89,7 @@ const filteredSongs = (filters: SetlistFilters, songs: Song[]) => {
       return song.isCover;
     }
     if (noBallads) {
-      return song.tempo > 1;
+      return (song.tempo || 0) > 1;
     }
     return song.rank !== "exclude";
   });
@@ -207,3 +208,14 @@ export const autoGenSetlist = (
 
   return sortedByPosition;
 };
+
+export const AutoSetlistSchema = z.object({
+  name: z.string().min(1),
+  setLength: z.coerce.number(),
+  numSets: z.coerce.number(),
+  artistPreference: z.enum(["covers", "no-covers", "no-preference"]),
+  excludeBallads: z.coerce.boolean(),
+  wildCard: z.coerce.boolean(),
+});
+
+export type TAutoSetlist = z.infer<typeof AutoSetlistSchema>;
