@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FlexList } from "~/components";
 import { H1 } from "~/components/typography";
-import { getBand, updateBand } from "~/models/band.server";
+import { getBand, updateBandName } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 
 const FormSchema = z
@@ -54,7 +54,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (submission.status !== "success") {
     return submission.reply();
   }
-  await updateBand(bandId, { name: submission.value.band_name });
+  await updateBandName(bandId, submission.value.band_name);
   return redirect(`/${bandId}/band-settings`);
 }
 

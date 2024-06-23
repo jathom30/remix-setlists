@@ -88,7 +88,7 @@ import {
 } from "@/components/ui/sheet";
 import { FlexList, MaxWidth } from "~/components";
 import { SongContainer } from "~/components/song-container";
-import { H1, P } from "~/components/typography";
+import { H1, Muted, P } from "~/components/typography";
 import { useContainerHeight } from "~/hooks/use-container-height";
 import {
   copySetlist,
@@ -421,6 +421,9 @@ export default function SetlistPage() {
 
   const { containerRef, top } = useContainerHeight();
 
+  const totalSetLength = (set: SerializeFrom<Song>[]) =>
+    set.reduce((total, song) => total + song.length, 0);
+
   return (
     <div
       ref={containerRef}
@@ -538,13 +541,23 @@ export default function SetlistPage() {
                             : ""
                         }
                       >
-                        <Label
-                          className={
-                            dropSnapshot.isDraggingOver ? "font-bold" : ""
-                          }
+                        <FlexList
+                          direction="row"
+                          items="center"
+                          justify="between"
                         >
-                          Set {index + 1}
-                        </Label>
+                          <Label
+                            className={
+                              dropSnapshot.isDraggingOver ? "font-bold" : ""
+                            }
+                          >
+                            Set {index + 1}
+                          </Label>
+                          <Muted>
+                            {totalSetLength(set)}{" "}
+                            {totalSetLength(set) === 1 ? "Minute" : "Minutes"}
+                          </Muted>
+                        </FlexList>
                         {set?.map((song, songIndex) => (
                           <Draggable
                             draggableId={song.id}

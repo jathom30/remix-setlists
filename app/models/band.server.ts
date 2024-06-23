@@ -112,6 +112,27 @@ export async function updateBand(bandId: Band["id"], band: Partial<Band>) {
   return updatedBand;
 }
 
+export async function updateBandName(bandId: Band["id"], name: Band["name"]) {
+  const originalBand = await prisma.band.findUnique({
+    where: { id: bandId },
+    select: { name: true },
+  });
+  await prisma.usersInBands.updateMany({
+    where: { bandId },
+    data: { bandName: name },
+  });
+  await prisma.song.updateMany({
+    where: { bandId, author: originalBand?.name },
+    data: {
+      author: name,
+    },
+  });
+  return await prisma.band.update({
+    where: { id: bandId },
+    data: { name },
+  });
+}
+
 export async function updateBandCode(bandId: Band["id"]) {
   const code = Math.random().toString(36).substring(2, 8).toUpperCase();
   return prisma.band.update({

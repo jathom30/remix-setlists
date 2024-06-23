@@ -1,9 +1,7 @@
 import { LoaderFunctionArgs, json } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
-import { ArrowBigLeft } from "lucide-react";
+import { useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -37,11 +35,6 @@ export default function SetlistCondensedPage() {
   return (
     <div className="p-2 space-y-2">
       <FlexList direction="row" items="center" gap={2}>
-        <Button variant="ghost" size="icon" title="Back to detail view" asChild>
-          <Link to={`/${setlist.bandId}/setlists/${setlist.id}`}>
-            <ArrowBigLeft className="h-4 w-4" />
-          </Link>
-        </Button>
         <H1>{setlist.name}</H1>
       </FlexList>
       <div className="grid gap-2 sm:grid-cols-2">

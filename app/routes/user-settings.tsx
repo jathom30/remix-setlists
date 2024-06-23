@@ -13,7 +13,7 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
 } from "@remix-run/server-runtime";
-import { Boxes, CirclePlus } from "lucide-react";
+import { Boxes, CircleMinus, CirclePlus, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -365,8 +365,10 @@ export default function UserSettings() {
                     <Badge variant="outline">{band.role}</Badge>
                     <div className="flex-grow" />
                     {band.role === "ADMIN" ? (
-                      <Button variant="ghost" asChild>
-                        <Link to={`/${band.bandId}/band-settings`}>Edit</Link>
+                      <Button variant="ghost" asChild size="icon">
+                        <Link to={`/${band.bandId}/band-settings`}>
+                          <Settings className="w-4 h-4" />
+                        </Link>
                       </Button>
                     ) : null}
                     <RemoveSelfFromBandDialog band={band} />
@@ -742,7 +744,9 @@ const RemoveSelfFromBandDialog = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="secondary">Remove</Button>
+        <Button variant="secondary" size="icon">
+          <CircleMinus className="h-4 w-4" />
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
