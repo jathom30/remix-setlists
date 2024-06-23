@@ -2,6 +2,7 @@ import { Link, useLocation, useParams } from "@remix-run/react";
 import {
   AudioLines,
   Boxes,
+  Dna,
   LayoutDashboard,
   List,
   Menu,
@@ -40,7 +41,7 @@ export const MainNavSheet = ({
 
   const isDashboardRoute =
     bandId &&
-    ["setlists", "songs", "band-settings"].every(
+    ["setlists", "songs", "band-settings", "feels"].every(
       (route) => !pathname.includes(route),
       ``,
     );
@@ -88,6 +89,11 @@ export const MainNavSheet = ({
               <Button size="sm" variant={isActive("songs")} asChild>
                 <Link to={`/${bandId}/songs`} onClick={() => setOpen(false)}>
                   <AudioLines className="pr-2" /> Songs
+                </Link>
+              </Button>
+              <Button size="sm" variant={isActive("feels")} asChild>
+                <Link to={`/${bandId}/feels`} onClick={() => setOpen(false)}>
+                  <Dna className="pr-2" /> Feels
                 </Link>
               </Button>
               <Button size="sm" variant={isActive("band-settings")} asChild>

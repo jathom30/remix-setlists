@@ -2,9 +2,14 @@ import type { Band, Feel } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 
-export async function getFeels(bandId: Band["id"]) {
+export async function getFeels(bandId: Band["id"], query?: string) {
   return prisma.feel.findMany({
-    where: { bandId },
+    where: {
+      bandId,
+      label: {
+        contains: query?.trim(),
+      },
+    },
     orderBy: { label: "asc" },
     include: { songs: { select: { id: true } } },
   });
@@ -22,6 +27,22 @@ export async function getMostRecentFeels(bandId: Band["id"]) {
 export async function getFeel(feelId: Feel["id"]) {
   return prisma.feel.findUnique({
     where: { id: feelId },
+  });
+}
+
+export async function getFeelWithSongs(feelId: Feel["id"], nameQuery?: string) {
+  return prisma.feel.findUnique({
+    where: { id: feelId },
+    include: {
+      songs: {
+        orderBy: { name: "asc" },
+        where: {
+          name: {
+            contains: nameQuery?.trim(),
+          },
+        },
+      },
+    },
   });
 }
 

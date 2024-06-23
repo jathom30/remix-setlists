@@ -82,6 +82,16 @@ const SetlistDetailMatchSchema = z.object({
   pathname: z.string(),
 });
 
+const FeelMatchSchema = z.object({
+  data: z.object({
+    feel: z.object({
+      id: z.string(),
+      label: z.string(),
+      color: z.string().nullable(),
+    }),
+  }),
+});
+
 const getMatch = <Z extends z.ZodTypeAny>(
   matches: ReturnType<typeof useMatches>,
   schema: Z,
@@ -122,6 +132,13 @@ export default function BandRoute() {
   const isEditSongRoute =
     isSongsRoute && songMatch && songMatch.pathname.includes("edit");
   const isCreateSongRoute = isSongsRoute && pathname.includes("new");
+
+  // feels routes
+  const isFeelsRoute = isBandRoute && pathname.includes("feels");
+  const feelMatch = getMatch(matches, FeelMatchSchema);
+  const isEditFeelRoute =
+    isFeelsRoute && feelMatch && pathname.includes("edit");
+  const isNewFeelRoute = isFeelsRoute && pathname.includes("new");
 
   // band settings routes
   const isBandSettingsRoute = isBandRoute && pathname.includes("band-settings");
@@ -329,6 +346,65 @@ export default function BandRoute() {
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
                     <Link to={`/${bandId}/songs/new`}>Create</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+
+            {isFeelsRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/feels`}>Feels</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+            {feelMatch ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/feels/${feelMatch.data.feel.id}`}>
+                      {feelMatch.data.feel.label}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+            {isEditFeelRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link
+                      to={`/${bandId}/feels/${feelMatch.data.feel.id}/edit`}
+                    >
+                      Edit
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+            {isNewFeelRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/feels/new`}>New</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </>

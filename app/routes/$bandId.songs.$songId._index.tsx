@@ -1,17 +1,11 @@
 import {
-  faMaximize,
-  faMinimize,
-  faPencil,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
   type LoaderFunctionArgs,
   json,
   ActionFunctionArgs,
   redirect,
 } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Maximize, Minimize, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 
@@ -108,10 +102,10 @@ export default function SongPage() {
   return (
     <div className="p-2 space-y-2">
       <FlexList direction="row" justify="between" items="center">
-        <H1>Song Details</H1>
+        <H1>Song</H1>
         <Button asChild>
           <Link to="edit">
-            <FontAwesomeIcon icon={faPencil} className="mr-2" />
+            <Pencil className="w-4 h-4 mr-2" />
             Edit Song
           </Link>
         </Button>
@@ -172,7 +166,11 @@ export default function SongPage() {
                   expandNotes ? "Collapse note section" : "Expand note section"
                 }
               >
-                <FontAwesomeIcon icon={expandNotes ? faMinimize : faMaximize} />
+                {expandNotes ? (
+                  <Minimize className="h-4 w-4" />
+                ) : (
+                  <Maximize className="h-4 w-4" />
+                )}
               </Button>
             </FlexList>
           </CardHeader>
@@ -252,7 +250,7 @@ const DeleteSongDialog = () => {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="destructive">
-          <FontAwesomeIcon icon={faTrash} className="mr-2" />
+          <Trash className="w-4 h-4 mr-2" />
           Delete Song
         </Button>
       </AlertDialogTrigger>

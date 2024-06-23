@@ -1,15 +1,23 @@
-import {
-  faArrowDownWideShort,
-  faArrowUpAZ,
-  faArrowUpWideShort,
-  faArrowUpZA,
-  faMagnifyingGlass,
-  faPlusCircle,
-  faSort,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import {
+//   faArrowDownWideShort,
+//   faArrowUpAZ,
+//   faArrowUpWideShort,
+//   faArrowUpZA,
+//   faPlusCircle,
+//   faSort,
+// } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import { Link, MetaFunction, useSearchParams } from "@remix-run/react";
+import {
+  ArrowDown01,
+  ArrowDownAZ,
+  ArrowUp01,
+  ArrowUpAZ,
+  ArrowUpDown,
+  CirclePlus,
+  SearchIcon,
+} from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import invariant from "tiny-invariant";
@@ -137,7 +145,7 @@ function SongsListNew() {
         {!isSub ? (
           <Button asChild>
             <Link to="new">
-              <FontAwesomeIcon icon={faPlusCircle} className="mr-2" />
+              <CirclePlus className="h-4 w-4 mr-2" />
               Create Song
             </Link>
           </Button>
@@ -146,10 +154,7 @@ function SongsListNew() {
 
       <FlexList direction="row" items="center" justify="end" gap={2}>
         <div className="relative ml-auto flex-1 md:grow-0">
-          <FontAwesomeIcon
-            icon={faMagnifyingGlass}
-            className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground"
-          />
+          <SearchIcon className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
           <Input
             type="search"
             placeholder="Search..."
@@ -202,15 +207,15 @@ const sortOptions = [
   {
     label: "Updated: Newest first",
     value: "updatedAt:desc",
-    icon: faArrowUpWideShort,
+    Icon: ArrowDown01,
   },
   {
     label: "Updated: Oldest first",
     value: "updatedAt:asc",
-    icon: faArrowDownWideShort,
+    Icon: ArrowUp01,
   },
-  { label: "Name: A-Z", value: "name:asc", icon: faArrowUpAZ },
-  { label: "Name: Z-A", value: "name:desc", icon: faArrowUpZA },
+  { label: "Name: A-Z", value: "name:asc", Icon: ArrowDownAZ },
+  { label: "Name: Z-A", value: "name:desc", Icon: ArrowUpAZ },
 ];
 
 const SortSetlists = ({
@@ -227,7 +232,7 @@ const SortSetlists = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="icon" variant="outline">
-              <FontAwesomeIcon icon={faSort} />
+              <ArrowUpDown className="w-4 h-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
@@ -235,9 +240,9 @@ const SortSetlists = ({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuRadioGroup value={value} onValueChange={onChange}>
-                {sortOptions.map(({ label, value: val, icon }) => (
+                {sortOptions.map(({ label, value: val, Icon }) => (
                   <DropdownMenuRadioItem key={val} value={val}>
-                    <FontAwesomeIcon icon={icon} className="mr-2" />
+                    <Icon className="w-4 h-4 mr-2" />
                     {label}
                   </DropdownMenuRadioItem>
                 ))}
@@ -250,7 +255,7 @@ const SortSetlists = ({
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button size="icon" variant="outline">
-              <FontAwesomeIcon icon={faSort} />
+              <ArrowUpDown className="w-4 h-4" />
             </Button>
           </SheetTrigger>
           <SheetContent side="bottom">
@@ -265,15 +270,18 @@ const SortSetlists = ({
                   }}
                 >
                   <FlexList gap={0}>
-                    {sortOptions.map(({ label, value: val, icon }) => (
+                    {sortOptions.map(({ label, value: val, Icon }) => (
                       <div
                         key={val}
                         className="p-2 rounded hover:bg-accent hover:text-accent-foreground"
                       >
                         <FlexList direction="row" items="center" gap={2}>
                           <RadioGroupItem value={val} id={val} />
-                          <Label className="w-full text-start" htmlFor={val}>
-                            <FontAwesomeIcon icon={icon} className="mr-2" />
+                          <Label
+                            className="w-full text-start flex"
+                            htmlFor={val}
+                          >
+                            <Icon className="w-4 h-4 mr-2" />
                             {label}
                           </Label>
                         </FlexList>

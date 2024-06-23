@@ -1,22 +1,13 @@
 import { getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import {
-  faCheck,
-  faCopy,
-  faEllipsisVertical,
-  faPenToSquare,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Feel } from "@prisma/client";
-import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
-  SerializeFrom,
   json,
   redirect,
 } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
+import { Check, Copy, EllipsisVertical, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
 import { QRCode } from "react-qrcode-logo";
 import invariant from "tiny-invariant";
@@ -58,7 +49,6 @@ import {
   getBandMembers,
   updateBandCode,
 } from "~/models/band.server";
-import { deleteFeel, getMostRecentFeels } from "~/models/feel.server";
 import { getUsersById } from "~/models/user.server";
 import { removeMemberFromBand } from "~/models/usersInBands.server";
 import {
@@ -72,7 +62,6 @@ import { RoleEnum } from "~/utils/enums";
 
 const IntentSchema = z.enum([
   "delete-band",
-  "delete-feel",
   "remove-member",
   "member-role",
   "generate-code",
@@ -81,12 +70,6 @@ const IntentSchema = z.enum([
 const DeleteBandSchema = z.object({
   band_id: z.string(),
   intent: z.literal(IntentSchema.Enum["delete-band"]),
-});
-
-const DeleteFeelSchema = z.object({
-  band_id: z.string(),
-  feel_id: z.string(),
-  intent: z.literal(IntentSchema.Enum["delete-feel"]),
 });
 
 const DeleteMemberSchema = z.object({
@@ -110,12 +93,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     ...member,
     role: band.members.find((m) => m.userId === member.id)?.role,
   }));
-  const feels = await getMostRecentFeels(bandId);
 
   const domainUrl = getDomainUrl(request);
   const qrCodeAddress = `${domainUrl}/home/add-band/existing?code=${band.code}`;
 
-  return json({ band, members: augmentedMembers, feels, qrCodeAddress });
+  return json({ band, members: augmentedMembers, qrCodeAddress });
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
@@ -140,25 +122,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
     await deleteBand(submission.value.band_id);
     return redirect("/");
-  }
-
-  if (intent === IntentSchema.Enum["delete-feel"]) {
-    const submission = parseWithZod(formData, { schema: DeleteFeelSchema });
-    if (submission.status !== "success") {
-      return submission.reply();
-    }
-    const band = await getBand(submission.value.band_id);
-    if (!band) {
-      throw new Response("Band not found", { status: 404 });
-    }
-    const memberRole = band.members.find((m) => m.userId === user.id)?.role;
-    if (memberRole !== RoleEnum.ADMIN) {
-      throw new Response("You do not have permission to delete this feel", {
-        status: 403,
-      });
-    }
-    await deleteFeel(submission.value.feel_id);
-    return null;
   }
 
   if (intent === IntentSchema.Enum["remove-member"]) {
@@ -198,11 +161,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function BandSettings() {
-  const { band, members, feels } = useLoaderData<typeof loader>();
+  const { band, members } = useLoaderData<typeof loader>();
   const user = useUser();
   const memberRole = useMemberRole();
   const isAdmin = memberRole === RoleEnum.ADMIN;
-  const isSub = memberRole === RoleEnum.SUB;
 
   return (
     <div className="p-2 space-y-2">
@@ -261,7 +223,7 @@ export default function BandSettings() {
           </FlexList>
         </CardContent>
       </Card>
-      <Card>
+      {/* <Card>
         <CardHeader>
           <FlexList direction="row" items="center" justify="between">
             <CardTitle>Feels</CardTitle>
@@ -287,7 +249,7 @@ export default function BandSettings() {
             ))}
           </FlexList>
         </CardContent>
-      </Card>
+      </Card> */}
       {isAdmin ? (
         <Card>
           <CardHeader>
@@ -350,94 +312,6 @@ const DeleteBandDialog = ({ bandId }: { bandId: string }) => {
   );
 };
 
-const FeelSettings = ({ feel }: { feel: SerializeFrom<Feel> }) => {
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button title="Update member settings" variant="ghost" size="icon">
-          <FontAwesomeIcon className="h-4 w-4" icon={faEllipsisVertical} />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Feel Options</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link to={`feels/${feel.id}`}>
-            <FontAwesomeIcon icon={faPenToSquare} className="mr-2" />
-            Edit
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setShowDeleteModal(true)}>
-          <FontAwesomeIcon icon={faTrash} className="mr-2" />
-          Delete
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-      <DeleteFeelDialog
-        bandId={feel.bandId}
-        feelId={feel.id}
-        open={showDeleteModal}
-        onOpenChange={setShowDeleteModal}
-      />
-    </DropdownMenu>
-  );
-};
-
-const DeleteFeelDialog = ({
-  bandId,
-  feelId,
-  open,
-  onOpenChange,
-}: {
-  bandId: string;
-  feelId: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) => {
-  const [form, fields] = useForm({
-    id: IntentSchema.Enum["delete-feel"],
-    defaultValue: {
-      feel_id: feelId,
-      band_id: bandId,
-      intent: IntentSchema.Enum["delete-feel"],
-    },
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: DeleteFeelSchema });
-    },
-    shouldValidate: "onBlur",
-    shouldRevalidate: "onInput",
-  });
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Delete this Feel?</DialogTitle>
-          <DialogDescription>
-            This action is permanent and cannot be undone. Are you sure you want
-            to delete this feel?
-          </DialogDescription>
-        </DialogHeader>
-        <Form method="post" id={form.id} onSubmit={form.onSubmit} noValidate>
-          <input
-            hidden
-            {...getInputProps(fields.feel_id, { type: "hidden" })}
-          />
-          <input
-            hidden
-            {...getInputProps(fields.band_id, { type: "hidden" })}
-          />
-          <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
-          {fields.intent.errors}
-          <DialogFooter>
-            <Button variant="destructive">Delete Feel</Button>
-          </DialogFooter>
-        </Form>
-      </DialogContent>
-    </Dialog>
-  );
-};
-
 const MemberSettings = ({
   memberId,
   bandId,
@@ -450,7 +324,7 @@ const MemberSettings = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button title="Update member settings" variant="ghost" size="icon">
-          <FontAwesomeIcon className="h-4 w-4" icon={faEllipsisVertical} />
+          <EllipsisVertical />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -458,12 +332,12 @@ const MemberSettings = ({
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link to={`members/${memberId}`}>
-            <FontAwesomeIcon icon={faPenToSquare} className="mr-2" />
+            <Pencil className="w-4 h-4 mr-2" />
             Adjust Role
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setShowDeleteModal(true)}>
-          <FontAwesomeIcon icon={faTrash} className="mr-2" />
+          <Trash className="w-4 h-4 mr-2" />
           Remove
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -562,10 +436,11 @@ const AddMemberDialog = () => {
             onMouseLeave={() => setShowSuccess(false)}
           >
             {showSuccess ? "Copied!" : qrCodeAddress}
-            <FontAwesomeIcon
-              icon={showSuccess ? faCheck : faCopy}
-              className="ml-2"
-            />
+            {showSuccess ? (
+              <Check className="w-4 h-4 ml-2" />
+            ) : (
+              <Copy className="w-4 h-4 ml-2" />
+            )}
           </Button>
           <FlexList items="center" gap={0}>
             <QRCode value={qrCodeAddress} />
