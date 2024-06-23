@@ -408,12 +408,16 @@ export default function CreateSongRoute() {
               </FlexList>
             </CardContent>
           </Card>
-          <div className="flex flex-col gap-2 justify-start sm:pb-8 sm:flex-row-reverse">
-            <Button type="submit">Create Song</Button>
-            <Button variant="ghost" asChild>
-              <Link to={`/${bandId}/songs`}>Cancel</Link>
-            </Button>
-          </div>
+          <Card>
+            <CardHeader>
+              <div className="flex flex-col gap-2 justify-start sm:flex-row-reverse">
+                <Button type="submit">Create Song</Button>
+                <Button variant="outline" asChild>
+                  <Link to={`/${bandId}/songs`}>Cancel</Link>
+                </Button>
+              </div>
+            </CardHeader>
+          </Card>
         </div>
       </Form>
     </div>

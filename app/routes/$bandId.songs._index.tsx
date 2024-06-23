@@ -165,7 +165,9 @@ function SongsListNew() {
         <FlexList gap={1}>
           {songs.map((song) => (
             <Link key={song.id} to={song.id}>
-              <SongContainer song={song} />
+              <SongContainer.Card>
+                <SongContainer.Song song={song} />
+              </SongContainer.Card>
             </Link>
           ))}
         </FlexList>

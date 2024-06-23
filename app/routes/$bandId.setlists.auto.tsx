@@ -1,7 +1,7 @@
 import { getInputProps, useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { ActionFunctionArgs, redirect } from "@remix-run/node";
-import { Form } from "@remix-run/react";
+import { Form, Link, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function SetlistAuto() {
+  const { bandId } = useParams();
   const [form, fields] = useForm({
     id: "auto-setlist-create",
     onValidate({ formData }) {
@@ -230,7 +231,9 @@ export default function SetlistAuto() {
           <CardHeader>
             <div className="flex flex-col gap-2 sm:flex-row-reverse">
               <Button type="submit">Generate Setlist</Button>
-              <Button variant="ghost">Cancel</Button>
+              <Button variant="outline" asChild>
+                <Link to={`/${bandId}/setlists`}>Cancel</Link>
+              </Button>
             </div>
           </CardHeader>
         </Card>
