@@ -42,6 +42,9 @@ export async function getSongs(bandId: Band["id"], params?: SongParams) {
       //   : null),
     },
     orderBy,
+    include: {
+      feels: true,
+    },
   });
 }
 
@@ -49,6 +52,9 @@ export async function getRecentSongs(bandId: Band["id"]) {
   return prisma.song.findMany({
     where: { bandId },
     orderBy: { updatedAt: "desc" },
+    include: {
+      feels: true,
+    },
     take: 5,
   });
 }
@@ -269,6 +275,9 @@ export async function getSongsNotInSetlist(
       name: {
         contains: params?.q,
       },
+    },
+    include: {
+      feels: true,
     },
     orderBy: { name: "asc" },
   });

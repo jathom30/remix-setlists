@@ -1,4 +1,4 @@
-import { Song } from "@prisma/client";
+import { Feel, Song } from "@prisma/client";
 import { SerializeFrom } from "@remix-run/node";
 import { ChevronFirst, ChevronLast } from "lucide-react";
 import { ReactNode } from "react";
@@ -15,7 +15,12 @@ import {
 import { FlexList } from "./FlexList";
 import { Large, Muted, P, Small } from "./typography";
 
-export const SongContainer = ({ song }: { song: SerializeFrom<Song> }) => {
+export const SongContainer = ({
+  song,
+}: {
+  song: SerializeFrom<Song & { feels: Feel[] }>;
+}) => {
+  console.log(song);
   const positionIcon =
     {
       opener: <ChevronFirst className="h-4 w-4" />,
@@ -38,6 +43,21 @@ export const SongContainer = ({ song }: { song: SerializeFrom<Song> }) => {
       <FlexList direction="row" items="center" justify="between" gap={2}>
         <Small>{song.author}</Small>
         <FlexList direction="row" gap={2} items="center">
+          {song?.feels?.map((feel) => (
+            <TooltipProvider key={feel.id}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div
+                    className="w-4 h-4 rounded-full border"
+                    style={{ background: feel.color || "" }}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <P>{feel.label}</P>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ))}
           {positionIcon ? (
             <TooltipProvider>
               <Tooltip>

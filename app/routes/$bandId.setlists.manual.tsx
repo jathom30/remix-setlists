@@ -171,7 +171,9 @@ export default function ManualCreateSetlist() {
                                   {...dragprovided.dragHandleProps}
                                   {...dragprovided.draggableProps}
                                 >
-                                  <SongContainer song={song} />
+                                  <SongContainer.Card>
+                                    <SongContainer.Song song={song} />
+                                  </SongContainer.Card>
                                 </div>
                               )}
                             </Draggable>
@@ -242,7 +244,9 @@ export default function ManualCreateSetlist() {
                             {...dragprovided.dragHandleProps}
                             {...dragprovided.draggableProps}
                           >
-                            <SongContainer song={song} />
+                            <SongContainer.Card>
+                              <SongContainer.Song song={song} />
+                            </SongContainer.Card>
                           </div>
                         )}
                       </Draggable>

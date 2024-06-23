@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { Link, json, useLoaderData, useNavigate } from "@remix-run/react";
-import { Boxes, Settings } from "lucide-react";
+import { AudioLines, Boxes, Dna, List, Settings } from "lucide-react";
 import { useEffect } from "react";
 import invariant from "tiny-invariant";
 
@@ -77,7 +77,10 @@ export default function BandId() {
         <Card>
           <CardHeader>
             <FlexList direction="row" items="center" justify="between">
-              <CardTitle>Recent Setlists</CardTitle>
+              <CardTitle className="flex">
+                <List className="mr-2" />
+                Recent Setlists
+              </CardTitle>
               {setlists.length ? (
                 <Button variant="outline" asChild>
                   <Link to="setlists">See all</Link>
@@ -109,7 +112,10 @@ export default function BandId() {
         <Card>
           <CardHeader>
             <FlexList direction="row" items="center" justify="between">
-              <CardTitle>Recent Songs</CardTitle>
+              <CardTitle className="flex">
+                <AudioLines className="mr-2" />
+                Recent Songs
+              </CardTitle>
               {songs.length ? (
                 <Button variant="outline" asChild>
                   <Link to="songs">See all</Link>
@@ -143,7 +149,10 @@ export default function BandId() {
         <Card>
           <CardHeader>
             <FlexList direction="row" items="center" justify="between">
-              <CardTitle>Recent Feels</CardTitle>
+              <CardTitle className="flex">
+                <Dna className="mr-2" />
+                Recent Feels
+              </CardTitle>
               {songs.length ? (
                 <Button variant="outline" asChild>
                   <Link to="feels">See all</Link>

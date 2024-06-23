@@ -6,7 +6,7 @@ import {
   DropResult,
   Droppable,
 } from "@hello-pangea/dnd";
-import { Song } from "@prisma/client";
+import { Feel, Song } from "@prisma/client";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -298,7 +298,7 @@ export default function SetlistPage() {
   const defaultSets = setlist.sets.reduce((acc: TSet, set) => {
     const setSongs = set.songs
       ?.filter((song) => Boolean(song) && Boolean(song.song))
-      .map((song) => song.song) as SerializeFrom<Song>[];
+      .map((song) => song.song) as SerializeFrom<Song & { feels: Feel[] }>[];
     acc[set.id] = setSongs;
     return acc;
   }, {} as TSet);
@@ -321,7 +321,9 @@ export default function SetlistPage() {
       (acc: TSet, set) => {
         const setSongs = set.songs
           .filter((song) => Boolean(song) && Boolean(song.song))
-          .map((song) => song.song) as unknown as SerializeFrom<Song>[];
+          .map((song) => song.song) as unknown as SerializeFrom<
+          Song & { feels: Feel[] }
+        >[];
         acc[set.id] = setSongs;
         return acc;
       },
@@ -341,7 +343,7 @@ export default function SetlistPage() {
     });
   };
 
-  const handleSwapSong = (newSong: SerializeFrom<Song>) => {
+  const handleSwapSong = (newSong: SerializeFrom<Song & { feels: Feel[] }>) => {
     setSets((prev) => {
       const updatedSets = { ...prev };
       if (!songToSwap) return updatedSets;
@@ -1275,8 +1277,8 @@ const SongSwapSheet = ({
   onOpenChange,
   open,
 }: {
-  availableSongs: SerializeFrom<Song>[];
-  onSubmit: (newSongId: SerializeFrom<Song>) => void;
+  availableSongs: SerializeFrom<Song & { feels: Feel[] }>[];
+  onSubmit: (newSongId: SerializeFrom<Song & { feels: Feel[] }>) => void;
   onOpenChange: (open: boolean) => void;
   open: boolean;
 }) => {
