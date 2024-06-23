@@ -6,7 +6,7 @@ import {
   DropResult,
   Droppable,
 } from "@hello-pangea/dnd";
-import { Feel, Song } from "@prisma/client";
+import { Feel, Link as PLink, Song } from "@prisma/client";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -285,6 +285,8 @@ const FetcherDataSchema = z.object({
   }),
 });
 
+type TSong = SerializeFrom<Song & { feels: Feel[]; links?: PLink[] }>;
+
 export default function SetlistPage() {
   const { setlist, availableSongs } = useLoaderData<typeof loader>();
   const fetcher = useFetcher({ key: `setlist-${setlist.id}` });
@@ -298,7 +300,7 @@ export default function SetlistPage() {
   const defaultSets = setlist.sets.reduce((acc: TSet, set) => {
     const setSongs = set.songs
       ?.filter((song) => Boolean(song) && Boolean(song.song))
-      .map((song) => song.song) as SerializeFrom<Song & { feels: Feel[] }>[];
+      .map((song) => song.song) as TSong[];
     acc[set.id] = setSongs;
     return acc;
   }, {} as TSet);
@@ -321,9 +323,7 @@ export default function SetlistPage() {
       (acc: TSet, set) => {
         const setSongs = set.songs
           .filter((song) => Boolean(song) && Boolean(song.song))
-          .map((song) => song.song) as unknown as SerializeFrom<
-          Song & { feels: Feel[] }
-        >[];
+          .map((song) => song.song) as unknown as TSong[];
         acc[set.id] = setSongs;
         return acc;
       },
@@ -1080,7 +1080,7 @@ const SongActions = ({
   onRemove,
   onSwap,
 }: {
-  song: SerializeFrom<Song>;
+  song: TSong;
   onRemove: () => void;
   onSwap: () => void;
 }) => {
@@ -1138,7 +1138,7 @@ const SongDetailsSheet = ({
   open,
   onOpenChange,
 }: {
-  song: SerializeFrom<Song>;
+  song: TSong;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) => {
@@ -1191,24 +1191,24 @@ const SongDetailsSheet = ({
                     <P>{song.tempo} BPM</P>
                   </div>
                 </div>
-                {/* {song.feels.length ? (
-            <div className="pt-4">
-              <Label>Feels</Label>
-              <FlexList direction="row" wrap>
-                {song.feels?.map((feel) => (
-                  <P key={feel.id}>
-                    <span className="flex flex-row items-center gap-1">
-                      <span
-                        className="w-4 h-4 rounded-full"
-                        style={{ background: feel.color || undefined }}
-                      />
-                      {feel.label}
-                    </span>
-                  </P>
-                ))}
-              </FlexList>
-            </div>
-          ) : null} */}
+                {song.feels.length ? (
+                  <div className="pt-4">
+                    <Label>Feels</Label>
+                    <FlexList direction="row" wrap>
+                      {song.feels?.map((feel) => (
+                        <P key={feel.id}>
+                          <span className="flex flex-row items-center gap-1">
+                            <span
+                              className="w-4 h-4 rounded-full"
+                              style={{ background: feel.color || undefined }}
+                            />
+                            {feel.label}
+                          </span>
+                        </P>
+                      ))}
+                    </FlexList>
+                  </div>
+                ) : null}
               </CardContent>
             </Card>
             {splitNote?.length ? (
@@ -1246,24 +1246,24 @@ const SongDetailsSheet = ({
                 </CardContent>
               </Card>
             ) : null}
-            {/* {song.links?.length ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Links</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FlexList items="start">
-              {song.links.map((link) => (
-                <Button asChild variant="link" key={link.id}>
-                  <a href={link.href} target="_blank" rel="noreferrer">
-                    {link.href}
-                  </a>
-                </Button>
-              ))}
-            </FlexList>
-          </CardContent>
-        </Card>
-      ) : null} */}
+            {song.links?.length ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Links</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <FlexList items="start">
+                    {song.links.map((link) => (
+                      <Button asChild variant="link" key={link.id}>
+                        <a href={link.href} target="_blank" rel="noreferrer">
+                          {link.href}
+                        </a>
+                      </Button>
+                    ))}
+                  </FlexList>
+                </CardContent>
+              </Card>
+            ) : null}
           </div>
         </MaxWidth>
       </SheetContent>

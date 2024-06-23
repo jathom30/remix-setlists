@@ -1,4 +1,9 @@
-import { getInputProps, useForm, useInputControl } from "@conform-to/react";
+import {
+  getFormProps,
+  getInputProps,
+  useForm,
+  useInputControl,
+} from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import {
   ActionFunctionArgs,
@@ -129,6 +134,7 @@ export default function CreateSongRoute() {
 
   const [form, fields] = useForm({
     lastResult,
+    id: "create-song",
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: CreateSongSchema });
     },
@@ -158,12 +164,7 @@ export default function CreateSongRoute() {
   return (
     <div className="p-2 space-y-2">
       <H1>Create Song</H1>
-      <Form
-        method="post"
-        id={form.id}
-        onSubmit={form.onSubmit}
-        noValidate={form.noValidate}
-      >
+      <Form method="post" {...getFormProps(form)}>
         <div className="space-y-2">
           <Card>
             <CardHeader>
@@ -364,6 +365,7 @@ export default function CreateSongRoute() {
                       variant="secondary"
                       {...form.insert.getButtonProps({
                         name: fields.links.name,
+                        defaultValue: "",
                       })}
                     >
                       Add Link

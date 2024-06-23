@@ -109,6 +109,7 @@ export async function getSetlist(setlistId: Setlist["id"]) {
               song: {
                 include: {
                   feels: true,
+                  links: true,
                 },
               },
             },

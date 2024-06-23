@@ -19,6 +19,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Header, MaxWidth } from "~/components";
+import { MainNav } from "~/components/main-nav";
 import { MainNavSheet } from "~/components/main-nav-sheet";
 import { UserAvatarMenu } from "~/components/user-avatar-menu";
 import { getBandHome, getBands } from "~/models/band.server";
@@ -151,11 +152,14 @@ export default function BandRoute() {
     <div className="bg-muted/40 h-full">
       <div className="p-2 border-b sticky top-0 inset-x-0 z-10 bg-background">
         <Header>
-          <div className="sm:hidden">
+          <div className="md:hidden">
             <MainNavSheet
               band={bandMatch?.data?.band}
               role={bandMatch?.data?.memberRole}
             />
+          </div>
+          <div className="hidden md:block">
+            <MainNav />
           </div>
           <UserAvatarMenu />
         </Header>

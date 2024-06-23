@@ -4,7 +4,7 @@ import type {
 } from "@dnd-kit/core";
 import { closestCorners, getFirstCollision, KeyboardCode } from "@dnd-kit/core";
 import { DropResult } from "@hello-pangea/dnd";
-import { Feel, Song } from "@prisma/client";
+import { Feel, Link, Song } from "@prisma/client";
 import { SerializeFrom } from "@remix-run/node";
 import { z } from "zod";
 
@@ -117,7 +117,10 @@ export const coordinateGetter: KeyboardCoordinateGetter = (
 
 // NEW DND HELPER
 
-export type TSet = Record<string, SerializeFrom<Song & { feels: Feel[] }>[]>;
+export type TSet = Record<
+  string,
+  SerializeFrom<Song & { feels: Feel[]; links?: Link[] }>[]
+>;
 export const DroppableIdEnums = z.enum(["available-songs", "new-set"]);
 
 export const onDragEnd = (

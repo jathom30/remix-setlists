@@ -20,7 +20,6 @@ export const SongContainer = ({
 }: {
   song: SerializeFrom<Song & { feels: Feel[] }>;
 }) => {
-  console.log(song);
   const positionIcon =
     {
       opener: <ChevronFirst className="h-4 w-4" />,

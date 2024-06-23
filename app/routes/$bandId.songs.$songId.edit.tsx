@@ -90,7 +90,6 @@ export default function EditSong() {
   const lastResult = useActionData<typeof action>();
   const {
     song,
-    // setlists,
     band: { feels },
   } = useLoaderData<typeof loader>();
 
@@ -329,6 +328,7 @@ export default function EditSong() {
                     variant="secondary"
                     {...form.insert.getButtonProps({
                       name: fields.links.name,
+                      defaultValue: "",
                     })}
                   >
                     Add Link
