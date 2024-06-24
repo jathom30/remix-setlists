@@ -102,6 +102,9 @@ export async function getSetlist(setlistId: Setlist["id"]) {
   return prisma.setlist.findUnique({
     where: { id: setlistId },
     include: {
+      band: {
+        select: { name: true },
+      },
       sets: {
         include: {
           songs: {

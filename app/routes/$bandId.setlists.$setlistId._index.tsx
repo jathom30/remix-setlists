@@ -22,6 +22,7 @@ import {
   useParams,
 } from "@remix-run/react";
 import {
+  AreaChart,
   AudioLines,
   Check,
   CircleMinus,
@@ -698,6 +699,12 @@ const SetlistActions = ({
                 <Pencil className="h-4 w-4 mr-2" />
                 Edit Name
               </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="metrics">
+                  <AreaChart className="h-4 w-4 mr-2" />
+                  Metrics
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onCopy(setlistLink)}>
                 <LinkIcon className="h-4 w-4 mr-2" />
                 Copy Link
@@ -751,6 +758,14 @@ const SetlistActions = ({
                 <Button onClick={() => setShowEditName(true)} variant="ghost">
                   <Pencil className="h-4 w-4 mr-2" />
                   Edit Name
+                </Button>
+              </SheetClose>
+              <SheetClose asChild>
+                <Button variant="ghost" asChild>
+                  <Link to="metrics">
+                    <AreaChart className="h-4 w-4 mr-2" />
+                    Metrics
+                  </Link>
                 </Button>
               </SheetClose>
               <SheetClose asChild>

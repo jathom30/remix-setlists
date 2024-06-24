@@ -15,6 +15,7 @@ import {
   useNavigate,
   useNavigation,
 } from "@remix-run/react";
+import { Boxes } from "lucide-react";
 import { useSpinDelay } from "spin-delay";
 
 import {
@@ -71,14 +72,20 @@ const HomeNew = () => {
   const isExistingBandRoute = isAddBandRoute && pathname.includes("existing");
   return (
     <div className="bg-muted/40 h-full">
-      <div className="sticky border-b top-0 z-10 bg-background inset-x-0 flex items-center justify-end p-2 gap-2">
-        <Button size="sm" asChild>
-          <Link to="add-band">
-            <FontAwesomeIcon icon={faAdd} className="mr-2" />
-            Add Band
-          </Link>
+      <div className="sticky border-b top-0 z-10 bg-background inset-x-0 flex items-center justify-between p-2 gap-2">
+        <Button variant="secondary" size="sm">
+          <Boxes className="w-4 h-4 mr-2" />
+          Bands
         </Button>
-        <UserAvatarMenu />
+        <FlexList direction="row" items="center" gap={2}>
+          <Button size="sm" asChild>
+            <Link to="add-band">
+              <FontAwesomeIcon icon={faAdd} className="mr-2" />
+              Add Band
+            </Link>
+          </Button>
+          <UserAvatarMenu />
+        </FlexList>
       </div>
       <MaxWidth>
         <Breadcrumb className="p-2 pb-0">

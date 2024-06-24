@@ -26,7 +26,7 @@ export const getCoords = (tempos: Song["tempo"][], width: number) =>
   tempos.map((tempo, i) => {
     return {
       x: getX(i, tempos.length - 1, width),
-      y: getY(tempo),
+      y: getY(tempo || 0),
     };
   });
 
@@ -52,7 +52,10 @@ function getCoordinatesForPercent(percent: number) {
 }
 
 export const createPaths = (
-  slices: { percent: number; feel: SerializeFrom<Feel | null> }[],
+  slices: {
+    percent: number;
+    feel: Pick<SerializeFrom<Feel>, "color" | "label">;
+  }[],
 ) => {
   let cumulativePercent = 0;
   return slices.map((slice) => {

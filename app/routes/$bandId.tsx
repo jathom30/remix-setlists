@@ -126,6 +126,8 @@ export default function BandRoute() {
   const isSetlistDetailRoute = isSetlistsRoute && Boolean(setlistId);
   const isCondensedSetlistRoute =
     isSetlistDetailRoute && pathname.includes("condensed");
+  const isSetlistMetricsRoute =
+    isSetlistDetailRoute && pathname.includes("metrics");
 
   // songs routes
   const isSongsRoute = isBandRoute && pathname.includes("songs");
@@ -227,6 +229,21 @@ export default function BandRoute() {
                   <BreadcrumbLink asChild>
                     <Link to={`/${bandId}/setlists/${setlistId}/condensed`}>
                       Condensed
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+            {isSetlistMetricsRoute ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to={`/${bandId}/setlists/${setlistId}/metrics`}>
+                      Metrics
                     </Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>

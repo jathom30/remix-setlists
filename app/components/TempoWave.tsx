@@ -39,7 +39,7 @@ export const TempoWave = ({ tempos }: { tempos: number[] }) => {
               width={width}
               height={10}
               style={{ fill: color }}
-              clipPath="url(#curve-cutout"
+              clipPath="url(#curve-cutout)"
             />
           ))}
         </svg>

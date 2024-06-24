@@ -1,16 +1,20 @@
 import type { Feel } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/node";
 
+import { Badge } from "@/components/ui/badge";
+import { contrastColor } from "~/utils/assorted";
 import { createPaths } from "~/utils/svg";
 
-import { FeelTag } from "./FeelTag";
 import { FlexList } from "./FlexList";
 
 export const PieChart = ({
   slices,
   noFeel,
 }: {
-  slices: { percent: number; feel: SerializeFrom<Feel | null> }[];
+  slices: {
+    percent: number;
+    feel: Pick<SerializeFrom<Feel>, "color" | "label">;
+  }[];
   noFeel?: number;
 }) => {
   const paths = createPaths(slices);
@@ -20,7 +24,7 @@ export const PieChart = ({
         version="1.1"
         preserveAspectRatio="xMinYMin meet"
         viewBox="-1 -1 2 2"
-        className="w-full h-auto aspect-square -rotate-90"
+        className="w-full h-auto aspect-square -rotate-90 border rounded-full"
       >
         {paths.map((path) => (
           <path
@@ -36,16 +40,21 @@ export const PieChart = ({
             return null;
           }
           return (
-            <FeelTag fullWidth feel={slice.feel} key={slice.feel.id}>
-              {Math.round(slice.percent * 100)}%
-            </FeelTag>
+            <Badge
+              style={{
+                background: slice.feel.color || "",
+                color: contrastColor(slice.feel.color || ""),
+              }}
+              key={slice.feel.label}
+            >
+              {Math.round(slice.percent * 100)}% {slice.feel.label}
+            </Badge>
           );
         })}
         {noFeel ? (
-          <FlexList direction="row" gap={2} justify="center">
-            Songs without feels
-            <span>{Math.round(noFeel * 100)}%</span>
-          </FlexList>
+          <Badge variant="outline">
+            {Math.round(noFeel * 100)}% Songs without feels
+          </Badge>
         ) : null}
       </FlexList>
     </div>
