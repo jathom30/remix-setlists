@@ -183,23 +183,37 @@ export default function SetlistMetrics() {
   });
   const songsWithoutFeelsCount = getSongsWithoutFeelsCount();
   const totalFeels = feels?.length + songsWithoutFeelsCount;
-  console.log(getSongsWithoutFeelsCount());
 
+  const getTempos = () => {
+    if (activeSet === "all-sets") {
+      return setlist.sets.reduce((acc: number[], set) => {
+        const setTempos = set.songs.map((song) => song.song?.tempo || 0);
+        return acc.concat(setTempos);
+      }, []);
+    }
+    const set = setlist.sets.find((set) => set.id === activeSet);
+    if (!set) {
+      return [];
+    }
+    return set.songs.map((song) => song.song?.tempo || 0);
+  };
   return (
     <div className="p-2 space-y-2">
       <H1>Metrics</H1>
-      <FlexList direction="row" justify="end">
-        <Tabs value={activeSet} onValueChange={setActiveSet}>
-          <TabsList>
-            {setlist.sets.map((set, i) => (
-              <TabsTrigger key={set.id} value={set.id}>
-                Set {i + 1}
-              </TabsTrigger>
-            ))}
-            <TabsTrigger value="all-sets">All Sets</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </FlexList>
+      {setlist.sets.length > 1 ? (
+        <FlexList direction="row" justify="end">
+          <Tabs value={activeSet} onValueChange={setActiveSet}>
+            <TabsList>
+              {setlist.sets.map((set, i) => (
+                <TabsTrigger key={set.id} value={set.id}>
+                  Set {i + 1}
+                </TabsTrigger>
+              ))}
+              <TabsTrigger value="all-sets">All Sets</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </FlexList>
+      ) : null}
       <div className="grid gap-2 md:grid-cols-2">
         <Card>
           <CardHeader>
@@ -217,7 +231,7 @@ export default function SetlistMetrics() {
           <CardHeader>
             <CardTitle>Feels</CardTitle>
             <CardDescription>
-              See the mix of feels in the setlist. Filter by set.
+              See the mix of feels across the setlist.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -227,16 +241,16 @@ export default function SetlistMetrics() {
             />
           </CardContent>
         </Card>
-        <Card>
+        <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle>Tempos</CardTitle>
             <CardDescription>
-              The graph below shows the distribution of tempos in the setlist.
+              The graph below shows the tempos chronologically.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="w-full h-full">
-              <TempoWave tempos={[1, 4, 2]} />
+              <TempoWave tempos={getTempos()} />
             </div>
           </CardContent>
         </Card>

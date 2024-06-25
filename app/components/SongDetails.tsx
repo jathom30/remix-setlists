@@ -72,7 +72,7 @@ export const SongDetails = ({
               )}
 
               <Label align="right">Tempo</Label>
-              <TempoIcons tempo={song.tempo} />
+              <TempoIcons tempo={song.tempo || 0} />
 
               <Label align="right">Length</Label>
               <span>{pluralize("Minutes", song.length, true)}</span>

@@ -1192,7 +1192,7 @@ const SongDetailsSheet = ({
                   <div>
                     <Label>Length</Label>
                     <P>
-                      {song.length} {song.length === 1 ? "minute" : "minutes"}
+                      {song?.length} {song?.length === 1 ? "minute" : "minutes"}
                     </P>
                   </div>
                   <div>
@@ -1206,7 +1206,7 @@ const SongDetailsSheet = ({
                     <P>{song.tempo} BPM</P>
                   </div>
                 </div>
-                {song.feels.length ? (
+                {song.feels?.length ? (
                   <div className="pt-4">
                     <Label>Feels</Label>
                     <FlexList direction="row" wrap>
