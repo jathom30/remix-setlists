@@ -14,4 +14,3 @@
 - update cancel to when editing song from setlist
 - fix links in song form
 - drag/drop whole sets
-- add menu to setlist container to quickly edit name, view metrics, copy link, create public link, condensed view, clone, or delete

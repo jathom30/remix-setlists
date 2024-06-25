@@ -104,7 +104,9 @@ export default function BandId() {
             <FlexList gap={1}>
               {setlists.map((setlist) => (
                 <Link key={setlist.id} to={`setlists/${setlist.id}`}>
-                  <SetlistContainer setlist={setlist} />
+                  <SetlistContainer.Card>
+                    <SetlistContainer.Setlist setlist={setlist} />
+                  </SetlistContainer.Card>
                 </Link>
               ))}
             </FlexList>
