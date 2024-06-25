@@ -6,7 +6,7 @@ import {
   DropResult,
   Droppable,
 } from "@hello-pangea/dnd";
-import { Feel, Link as PLink, Song } from "@prisma/client";
+import { Feel, Link as PLink, Set, Setlist, Song } from "@prisma/client";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -99,7 +99,7 @@ import {
   updateSetlist,
   updateSetlistName,
 } from "~/models/setlist.server";
-import { getSongsNotInSetlist } from "~/models/song.server";
+import { getSongs } from "~/models/song.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { getDomainUrl } from "~/utils/assorted";
 import { DroppableIdEnums, TSet, compareSets, onDragEnd } from "~/utils/dnd";
@@ -114,7 +114,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     throw new Response("Setlist not found", { status: 404 });
   }
 
-  const availableSongs = await getSongsNotInSetlist(bandId, setlistId);
+  // const availableSongs = await getSongsNotInSetlist(bandId, setlistId);
+  const allSongs = await getSongs(bandId);
 
   const domainUrl = getDomainUrl(request);
   const setlistLink = `${domainUrl}/${setlist.bandId}/setlists/${setlist.id}`;
@@ -126,7 +127,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     setlist,
     setlistLink,
-    availableSongs,
+    allSongs,
+    // availableSongs,
     ...(setlist.isPublic ? { setlistPublicUrl } : {}),
   });
 }
@@ -288,8 +290,23 @@ const FetcherDataSchema = z.object({
 
 type TSong = SerializeFrom<Song & { feels: Feel[]; links?: PLink[] }>;
 
+const getAvailableSongs = (
+  setlist: SerializeFrom<
+    Setlist & { sets: (Set & { songs: { song: Song | null }[] })[] }
+  >,
+  allSongs: SerializeFrom<Song & { feels: Feel[]; links?: PLink[] }>[],
+) => {
+  const setlistSongIds = setlist.sets.reduce((songs: string[], set) => {
+    const songsInSet = set.songs
+      .map((song) => song.song?.id)
+      .filter((id): id is string => Boolean(id));
+    return [...songs, ...songsInSet];
+  }, []);
+  return allSongs.filter((song) => !setlistSongIds.includes(song.id));
+};
+
 export default function SetlistPage() {
-  const { setlist, availableSongs } = useLoaderData<typeof loader>();
+  const { setlist, allSongs } = useLoaderData<typeof loader>();
   const fetcher = useFetcher({ key: `setlist-${setlist.id}` });
   const [showAvailableSongs, setShowAvailableSongs] = useState(false);
   const [songToSwap, setSongToSwap] = useState<{
@@ -298,17 +315,20 @@ export default function SetlistPage() {
   }>();
   const [query, setQuery] = useState("");
 
-  const defaultSets = setlist.sets.reduce((acc: TSet, set) => {
+  const availableSongs = getAvailableSongs(setlist, allSongs);
+
+  const intitialSets = setlist.sets.reduce((acc: TSet, set) => {
     const setSongs = set.songs
       ?.filter((song) => Boolean(song) && Boolean(song.song))
       .map((song) => song.song) as TSong[];
     acc[set.id] = setSongs;
     return acc;
   }, {} as TSet);
-  const [sets, setSets] = useState<TSet>({
-    ...defaultSets,
+  const defaultSets = {
+    ...intitialSets,
     [DroppableIdEnums.Enum["available-songs"]]: availableSongs,
-  });
+  };
+  const [sets, setSets] = useState<TSet>(defaultSets);
   const filteredSongs =
     sets[DroppableIdEnums.Enum["available-songs"]]?.filter((song) =>
       song.name.toLowerCase().includes(query.toLowerCase()),
@@ -330,9 +350,14 @@ export default function SetlistPage() {
       },
       {} as TSet,
     );
-
-    setSets(returnedSets);
-  }, [fetcher.data, fetcher.state]);
+    const songsInSets = Object.values(returnedSets).flat();
+    setSets({
+      ...returnedSets,
+      [DroppableIdEnums.Enum["available-songs"]]: allSongs.filter((song) => {
+        return !songsInSets.some((setSong) => setSong.id === song.id);
+      }),
+    });
+  }, [allSongs, fetcher.data, fetcher.state]);
 
   const [isChangedSetlist, setIsChangedSetlist] = useState(false);
 
