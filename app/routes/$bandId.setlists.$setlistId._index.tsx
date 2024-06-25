@@ -280,6 +280,17 @@ const FetcherDataSchema = z.object({
               createdAt: z.coerce.date(),
               updatedAt: z.coerce.date(),
               bandId: z.string(),
+              feels: z.array(
+                z.object({
+                  bandId: z.string(),
+                  color: z.string().nullish(),
+                  createdAt: z.coerce.date(),
+                  id: z.string(),
+                  label: z.string(),
+                  updatedAt: z.coerce.date(),
+                }),
+              ),
+              links: z.array(z.any()),
             }),
           }),
         ),
@@ -333,6 +344,8 @@ export default function SetlistPage() {
     sets[DroppableIdEnums.Enum["available-songs"]]?.filter((song) =>
       song.name.toLowerCase().includes(query.toLowerCase()),
     ) || [];
+
+  console.log(sets);
 
   // update sets when fetcher is done
   useEffect(() => {

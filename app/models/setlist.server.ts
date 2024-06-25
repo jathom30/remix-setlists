@@ -224,7 +224,17 @@ export async function updateMultiSetSetlist(
     include: {
       sets: {
         include: {
-          songs: { include: { song: true }, orderBy: { positionInSet: "asc" } },
+          songs: {
+            include: {
+              song: {
+                include: {
+                  feels: true,
+                  links: true,
+                },
+              },
+            },
+            orderBy: { positionInSet: "asc" },
+          },
         },
         orderBy: { positionInSetlist: "asc" },
       },
