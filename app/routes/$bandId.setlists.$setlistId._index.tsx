@@ -618,7 +618,7 @@ export default function SetlistPage() {
                   >
                     <CardHeader>
                       <CardDescription className="text-center">
-                        Drop songs here to create a new set
+                        Drag songs here to create a new set
                       </CardDescription>
                     </CardHeader>
                   </Card>

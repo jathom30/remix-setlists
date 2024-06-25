@@ -74,7 +74,14 @@ export async function getSong(
       },
       setlists: {
         where: { sets: { some: { songs: { some: { songId } } } } },
-        select: { name: true, id: true, editedFromId: true },
+        include: {
+          sets: {
+            select: {
+              songs: { include: { song: { select: { length: true } } } },
+              updatedAt: true,
+            },
+          },
+        },
       },
     },
   });

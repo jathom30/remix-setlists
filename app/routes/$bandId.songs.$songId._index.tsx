@@ -32,6 +32,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FlexList } from "~/components";
+import { SetlistContainer } from "~/components/setlist-container";
 import { H1, Muted, P } from "~/components/typography";
 import { deleteSong, getSong } from "~/models/song.server";
 import { requireUser } from "~/session.server";
@@ -71,7 +72,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function SongPage() {
-  const { song } = useLoaderData<typeof loader>();
+  const { song, setlists } = useLoaderData<typeof loader>();
   const [expandNotes, setExpandNotes] = useState(false);
 
   const splitNote = song.note?.split("\n");
@@ -154,6 +155,32 @@ export default function SongPage() {
           ) : null}
         </CardContent>
       </Card>
+      {setlists?.length ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Setlists featuring this song</CardTitle>
+            <CardDescription>
+              This song is featured in {setlists.length}{" "}
+              {setlists.length === 1 ? "setlist" : "setlists"}.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="max-h-96 overflow-auto">
+              <FlexList gap={2}>
+                {setlists.map((setlist) => (
+                  <Link
+                    to={`/${setlist.bandId}/setlists/${setlist.id}`}
+                    key={setlist.id}
+                  >
+                    <SetlistContainer setlist={setlist} />
+                  </Link>
+                ))}
+              </FlexList>
+            </div>
+          </CardContent>
+        </Card>
+      ) : null}
+
       {splitNote?.length ? (
         <Card>
           <CardHeader>
