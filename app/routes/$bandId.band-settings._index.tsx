@@ -13,6 +13,7 @@ import { QRCode } from "react-qrcode-logo";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,9 +41,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Label } from "@/components/ui/label";
-import { Avatar, FlexList } from "~/components";
-import { H1, P, Small, Large } from "~/components/typography";
+import { FlexList } from "~/components";
+import { H1, P, Small, Large, H3 } from "~/components/typography";
 import {
   deleteBand,
   getBand,
@@ -183,15 +183,12 @@ export default function BandSettings() {
             Created on {new Date(band.createdAt).toLocaleDateString()}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-2">
-          <div>
-            <Label>Name</Label>
-            <P>{band.name}</P>
-          </div>
-          <div>
-            <Label>Avatar</Label>
-            <Avatar bandName={band.name} icon={band.icon} />
-          </div>
+        <CardContent className="flex items-center gap-2">
+          <Avatar>
+            <AvatarImage src={band.icon?.path || ""} alt={band.name} />
+            <AvatarFallback>{band.name.charAt(0).toUpperCase()}</AvatarFallback>
+          </Avatar>
+          <H3>{band.name}</H3>
         </CardContent>
       </Card>
       <Card>

@@ -4,6 +4,7 @@ import { AudioLines, Boxes, Dna, List, Settings } from "lucide-react";
 import { useEffect } from "react";
 import invariant from "tiny-invariant";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -58,7 +59,15 @@ export default function BandId() {
       <H1>Band Home</H1>
       <Card>
         <CardHeader>
-          <CardTitle>{band.name}</CardTitle>
+          <CardTitle className="flex gap-2 items-center">
+            <Avatar>
+              <AvatarImage src={band.icon?.path || ""} alt={band.name} />
+              <AvatarFallback>
+                {band.name.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            {band.name}
+          </CardTitle>
           <CardDescription>
             <P>Created on {new Date(band.createdAt).toLocaleDateString()}</P>
           </CardDescription>
