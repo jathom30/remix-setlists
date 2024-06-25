@@ -117,7 +117,7 @@ export default function BandFeels() {
       ) : (
         <Card>
           <CardHeader>
-            <CardTitle>No Songs Found</CardTitle>
+            <CardTitle>No Feels Found</CardTitle>
             <CardDescription>
               {query
                 ? "We couldn't find any feels matching your search."
@@ -131,7 +131,7 @@ export default function BandFeels() {
               </Button>
             ) : !isSub ? (
               <Button asChild>
-                <Link to="new">Create your first song here</Link>
+                <Link to="new">Create your first feel here</Link>
               </Button>
             ) : null}
           </CardFooter>

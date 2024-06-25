@@ -1,16 +1,33 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node";
-import { Link, useSearchParams } from "@remix-run/react";
+import { getInputProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
+import { Setlist } from "@prisma/client";
 import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  SerializeFrom,
+  json,
+} from "@remix-run/node";
+import { Form, Link, useLoaderData, useSearchParams } from "@remix-run/react";
+import {
+  AreaChart,
   ArrowDown01,
   ArrowDownAZ,
   ArrowDownUp,
   ArrowUp01,
   ArrowUpAZ,
+  Copy,
+  EllipsisVertical,
+  LinkIcon,
+  Pencil,
   Plus,
   Search,
+  Shrink,
+  Trash,
 } from "lucide-react";
+import { ReactNode, useState } from "react";
 import toast from "react-hot-toast";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,9 +38,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -46,9 +72,15 @@ import { SetlistContainer } from "~/components/setlist-container";
 import { H1 } from "~/components/typography";
 import { useLiveLoader } from "~/hooks";
 import { userPrefs } from "~/models/cookies.server";
-import { getSetlists } from "~/models/setlist.server";
-import { requireUserId } from "~/session.server";
+import {
+  copySetlist,
+  deleteSetlist,
+  getSetlists,
+  updateSetlistName,
+} from "~/models/setlist.server";
+import { requireNonSubMember, requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
+import { getDomainUrl } from "~/utils/assorted";
 import { RoleEnum } from "~/utils/enums";
 import { getColor } from "~/utils/tailwindColors";
 
@@ -56,6 +88,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
   const bandId = params.bandId;
   invariant(bandId, "bandId not found");
+  const domainUrl = getDomainUrl(request);
 
   const urlSearchParams = new URL(request.url).searchParams;
   const q = urlSearchParams.get("query");
@@ -81,7 +114,80 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({
     setlists,
     sort,
+    domainUrl,
   });
+}
+
+const IntentSchema = z.enum([
+  "update-setlist",
+  "update-name",
+  "delete-setlist",
+  "clone-setlist",
+  "remove-song",
+]);
+
+const SetlistNameSchema = z
+  .object({
+    setlist_name: z.string().min(1),
+    setlist_id: z.string().min(1),
+    intent: z.literal(IntentSchema.Enum["update-name"]),
+  })
+  .required();
+
+const DeleteSetlistSchema = z
+  .object({
+    setlist_id: z.string().min(1),
+    intent: z.literal(IntentSchema.Enum["delete-setlist"]),
+  })
+  .required();
+
+const CloneSetlistSchema = z
+  .object({
+    setlist_id: z.string().min(1),
+    intent: z.literal(IntentSchema.Enum["clone-setlist"]),
+  })
+  .required();
+
+export async function action({ request, params }: ActionFunctionArgs) {
+  const { bandId } = params;
+  invariant(bandId, "bandId not found");
+  await requireNonSubMember(request, bandId);
+
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+
+  if (intent === IntentSchema.Enum["update-name"]) {
+    const submission = parseWithZod(formData, { schema: SetlistNameSchema });
+    if (submission.status !== "success") {
+      return submission.reply();
+    }
+    await updateSetlistName(
+      submission.value.setlist_id,
+      submission.value.setlist_name,
+    );
+  }
+
+  if (intent === IntentSchema.Enum["delete-setlist"]) {
+    const submission = parseWithZod(formData, { schema: DeleteSetlistSchema });
+    if (submission.status !== "success") {
+      return submission.reply();
+    }
+    await deleteSetlist(submission.value.setlist_id);
+  }
+
+  if (intent === IntentSchema.Enum["clone-setlist"]) {
+    const submission = parseWithZod(formData, { schema: CloneSetlistSchema });
+    if (submission.status !== "success") {
+      return submission.reply();
+    }
+    // clone setlist
+    const newSetlist = await copySetlist(submission.value.setlist_id);
+    if (!newSetlist) {
+      throw new Response("Failed to clone setlist", { status: 500 });
+    }
+  }
+
+  return null;
 }
 
 export default function Setlists() {
@@ -138,9 +244,14 @@ export default function Setlists() {
       {setlists.length ? (
         <FlexList gap={2}>
           {setlists.map((setlist) => (
-            <Link to={setlist.id} key={setlist.id}>
-              <SetlistContainer setlist={setlist} />
-            </Link>
+            <SetlistContainer.Card key={setlist.id}>
+              <FlexList direction="row" items="center" gap={2}>
+                <Link className="w-full" to={setlist.id}>
+                  <SetlistContainer.Setlist setlist={setlist} />
+                </Link>
+                <SetlistActions setlist={setlist} />
+              </FlexList>
+            </SetlistContainer.Card>
           ))}
         </FlexList>
       ) : (
@@ -270,5 +381,240 @@ const SortSetlists = ({
         </Sheet>
       </div>
     </div>
+  );
+};
+
+const SetlistActions = ({ setlist }: { setlist: SerializeFrom<Setlist> }) => {
+  const { domainUrl } = useLoaderData<typeof loader>();
+  const [showEditName, setShowEditName] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const [showClone, setShowClone] = useState(false);
+  const memberRole = useMemberRole();
+  const isSub = memberRole === RoleEnum.SUB;
+
+  const onCopy = (textToCopy: string) =>
+    navigator.clipboard.writeText(textToCopy);
+
+  return (
+    <div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <EllipsisVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Setlist Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            {!isSub ? (
+              <DropdownMenuItem onClick={() => setShowEditName(true)}>
+                <Pencil className="h-4 w-4 mr-2" />
+                Edit Name
+              </DropdownMenuItem>
+            ) : null}
+            <DropdownMenuItem asChild>
+              <Link to={`/${setlist.bandId}/setlists/${setlist.id}/metrics`}>
+                <AreaChart className="h-4 w-4 mr-2" />
+                Metrics
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                onCopy(`${domainUrl}/${setlist.bandId}/setlists/${setlist.id}`)
+              }
+            >
+              <LinkIcon className="h-4 w-4 mr-2" />
+              Copy Link
+            </DropdownMenuItem>
+
+            <DropdownMenuItem asChild>
+              <Link to={`/${setlist.bandId}/setlists/${setlist.id}/condensed`}>
+                <Shrink className="h-4 w-4 mr-2" />
+                Condensed View
+              </Link>
+            </DropdownMenuItem>
+            {!isSub ? (
+              <>
+                <DropdownMenuItem onClick={() => setShowClone(true)}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Clone Setlist
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowDelete(true)}>
+                  <Trash className="h-4 w-4 mr-2" />
+                  Delete Setlist
+                </DropdownMenuItem>
+              </>
+            ) : null}
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Dialog open={showEditName} onOpenChange={setShowEditName}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Name</DialogTitle>
+            <DialogDescription>Edit the name of the setlist</DialogDescription>
+          </DialogHeader>
+          <EditNameForm name={setlist.name} id={setlist.id}>
+            <DialogFooter>
+              <Button type="submit" onClick={() => setShowEditName(false)}>
+                Save
+              </Button>
+            </DialogFooter>
+          </EditNameForm>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDelete} onOpenChange={setShowDelete}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Setlist?</DialogTitle>
+            <DialogDescription>
+              This is a perminent action and cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DeleteSetlistForm id={setlist.id}>
+            <DialogFooter>
+              <Button variant="destructive" type="submit">
+                Delete
+              </Button>
+            </DialogFooter>
+          </DeleteSetlistForm>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showClone} onOpenChange={setShowClone}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Clone Setlist</DialogTitle>
+            <DialogDescription>
+              Clone this setlist to create a new identical one.
+            </DialogDescription>
+          </DialogHeader>
+          <CloneSetlistForm id={setlist.id}>
+            <DialogFooter>
+              <Button type="submit" onClick={() => setShowClone(false)}>
+                Clone
+              </Button>
+            </DialogFooter>
+          </CloneSetlistForm>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+const EditNameForm = ({
+  name,
+  id,
+  children,
+}: {
+  name: string;
+  id: string;
+  children: ReactNode;
+}) => {
+  const [form, fields] = useForm({
+    id: IntentSchema.Enum["update-name"],
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: SetlistNameSchema });
+    },
+    defaultValue: {
+      setlist_name: name,
+      setlist_id: id,
+      intent: IntentSchema.Enum["update-name"],
+    },
+  });
+
+  return (
+    <Form
+      method="put"
+      id={form.id}
+      onSubmit={form.onSubmit}
+      noValidate={form.noValidate}
+      className="space-y-4"
+    >
+      <div>
+        <Label htmlFor={fields.setlist_name.name}>Setlist Name</Label>
+        <Input
+          {...getInputProps(fields.setlist_name, { type: "text" })}
+          placeholder="Setlist name"
+        />
+        <div
+          className="text-sm text-destructive"
+          id={fields.setlist_name.errorId}
+        >
+          {fields.setlist_name.errors}
+        </div>
+      </div>
+      <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
+      <input hidden {...getInputProps(fields.setlist_id, { type: "hidden" })} />
+      {children}
+    </Form>
+  );
+};
+
+const DeleteSetlistForm = ({
+  id,
+  children,
+}: {
+  id: string;
+  children: ReactNode;
+}) => {
+  const [form, fields] = useForm({
+    id: IntentSchema.Enum["delete-setlist"],
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: DeleteSetlistSchema });
+    },
+    defaultValue: {
+      setlist_id: id,
+      intent: IntentSchema.Enum["delete-setlist"],
+    },
+  });
+
+  return (
+    <Form
+      method="delete"
+      id={form.id}
+      onSubmit={form.onSubmit}
+      noValidate={form.noValidate}
+      className="space-y-4"
+    >
+      <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
+      <input hidden {...getInputProps(fields.setlist_id, { type: "hidden" })} />
+      {children}
+    </Form>
+  );
+};
+
+const CloneSetlistForm = ({
+  id,
+  children,
+}: {
+  id: string;
+  children: ReactNode;
+}) => {
+  const [form, fields] = useForm({
+    id: IntentSchema.Enum["clone-setlist"],
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: CloneSetlistSchema });
+    },
+    defaultValue: {
+      setlist_id: id,
+      intent: IntentSchema.Enum["clone-setlist"],
+    },
+  });
+
+  return (
+    <Form
+      method="post"
+      id={form.id}
+      onSubmit={form.onSubmit}
+      noValidate={form.noValidate}
+      className="space-y-4"
+    >
+      <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
+      <input hidden {...getInputProps(fields.setlist_id, { type: "hidden" })} />
+      {children}
+    </Form>
   );
 };

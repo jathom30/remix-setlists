@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { Link, json, useLoaderData, useNavigate } from "@remix-run/react";
-import { AudioLines, Boxes, Dna, List, Settings } from "lucide-react";
+import { AudioLines, Boxes, Dna, Link2, List, Settings } from "lucide-react";
 import { useEffect } from "react";
 import invariant from "tiny-invariant";
 
@@ -111,7 +111,7 @@ export default function BandId() {
             {setlists.length === 0 ? (
               <div className="text-center">
                 <P>This band has no setlists yet.</P>
-                <Button asChild>
+                <Button className="w-full" variant="outline" asChild>
                   <Link to="setlists/new">Create your first setlist here</Link>
                 </Button>
               </div>
@@ -148,7 +148,7 @@ export default function BandId() {
             {songs.length === 0 ? (
               <div className="text-center">
                 <P>This band has no songs yet.</P>
-                <Button asChild>
+                <Button className="w-full" variant="outline" asChild>
                   <Link to="songs/new">Create your first song here</Link>
                 </Button>
               </div>
@@ -185,7 +185,7 @@ export default function BandId() {
             {songs.length === 0 ? (
               <div className="text-center">
                 <P>This band has no feels yet.</P>
-                <Button asChild>
+                <Button className="w-full" variant="outline" asChild>
                   <Link to="feels/new">Create your first feel here</Link>
                 </Button>
               </div>
@@ -194,7 +194,10 @@ export default function BandId() {
         </Card>
         <Card>
           <CardHeader>
-            <CardDescription>Additional Links</CardDescription>
+            <CardTitle className="flex">
+              <Link2 className="mr-2" />
+              Additional Links
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2 sm:flex-row md:flex-col">
             <Button className="w-full" variant="outline" asChild>

@@ -1,6 +1,7 @@
 import { Setlist, Song } from "@prisma/client";
 import { SerializeFrom } from "@remix-run/node";
 import { Eye } from "lucide-react";
+import { ReactNode } from "react";
 
 import { Card } from "@/components/ui/card";
 import {
@@ -26,7 +27,7 @@ export const SetlistContainer = ({
   >;
 }) => {
   return (
-    <Card className="p-1 px-2">
+    <div className="flex-grow">
       <FlexList direction="row" items="center" justify="between" gap={2}>
         <Large>{setlist.name}</Large>
         <FlexList direction="row" items="center" gap={2}>
@@ -52,6 +53,13 @@ export const SetlistContainer = ({
           ) : null}
         </FlexList>
       </FlexList>
-    </Card>
+    </div>
   );
 };
+
+export const SetlistContainerCard = ({ children }: { children: ReactNode }) => (
+  <Card className="p-1 px-2">{children}</Card>
+);
+
+SetlistContainer.Card = SetlistContainerCard;
+SetlistContainer.Setlist = SetlistContainer;
