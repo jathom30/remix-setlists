@@ -6,7 +6,13 @@ import {
   json,
   redirect,
 } from "@remix-run/node";
-import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  useActionData,
+  useLoaderData,
+  useSearchParams,
+} from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { Button } from "@/components/ui/button";
@@ -92,6 +98,8 @@ export default function EditSong() {
     song,
     band: { feels },
   } = useLoaderData<typeof loader>();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo");
 
   const [form, fields] = useForm({
     lastResult,
@@ -402,12 +410,18 @@ export default function EditSong() {
             </FlexList>
           </CardContent>
         </Card>
-        <div className="flex flex-col gap-2 justify-start sm:pb-8 sm:flex-row-reverse">
-          <Button type="submit">Update Song</Button>
-          <Button variant="ghost" asChild>
-            <Link to={`/${song.bandId}/songs/${song.id}`}>Cancel</Link>
-          </Button>
-        </div>
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col gap-2 justify-start sm:flex-row-reverse">
+              <Button type="submit">Update Song</Button>
+              <Button variant="ghost" asChild>
+                <Link to={redirectTo ?? `/${song.bandId}/songs/${song.id}`}>
+                  Cancel
+                </Link>
+              </Button>
+            </div>
+          </CardHeader>
+        </Card>
       </Form>
     </div>
   );
