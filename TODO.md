@@ -3,7 +3,6 @@
 - dark mode
 - sorting for setlists, songs, and feels
 - better remove member from band settings (should know if you are removing self)
-- desktop mode should better show your band role (sub, member, admin)
 - update log in/sign up routes
 - update commercial route
 - update band containers to look better in 2 col grid

@@ -11,6 +11,7 @@ import { ChevronRight } from "lucide-react";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
+import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -18,7 +19,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Header, MaxWidth } from "~/components";
+import { FlexList, Header, MaxWidth } from "~/components";
 import { MainNav } from "~/components/main-nav";
 import { MainNavSheet } from "~/components/main-nav-sheet";
 import { UserAvatarMenu } from "~/components/user-avatar-menu";
@@ -154,16 +155,23 @@ export default function BandRoute() {
     <div className="bg-muted/40 h-full">
       <div className="p-2 border-b sticky top-0 inset-x-0 z-10 bg-background">
         <Header>
-          <div className="md:hidden">
-            <MainNavSheet
-              band={bandMatch?.data?.band}
-              role={bandMatch?.data?.memberRole}
-            />
+          <div>
+            <div className="md:hidden">
+              <MainNavSheet
+                band={bandMatch?.data?.band}
+                role={bandMatch?.data?.memberRole}
+              />
+            </div>
+            <div className="hidden md:block">
+              <MainNav />
+            </div>
           </div>
-          <div className="hidden md:block">
-            <MainNav />
-          </div>
-          <UserAvatarMenu />
+          <FlexList direction="row" gap={2} items="center">
+            <div className="hidden md:block">
+              <Badge variant="secondary">{bandMatch?.data?.memberRole}</Badge>
+            </div>
+            <UserAvatarMenu />
+          </FlexList>
         </Header>
       </div>
       <MaxWidth>
