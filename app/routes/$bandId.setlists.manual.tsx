@@ -49,6 +49,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
   const { bandId } = params;
   invariant(bandId, "bandId is required");
+  await requireNonSubMember(request, bandId);
   const songs = await getSongs(bandId);
 
   return json({ songs });

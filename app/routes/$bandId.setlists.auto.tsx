@@ -1,6 +1,10 @@
 import { getInputProps, useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { ActionFunctionArgs, redirect } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  redirect,
+} from "@remix-run/node";
 import { Form, Link, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
@@ -19,8 +23,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { H1, Muted } from "~/components/typography";
 import { createAutoSetlist } from "~/models/setlist.server";
-import { requireUserId } from "~/session.server";
+import { requireNonSubMember, requireUserId } from "~/session.server";
 import { AutoSetlistSchema } from "~/utils/setlists";
+
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  const { bandId } = params;
+  invariant(bandId, "bandId not found");
+  await requireNonSubMember(request, bandId);
+  return null;
+}
 
 export async function action({ request, params }: ActionFunctionArgs) {
   await requireUserId(request);

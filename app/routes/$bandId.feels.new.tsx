@@ -1,6 +1,10 @@
 import { getInputProps, useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { ActionFunctionArgs, redirect } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  redirect,
+} from "@remix-run/node";
 import { Form, Link, useActionData, useParams } from "@remix-run/react";
 import { HexColorPicker } from "react-colorful";
 import invariant from "tiny-invariant";
@@ -24,6 +28,13 @@ const CreateFeelSchema = z.object({
   label: z.string().min(1),
   color: z.string().min(1),
 });
+
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  const { bandId } = params;
+  invariant(bandId, "bandId not found");
+  await requireNonSubMember(request, bandId);
+  return null;
+}
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId } = params;

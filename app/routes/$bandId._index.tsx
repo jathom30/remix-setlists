@@ -24,7 +24,8 @@ import { getMostRecentFeels } from "~/models/feel.server";
 import { getRecentSetlists } from "~/models/setlist.server";
 import { getRecentSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
-import { useFeatureFlags, useUser } from "~/utils";
+import { useFeatureFlags, useMemberRole, useUser } from "~/utils";
+import { RoleEnum } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
@@ -54,6 +55,8 @@ export default function BandId() {
   useRedirectHome();
   const { setlists, songs, band, feels } = useLoaderData<typeof loader>();
   const user = useUser();
+  const role = useMemberRole();
+  const isSub = role === RoleEnum.SUB;
   return (
     <div className="p-2 space-y-2">
       <H1>Band Home</H1>
@@ -113,9 +116,13 @@ export default function BandId() {
             {setlists.length === 0 ? (
               <div className="text-center">
                 <P>This band has no setlists yet.</P>
-                <Button className="w-full" variant="outline" asChild>
-                  <Link to="setlists/new">Create your first setlist here</Link>
-                </Button>
+                {!isSub ? (
+                  <Button className="w-full" variant="outline" asChild>
+                    <Link to="setlists/new">
+                      Create your first setlist here
+                    </Link>
+                  </Button>
+                ) : null}
               </div>
             ) : null}
           </CardContent>
@@ -150,9 +157,11 @@ export default function BandId() {
             {songs.length === 0 ? (
               <div className="text-center">
                 <P>This band has no songs yet.</P>
-                <Button className="w-full" variant="outline" asChild>
-                  <Link to="songs/new">Create your first song here</Link>
-                </Button>
+                {!isSub ? (
+                  <Button className="w-full" variant="outline" asChild>
+                    <Link to="songs/new">Create your first song here</Link>
+                  </Button>
+                ) : null}
               </div>
             ) : null}
           </CardContent>
@@ -187,9 +196,11 @@ export default function BandId() {
             {songs.length === 0 ? (
               <div className="text-center">
                 <P>This band has no feels yet.</P>
-                <Button className="w-full" variant="outline" asChild>
-                  <Link to="feels/new">Create your first feel here</Link>
-                </Button>
+                {!isSub ? (
+                  <Button className="w-full" variant="outline" asChild>
+                    <Link to="feels/new">Create your first feel here</Link>
+                  </Button>
+                ) : null}
               </div>
             ) : null}
           </CardContent>

@@ -1,5 +1,7 @@
 import { Link, useParams } from "@remix-run/react";
+import { LoaderFunctionArgs } from "@remix-run/server-runtime";
 import { Hammer, WandSparkles } from "lucide-react";
+import invariant from "tiny-invariant";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +13,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { H1 } from "~/components/typography";
+import { requireNonSubMember } from "~/session.server";
+
+export async function loader({ request, params }: LoaderFunctionArgs) {
+  const { bandId } = params;
+  invariant(bandId, "bandId not found");
+  await requireNonSubMember(request, bandId);
+  return null;
+}
 
 export default function CreateSetlist() {
   const { bandId } = useParams();
