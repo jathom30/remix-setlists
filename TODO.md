@@ -2,7 +2,6 @@
 
 - dark mode
 - sorting for setlists, songs, and feels
-- mobile avatar sheet (as opposed to dropdown menu)
 - better remove member from band settings (should know if you are removing self)
 - desktop mode should better show your band role (sub, member, admin)
 - update log in/sign up routes
