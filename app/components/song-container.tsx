@@ -77,7 +77,7 @@ export const SongContainer = ({
 };
 
 export const SongContainerCard = ({ children }: { children: ReactNode }) => (
-  <Card className="p-1 px-2">{children}</Card>
+  <Card className="p-1 px-2 hover:outline">{children}</Card>
 );
 
 SongContainer.Card = SongContainerCard;

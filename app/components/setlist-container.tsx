@@ -58,7 +58,7 @@ export const SetlistContainer = ({
 };
 
 export const SetlistContainerCard = ({ children }: { children: ReactNode }) => (
-  <Card className="p-1 px-2">{children}</Card>
+  <Card className="p-1 px-2 hover:outline">{children}</Card>
 );
 
 SetlistContainer.Card = SetlistContainerCard;

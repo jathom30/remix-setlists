@@ -33,7 +33,7 @@ export const FeelContainer = ({
 };
 
 export const FeelContainerCard = ({ children }: { children: ReactNode }) => (
-  <Card className="p-1 px-2">{children}</Card>
+  <Card className="p-1 px-2 hover:outline">{children}</Card>
 );
 
 FeelContainer.Card = FeelContainerCard;
