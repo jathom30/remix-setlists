@@ -92,7 +92,7 @@ export default function PublicSetlist() {
                 <CardHeader>
                   <CardTitle className="text-lg">Set {index + 1}</CardTitle>
                   <CardDescription>
-                    {pluralize("set", setLength(set), true)}
+                    {pluralize("minutes", setLength(set), true)}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
