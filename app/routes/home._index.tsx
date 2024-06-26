@@ -6,6 +6,7 @@ import { NavLink, useLoaderData } from "@remix-run/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader } from "@/components/ui/card";
+import { FlexList } from "~/components";
 import { H1, H3, Small } from "~/components/typography";
 import { getBands } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
@@ -50,25 +51,31 @@ export default function Home() {
           {bands.map((band) => (
             <NavLink to={`/${band.id}`} key={band.id}>
               <Card className="hover:bg-accent hover:text-accent-foreground">
-                <CardHeader className="flex-row gap-4 flex-wrap">
-                  <Avatar>
-                    <AvatarImage src={band.icon?.path || ""} alt={band.name} />
-                    <AvatarFallback>
-                      {band.name.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <H3>{band.name}</H3>
-                  <div className="flex-grow" />
-                  <Badge variant="secondary">
-                    {
-                      band.members.find((member) => member.userId === user.id)
-                        ?.role
-                    }
-                  </Badge>
-                  <Badge variant="outline">
-                    {band.members.length}{" "}
-                    {band.members.length === 1 ? "Member" : "Members"}
-                  </Badge>
+                <CardHeader>
+                  <FlexList direction="row" items="center" gap={2}>
+                    <Avatar>
+                      <AvatarImage
+                        src={band.icon?.path || ""}
+                        alt={band.name}
+                      />
+                      <AvatarFallback>
+                        {band.name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <H3>{band.name}</H3>
+                  </FlexList>
+                  <FlexList direction="row" items="center" gap={2}>
+                    <Badge variant="secondary">
+                      {
+                        band.members.find((member) => member.userId === user.id)
+                          ?.role
+                      }
+                    </Badge>
+                    <Badge variant="outline">
+                      {band.members.length}{" "}
+                      {band.members.length === 1 ? "Member" : "Members"}
+                    </Badge>
+                  </FlexList>
                 </CardHeader>
               </Card>
             </NavLink>
