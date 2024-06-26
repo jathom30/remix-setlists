@@ -183,7 +183,7 @@ export default function BandId() {
                 </Link>
               ))}
             </FlexList>
-            {songs.length === 0 ? (
+            {feels.length === 0 ? (
               <div className="text-center">
                 <P>This band has no feels yet.</P>
                 {!isSub ? (
