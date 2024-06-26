@@ -56,7 +56,6 @@ import { deleteSong, getSongs } from "~/models/song.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
-import { getColor } from "~/utils/tailwindColors";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
@@ -113,8 +112,8 @@ export default function SongsList() {
     toast("Songs updated!", {
       duration: 2000,
       style: {
-        backgroundColor: getColor("success"),
-        color: getColor("success-content"),
+        // backgroundColor: getColor("success"),
+        // color: getColor("success-content"),
       },
     });
   };
