@@ -220,33 +220,6 @@ export default function BandSettings() {
           </FlexList>
         </CardContent>
       </Card>
-      {/* <Card>
-        <CardHeader>
-          <FlexList direction="row" items="center" justify="between">
-            <CardTitle>Feels</CardTitle>
-            {!isSub ? <Button variant="outline">Add Feel</Button> : null}
-          </FlexList>
-          <CardDescription>
-            These are the feels that your band has created. Update and add to
-            them here.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FlexList gap={1}>
-            {feels.map((feel) => (
-              <FlexList
-                direction="row"
-                items="center"
-                justify="between"
-                key={feel.id}
-              >
-                <P>{feel.label}</P>
-                <FeelSettings feel={feel} />
-              </FlexList>
-            ))}
-          </FlexList>
-        </CardContent>
-      </Card> */}
       {isAdmin ? (
         <Card>
           <CardHeader>
@@ -359,6 +332,14 @@ const DeleteMemberDialog = ({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) => {
+  const { members } = useLoaderData<typeof loader>();
+  const user = useUser();
+
+  const isOnlyAdmin =
+    members.filter((m) => m.role === RoleEnum.ADMIN && m.id === user.id)
+      .length === 1;
+  console.log(isOnlyAdmin);
+
   const [form, fields] = useForm({
     id: IntentSchema.Enum["remove-member"],
     defaultValue: {
@@ -377,27 +358,41 @@ const DeleteMemberDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Remove this Member?</DialogTitle>
+          <DialogTitle>
+            {isOnlyAdmin ? "Unable to remove member" : "Remove this Member?"}
+          </DialogTitle>
           <DialogDescription>
-            This action will remove this member from the band. They can be
-            re-added at any time in the future.
+            {isOnlyAdmin
+              ? "Bands must have at least one Admin member."
+              : "This action will remove this member from the band. They can be re-added at any time in the future."}
           </DialogDescription>
         </DialogHeader>
-        <Form method="post" id={form.id} onSubmit={form.onSubmit} noValidate>
-          <input
-            hidden
-            {...getInputProps(fields.member_id, { type: "hidden" })}
-          />
-          <input
-            hidden
-            {...getInputProps(fields.band_id, { type: "hidden" })}
-          />
-          <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
-          {fields.intent.errors}
-          <DialogFooter>
-            <Button variant="destructive">Remove Member</Button>
-          </DialogFooter>
-        </Form>
+        <CardContent>
+          <P>
+            You are the only Admin member of this band. Either promote someone
+            else to Admin or delete the band.
+          </P>
+        </CardContent>
+        {!isOnlyAdmin ? (
+          <Form method="post" id={form.id} onSubmit={form.onSubmit} noValidate>
+            <input
+              hidden
+              {...getInputProps(fields.member_id, { type: "hidden" })}
+            />
+            <input
+              hidden
+              {...getInputProps(fields.band_id, { type: "hidden" })}
+            />
+            <input
+              hidden
+              {...getInputProps(fields.intent, { type: "hidden" })}
+            />
+            {fields.intent.errors}
+            <DialogFooter>
+              <Button variant="destructive">Remove Member</Button>
+            </DialogFooter>
+          </Form>
+        ) : null}
       </DialogContent>
     </Dialog>
   );

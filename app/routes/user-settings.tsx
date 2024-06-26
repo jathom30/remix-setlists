@@ -203,13 +203,8 @@ export async function action({ request }: ActionFunctionArgs) {
     if (submission.status !== "success") {
       return submission.reply();
     }
-    const band = await removeMemberFromBand(submission.value.band_id, userId);
-    if ("error" in band) {
-      return submission.reply({
-        formErrors: ["An error occurred while leaving the band."],
-      });
-    }
-    return submission;
+    await removeMemberFromBand(submission.value.band_id, userId);
+    return null;
   }
 
   if (intent === IntentEnums.Enum["new-band"]) {

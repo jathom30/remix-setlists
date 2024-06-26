@@ -29,9 +29,21 @@ export async function removeMemberFromBand(
   bandId: Band["id"],
   userId: User["id"],
 ) {
-  return prisma.usersInBands.delete({
-    where: { userId_bandId: { userId, bandId } },
+  const band = await prisma.band.update({
+    where: { id: bandId },
+    data: {
+      members: {
+        delete: { userId_bandId: { userId, bandId } },
+      },
+    },
+    select: {
+      members: true,
+    },
   });
+  // if user removed the last member of the band, delete the band
+  if (band.members.length === 0) {
+    await prisma.band.delete({ where: { id: bandId } });
+  }
 }
 
 export async function getUserBands(userId: User["id"]) {
