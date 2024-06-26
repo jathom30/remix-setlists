@@ -68,7 +68,6 @@ import { requireNonSubMember, requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { getDomainUrl } from "~/utils/assorted";
 import { RoleEnum } from "~/utils/enums";
-import { getColor } from "~/utils/tailwindColors";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
@@ -184,10 +183,10 @@ export default function Setlists() {
   const showToast = () => {
     toast("Setlists updated!", {
       duration: 2000,
-      style: {
-        backgroundColor: getColor("success"),
-        color: getColor("success-content"),
-      },
+      // style: {
+      //   backgroundColor: getColor("success"),
+      //   color: getColor("success-content"),
+      // },
     });
   };
   const { setlists, sort } = useLiveLoader<typeof loader>(showToast);
