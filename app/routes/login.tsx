@@ -17,6 +17,16 @@ import {
 import * as React from "react";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
 
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   CatchContainer,
   ErrorContainer,
@@ -24,7 +34,6 @@ import {
   MaxWidth,
   Link as CustomLink,
   ItemBox,
-  Button,
 } from "~/components";
 import { verifyAccount } from "~/email/verify";
 import { generateTokenLink, verifyLogin } from "~/models/user.server";
@@ -126,96 +135,106 @@ export default function LoginPage() {
     <div className="flex min-h-full flex-col justify-center">
       <div className="mx-auto w-full max-w-md px-8">
         <Form method="post" className="space-y-6">
-          <HoneypotInputs />
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium">
-              Email address
-            </label>
-            <div className="mt-1">
-              <input
-                ref={emailRef}
-                id="email"
-                required
-                // eslint-disable-next-line jsx-a11y/no-autofocus
-                autoFocus
-                name="email"
-                type="email"
-                autoComplete="email"
-                aria-invalid={actionData?.errors?.email ? true : undefined}
-                aria-describedby="email-error"
-                className="input input-bordered w-full"
-              />
-              {actionData?.errors?.email ? (
-                <div className="pt-1 text-error" id="email-error">
-                  {actionData.errors.email}
+          <Card>
+            <CardHeader>
+              <CardTitle>Log in</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <HoneypotInputs />
+              <div>
+                <Label htmlFor="email" className="block text-sm font-medium">
+                  Email address
+                </Label>
+                <div className="mt-1">
+                  <Input
+                    ref={emailRef}
+                    id="email"
+                    required
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    aria-invalid={actionData?.errors?.email ? true : undefined}
+                    aria-describedby="email-error"
+                    className="input input-bordered w-full"
+                  />
+                  {actionData?.errors?.email ? (
+                    <div className="pt-1 text-error" id="email-error">
+                      {actionData.errors.email}
+                    </div>
+                  ) : null}
                 </div>
-              ) : null}
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium">
-              Password
-            </label>
-            <div className="mt-1">
-              <input
-                id="password"
-                ref={passwordRef}
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                aria-invalid={actionData?.errors?.password ? true : undefined}
-                aria-describedby="password-error"
-                className="input input-bordered w-full"
-              />
-              {actionData?.errors?.password ? (
-                <div className="pt-1 text-error" id="password-error">
-                  {actionData.errors.password}
+              </div>
+              <div>
+                <Label htmlFor="password" className="block text-sm font-medium">
+                  Password
+                </Label>
+                <div className="mt-1">
+                  <Input
+                    id="password"
+                    ref={passwordRef}
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    aria-invalid={
+                      actionData?.errors?.password ? true : undefined
+                    }
+                    aria-describedby="password-error"
+                    className="input input-bordered w-full"
+                  />
+                  {actionData?.errors?.password ? (
+                    <div className="pt-1 text-error" id="password-error">
+                      {actionData.errors.password}
+                    </div>
+                  ) : null}
                 </div>
-              ) : null}
-            </div>
-          </div>
-
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-          <FlexList>
-            <Button type="submit" kind="primary">
-              Log in
-            </Button>
-          </FlexList>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember"
-                name="remember"
-                type="checkbox"
-                className="checkbox"
-              />
-              <label htmlFor="remember" className="ml-2 block text-sm">
-                Remember me
-              </label>
-            </div>
-            <Link
-              className="text-sm link link-secondary"
-              to={{
-                pathname: "/forgotPassword",
-                search: searchParams.toString(),
-              }}
-            >
-              Forgot password
-            </Link>
-          </div>
-          <div className="text-center text-sm">
-            Don't have an account?{" "}
-            <Link
-              className="link link-primary"
-              to={{
-                pathname: "/join",
-                search: searchParams.toString(),
-              }}
-            >
-              Sign up
-            </Link>
-          </div>
+              </div>
+              <input type="hidden" name="redirectTo" value={redirectTo} />
+            </CardContent>
+            <CardFooter className="flex-col">
+              <Button className="w-full" type="submit">
+                Log in
+              </Button>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input
+                    id="remember"
+                    name="remember"
+                    type="checkbox"
+                    className="checkbox"
+                  />
+                  <label htmlFor="remember" className="ml-2 block text-sm">
+                    Remember me
+                  </label>
+                </div>
+                <Button variant="link" asChild>
+                  <Link
+                    to={{
+                      pathname: "/forgotPassword",
+                      search: searchParams.toString(),
+                    }}
+                  >
+                    Forgot password
+                  </Link>
+                </Button>
+              </div>
+              <div className="text-center text-sm">
+                Don't have an account?{" "}
+                <Button asChild variant="link">
+                  <Link
+                    className="link link-primary"
+                    to={{
+                      pathname: "/join",
+                      search: searchParams.toString(),
+                    }}
+                  >
+                    Sign up
+                  </Link>
+                </Button>
+              </div>
+            </CardFooter>
+          </Card>
         </Form>
       </div>
     </div>

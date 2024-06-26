@@ -1,15 +1,20 @@
-import {
-  faCheckCircle,
-  faCircleXmark,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Form, Link, useNavigation } from "@remix-run/react";
+import { Ban, CheckCircle } from "lucide-react";
 import { useSpinDelay } from "spin-delay";
 import invariant from "tiny-invariant";
 
-import { Button, FlexList, ItemBox } from "~/components";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { P } from "~/components/typography";
 import { deleteToken } from "~/models/token.server";
 import { compareToken, getUserById, verifyUser } from "~/models/user.server";
 import { createUserSession } from "~/session.server";
@@ -69,48 +74,48 @@ export default function Verifying() {
   const navigation = useNavigation();
   const isSubmitting = useSpinDelay(navigation.state !== "idle");
   return (
-    <Form method="put">
-      <FlexList pad={4}>
-        <FontAwesomeIcon icon={faCheckCircle} size="5x" />
-        <h1 className="text-center text-2xl font-bold">Verified!</h1>
-        <ItemBox>
-          <FlexList>
-            <p>
-              Your account has been verified. You are one click away from create
-              setlists with your band(s).
-            </p>
-            <Button type="submit" kind="primary" isSaving={isSubmitting}>
-              Log in
-            </Button>
-          </FlexList>
-        </ItemBox>
-      </FlexList>
-    </Form>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <CheckCircle />
+          Verified!
+        </CardTitle>
+        <CardDescription>
+          Your account has been verified. You are one click away from create
+          setlists with your band(s).
+        </CardDescription>
+      </CardHeader>
+      <Form method="put">
+        <CardFooter>
+          <Button className="w-full" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Logging in..." : "Log in"}
+          </Button>
+        </CardFooter>
+      </Form>
+    </Card>
   );
 }
 
 export function ErrorBoundary() {
   return (
     <div className="max-w-lg m-auto mt-8">
-      <FlexList pad={4}>
-        <FontAwesomeIcon icon={faCircleXmark} size="5x" />
-        <h1 className="text-center text-2xl font-bold">Oops...</h1>
-        <ItemBox>
-          <FlexList>
-            <p>It looks like this link is either incorrect or too old.</p>
-            <p>
-              If you'd like to request a new email,{" "}
-              <Link
-                className="text-blue-500 underline"
-                to="/join/requestVerification"
-              >
-                click here
-              </Link>
-              .
-            </p>
-          </FlexList>
-        </ItemBox>
-      </FlexList>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex gap-2 items-center">
+            <Ban />
+            Oops...
+          </CardTitle>
+          <CardDescription>
+            It looks like this link is either incorrect or too old.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="text-center">
+          <P>Click here to request a new email</P>
+          <Button asChild variant="link">
+            <Link to="/join/requestVerification">click here</Link>
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }
