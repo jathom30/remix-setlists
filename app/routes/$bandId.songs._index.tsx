@@ -1,8 +1,24 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node";
-import { Link, MetaFunction, useSearchParams } from "@remix-run/react";
-import { CirclePlus, SearchIcon } from "lucide-react";
+import { getInputProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
+import { Song } from "@prisma/client";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  SerializeFrom,
+  json,
+} from "@remix-run/node";
+import { Form, Link, MetaFunction, useSearchParams } from "@remix-run/react";
+import {
+  CirclePlus,
+  EllipsisVertical,
+  Pencil,
+  SearchIcon,
+  Trash,
+} from "lucide-react";
+import { ReactNode, useState } from "react";
 import toast from "react-hot-toast";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +28,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { FlexList } from "~/components";
 import { SongContainer } from "~/components/song-container";
@@ -19,8 +52,8 @@ import { SortItems } from "~/components/sort-items";
 import { H1 } from "~/components/typography";
 import { useLiveLoader } from "~/hooks";
 import { userPrefs } from "~/models/cookies.server";
-import { getSongs } from "~/models/song.server";
-import { requireUserId } from "~/session.server";
+import { deleteSong, getSongs } from "~/models/song.server";
+import { requireNonSubMember, requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { getColor } from "~/utils/tailwindColors";
@@ -56,6 +89,24 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export const meta: MetaFunction<typeof loader> = () => {
   return [{ title: "Songs" }];
 };
+
+export async function action({ request, params }: ActionFunctionArgs) {
+  await requireUserId(request);
+  const { bandId } = params;
+  invariant(bandId, "bandId not found");
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+
+  if (intent === "delete-song") {
+    await requireNonSubMember(request, bandId);
+    const submission = parseWithZod(formData, { schema: DeleteSongSchema });
+    if (submission.status !== "success") {
+      return submission.reply();
+    }
+    await deleteSong(submission.value.song_id);
+  }
+  return null;
+}
 
 export default function SongsList() {
   const showToast = () => {
@@ -118,11 +169,14 @@ export default function SongsList() {
       {songs.length ? (
         <FlexList gap={1}>
           {songs.map((song) => (
-            <Link key={song.id} to={song.id}>
-              <SongContainer.Card>
-                <SongContainer.Song song={song} />
-              </SongContainer.Card>
-            </Link>
+            <SongContainer.Card key={song.id}>
+              <FlexList direction="row" items="center" gap={2}>
+                <Link className="w-full" key={song.id} to={song.id}>
+                  <SongContainer.Song song={song} />
+                </Link>
+                <SongActions song={song} />
+              </FlexList>
+            </SongContainer.Card>
           ))}
         </FlexList>
       ) : (
@@ -151,3 +205,98 @@ export default function SongsList() {
     </div>
   );
 }
+
+const SongActions = ({ song }: { song: SerializeFrom<Song> }) => {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const isSub = useMemberRole() === RoleEnum.SUB;
+  return (
+    <div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <EllipsisVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Song Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem asChild>
+              <Link
+                to={{
+                  pathname: `/${song.bandId}/songs/${song.id}/edit`,
+                  search: `redirectTo=${`/${song.bandId}/songs`}`,
+                }}
+              >
+                <Pencil className="h-4 w-4 mr-2" />
+                Edit
+              </Link>
+            </DropdownMenuItem>
+            {!isSub ? (
+              <DropdownMenuItem onClick={() => setShowDeleteDialog(true)}>
+                <Trash className="h-4 w-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+            ) : null}
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Song?</DialogTitle>
+            <DialogDescription>
+              This is a perminent action and cannot be undone. This song will be
+              removed from all associated setlists.
+            </DialogDescription>
+          </DialogHeader>
+          <DeleteSongForm id={song.id}>
+            <DialogFooter>
+              <Button type="submit" onClick={() => setShowDeleteDialog(false)}>
+                Delete
+              </Button>
+            </DialogFooter>
+          </DeleteSongForm>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+const DeleteSongSchema = z.object({
+  song_id: z.string().min(1),
+  intent: z.literal("delete-song"),
+});
+
+const DeleteSongForm = ({
+  id,
+  children,
+}: {
+  id: string;
+  children: ReactNode;
+}) => {
+  const [form, fields] = useForm({
+    id: "delete-song",
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: DeleteSongSchema });
+    },
+    defaultValue: {
+      song_id: id,
+      intent: "delete-song",
+    },
+  });
+
+  return (
+    <Form
+      method="post"
+      id={form.id}
+      onSubmit={form.onSubmit}
+      noValidate={form.noValidate}
+      className="space-y-4"
+    >
+      <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
+      <input hidden {...getInputProps(fields.song_id, { type: "hidden" })} />
+      {children}
+    </Form>
+  );
+};

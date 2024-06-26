@@ -7,7 +7,13 @@ import {
   json,
   redirect,
 } from "@remix-run/node";
-import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  useActionData,
+  useLoaderData,
+  useSearchParams,
+} from "@remix-run/react";
 import { HexColorPicker } from "react-colorful";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -55,6 +61,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
   invariant(bandId, "bandId is required");
   const formData = await request.formData();
 
+  const searchParams = new URL(request.url).searchParams;
+  const redirectTo = searchParams.get("redirectTo");
+
   const submission = parseWithZod(formData, { schema: EditFeelSchema });
   if (submission.status !== "success") {
     return submission.reply();
@@ -66,12 +75,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (!feel) {
     throw new Response("Feel not found", { status: 404 });
   }
-  return redirect(`/${bandId}/feels/${feel.id}`);
+  return redirect(redirectTo ?? `/${bandId}/feels/${feel.id}`);
 }
 
 export default function EditFeelPage() {
   const { feel } = useLoaderData<typeof loader>();
   const lastResult = useActionData<typeof action>();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo");
 
   const [form, fields] = useForm({
     id: "edit-feel",
@@ -168,7 +179,9 @@ export default function EditFeelPage() {
           <div className="flex flex-col gap-2 sm:flex-row-reverse">
             <Button type="submit">Update Feel</Button>
             <Button variant="outline" asChild>
-              <Link to={`/${feel.bandId}/feels/${feel.id}`}>Cancel</Link>
+              <Link to={redirectTo ?? `/${feel.bandId}/feels/${feel.id}`}>
+                Cancel
+              </Link>
             </Button>
           </div>
         </CardHeader>

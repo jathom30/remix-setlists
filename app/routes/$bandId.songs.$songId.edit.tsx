@@ -91,10 +91,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (!song) {
     throw new Response("Song not found", { status: 404 });
   }
-  if (redirectTo) {
-    return redirect(redirectTo);
-  }
-  return redirect(`/${bandId}/songs/${songId}`);
+  return redirect(redirectTo ?? `/${bandId}/songs/${songId}`);
 }
 
 export default function EditSong() {

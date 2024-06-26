@@ -1,4 +1,10 @@
-import { LoaderFunctionArgs, MetaFunction, json } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+  json,
+  redirect,
+} from "@remix-run/node";
 import { Form, Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import { SearchIcon, Trash } from "lucide-react";
 import invariant from "tiny-invariant";
@@ -27,8 +33,8 @@ import { Input } from "@/components/ui/input";
 import { FlexList } from "~/components";
 import { SongContainer } from "~/components/song-container";
 import { H1, Muted } from "~/components/typography";
-import { getFeelWithSongs } from "~/models/feel.server";
-import { requireUserId } from "~/session.server";
+import { deleteFeel, getFeelWithSongs } from "~/models/feel.server";
+import { requireNonSubMember, requireUserId } from "~/session.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
@@ -45,6 +51,16 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: data?.feel.label || "Feel Detail" }];
 };
+
+export async function action({ request, params }: ActionFunctionArgs) {
+  const { feelId, bandId } = params;
+  invariant(feelId, "feelId is required");
+  invariant(bandId, "bandId is required");
+  await requireNonSubMember(request, bandId);
+
+  await deleteFeel(feelId);
+  return redirect(`/${bandId}/feels`);
+}
 
 export default function BandFeel() {
   const { feel } = useLoaderData<typeof loader>();

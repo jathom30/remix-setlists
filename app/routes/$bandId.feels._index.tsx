@@ -1,12 +1,22 @@
+import { getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
+import { Feel } from "@prisma/client";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
+  SerializeFrom,
   json,
 } from "@remix-run/node";
-import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
-import { SearchIcon } from "lucide-react";
+import {
+  Form,
+  Link,
+  useLoaderData,
+  useParams,
+  useSearchParams,
+} from "@remix-run/react";
+import { EllipsisVertical, Pencil, SearchIcon, Trash } from "lucide-react";
+import { ReactNode, useState } from "react";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -18,13 +28,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { FlexList } from "~/components";
 import { FeelContainer } from "~/components/feel-container";
 import { H1 } from "~/components/typography";
-import { getBand } from "~/models/band.server";
 import { deleteFeel, getFeels } from "~/models/feel.server";
-import { requireUser } from "~/session.server";
+import { requireNonSubMember, requireUser } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 
@@ -49,29 +75,22 @@ const DeleteFeelSchema = z.object({
   intent: z.literal(IntentSchema.Enum["delete-feel"]),
 });
 
-export async function action({ request }: ActionFunctionArgs) {
-  const user = await requireUser(request);
+export async function action({ request, params }: ActionFunctionArgs) {
+  await requireUser(request);
+  const { bandId } = params;
+  invariant(bandId, "bandId is required");
   const formData = await request.formData();
   const intent = formData.get("intent");
 
   if (intent === IntentSchema.Enum["delete-feel"]) {
+    await requireNonSubMember(request, bandId);
     const submission = parseWithZod(formData, { schema: DeleteFeelSchema });
     if (submission.status !== "success") {
       return submission.reply();
     }
-    const band = await getBand(submission.value.band_id);
-    if (!band) {
-      throw new Response("Band not found", { status: 404 });
-    }
-    const memberRole = band.members.find((m) => m.userId === user.id)?.role;
-    if (memberRole !== RoleEnum.ADMIN) {
-      throw new Response("You do not have permission to delete this feel", {
-        status: 403,
-      });
-    }
     await deleteFeel(submission.value.feel_id);
-    return null;
   }
+  return null;
 }
 
 export default function BandFeels() {
@@ -115,11 +134,14 @@ export default function BandFeels() {
       {feels.length ? (
         <FlexList gap={1}>
           {feels.map((feel) => (
-            <Link className="w-full" key={feel.id} to={feel.id}>
-              <FeelContainer.Card>
-                <FeelContainer.Feel feel={feel} />
-              </FeelContainer.Card>
-            </Link>
+            <FeelContainer.Card key={feel.id}>
+              <FlexList direction="row" items="center" gap={2}>
+                <Link className="w-full" key={feel.id} to={feel.id}>
+                  <FeelContainer.Feel feel={feel} />
+                </Link>
+                <FeelActions feel={feel} />
+              </FlexList>
+            </FeelContainer.Card>
           ))}
         </FlexList>
       ) : (
@@ -149,90 +171,95 @@ export default function BandFeels() {
   );
 }
 
-// const FeelSettings = ({ feel }: { feel: SerializeFrom<Feel> }) => {
-//   const [showDeleteModal, setShowDeleteModal] = useState(false);
-//   return (
-//     <DropdownMenu>
-//       <DropdownMenuTrigger asChild>
-//         <Button title="Update member settings" variant="ghost" size="icon">
-//           <EllipsisVertical className="w-4 h-4" />
-//         </Button>
-//       </DropdownMenuTrigger>
-//       <DropdownMenuContent align="end">
-//         <DropdownMenuLabel>Feel Options</DropdownMenuLabel>
-//         <DropdownMenuSeparator />
-//         <DropdownMenuItem asChild>
-//           <Link to={`${feel.id}/edit`}>
-//             <Pencil className="w-4 h-4 mr-2" />
-//             Edit
-//           </Link>
-//         </DropdownMenuItem>
-//         <DropdownMenuItem onClick={() => setShowDeleteModal(true)}>
-//           <Trash className="w-4 h-4 mr-2" />
-//           Delete
-//         </DropdownMenuItem>
-//       </DropdownMenuContent>
-//       <DeleteFeelDialog
-//         bandId={feel.bandId}
-//         feelId={feel.id}
-//         open={showDeleteModal}
-//         onOpenChange={setShowDeleteModal}
-//       />
-//     </DropdownMenu>
-//   );
-// };
+const FeelActions = ({ feel }: { feel: SerializeFrom<Feel> }) => {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const isSub = useMemberRole() === RoleEnum.SUB;
+  return (
+    <div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <EllipsisVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Feel Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem asChild>
+              <Link
+                to={{
+                  pathname: `/${feel.bandId}/feels/${feel.id}/edit`,
+                  search: `redirectTo=${`/${feel.bandId}/feels`}`,
+                }}
+              >
+                <Pencil className="h-4 w-4 mr-2" />
+                Edit
+              </Link>
+            </DropdownMenuItem>
+            {!isSub ? (
+              <DropdownMenuItem onClick={() => setShowDeleteDialog(true)}>
+                <Trash className="h-4 w-4 mr-2" />
+                Delete
+              </DropdownMenuItem>
+            ) : null}
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Song?</DialogTitle>
+            <DialogDescription>
+              This is a perminent action and cannot be undone. This song will be
+              removed from all associated setlists.
+            </DialogDescription>
+          </DialogHeader>
+          <DeleteFeelForm id={feel.id}>
+            <DialogFooter>
+              <Button type="submit" onClick={() => setShowDeleteDialog(false)}>
+                Delete
+              </Button>
+            </DialogFooter>
+          </DeleteFeelForm>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
 
-// const DeleteFeelDialog = ({
-//   bandId,
-//   feelId,
-//   open,
-//   onOpenChange,
-// }: {
-//   bandId: string;
-//   feelId: string;
-//   open: boolean;
-//   onOpenChange: (open: boolean) => void;
-// }) => {
-//   const [form, fields] = useForm({
-//     id: IntentSchema.Enum["delete-feel"],
-//     defaultValue: {
-//       feel_id: feelId,
-//       band_id: bandId,
-//       intent: IntentSchema.Enum["delete-feel"],
-//     },
-//     onValidate({ formData }) {
-//       return parseWithZod(formData, { schema: DeleteFeelSchema });
-//     },
-//     shouldValidate: "onBlur",
-//     shouldRevalidate: "onInput",
-//   });
+const DeleteFeelForm = ({
+  id,
+  children,
+}: {
+  id: string;
+  children: ReactNode;
+}) => {
+  const { bandId } = useParams();
+  const [form, fields] = useForm({
+    id: IntentSchema.Enum["delete-feel"],
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: DeleteFeelSchema });
+    },
+    defaultValue: {
+      feel_id: id,
+      band_id: bandId,
+      intent: IntentSchema.Enum["delete-feel"],
+    },
+  });
 
-//   return (
-//     <Dialog open={open} onOpenChange={onOpenChange}>
-//       <DialogContent>
-//         <DialogHeader>
-//           <DialogTitle>Delete this Feel?</DialogTitle>
-//           <DialogDescription>
-//             This action is permanent and cannot be undone. Are you sure you want
-//             to delete this feel?
-//           </DialogDescription>
-//         </DialogHeader>
-//         <Form method="post" id={form.id} onSubmit={form.onSubmit} noValidate>
-//           <input
-//             hidden
-//             {...getInputProps(fields.feel_id, { type: "hidden" })}
-//           />
-//           <input
-//             hidden
-//             {...getInputProps(fields.band_id, { type: "hidden" })}
-//           />
-//           <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
-//           {fields.intent.errors}
-//           <DialogFooter>
-//             <Button variant="destructive">Delete Feel</Button>
-//           </DialogFooter>
-//         </Form>
-//       </DialogContent>
-//     </Dialog>
-//   );
-// };
+  return (
+    <Form
+      method="post"
+      id={form.id}
+      onSubmit={form.onSubmit}
+      noValidate={form.noValidate}
+      className="space-y-4"
+    >
+      <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
+      <input hidden {...getInputProps(fields.feel_id, { type: "hidden" })} />
+      <input hidden {...getInputProps(fields.band_id, { type: "hidden" })} />
+      {children}
+    </Form>
+  );
+};

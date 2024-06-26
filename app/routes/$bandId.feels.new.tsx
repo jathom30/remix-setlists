@@ -61,12 +61,20 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function BandFeelCreate() {
   const { bandId } = useParams();
   const lastResult = useActionData<typeof action>();
+  function getRandomColor() {
+    const letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
   const [form, fields] = useForm({
     id: "create-feel",
     lastResult,
     defaultValue: {
       label: "",
-      color: "",
+      color: getRandomColor(),
     },
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: CreateFeelSchema });
