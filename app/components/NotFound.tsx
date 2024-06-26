@@ -1,7 +1,16 @@
+import { Link } from "@remix-run/react";
 import type { ReactNode } from "react";
 
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 import { FlexList } from "./FlexList";
-import { Link } from "./Link";
 import { MaxWidth } from "./MaxWidth";
 
 export const NotFound = ({
@@ -12,15 +21,23 @@ export const NotFound = ({
   message: ReactNode;
 }) => {
   return (
-    <MaxWidth>
-      <FlexList pad={4}>
-        <h1 className="text-3xl font-bold">404 Not Found</h1>
-        <p>{message}</p>
-        <Link isOutline to={dismissTo}>
-          Go back
-        </Link>
-        <Link to="/">Go home</Link>
-      </FlexList>
+    <MaxWidth className="p-2">
+      <Card>
+        <CardHeader>
+          <CardTitle>404 Not Found</CardTitle>
+          <CardDescription>{message}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <FlexList gap={2}>
+            <Button asChild variant="secondary">
+              <Link to={dismissTo}>Go back</Link>
+            </Button>
+            <Button asChild variant="secondary">
+              <Link to="/">Go home</Link>
+            </Button>
+          </FlexList>
+        </CardContent>
+      </Card>
     </MaxWidth>
   );
 };
