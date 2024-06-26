@@ -112,7 +112,7 @@ export const EditSongSchema = z.object({
       .string()
       .refine(
         (value) =>
-          /^(https?):\/\/(?=.*\.[a-z]{2,})[^\s$.?#].[^\s]*$/i.test(value),
+          /^((https?):\/\/)?(?=.*\.[a-z]{2,})[^\s$.?#].[^\s]*$/i.test(value),
         {
           message: "Please enter a valid URL",
         },
@@ -191,7 +191,15 @@ export async function updateSongWithLinksAndFeels(
       author: song.author,
       // add links back to song
       links: {
-        create: song.links.map((link) => ({ href: link })),
+        create: song.links.map((link) => {
+          if (!link.includes("http://")) {
+            link = `https://${link}`;
+          }
+          if (!link.includes("https://")) {
+            link = `https://${link}`;
+          }
+          return { href: link };
+        }),
       },
       feels: {
         disconnect: removedFeels.map((feel) => ({ id: feel })),

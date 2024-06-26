@@ -1033,7 +1033,7 @@ const PublicLink = ({
               {showSuccess ? (
                 "Copied!"
               ) : (
-                <span className="truncate max-w-xs">{publicLink}</span>
+                <span className="truncate max-w-[200px]">{publicLink}</span>
               )}
               {showSuccess ? (
                 <Check className="w-4 h-4 ml-2" />
@@ -1309,7 +1309,12 @@ const SongDetailsSheet = ({
                   <FlexList items="start">
                     {song.links.map((link) => (
                       <Button asChild variant="link" key={link.id}>
-                        <a href={link.href} target="_blank" rel="noreferrer">
+                        <a
+                          className="truncate max-w-[200px]"
+                          href={link.href}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
                           {link.href}
                         </a>
                       </Button>

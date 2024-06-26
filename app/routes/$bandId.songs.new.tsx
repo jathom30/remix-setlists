@@ -80,7 +80,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
   const song = await createSongWithFeels(bandId, {
     feels: submission.value.feels,
-    links: submission.value.links,
+    links: submission.value.links.map((link) => {
+      if (!link.includes("http://")) {
+        link = `https://${link}`;
+      }
+      if (!link.includes("https://")) {
+        return `https://${link}`;
+      }
+      return link;
+    }),
     isCover: submission.value.isCover,
     isMinor: submission.value.isMinor,
     keyLetter: submission.value.keyLetter,
@@ -113,7 +121,7 @@ const CreateSongSchema = z.object({
       .string()
       .refine(
         (value) =>
-          /^(https?):\/\/(?=.*\.[a-z]{2,})[^\s$.?#].[^\s]*$/i.test(value),
+          /^((https?):\/\/)?(?=.*\.[a-z]{2,})[^\s$.?#].[^\s]*$/i.test(value),
         {
           message: "Please enter a valid URL",
         },
