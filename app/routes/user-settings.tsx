@@ -9,6 +9,7 @@ import {
   useActionData,
   useNavigation,
   MetaFunction,
+  useFetcher,
 } from "@remix-run/react";
 import {
   ActionFunctionArgs,
@@ -16,6 +17,7 @@ import {
 } from "@remix-run/server-runtime";
 import { Boxes, CircleMinus, CirclePlus, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
+import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +29,6 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -49,6 +50,7 @@ import {
   getBand,
   updateBandByCode,
 } from "~/models/band.server";
+import { userPrefs } from "~/models/cookies.server";
 import {
   deleteUserById,
   getUserWithBands,
@@ -69,7 +71,13 @@ const IntentEnums = z.enum([
   "new-band",
   "add-band",
   "delete-account",
+  "change-theme",
 ]);
+
+const ThemeFormSchema = z.object({
+  theme: z.enum(["system", "light", "dark"]),
+  intent: z.literal(IntentEnums.Enum["change-theme"]),
+});
 
 const UserDetailsSchema = z
   .object({
@@ -158,7 +166,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!user) {
     throw new Response("User not found", { status: 404 });
   }
-  return json({ user });
+  const cookieHeader = request.headers.get("Cookie");
+  const cookie = (await userPrefs.parse(cookieHeader)) || {};
+
+  return json({ user, theme: cookie.theme });
 }
 
 export const meta: MetaFunction = () => {
@@ -209,7 +220,7 @@ export async function action({ request }: ActionFunctionArgs) {
       return submission.reply();
     }
     await removeMemberFromBand(submission.value.band_id, userId);
-    return null;
+    return redirect(".");
   }
 
   if (intent === IntentEnums.Enum["new-band"]) {
@@ -268,6 +279,24 @@ export async function action({ request }: ActionFunctionArgs) {
     return redirect("/login");
   }
 
+  if (intent === IntentEnums.Enum["change-theme"]) {
+    const cookieHeader = request.headers.get("Cookie");
+    const cookie = (await userPrefs.parse(cookieHeader)) || {};
+    const submission = parseWithZod(formData, {
+      schema: ThemeFormSchema,
+    });
+
+    invariant(submission.status === "success", "Invalid theme received");
+
+    const { theme } = submission.value;
+    cookie.theme = theme;
+
+    const responseInit = {
+      headers: { "Set-Cookie": await userPrefs.serialize(cookie) },
+    };
+    return json(null, responseInit);
+  }
+
   return null;
 }
 
@@ -291,19 +320,11 @@ export default function UserSettings() {
           <CardHeader>
             <H4>Site Theme</H4>
             <CardDescription>
-              Set the site's theme between light or dark mode. If you'd prefer,
-              check "Prefer system settings" to use your OS's settings.
+              Set the site's theme between light or dark mode.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <FlexList direction="row" items="center" gap={2}>
-              <Switch id="airplane-mode" />
-              <Label htmlFor="airplane-mode">Dark Mode</Label>
-            </FlexList>
-            <FlexList direction="row" items="center" gap={2}>
-              <Checkbox id="prefer-system" />
-              <Label htmlFor="prefer-system">Prefer system settings</Label>
-            </FlexList>
+          <CardContent>
+            <ThemeSwitch />
           </CardContent>
         </Card>
 
@@ -815,3 +836,35 @@ const DeleteAccountDialog = ({ userId }: { userId: string }) => {
     </Dialog>
   );
 };
+
+function ThemeSwitch() {
+  const { theme } = useLoaderData<typeof loader>();
+  const fetcher = useFetcher({ key: "theme" });
+
+  const handleSwitchChange = (checked: boolean) => {
+    fetcher.submit(
+      {
+        theme: checked ? "dark" : "light",
+        intent: "change-theme",
+      },
+      { method: "post" },
+    );
+  };
+
+  return (
+    <div className="flex flex-col gap-4">
+      <FlexList direction="row" items="center" gap={2}>
+        <Switch
+          id="airplane-mode"
+          defaultChecked={theme === "dark"}
+          onCheckedChange={handleSwitchChange}
+        />
+        <Label htmlFor="airplane-mode">Dark Mode</Label>
+      </FlexList>
+      {/* <FlexList direction="row" items="center" gap={2}>
+        <Checkbox id="prefer-system" />
+        <Label htmlFor="prefer-system">Prefer system settings</Label>
+      </FlexList> */}
+    </div>
+  );
+}
