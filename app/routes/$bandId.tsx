@@ -341,7 +341,7 @@ const MobileBreadcrumbsList = ({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
                 {crumbs.rest.map((crumb) => (
-                  <DropdownMenuItem key={crumb.to}>
+                  <DropdownMenuItem asChild key={crumb.to}>
                     <BreadcrumbLink asChild>
                       <Link to={crumb.to}>{crumb.label}</Link>
                     </BreadcrumbLink>
