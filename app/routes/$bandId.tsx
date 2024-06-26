@@ -8,17 +8,25 @@ import {
   useParams,
 } from "@remix-run/react";
 import { ChevronRight } from "lucide-react";
+import { Fragment } from "react";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
+  BreadcrumbEllipsis,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { FlexList, Header, MaxWidth } from "~/components";
 import { MainNav } from "~/components/main-nav";
 import { MainNavSheet } from "~/components/main-nav-sheet";
@@ -151,6 +159,97 @@ export default function BandRoute() {
   const isMembersRoute =
     isBandSettingsRoute && memberId && pathname.includes("members");
 
+  const crumbs: { label: string; to: string }[] = [
+    { to: "/home", label: "Bands" },
+    ...(isBandRoute
+      ? [{ to: `/${bandId}`, label: bandMatch?.data.band.name || "Dashboard" }]
+      : []),
+    ...(isSetlistsRoute
+      ? [{ to: `/${bandId}/setlists`, label: "Setlists" }]
+      : []),
+    ...(isSetlistDetailRoute
+      ? [
+          {
+            to: `/${bandId}/setlists/${setlistId}`,
+            label: setlistMatch.data.setlist.name,
+          },
+        ]
+      : []),
+    ...(isCondensedSetlistRoute
+      ? [
+          {
+            to: `/${bandId}/setlists/${setlistId}/condensed`,
+            label: "Condensed",
+          },
+        ]
+      : []),
+    ...(isSetlistMetricsRoute
+      ? [{ to: `/${bandId}/setlists/${setlistId}/metrics`, label: "Metrics" }]
+      : []),
+    ...(isCreateSetlistsRoute
+      ? [{ to: `/${bandId}/setlists/new`, label: "Create" }]
+      : []),
+    ...(isManualCreateSetlistRoute
+      ? [
+          { to: `/${bandId}/setlists/new`, label: "Create" },
+          { to: `/${bandId}/setlists/manual`, label: "Manual" },
+        ]
+      : []),
+    ...(isAutoCreateSetlistRoute
+      ? [
+          { to: `/${bandId}/setlists/new`, label: "Create" },
+          { to: `/${bandId}/setlists/auto`, label: "Auto" },
+        ]
+      : []),
+    ...(isSongsRoute ? [{ to: `/${bandId}/songs`, label: "Songs" }] : []),
+    ...(songMatch
+      ? [
+          {
+            to: `/${bandId}/songs/${songMatch.data.song.id}`,
+            label: songMatch.data.song.name,
+          },
+        ]
+      : []),
+    ...(isEditSongRoute
+      ? [
+          {
+            to: `/${bandId}/songs/${songMatch.data.song.id}/edit`,
+            label: "Edit",
+          },
+        ]
+      : []),
+    ...(isCreateSongRoute
+      ? [{ to: `/${bandId}/songs/new`, label: "Create" }]
+      : []),
+    ...(isFeelsRoute ? [{ to: `/${bandId}/feels`, label: "Feels" }] : []),
+    ...(feelMatch
+      ? [
+          {
+            to: `/${bandId}/feels/${feelMatch.data.feel.id}`,
+            label: feelMatch.data.feel.label,
+          },
+        ]
+      : []),
+    ...(isEditFeelRoute
+      ? [
+          {
+            to: `/${bandId}/feels/${feelMatch.data.feel.id}/edit`,
+            label: "Edit",
+          },
+        ]
+      : []),
+    ...(isNewFeelRoute ? [{ to: `/${bandId}/feels/new`, label: "New" }] : []),
+    ...(isBandSettingsRoute
+      ? [{ to: `/${bandId}/band-settings`, label: "Settings" }]
+      : []),
+    ...(isEditBandSettingsRoute
+      ? [{ to: `/${bandId}/band-settings/edit`, label: "Edit" }]
+      : []),
+    ...(isMembersRoute
+      ? [{ to: `/${bandId}/band-settings/members`, label: "Members" }]
+      : []),
+  ];
+
   return (
     <div className="h-full">
       <div className="p-2 border-b sticky top-0 inset-x-0 z-10 bg-background">
@@ -176,318 +275,118 @@ export default function BandRoute() {
       </div>
       <MaxWidth>
         <Breadcrumb className="p-2 pb-0">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link to="/home">Bands</Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-
-            {isBandRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}`}>
-                      {bandMatch?.data.band.name || "Dashboard"}
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-
-            {isSetlistsRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/setlists`}>Setlists</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-            {isSetlistDetailRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/setlists/${setlistId}`}>
-                      {setlistMatch.data.setlist.name}
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-            {isCondensedSetlistRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/setlists/${setlistId}/condensed`}>
-                      Condensed
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-            {isSetlistMetricsRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/setlists/${setlistId}/metrics`}>
-                      Metrics
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-            {isCreateSetlistsRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/setlists/new`}>Create</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-
-            {isManualCreateSetlistRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/setlists/new`}>Create</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/setlists/manual`}>Manual</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-            {isAutoCreateSetlistRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/setlists/new`}>Create</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/setlists/auto`}>Auto</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-
-            {isSongsRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/songs`}>Songs</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-
-            {songMatch ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/songs/${songMatch.data.song.id}`}>
-                      {songMatch.data.song.name}
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-
-            {isEditSongRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link
-                      to={`/${bandId}/songs/${songMatch.data.song.id}/edit`}
-                    >
-                      Edit
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-
-            {isCreateSongRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/songs/new`}>Create</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-
-            {isFeelsRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/feels`}>Feels</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-            {feelMatch ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/feels/${feelMatch.data.feel.id}`}>
-                      {feelMatch.data.feel.label}
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-            {isEditFeelRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link
-                      to={`/${bandId}/feels/${feelMatch.data.feel.id}/edit`}
-                    >
-                      Edit
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-            {isNewFeelRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/feels/new`}>New</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-
-            {isBandSettingsRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/band-settings`}>Settings</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-
-            {isEditBandSettingsRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/band-settings/edit`}>
-                      Edit Details
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-
-            {isMembersRoute ? (
-              <>
-                <BreadcrumbSeparator>
-                  <ChevronRight className="w-4 h-4" />
-                </BreadcrumbSeparator>
-
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to={`/${bandId}/band-settings/members/${memberId}`}>
-                      Member Role
-                    </Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-              </>
-            ) : null}
-          </BreadcrumbList>
+          <DesktopBreadcrumbsList initialCrumbs={crumbs} />
+          <MobileBreadcrumbsList initialCrumbs={crumbs} />
         </Breadcrumb>
         <Outlet />
       </MaxWidth>
     </div>
   );
 }
+
+const MobileBreadcrumbsList = ({
+  initialCrumbs,
+}: {
+  initialCrumbs: { label: string; to: string }[];
+}) => {
+  const getCrumbs = () => {
+    if (initialCrumbs.length > 3) {
+      const crumbsLength = initialCrumbs.length;
+      const first = initialCrumbs.slice(0, 1);
+      const last = initialCrumbs.slice(crumbsLength - 1);
+      const rest = initialCrumbs.slice(1, crumbsLength - 1);
+      return {
+        start: first[0],
+        rest,
+        end: last[0],
+      };
+    }
+    return initialCrumbs;
+  };
+  const crumbs = getCrumbs();
+  return (
+    <BreadcrumbList className="md:hidden">
+      {Array.isArray(crumbs) ? (
+        crumbs.map((crumb, i) => (
+          <Fragment key={crumb.to}>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link to={crumb.to}>{crumb.label}</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            {crumbs.length - 1 !== i ? (
+              <BreadcrumbSeparator>
+                <ChevronRight size={16} />
+              </BreadcrumbSeparator>
+            ) : null}
+          </Fragment>
+        ))
+      ) : (
+        <>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to={crumbs.start.to}>{crumbs.start.label}</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+
+          <BreadcrumbSeparator>
+            <ChevronRight size={16} />
+          </BreadcrumbSeparator>
+
+          <BreadcrumbItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-1">
+                <BreadcrumbEllipsis className="h-4 w-4" />
+                <span className="sr-only">Toggle menu</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                {crumbs.rest.map((crumb) => (
+                  <DropdownMenuItem key={crumb.to}>
+                    <BreadcrumbLink asChild>
+                      <Link to={crumb.to}>{crumb.label}</Link>
+                    </BreadcrumbLink>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </BreadcrumbItem>
+
+          <BreadcrumbSeparator>
+            <ChevronRight size={16} />
+          </BreadcrumbSeparator>
+
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to={crumbs.end.to}>{crumbs.end.label}</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </>
+      )}
+    </BreadcrumbList>
+  );
+};
+
+const DesktopBreadcrumbsList = ({
+  initialCrumbs,
+}: {
+  initialCrumbs: { label: string; to: string }[];
+}) => {
+  return (
+    <BreadcrumbList className="hidden md:flex">
+      {initialCrumbs.map((crumb, i) => (
+        <Fragment key={crumb.to}>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to={crumb.to}>{crumb.label}</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          {initialCrumbs.length - 1 !== i ? (
+            <BreadcrumbSeparator>
+              <ChevronRight size={16} />
+            </BreadcrumbSeparator>
+          ) : null}
+        </Fragment>
+      ))}
+    </BreadcrumbList>
+  );
+};
