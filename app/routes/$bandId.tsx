@@ -152,7 +152,7 @@ export default function BandRoute() {
     isBandSettingsRoute && memberId && pathname.includes("members");
 
   return (
-    <div className="bg-muted/40 h-full">
+    <div className="h-full">
       <div className="p-2 border-b sticky top-0 inset-x-0 z-10 bg-background">
         <Header>
           <div>

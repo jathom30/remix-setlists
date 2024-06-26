@@ -1,5 +1,3 @@
-import { config } from "@fortawesome/fontawesome-svg-core";
-import faStylesheet from "@fortawesome/fontawesome-svg-core/styles.css";
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
@@ -22,9 +20,6 @@ import { getUser } from "./session.server";
 import { getFeatureFlags } from "./utils/featureflags.server";
 import { honeypot } from "./utils/honeypot.server";
 
-// Prevent fontawesome from dynamically adding its css since we are going to include it manually
-config.autoAddCss = false;
-
 export const links: LinksFunction = () => {
   return [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -33,7 +28,6 @@ export const links: LinksFunction = () => {
       rel: "stylesheet",
       href: "https://fonts.googleapis.com/css2?family=Fascinate&family=Poppins:wght@100;400;700&display=swap",
     },
-    { rel: "stylesheet", href: faStylesheet },
     { rel: "stylesheet", href: stylesheet },
   ];
 };
@@ -81,7 +75,7 @@ export default function App() {
         <link rel="manifest" href="/resources/manifest.webmanifest" />
         <Links />
       </head>
-      <body className="h-full">
+      <body className="h-full bg-muted/40">
         <Toaster>
           {(t) => {
             if (uniqueToasts.every((u) => u.id !== t.id)) return <></>;

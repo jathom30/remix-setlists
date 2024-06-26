@@ -39,7 +39,7 @@ export const meta: MetaFunction = () => [
 
 export default function Landing() {
   return (
-    <div className="mt-16 pb-16">
+    <div className="pb-16">
       <div className="fixed top-0 bg-card inset-x-0 z-20 border-b p-2">
         <FlexHeader>
           <H4>Setlists</H4>
