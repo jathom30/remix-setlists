@@ -454,3 +454,15 @@ export default function CreateSongRoute() {
     </div>
   );
 }
+
+const SongLink = () => {
+  return (
+    <div>
+      <Label>External Links</Label>
+      <FlexList gap={2}>
+        <Input placeholder="Link" />
+        <Button variant="ghost">Remove</Button>
+      </FlexList>
+    </div>
+  );
+};

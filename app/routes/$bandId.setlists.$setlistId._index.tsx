@@ -351,8 +351,6 @@ export default function SetlistPage() {
       song.name.toLowerCase().includes(query.toLowerCase()),
     ) || [];
 
-  console.log(sets);
-
   // update sets when fetcher is done
   useEffect(() => {
     if (!fetcher.data || fetcher.state !== "loading") return;

@@ -50,7 +50,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const songs = await getSongs(bandId, songParams);
   cookie.songSort = sort;
   await userPrefs.serialize(cookie);
-  console.log(sort);
   return json({ songs, sort });
 }
 

@@ -66,7 +66,6 @@ export async function action({ request }: ActionFunctionArgs) {
   const email = formData.get("email");
   const password = formData.get("password");
   const name = formData.get("name");
-  console.log(email, password, name);
   // const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
   invariant(process.env.SENDGRID_API_KEY, "sendgrid api key must be set");
 
