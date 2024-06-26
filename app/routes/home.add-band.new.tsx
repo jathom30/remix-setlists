@@ -1,6 +1,6 @@
 import { getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { ActionFunctionArgs, redirect } from "@remix-run/node";
+import { ActionFunctionArgs, MetaFunction, redirect } from "@remix-run/node";
 import { Form } from "@remix-run/react";
 import { z } from "zod";
 
@@ -24,6 +24,10 @@ const FormSchema = z
     name: z.string().min(1),
   })
   .required();
+
+export const meta: MetaFunction = () => {
+  return [{ title: "New Band" }];
+};
 
 export async function action({ request }: ActionFunctionArgs) {
   const userId = await requireUserId(request);

@@ -1,5 +1,10 @@
 import { Feel, Set, Setlist, Song } from "@prisma/client";
-import { LoaderFunctionArgs, SerializeFrom, json } from "@remix-run/node";
+import {
+  LoaderFunctionArgs,
+  MetaFunction,
+  SerializeFrom,
+  json,
+} from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
@@ -28,6 +33,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
   return json({ setlist });
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: `${data?.setlist.name} Metrics` }];
+};
 
 type TSetlist = SerializeFrom<
   Setlist & {

@@ -1,8 +1,7 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { Link, json, useLoaderData, useNavigate } from "@remix-run/react";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import { Link, json, useLoaderData } from "@remix-run/react";
 import { AudioLines, Boxes, Dna, Link2, List, Settings } from "lucide-react";
 import pluralize from "pluralize";
-import { useEffect } from "react";
 import invariant from "tiny-invariant";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,7 +24,7 @@ import { getMostRecentFeels } from "~/models/feel.server";
 import { getRecentSetlists } from "~/models/setlist.server";
 import { getRecentSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
-import { useFeatureFlags, useMemberRole, useUser } from "~/utils";
+import { useMemberRole, useUser } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -42,18 +41,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({ setlists, songs, band, feels });
 }
 
-const useRedirectHome = () => {
-  const navigate = useNavigate();
-  const { rebranding } = useFeatureFlags();
-  useEffect(() => {
-    if (!rebranding) {
-      navigate("/home");
-    }
-  }, [rebranding, navigate]);
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: data?.band.name || "Band Home" }];
 };
 
 export default function BandId() {
-  useRedirectHome();
   const { setlists, songs, band, feels } = useLoaderData<typeof loader>();
   const user = useUser();
   const role = useMemberRole();

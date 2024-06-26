@@ -1,5 +1,9 @@
 import { json, redirect } from "@remix-run/node";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { Mail } from "lucide-react";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
@@ -30,6 +34,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return json({ email, user });
 }
+
+export const meta: MetaFunction = () => {
+  return [{ title: "Request Verification" }];
+};
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();

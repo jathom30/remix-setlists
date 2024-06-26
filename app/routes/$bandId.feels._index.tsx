@@ -1,5 +1,10 @@
 import { parseWithZod } from "@conform-to/zod";
-import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+  json,
+} from "@remix-run/node";
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import { SearchIcon } from "lucide-react";
 import invariant from "tiny-invariant";
@@ -33,6 +38,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const feels = await getFeels(bandId, query);
   return json({ feels });
 }
+
+export const meta: MetaFunction<typeof loader> = () => {
+  return [{ title: "Feels" }];
+};
 
 const DeleteFeelSchema = z.object({
   band_id: z.string(),

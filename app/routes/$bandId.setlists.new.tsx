@@ -1,4 +1,4 @@
-import { Link, useParams } from "@remix-run/react";
+import { Link, MetaFunction, useParams } from "@remix-run/react";
 import { LoaderFunctionArgs } from "@remix-run/server-runtime";
 import { Hammer, WandSparkles } from "lucide-react";
 import invariant from "tiny-invariant";
@@ -21,6 +21,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireNonSubMember(request, bandId);
   return null;
 }
+
+export const meta: MetaFunction<typeof loader> = () => {
+  return [{ title: "New Setlist" }];
+};
 
 export default function CreateSetlist() {
   const { bandId } = useParams();

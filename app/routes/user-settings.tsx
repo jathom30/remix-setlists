@@ -8,6 +8,7 @@ import {
   Form,
   useActionData,
   useNavigation,
+  MetaFunction,
 } from "@remix-run/react";
 import {
   ActionFunctionArgs,
@@ -159,6 +160,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
   return json({ user });
 }
+
+export const meta: MetaFunction = () => {
+  return [{ title: "User Settings" }];
+};
 
 export async function action({ request }: ActionFunctionArgs) {
   const userId = await requireUserId(request);

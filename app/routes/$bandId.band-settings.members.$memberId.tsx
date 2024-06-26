@@ -1,6 +1,11 @@
 import { getInputProps, useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+  json,
+} from "@remix-run/node";
 import { Form, useLoaderData, useParams } from "@remix-run/react";
 import { CircleCheck, CircleX } from "lucide-react";
 import invariant from "tiny-invariant";
@@ -54,6 +59,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   return json({ member: augmentedMember, canRemoveAsAdmin });
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: `Member: ${data?.member.name}` || "Member Role" }];
+};
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId } = params;

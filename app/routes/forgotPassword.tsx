@@ -1,5 +1,5 @@
 import { json } from "@remix-run/node";
-import type { ActionFunctionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Form, Link, useActionData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
@@ -20,6 +20,10 @@ import { passwordReset } from "~/email/password";
 import { generateTokenLink, getUserByEmail } from "~/models/user.server";
 import { validateEmail } from "~/utils";
 import { getDomainUrl } from "~/utils/assorted";
+
+export const meta: MetaFunction = () => {
+  return [{ title: "Forgot Password" }];
+};
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();

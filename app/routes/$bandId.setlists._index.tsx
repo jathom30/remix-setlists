@@ -4,6 +4,7 @@ import { Setlist } from "@prisma/client";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
+  MetaFunction,
   SerializeFrom,
   json,
 } from "@remix-run/node";
@@ -102,6 +103,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     domainUrl,
   });
 }
+
+export const meta: MetaFunction<typeof loader> = () => {
+  return [{ title: "Setlists" }];
+};
 
 const IntentSchema = z.enum([
   "update-setlist",

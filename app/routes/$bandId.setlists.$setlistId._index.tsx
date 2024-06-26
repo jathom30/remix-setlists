@@ -10,6 +10,7 @@ import { Feel, Link as PLink, Set, Setlist, Song } from "@prisma/client";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
+  MetaFunction,
   SerializeFrom,
   json,
   redirect,
@@ -133,6 +134,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     ...(setlist.isPublic ? { setlistPublicUrl } : {}),
   });
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: data?.setlist.name || "Setlist Detail" }];
+};
 
 const IntentSchema = z.enum([
   "update-setlist",

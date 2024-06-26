@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction, json } from "@remix-run/node";
 import { Form, Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import { SearchIcon, Trash } from "lucide-react";
 import invariant from "tiny-invariant";
@@ -41,6 +41,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
   return json({ feel });
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: data?.feel.label || "Feel Detail" }];
+};
 
 export default function BandFeel() {
   const { feel } = useLoaderData<typeof loader>();

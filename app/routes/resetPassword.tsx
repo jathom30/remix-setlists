@@ -1,4 +1,8 @@
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import {
   Form,
@@ -54,6 +58,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
   return json({ email: user.email });
 }
+
+export const meta: MetaFunction = () => {
+  return [{ title: "Password Reset" }];
+};
 
 export async function action({ request }: ActionFunctionArgs) {
   const url = new URL(request.url);

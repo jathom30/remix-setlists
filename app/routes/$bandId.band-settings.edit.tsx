@@ -3,6 +3,7 @@ import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
+  MetaFunction,
   UploadHandler,
   json,
   redirect,
@@ -58,6 +59,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
   return json({ band });
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: `Edit ${data?.band.name}` || "Edit Band" }];
+};
 
 export async function action({ request, params }: ActionFunctionArgs) {
   await requireUserId(request);

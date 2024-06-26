@@ -3,6 +3,7 @@ import { parseWithZod } from "@conform-to/zod";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
+  MetaFunction,
   json,
   redirect,
 } from "@remix-run/node";
@@ -67,6 +68,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
   return json({ song, setlists, band });
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: `Edit ${data?.song.name || "Song"}` }];
+};
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId, songId } = params;

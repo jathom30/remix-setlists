@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction, json } from "@remix-run/node";
 import { NavLink, useLoaderData } from "@remix-run/react";
 import { CirclePlus } from "lucide-react";
 import pluralize from "pluralize";
@@ -21,6 +21,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
   return json({ bands });
 }
+
+export const meta: MetaFunction<typeof loader> = () => {
+  return [{ title: "Your Bands" }];
+};
 
 export default function Home() {
   const { bands } = useLoaderData<typeof loader>();

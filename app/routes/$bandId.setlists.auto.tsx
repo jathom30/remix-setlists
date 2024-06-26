@@ -3,6 +3,7 @@ import { parseWithZod } from "@conform-to/zod";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
+  MetaFunction,
   redirect,
 } from "@remix-run/node";
 import { Form, Link, useParams } from "@remix-run/react";
@@ -32,6 +33,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireNonSubMember(request, bandId);
   return null;
 }
+
+export const meta: MetaFunction<typeof loader> = () => {
+  return [{ title: "Auto Gen Setlist" }];
+};
 
 export async function action({ request, params }: ActionFunctionArgs) {
   await requireUserId(request);

@@ -25,12 +25,6 @@ import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 import { getColor } from "~/utils/tailwindColors";
 
-export const meta: MetaFunction = () => [
-  {
-    title: "Songs",
-  },
-];
-
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
   const { bandId } = params;
@@ -60,11 +54,11 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   return json({ songs, sort });
 }
 
-export default function SongsIndex() {
-  return <SongsListNew />;
-}
+export const meta: MetaFunction<typeof loader> = () => {
+  return [{ title: "Songs" }];
+};
 
-function SongsListNew() {
+export default function SongsList() {
   const showToast = () => {
     toast("Songs updated!", {
       duration: 2000,

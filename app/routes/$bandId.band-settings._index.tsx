@@ -3,6 +3,7 @@ import { parseWithZod } from "@conform-to/zod";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
+  MetaFunction,
   json,
   redirect,
 } from "@remix-run/node";
@@ -99,6 +100,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   return json({ band, members: augmentedMembers, qrCodeAddress });
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: `${data?.band.name} Settings` || "Band Settings" }];
+};
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const user = await requireUser(request);

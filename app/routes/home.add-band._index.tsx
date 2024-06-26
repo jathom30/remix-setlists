@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Link, MetaFunction } from "@remix-run/react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +9,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { H1, P } from "~/components/typography";
+
+export const meta: MetaFunction = () => {
+  return [{ title: "Add Band" }];
+};
 
 export default function BandNew() {
   return (

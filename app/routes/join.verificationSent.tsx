@@ -1,4 +1,4 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Form, Link } from "@remix-run/react";
 import { Mail } from "lucide-react";
@@ -24,6 +24,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
   return null;
 }
+
+export const meta: MetaFunction = () => {
+  return [{ title: "Verification Sent" }];
+};
 
 export default function VerificationSent() {
   return (

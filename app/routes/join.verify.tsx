@@ -1,4 +1,8 @@
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Form, Link, useNavigation } from "@remix-run/react";
 import { Ban, CheckCircle } from "lucide-react";
@@ -44,6 +48,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return null;
 }
+
+export const meta: MetaFunction = () => {
+  return [{ title: "Verified!" }];
+};
 
 export async function action({ request }: ActionFunctionArgs) {
   const url = new URL(request.url);

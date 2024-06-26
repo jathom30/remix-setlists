@@ -3,6 +3,7 @@ import { parseWithZod } from "@conform-to/zod";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
+  MetaFunction,
   redirect,
 } from "@remix-run/node";
 import { Form, Link, useActionData, useParams } from "@remix-run/react";
@@ -35,6 +36,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireNonSubMember(request, bandId);
   return null;
 }
+
+export const meta: MetaFunction<typeof loader> = () => {
+  return [{ title: "New Feel" }];
+};
 
 export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId } = params;

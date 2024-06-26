@@ -3,6 +3,7 @@ import { parseWithZod } from "@conform-to/zod";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
+  MetaFunction,
   json,
   redirect,
 } from "@remix-run/node";
@@ -42,6 +43,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
   return json({ feel });
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: `Edit ${data?.feel.label}` || "Edit Feel" }];
+};
 
 export async function action({ request, params }: ActionFunctionArgs) {
   await requireUserId(request);

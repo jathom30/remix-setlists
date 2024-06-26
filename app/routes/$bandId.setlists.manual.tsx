@@ -8,6 +8,7 @@ import {
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
+  MetaFunction,
   json,
   redirect,
 } from "@remix-run/node";
@@ -54,6 +55,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   return json({ songs });
 }
+
+export const meta: MetaFunction<typeof loader> = () => {
+  return [{ title: "Manual Setlist" }];
+};
 
 const FormSchema = z.record(z.string());
 

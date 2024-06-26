@@ -3,6 +3,7 @@ import {
   json,
   ActionFunctionArgs,
   redirect,
+  MetaFunction,
 } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { Maximize, Minimize, Pencil, Trash } from "lucide-react";
@@ -52,6 +53,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
   return json({ song, setlists });
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: data?.song.name || "Song Detail" }];
+};
 
 export async function action({ request, params }: ActionFunctionArgs) {
   await requireUser(request);

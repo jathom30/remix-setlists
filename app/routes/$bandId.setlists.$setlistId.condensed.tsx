@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import pluralize from "pluralize";
 import invariant from "tiny-invariant";
@@ -28,6 +28,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     setlist,
   });
 }
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: `${data?.setlist.name} Condensed` }];
+};
 
 export default function SetlistCondensedPage() {
   const { setlist } = useLoaderData<typeof loader>();

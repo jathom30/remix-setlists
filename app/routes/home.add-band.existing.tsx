@@ -3,6 +3,7 @@ import { parseWithZod } from "@conform-to/zod";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
+  MetaFunction,
   json,
   redirect,
 } from "@remix-run/node";
@@ -32,6 +33,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return json({ code });
 }
+
+export const meta: MetaFunction = () => {
+  return [{ title: "Join Band" }];
+};
 
 const FormSchema = z
   .object({
