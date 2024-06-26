@@ -64,7 +64,7 @@ export async function getBandMembers(bandId: Band["id"]) {
 
 export async function createBand(band: Pick<Band, "name">, userId: User["id"]) {
   const { name } = band;
-  const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const code = Math.random().toString(36).substring(2, 8)?.toUpperCase();
   const backgroundColor = `#${generateRandomHex()}`;
   const textColor = contrastColor(backgroundColor);
   return prisma.band.create({
@@ -134,7 +134,7 @@ export async function updateBandName(bandId: Band["id"], name: Band["name"]) {
 }
 
 export async function updateBandCode(bandId: Band["id"]) {
-  const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const code = Math.random().toString(36).substring(2, 8)?.toUpperCase();
   return prisma.band.update({
     where: { id: bandId },
     data: { code },

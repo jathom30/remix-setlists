@@ -59,7 +59,7 @@ export default function BandId() {
             <Avatar>
               <AvatarImage src={band.icon?.path || ""} alt={band.name} />
               <AvatarFallback>
-                {band.name.charAt(0).toUpperCase()}
+                {band.name.charAt(0)?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
             {band.name}

@@ -63,7 +63,7 @@ export default function Home() {
                         alt={band.name}
                       />
                       <AvatarFallback>
-                        {band.name.charAt(0).toUpperCase()}
+                        {band.name.charAt(0)?.toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <H3>{band.name}</H3>

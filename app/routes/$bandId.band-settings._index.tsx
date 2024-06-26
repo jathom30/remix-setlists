@@ -191,7 +191,9 @@ export default function BandSettings() {
         <CardContent className="flex items-center gap-2">
           <Avatar>
             <AvatarImage src={band.icon?.path || ""} alt={band.name} />
-            <AvatarFallback>{band.name.charAt(0).toUpperCase()}</AvatarFallback>
+            <AvatarFallback>
+              {band.name.charAt(0)?.toUpperCase()}
+            </AvatarFallback>
           </Avatar>
           <H3>{band.name}</H3>
         </CardContent>

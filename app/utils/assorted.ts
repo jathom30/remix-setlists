@@ -1,5 +1,5 @@
 export const capitalizeFirstLetter = (str: string) =>
-  str.charAt(0).toUpperCase() + str.slice(1);
+  str.charAt(0)?.toUpperCase() + str.slice(1);
 
 export const generateRandomHex = () =>
   "000000".replace(/0/g, function () {

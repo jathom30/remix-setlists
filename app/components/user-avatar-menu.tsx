@@ -35,7 +35,7 @@ export const UserAvatarMenu = () => {
             >
               {user.name
                 ?.split(" ")
-                .map((n) => n[0].toUpperCase())
+                .map((n) => n[0]?.toUpperCase())
                 .join(" ")}
             </Button>
           </DropdownMenuTrigger>
@@ -63,7 +63,7 @@ export const UserAvatarMenu = () => {
             >
               {user.name
                 ?.split(" ")
-                .map((n) => n[0].toUpperCase())
+                .map((n) => n[0]?.toUpperCase())
                 .join(" ")}
             </Button>
           </SheetTrigger>
