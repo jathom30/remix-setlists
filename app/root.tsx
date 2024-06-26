@@ -16,6 +16,7 @@ import { themeChange } from "theme-change";
 
 import stylesheet from "~/globals.css";
 
+import { userPrefs } from "./models/cookies.server";
 import { getUser } from "./session.server";
 import { getFeatureFlags } from "./utils/featureflags.server";
 import { honeypot } from "./utils/honeypot.server";
@@ -36,21 +37,26 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUser(request);
   // loading the feature flags here so that they are available to all routes via useFeatureFlags
   const featureFlags = await getFeatureFlags(user);
+  const cookieHeader = request.headers.get("Cookie");
+  const cookie = (await userPrefs.parse(cookieHeader)) || {};
+
   return json({
     user,
     featureFlags,
     honeyportInputProps: honeypot.getInputProps(),
+    theme: cookie.theme,
   });
 }
 
 export default function App() {
-  const { honeyportInputProps } = useLoaderData<typeof loader>();
+  const { honeyportInputProps, theme } = useLoaderData<typeof loader>();
   useEffect(() => {
     themeChange(false);
     // 👆 false parameter is required for react project
   });
 
   const { toasts } = useToaster();
+  console.log(theme);
 
   // a unique array of toasts based on messages
   // This is a bit of a hack. For some reason the server is double firing toasts.
@@ -63,7 +69,7 @@ export default function App() {
   }, []);
 
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className={`${theme} h-full`}>
       <head>
         <meta title="Setlists" />
         <meta charSet="utf-8" />
@@ -75,7 +81,7 @@ export default function App() {
         <link rel="manifest" href="/resources/manifest.webmanifest" />
         <Links />
       </head>
-      <body className="h-full bg-muted/40">
+      <body className="h-full bg-card/95">
         <Toaster>
           {(t) => {
             if (uniqueToasts.every((u) => u.id !== t.id)) return <></>;
