@@ -167,7 +167,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function BandSettings() {
   const { band, members } = useLoaderData<typeof loader>();
-  const user = useUser();
   const memberRole = useMemberRole();
   const isAdmin = memberRole === RoleEnum.ADMIN;
 
@@ -207,7 +206,7 @@ export default function BandSettings() {
           <CardDescription>Manage the members of your band.</CardDescription>
         </CardHeader>
         <CardContent>
-          <FlexList gap={1}>
+          <FlexList gap={2}>
             {members.map((member) => (
               <FlexList
                 direction="row"
@@ -219,7 +218,7 @@ export default function BandSettings() {
                   <P>{member.name}</P>
                   <Badge variant="secondary">{member.role}</Badge>
                 </FlexList>
-                {isAdmin || member.id === user.id ? (
+                {isAdmin ? (
                   <MemberSettings bandId={band.id} memberId={member.id} />
                 ) : null}
               </FlexList>
@@ -374,10 +373,12 @@ const DeleteMemberDialog = ({
           </DialogDescription>
         </DialogHeader>
         <CardContent>
-          <P>
-            You are the only Admin member of this band. Either promote someone
-            else to Admin or delete the band.
-          </P>
+          {isOnlyAdmin ? (
+            <P>
+              You are the only Admin member of this band. Either promote someone
+              else to Admin or delete the band.
+            </P>
+          ) : null}
         </CardContent>
         {!isOnlyAdmin ? (
           <Form method="post" id={form.id} onSubmit={form.onSubmit} noValidate>

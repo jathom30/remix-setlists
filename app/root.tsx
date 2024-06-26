@@ -56,7 +56,6 @@ export default function App() {
   });
 
   const { toasts } = useToaster();
-  console.log(theme);
 
   // a unique array of toasts based on messages
   // This is a bit of a hack. For some reason the server is double firing toasts.

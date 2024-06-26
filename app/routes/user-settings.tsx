@@ -220,7 +220,7 @@ export async function action({ request }: ActionFunctionArgs) {
       return submission.reply();
     }
     await removeMemberFromBand(submission.value.band_id, userId);
-    return null;
+    return redirect(".");
   }
 
   if (intent === IntentEnums.Enum["new-band"]) {
@@ -842,7 +842,6 @@ function ThemeSwitch() {
   const fetcher = useFetcher({ key: "theme" });
 
   const handleSwitchChange = (checked: boolean) => {
-    console.log(checked);
     fetcher.submit(
       {
         theme: checked ? "dark" : "light",
