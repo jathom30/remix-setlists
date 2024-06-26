@@ -65,7 +65,7 @@ export default function BandId() {
             {band.name}
           </CardTitle>
           <CardDescription>
-            <P>Created on {new Date(band.createdAt).toLocaleDateString()}</P>
+            Created on {new Date(band.createdAt).toLocaleDateString()}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-start gap-2">

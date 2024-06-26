@@ -159,7 +159,7 @@ export default function CreateSongRoute() {
   const tempoControl = useInputControl(fields.tempo);
   const feelControl = useInputControl(fields.feels);
   const showTempo = useInputControl(fields.showTempo);
-  const links = fields.links.getFieldList();
+  const linksControl = useInputControl(fields.links);
 
   return (
     <div className="p-2 space-y-2">
@@ -337,36 +337,75 @@ export default function CreateSongRoute() {
                 <div>
                   <Label>External Links</Label>
                   <FlexList gap={2}>
-                    {links.map((link, index) => (
-                      <div key={link.id}>
-                        <FlexList direction="row" gap={2}>
-                          <Input
-                            placeholder="Link"
-                            {...getInputProps(link, { type: "text" })}
-                          />
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            {...form.remove.getButtonProps({
-                              name: fields.links.name,
-                              index,
-                            })}
-                          >
-                            Remove
-                          </Button>
-                        </FlexList>
-                        <div className="text-sm text-destructive">
-                          {link.errors}
-                        </div>
-                      </div>
-                    ))}
+                    {Array.isArray(linksControl.value)
+                      ? linksControl.value?.map((link, index) => {
+                          if (linksControl.value)
+                            return (
+                              <div key={index}>
+                                <FlexList direction="row" gap={2}>
+                                  <Input
+                                    placeholder="Link"
+                                    defaultValue={linksControl.value[index]}
+                                    name={fields.links.name[index]}
+                                    onChange={(e) => {
+                                      if (
+                                        !linksControl.value ||
+                                        !Array.isArray(linksControl.value)
+                                      ) {
+                                        return;
+                                      }
+                                      linksControl.change(
+                                        linksControl.value.map((v, i) =>
+                                          i === index ? e.target.value : v,
+                                        ),
+                                      );
+                                    }}
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => {
+                                      if (
+                                        !linksControl.value ||
+                                        !Array.isArray(linksControl.value)
+                                      ) {
+                                        return;
+                                      }
+                                      linksControl.change(
+                                        linksControl.value.filter(
+                                          (_, i) => i !== index,
+                                        ),
+                                      );
+                                    }}
+                                  >
+                                    Remove
+                                  </Button>
+                                </FlexList>
+                                <div className="text-sm text-destructive">
+                                  {form.allErrors[
+                                    `${fields.links.name}[${index}]`
+                                  ]?.join(", ")}
+                                </div>
+                              </div>
+                            );
+                        })
+                      : null}
                     <Button
                       type="button"
                       variant="secondary"
-                      {...form.insert.getButtonProps({
-                        name: fields.links.name,
-                        defaultValue: "",
-                      })}
+                      onClick={() => {
+                        if (!linksControl.value) {
+                          linksControl.change([""]);
+                          return;
+                        }
+                        if (!Array.isArray(linksControl.value)) {
+                          return;
+                        }
+                        linksControl.change([
+                          ...linksControl.value,
+                          "https://",
+                        ]);
+                      }}
                     >
                       Add Link
                     </Button>
@@ -442,7 +481,9 @@ export default function CreateSongRoute() {
           <Card>
             <CardHeader>
               <div className="flex flex-col gap-2 justify-start sm:flex-row-reverse">
-                <Button type="submit">Create Song</Button>
+                <Button name="intent" value="submit">
+                  Create Song
+                </Button>
                 <Button variant="outline" asChild>
                   <Link to={`/${bandId}/songs`}>Cancel</Link>
                 </Button>
@@ -454,15 +495,3 @@ export default function CreateSongRoute() {
     </div>
   );
 }
-
-const SongLink = () => {
-  return (
-    <div>
-      <Label>External Links</Label>
-      <FlexList gap={2}>
-        <Input placeholder="Link" />
-        <Button variant="ghost">Remove</Button>
-      </FlexList>
-    </div>
-  );
-};

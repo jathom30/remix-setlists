@@ -224,9 +224,9 @@ export default function SongPage() {
             <CardTitle>Links</CardTitle>
           </CardHeader>
           <CardContent>
-            <FlexList items="start">
+            <FlexList items="start" gap={1}>
               {song.links.map((link) => (
-                <Button asChild variant="link" key={link.id}>
+                <Button asChild variant="link" size="sm" key={link.id}>
                   <a href={link.href} target="_blank" rel="noreferrer">
                     {link.href}
                   </a>
