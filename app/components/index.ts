@@ -1,4 +1,3 @@
-export * from "./dnd";
 export * from "./CatchContainer";
 export * from "./ErrorContainer";
 export * from "./ErrorMessage";

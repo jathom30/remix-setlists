@@ -43,6 +43,9 @@ export async function getFeelWithSongs(feelId: Feel["id"], nameQuery?: string) {
             contains: nameQuery?.trim(),
           },
         },
+        include: {
+          feels: true,
+        },
       },
     },
   });

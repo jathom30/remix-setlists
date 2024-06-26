@@ -1,7 +1,6 @@
-import { faCheck, faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Feel } from "@prisma/client";
 import { Jsonify } from "@remix-run/server-runtime/dist/jsonify";
+import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -51,10 +50,7 @@ export const MultiSelectFeel = ({
           }`}
         >
           {displayValue}
-          <FontAwesomeIcon
-            icon={faChevronDown}
-            className="ml-2 h-3 w-3 shrink-0 opacity-50"
-          />
+          <ChevronDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0">
@@ -79,8 +75,7 @@ export const MultiSelectFeel = ({
                     onChange(newValues);
                   }}
                 >
-                  <FontAwesomeIcon
-                    icon={faCheck}
+                  <Check
                     className={cn(
                       "mr-2 h-4 w-4",
                       values.includes(feel.id) ? "opacity-100" : "opacity-0",

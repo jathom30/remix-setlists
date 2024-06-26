@@ -1,9 +1,7 @@
-import { faAdd, faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, Outlet, useLocation } from "@remix-run/react";
-import { Boxes } from "lucide-react";
+import { Boxes, ChevronRight, CirclePlus } from "lucide-react";
 
 import {
   Breadcrumb,
@@ -48,7 +46,7 @@ export default function Home() {
           {!pathname.includes("add-band") ? (
             <Button size="sm" asChild>
               <Link to="add-band">
-                <FontAwesomeIcon icon={faAdd} className="mr-2" />
+                <CirclePlus className="w-4 h-4 mr-2" />
                 Add Band
               </Link>
             </Button>
@@ -67,7 +65,7 @@ export default function Home() {
             {isAddBandRoute ? (
               <>
                 <BreadcrumbSeparator>
-                  <FontAwesomeIcon icon={faChevronRight} />
+                  <ChevronRight className="w-4 h-4" />
                 </BreadcrumbSeparator>
 
                 <BreadcrumbItem>
@@ -80,7 +78,7 @@ export default function Home() {
             {isNewBandRoute ? (
               <>
                 <BreadcrumbSeparator>
-                  <FontAwesomeIcon icon={faChevronRight} />
+                  <ChevronRight className="w-4 h-4" />
                 </BreadcrumbSeparator>
 
                 <BreadcrumbItem>
@@ -93,7 +91,7 @@ export default function Home() {
             {isExistingBandRoute ? (
               <>
                 <BreadcrumbSeparator>
-                  <FontAwesomeIcon icon={faChevronRight} />
+                  <ChevronRight className="w-4 h-4" />
                 </BreadcrumbSeparator>
 
                 <BreadcrumbItem>

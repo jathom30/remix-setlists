@@ -1,5 +1,3 @@
-import { faUserLock } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -21,20 +19,14 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  CatchContainer,
-  ErrorContainer,
-  FlexList,
-  MaxWidth,
-  Link as CustomLink,
-  ItemBox,
-} from "~/components";
+import { CatchContainer, ErrorContainer, MaxWidth } from "~/components";
 import { verifyAccount } from "~/email/verify";
 import { generateTokenLink, verifyLogin } from "~/models/user.server";
 import { createUserSession, getUser } from "~/session.server";
@@ -249,24 +241,21 @@ export function ErrorBoundary() {
   if (error.status === 401) {
     return (
       <div className="h-full">
-        <MaxWidth>
-          <FlexList pad={4} items="center">
-            <FontAwesomeIcon icon={faUserLock} size="5x" />
-            <ItemBox>
-              <FlexList>
-                <h1 className="font-bold text-xl text-danger">
-                  Your account has been locked
-                </h1>
-                <p>
-                  You have exceeded the maximum number of attempts. Your account
-                  will remain locked until you reset your password.
-                </p>
-                <CustomLink to="/forgotPassword" kind="secondary">
-                  Reset password
-                </CustomLink>
-              </FlexList>
-            </ItemBox>
-          </FlexList>
+        <MaxWidth className="p-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Your account has been locked</CardTitle>
+              <CardDescription>
+                You have exceeded the maximum number of attempts. Your account
+                will remain locked until you reset your password.
+              </CardDescription>
+            </CardHeader>
+            <CardFooter>
+              <Button asChild variant="secondary">
+                <Link to="/forgotPassword">Reset password</Link>
+              </Button>
+            </CardFooter>
+          </Card>
         </MaxWidth>
       </div>
     );

@@ -5,7 +5,6 @@ import {
   passwordStrength,
   getPasswordError,
 } from "./assorted";
-import { buttonKind, buttonSize, badgeKind } from "./buttonStyles";
 import { valueAsType, getFields } from "./form";
 import { getSortFromParam, sortByLabel } from "./params";
 
@@ -71,24 +70,6 @@ describe("Assorted utils", () => {
 
     const passwordWithoutErrorsTests = passwordStrength("passw0rd!").tests;
     expect(getPasswordError(passwordWithoutErrorsTests)).toBe(undefined);
-  });
-});
-
-// Button styles
-describe("Button styles", () => {
-  test("Button kind", () => {
-    expect(buttonKind("accent")).toBe("btn-accent");
-    expect(buttonKind("active")).toBe("btn-active");
-  });
-
-  test("Button size", () => {
-    expect(buttonSize("sm")).toBe("btn-sm");
-    expect(buttonSize("md")).toBe("btn-md");
-  });
-
-  test("Badge kind", () => {
-    expect(badgeKind("accent")).toBe("badge-accent");
-    expect(badgeKind("error")).toBe("badge-error");
   });
 });
 

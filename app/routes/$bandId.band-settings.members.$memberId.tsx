@@ -1,12 +1,8 @@
 import { getInputProps, useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import {
-  faCheckCircle,
-  faXmarkCircle,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
 import { Form, useLoaderData, useParams } from "@remix-run/react";
+import { CircleCheck, CircleX } from "lucide-react";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -19,8 +15,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Label } from "~/components";
 import { H1, Large, P, Small } from "~/components/typography";
 import { getBand } from "~/models/band.server";
 import { getUserById } from "~/models/user.server";
@@ -197,24 +193,27 @@ export default function BandSettingsMembers() {
                 <Large>Band Controls</Large>
                 <ul>
                   <li>
-                    <FontAwesomeIcon
-                      icon={isAdmin ? faCheckCircle : faXmarkCircle}
-                      className={`mr-2 ${isAdmin ? "text-primary" : ""}`}
-                    />
+                    {isAdmin ? (
+                      <CircleCheck className="mr-2 text-primary" />
+                    ) : (
+                      <CircleX className="mr-2" />
+                    )}
                     Can add and remove members.
                   </li>
                   <li>
-                    <FontAwesomeIcon
-                      icon={isAdmin ? faCheckCircle : faXmarkCircle}
-                      className={`mr-2 ${isAdmin ? "text-primary" : ""}`}
-                    />
+                    {isAdmin ? (
+                      <CircleCheck className="mr-2 text-primary" />
+                    ) : (
+                      <CircleX className="mr-2" />
+                    )}
                     Can update band details such as name and avatar.
                   </li>
                   <li>
-                    <FontAwesomeIcon
-                      icon={isAdmin ? faCheckCircle : faXmarkCircle}
-                      className={`mr-2 ${isAdmin ? "text-primary" : ""}`}
-                    />
+                    {isAdmin ? (
+                      <CircleCheck className="mr-2 text-primary" />
+                    ) : (
+                      <CircleX className="mr-2" />
+                    )}
                     Can delete the band.
                   </li>
                 </ul>
@@ -223,31 +222,31 @@ export default function BandSettingsMembers() {
                 <Large>Setlist Controls</Large>
                 <ul>
                   <li>
-                    <FontAwesomeIcon
-                      icon={faCheckCircle}
-                      className="mr-2 text-primary"
-                    />
+                    <CircleCheck className="mr-2 text-primary" />
                     Can see setlists
                   </li>
                   <li>
-                    <FontAwesomeIcon
-                      icon={isSub ? faXmarkCircle : faCheckCircle}
-                      className={`mr-2 ${!isSub ? "text-primary" : ""}`}
-                    />
+                    {!isSub ? (
+                      <CircleCheck className="mr-2 text-primary" />
+                    ) : (
+                      <CircleX className="mr-2" />
+                    )}
                     Can create setlists
                   </li>
                   <li>
-                    <FontAwesomeIcon
-                      icon={isSub ? faXmarkCircle : faCheckCircle}
-                      className={`mr-2 ${!isSub ? "text-primary" : ""}`}
-                    />
+                    {!isSub ? (
+                      <CircleCheck className="mr-2 text-primary" />
+                    ) : (
+                      <CircleX className="mr-2" />
+                    )}
                     Can edit setlists
                   </li>
                   <li>
-                    <FontAwesomeIcon
-                      icon={isSub ? faXmarkCircle : faCheckCircle}
-                      className={`mr-2 ${!isSub ? "text-primary" : ""}`}
-                    />
+                    {!isSub ? (
+                      <CircleCheck className="mr-2 text-primary" />
+                    ) : (
+                      <CircleX className="mr-2" />
+                    )}
                     Can delete setlists
                   </li>
                 </ul>
@@ -256,31 +255,31 @@ export default function BandSettingsMembers() {
                 <Large>Song Controls</Large>
                 <ul>
                   <li>
-                    <FontAwesomeIcon
-                      icon={faCheckCircle}
-                      className="mr-2 text-primary"
-                    />
+                    <CircleCheck className="mr-2 text-primary" />
                     Can see songs
                   </li>
                   <li>
-                    <FontAwesomeIcon
-                      icon={isSub ? faXmarkCircle : faCheckCircle}
-                      className={`mr-2 ${!isSub ? "text-primary" : ""}`}
-                    />
+                    {!isSub ? (
+                      <CircleCheck className="mr-2 text-primary" />
+                    ) : (
+                      <CircleX className="mr-2" />
+                    )}
                     Can create songs
                   </li>
                   <li>
-                    <FontAwesomeIcon
-                      icon={isSub ? faXmarkCircle : faCheckCircle}
-                      className={`mr-2 ${!isSub ? "text-primary" : ""}`}
-                    />
+                    {!isSub ? (
+                      <CircleCheck className="mr-2 text-primary" />
+                    ) : (
+                      <CircleX className="mr-2" />
+                    )}
                     Can edit songs
                   </li>
                   <li>
-                    <FontAwesomeIcon
-                      icon={isSub ? faXmarkCircle : faCheckCircle}
-                      className={`mr-2 ${!isSub ? "text-primary" : ""}`}
-                    />
+                    {!isSub ? (
+                      <CircleCheck className="mr-2 text-primary" />
+                    ) : (
+                      <CircleX className="mr-2" />
+                    )}
                     Can delete songs
                   </li>
                 </ul>

@@ -1,7 +1,6 @@
-import { faAdd } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import { NavLink, useLoaderData } from "@remix-run/react";
+import { CirclePlus } from "lucide-react";
 import pluralize from "pluralize";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -36,7 +35,7 @@ export default function Home() {
           <Card className="hover:bg-accent hover:text-accent-foreground">
             <CardHeader className="flex-row gap-4 items-center flex-wrap">
               <H3>
-                <FontAwesomeIcon icon={faAdd} className="mr-2" />
+                <CirclePlus className="mr-2" />
                 Create New
               </H3>
               <div className="flex-grow" />
