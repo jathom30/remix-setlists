@@ -1,19 +1,25 @@
-import { faChevronLeft, faEnvelope } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json, redirect } from "@remix-run/node";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
+import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
+import { Mail } from "lucide-react";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
 
+import { Button } from "@/components/ui/button";
 import {
-  Button,
-  ErrorMessage,
-  Field,
-  FlexList,
-  Input,
-  ItemBox,
-  Link,
-} from "~/components";
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ErrorMessage, FlexList } from "~/components";
 import { verifyAccount } from "~/email/verify";
 import { generateTokenLink, getUserByEmail } from "~/models/user.server";
 import { getUser } from "~/session.server";
@@ -28,6 +34,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   return json({ email, user });
 }
+
+export const meta: MetaFunction = () => {
+  return [{ title: "Request Verification" }];
+};
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -70,19 +80,22 @@ export default function RequestVerification() {
 
   const displayEmail = user?.email || email || "";
   return (
-    <FlexList pad={4}>
-      <FontAwesomeIcon icon={faEnvelope} size="5x" />
-      <h1 className="text-center text-2xl font-bold">
-        Request a verification email
-      </h1>
-      <p className="text-sm text-slate-500 text-center">
-        It looks like your account is not yet verified with us
-      </p>
-      <ItemBox>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex gap-2 items-center">
+          <Mail />
+          Request Verification
+        </CardTitle>
+        <CardDescription>
+          It looks like your account is not yet verified with us.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
         <Form method="put">
           <HoneypotInputs />
           <FlexList>
-            <Field name="email" label="Email">
+            <div>
+              <Label htmlFor="email">Email</Label>
               <Input
                 name="email"
                 type="email"
@@ -92,17 +105,18 @@ export default function RequestVerification() {
               {actionData?.errors.email ? (
                 <ErrorMessage message={actionData?.errors.email} />
               ) : null}
-            </Field>
-
-            <Button kind="primary" type="submit">
-              Send email
-            </Button>
-            <Link to="/login" kind="ghost" icon={faChevronLeft}>
-              Back to log in
-            </Link>
+            </div>
           </FlexList>
         </Form>
-      </ItemBox>
-    </FlexList>
+      </CardContent>
+      <CardFooter className="flex-col">
+        <Button className="w-full" type="submit">
+          Send email
+        </Button>
+        <Button className="w-full" asChild variant="ghost">
+          <Link to="/login">Back to log in</Link>
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

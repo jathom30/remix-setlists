@@ -16,8 +16,18 @@ import * as React from "react";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
 import invariant from "tiny-invariant";
 
+import { Button } from "@/components/ui/button";
 import {
-  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
   CatchContainer,
   ErrorContainer,
   FlexList,
@@ -152,103 +162,120 @@ export default function Join() {
     <div className="h-full">
       <FlexList pad={4}>
         <Form method="post" className="space-y-6">
-          <HoneypotInputs />
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium">
-              Name
-            </label>
-            <div className="mt-1">
-              <input
-                ref={nameRef}
-                id="name"
-                required
-                // eslint-disable-next-line jsx-a11y/no-autofocus
-                autoFocus={true}
-                name="name"
-                type="text"
-                aria-invalid={actionData?.errors?.name ? true : undefined}
-                aria-describedby="name-error"
-                className="input input-bordered w-full"
-              />
-              {actionData?.errors?.name ? (
-                <div className="pt-1 text-error" id="email-error">
-                  {actionData.errors.name}
+          <Card>
+            <HoneypotInputs />
+            <CardHeader>
+              <CardTitle>Sign up</CardTitle>
+              <CardDescription>
+                Create an account, then enjoy the app
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div>
+                <Label htmlFor="name" className="block text-sm font-medium">
+                  Name
+                </Label>
+                <div className="mt-1">
+                  <Input
+                    ref={nameRef}
+                    id="name"
+                    required
+                    placeholder="Your name"
+                    // eslint-disable-next-line jsx-a11y/no-autofocus
+                    autoFocus={true}
+                    name="name"
+                    type="text"
+                    aria-invalid={actionData?.errors?.name ? true : undefined}
+                    aria-describedby="name-error"
+                    className="input input-bordered w-full"
+                  />
+                  {actionData?.errors?.name ? (
+                    <div className="pt-1 text-error" id="email-error">
+                      {actionData.errors.name}
+                    </div>
+                  ) : null}
                 </div>
-              ) : null}
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium">
-              Email address
-            </label>
-            <div className="mt-1">
-              <input
-                ref={emailRef}
-                id="email"
-                required
-                name="email"
-                type="email"
-                autoComplete="email"
-                aria-invalid={actionData?.errors?.email ? true : undefined}
-                aria-describedby="email-error"
-                className="input input-bordered w-full"
-              />
-              {actionData?.errors?.email ? (
-                <div className="pt-1 text-error" id="email-error">
-                  {actionData.errors.email}
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium">
-              Password
-            </label>
-            <div className="mt-1">
-              <input
-                id="password"
-                ref={passwordRef}
-                name="password"
-                type="password"
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="new-password"
-                aria-invalid={actionData?.errors?.password ? true : undefined}
-                aria-describedby="password-error"
-                className="input input-bordered w-full"
-              />
-              <div className="pt-2">
-                <PasswordStrength tests={tests} strength={strength} />
               </div>
-              {actionData?.errors?.password ? (
-                <div className="pt-1 text-error" id="password-error">
-                  {actionData.errors.password}
-                </div>
-              ) : null}
-            </div>
-          </div>
 
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-          <FlexList>
-            <Button type="submit" kind="primary">
-              Create Account
-            </Button>
-          </FlexList>
-          <div className="flex items-center justify-center">
-            <div className="text-center text-sm">
-              Already have an account?{" "}
-              <Link
-                className="link link-primary"
-                to={{
-                  pathname: "/login",
-                  search: searchParams.toString(),
-                }}
-              >
-                Log in
-              </Link>
-            </div>
-          </div>
+              <div>
+                <Label htmlFor="email" className="block text-sm font-medium">
+                  Email address
+                </Label>
+                <div className="mt-1">
+                  <Input
+                    ref={emailRef}
+                    id="email"
+                    required
+                    placeholder="email@email.com"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    aria-invalid={actionData?.errors?.email ? true : undefined}
+                    aria-describedby="email-error"
+                    className="input input-bordered w-full"
+                  />
+                  {actionData?.errors?.email ? (
+                    <div className="pt-1 text-error" id="email-error">
+                      {actionData.errors.email}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="password" className="block text-sm font-medium">
+                  Password
+                </Label>
+                <div className="mt-1">
+                  <Input
+                    id="password"
+                    ref={passwordRef}
+                    name="password"
+                    type="password"
+                    placeholder="***********"
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="new-password"
+                    aria-invalid={
+                      actionData?.errors?.password ? true : undefined
+                    }
+                    aria-describedby="password-error"
+                    className="input input-bordered w-full"
+                  />
+                  <div className="pt-2">
+                    <PasswordStrength tests={tests} strength={strength} />
+                  </div>
+                  {actionData?.errors?.password ? (
+                    <div className="pt-1 text-error" id="password-error">
+                      {actionData.errors.password}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+
+              <input type="hidden" name="redirectTo" value={redirectTo} />
+            </CardContent>
+            <CardFooter className="flex-col">
+              <FlexList>
+                <Button type="submit">Create Account</Button>
+              </FlexList>
+              <div className="flex items-center justify-center">
+                <div className="text-center text-sm">
+                  Already have an account?{" "}
+                  <Button asChild variant="link">
+                    <Link
+                      className="link link-primary"
+                      to={{
+                        pathname: "/login",
+                        search: searchParams.toString(),
+                      }}
+                    >
+                      Log in
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </CardFooter>
+          </Card>
         </Form>
       </FlexList>
     </div>

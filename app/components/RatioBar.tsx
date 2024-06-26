@@ -21,19 +21,19 @@ export const RatioBar = ({
         initial={{ height: 0 }}
         animate={{ height: 32 }}
         transition={{ delay: 0.3 }}
-        className="relative w-full bg-base-300 rounded overflow-hidden"
+        className="relative w-full bg-card rounded overflow-hidden"
       >
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${stopPercent + startPercent}%` }}
           transition={{ delay: 0.5 }}
-          className="absolute left-0 inset-y-0 bg-accent-focus h-full"
+          className="absolute left-0 inset-y-0 bg-primary/50 h-full"
         />
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${startPercent}%` }}
           transition={{ delay: 0.5 }}
-          className="absolute left-0 inset-y-0 bg-accent h-full"
+          className="absolute left-0 inset-y-0 bg-primary h-full"
         />
       </motion.div>
 
@@ -44,7 +44,7 @@ export const RatioBar = ({
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="w-4 h-4 bg-accent rounded"
+              className="w-4 h-4 bg-primary rounded"
             />
             <motion.span
               initial={{ opacity: 0, y: -10 }}
@@ -61,7 +61,7 @@ export const RatioBar = ({
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="w-4 h-4 bg-accent-focus rounded"
+              className="w-4 h-4 bg-primary/50 rounded"
             />
             <motion.span
               initial={{ opacity: 0, y: -10 }}
@@ -78,7 +78,7 @@ export const RatioBar = ({
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="w-4 h-4 bg-base-300 rounded"
+              className="w-4 h-4 bg-card rounded"
             />
             <motion.span
               initial={{ opacity: 0, y: -10 }}

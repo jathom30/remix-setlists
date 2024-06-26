@@ -49,12 +49,15 @@ export async function createUser(
     },
   });
 
-  console.log("IN HERE CREATING A USER", user);
   return user;
 }
 
 export async function deleteUserByEmail(email: User["email"]) {
   return prisma.user.delete({ where: { email } });
+}
+
+export async function deleteUserById(id: User["id"]) {
+  return prisma.user.delete({ where: { id } });
 }
 
 export async function verifyLogin(
@@ -124,7 +127,6 @@ export async function generateTokenLink(
   pathname: string,
   domainUrl: string,
 ) {
-  console.log("GENERATING LINK TOKEN");
   const user = await getUserByEmail(email);
   if (!user) {
     throw new Error("User does not exist");

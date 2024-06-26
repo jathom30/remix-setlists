@@ -1,20 +1,40 @@
-import { FlexList } from "./FlexList";
-import { Link } from "./Link";
+import { Link } from "@remix-run/react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
 import { MaxWidth } from "./MaxWidth";
+import { P } from "./typography";
 
 export const RestrictedAlert = ({ dismissTo }: { dismissTo: string }) => {
   return (
-    <MaxWidth>
-      <FlexList pad={4}>
-        <h1 className="text-3xl font-bold">Restricted Access</h1>
-        <div>
-          <p>You do not have proper access to perform this action.</p>
-          <p>
-            To gain access, have an <b>Admin</b> adjust your role in the band.
-          </p>
-        </div>
-        <Link to={dismissTo}>Ok</Link>
-      </FlexList>
+    <MaxWidth className="p-2">
+      <Card>
+        <CardHeader>
+          <CardTitle>Restricted Access</CardTitle>
+          <CardDescription>
+            You do not have proper access to perform this action.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <P>
+            To gain access, hand an <strong>Admin</strong> adjust your role in
+            the band.
+          </P>
+        </CardContent>
+        <CardFooter>
+          <Button asChild variant="secondary">
+            <Link to={dismissTo}>Ok</Link>
+          </Button>
+        </CardFooter>
+      </Card>
     </MaxWidth>
   );
 };

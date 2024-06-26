@@ -1,34 +1,24 @@
 import type { Feel, Song } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/node";
 
-const getY = (tempo: number) => {
-  // scale is based on 13 high svg
-  // TODO should make this more responsive
-  switch (tempo) {
-    case 1:
-      return 12;
-    case 2:
-      return 9;
-    case 3:
-      return 6;
-    case 4:
-      return 3;
-    case 5:
-      return 1;
-    default:
-      return 13;
-  }
+export const svgHeight = 13;
+
+const getY = (tempo: number, maxTempo: number) => {
+  return svgHeight - (tempo / maxTempo) * 13;
 };
 const getX = (index: number, numberOfPoints: number, width: number) => {
   return (width / numberOfPoints) * index;
 };
-export const getCoords = (tempos: Song["tempo"][], width: number) =>
-  tempos.map((tempo, i) => {
-    return {
-      x: getX(i, tempos.length - 1, width),
-      y: getY(tempo),
-    };
-  });
+export const getCoords = (tempos: Song["tempo"][], width: number) => {
+  const validTempos = tempos.filter(
+    (tempo): tempo is number => typeof tempo === "number",
+  );
+  const maxTempo = Math.max(...validTempos);
+  return tempos.map((tempo, i) => ({
+    x: getX(i, tempos.length - 1, width),
+    y: getY(tempo || 0, maxTempo),
+  }));
+};
 
 export const getPointsWithCurve = (coords: { x: number; y: number }[]) =>
   coords.map((coord, i) => {
@@ -52,7 +42,10 @@ function getCoordinatesForPercent(percent: number) {
 }
 
 export const createPaths = (
-  slices: { percent: number; feel: SerializeFrom<Feel | null> }[],
+  slices: {
+    percent: number;
+    feel: Pick<SerializeFrom<Feel>, "color" | "label">;
+  }[],
 ) => {
   let cumulativePercent = 0;
   return slices.map((slice) => {

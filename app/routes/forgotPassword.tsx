@@ -1,27 +1,29 @@
-import {
-  faChevronLeft,
-  faEnvelope,
-  faKey,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json } from "@remix-run/node";
-import type { ActionFunctionArgs } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
+import { Form, Link, useActionData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
+import { Button } from "@/components/ui/button";
 import {
-  Button,
-  ErrorMessage,
-  Field,
-  FlexList,
-  Input,
-  ItemBox,
-  Link,
-} from "~/components";
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ErrorMessage, FlexList } from "~/components";
+import { Small } from "~/components/typography";
 import { passwordReset } from "~/email/password";
 import { generateTokenLink, getUserByEmail } from "~/models/user.server";
 import { validateEmail } from "~/utils";
 import { getDomainUrl } from "~/utils/assorted";
+
+export const meta: MetaFunction = () => {
+  return [{ title: "Forgot Password" }];
+};
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -60,53 +62,54 @@ export default function ForgotPassword() {
   return (
     <div className="max-w-lg m-auto mt-8">
       <FlexList pad={4}>
-        {emailSuccess ? (
-          <>
-            <FontAwesomeIcon icon={faEnvelope} size="5x" />
-            <h1 className="text-center text-2xl font-bold">Check your email</h1>
-            <span className="text-center text-sm text-slate-500">
-              We sent a password reset link to <strong>{emailSuccess}</strong>
-            </span>
-            <ItemBox>
+        <Card>
+          {emailSuccess ? (
+            <>
+              <CardHeader>
+                <CardTitle>Check Your Email</CardTitle>
+                <CardDescription>
+                  {" "}
+                  We sent a password reset link to{" "}
+                  <strong>{emailSuccess}</strong>
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Small>Didn't receive the email?</Small>
+              </CardContent>
               <Form method="put">
-                <span className="text-center text-sm text-slate-500">
-                  Didn't receive the email?{" "}
-                  <button
-                    name="intent"
-                    value="resend"
-                    className="text-blue-500 underline"
-                  >
-                    Click to resend
-                  </button>
-                </span>
+                <CardFooter>
+                  <Button className="w-full" name="intent" value="resend">
+                    Click to resent
+                  </Button>
+                </CardFooter>
               </Form>
-            </ItemBox>
-          </>
-        ) : (
-          <>
-            <FontAwesomeIcon icon={faKey} size="5x" />
-            <h1 className="text-center text-2xl font-bold">Forgot password?</h1>
-            <span className="text-center text-sm text-slate-500">
-              No worries, we'll send you reset instructions.
-            </span>
-            <ItemBox>
+            </>
+          ) : (
+            <>
+              <CardHeader>
+                <CardTitle>Forgot Password?</CardTitle>
+                <CardDescription>
+                  No worries, we'll send you reset instructions.
+                </CardDescription>
+              </CardHeader>
               <Form method="put">
-                <FlexList>
-                  <Field name="email" label="Email">
-                    <Input name="email" placeholder="Enter your email" />
-                  </Field>
+                <CardContent>
+                  <Label htmlFor="email">Email</Label>
+                  <Input name="email" placeholder="Enter your email" />
                   {emailError ? <ErrorMessage message={emailError} /> : null}
-                  <Button type="submit" kind="primary">
+                </CardContent>
+                <CardFooter>
+                  <Button className="w-full" type="submit">
                     Reset password
                   </Button>
-                </FlexList>
+                </CardFooter>
               </Form>
-            </ItemBox>
-          </>
-        )}
-        <Link to="/login" icon={faChevronLeft}>
-          Back to log in
-        </Link>
+            </>
+          )}
+        </Card>
+        <Button variant="ghost" asChild>
+          <Link to="/login">Back to log in</Link>
+        </Button>
       </FlexList>
     </div>
   );

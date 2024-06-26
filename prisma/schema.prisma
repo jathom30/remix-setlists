@@ -5,7 +5,6 @@ datasource db {
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["jsonProtocol"]
 }
 
 model User {
@@ -122,13 +121,13 @@ model SongsInSets {
 model Song {
   id        String  @id @default(cuid())
   name      String
-  length    Int
+  length    Float
   isCover   Boolean @default(false)
   author    String?
   note      String?
   keyLetter String?
   isMinor   Boolean @default(false)
-  tempo     Int
+  tempo     Int?
   position  String
   rank      String
   feels     Feel[]

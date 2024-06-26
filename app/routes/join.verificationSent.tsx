@@ -1,10 +1,18 @@
-import { faEnvelopeOpen } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Form, Link } from "@remix-run/react";
+import { Mail } from "lucide-react";
 
-import { FlexList, ItemBox } from "~/components";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { FlexList } from "~/components";
+import { Muted, P } from "~/components/typography";
 import { getUser } from "~/session.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -17,32 +25,36 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return null;
 }
 
+export const meta: MetaFunction = () => {
+  return [{ title: "Verification Sent" }];
+};
+
 export default function VerificationSent() {
   return (
-    <FlexList pad={4}>
-      <FontAwesomeIcon icon={faEnvelopeOpen} size="5x" />
-      <h1 className="text-center text-2xl font-bold">Verification sent</h1>
-      <ItemBox>
-        <FlexList>
-          <p>We've sent you an email with a verification link.</p>
-          <p>
-            Please click the link in that email to verify your account and start
-            using <strong>setlists.pro</strong>
-          </p>
-        </FlexList>
-      </ItemBox>
-      <Form method="put">
-        <span>
-          Need a fresh link?{" "}
-          <Link
-            to="/join/requestVerification"
-            className="text-blue-500 underline"
-          >
-            click here
-          </Link>
-          .
-        </span>
-      </Form>
-    </FlexList>
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex gap-2 items-center">
+          <Mail />
+          Verification Sent
+        </CardTitle>
+        <CardDescription>
+          We've sent you an email with a verification link.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <P>
+          Please click the link in that email to verify your account and start
+          using <strong>setlists.pro</strong>
+        </P>
+      </CardContent>
+      <FlexList pad={4}>
+        <Form method="put" className="flex gap-2 items-center">
+          <Muted>Need a fresh link? </Muted>
+          <Button asChild variant="link">
+            <Link to="/join/requestVerification">click here</Link>
+          </Button>
+        </Form>
+      </FlexList>
+    </Card>
   );
 }

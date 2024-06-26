@@ -17,8 +17,8 @@ export async function getBands(userId: User["id"]) {
       name: true,
       icon: true,
       members: {
-        where: { userId },
-        select: { role: true },
+        // where: { userId },
+        select: { role: true, userId: true },
       },
     },
   });
@@ -38,6 +38,13 @@ export async function getBand(bandId: Band["id"]) {
   return await prisma.band.findUnique({
     where: { id: bandId },
     include: { icon: true, members: true },
+  });
+}
+
+export async function getBandWithFeels(bandId: Band["id"]) {
+  return await prisma.band.findUnique({
+    where: { id: bandId },
+    include: { feels: true },
   });
 }
 
@@ -103,6 +110,27 @@ export async function updateBand(bandId: Band["id"], band: Partial<Band>) {
     },
   });
   return updatedBand;
+}
+
+export async function updateBandName(bandId: Band["id"], name: Band["name"]) {
+  const originalBand = await prisma.band.findUnique({
+    where: { id: bandId },
+    select: { name: true },
+  });
+  await prisma.usersInBands.updateMany({
+    where: { bandId },
+    data: { bandName: name },
+  });
+  await prisma.song.updateMany({
+    where: { bandId, author: originalBand?.name },
+    data: {
+      author: name,
+    },
+  });
+  return await prisma.band.update({
+    where: { id: bandId },
+    data: { name },
+  });
 }
 
 export async function updateBandCode(bandId: Band["id"]) {

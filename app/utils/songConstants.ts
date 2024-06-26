@@ -1,5 +1,3 @@
-import { getColor } from "./tailwindColors";
-
 export const keyLetters = [
   "Ab",
   "A",
@@ -24,5 +22,9 @@ export const majorMinorOptions = [
   { label: "Minor", value: true },
 ];
 
-const tempoColors = ["info", "accent", "success", "warning", "error"].reverse();
-export const heatColors = tempoColors.map((color) => getColor(color));
+export const heatColors = [
+  "#2A9D8F",
+  "#E9C46A",
+  "#F4A261",
+  "#E76F51",
+].reverse();

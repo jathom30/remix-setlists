@@ -2,7 +2,7 @@ import type { Band, Setlist, Song } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 import { getSortFromParam } from "~/utils/params";
-import type { SetlistSettings } from "~/utils/setlists";
+import type { SetlistSettings, TAutoSetlist } from "~/utils/setlists";
 import {
   createRandomSetsByPosition,
   setOfLength,
@@ -33,6 +33,30 @@ export async function createSetlist(bandId: Band["id"], songIds: Song["id"][]) {
   });
 }
 
+export async function createMultiSetSetlist(
+  bandId: Band["id"],
+  sets: Song["id"][][],
+  setlistName?: string,
+) {
+  return await prisma.setlist.create({
+    data: {
+      name: setlistName || "Temp name",
+      bandId,
+      sets: {
+        create: sets.map((set, i) => ({
+          positionInSetlist: i,
+          songs: {
+            create: set.map((songId, index) => ({
+              songId,
+              positionInSet: index,
+            })),
+          },
+        })),
+      },
+    },
+  });
+}
+
 export async function getSetlists(
   bandId: Band["id"],
   params?: { q?: string; sort?: string },
@@ -58,13 +82,42 @@ export async function getSetlists(
   return setlists;
 }
 
+export async function getRecentSetlists(bandId: Band["id"]) {
+  return prisma.setlist.findMany({
+    where: { bandId },
+    include: {
+      sets: {
+        select: {
+          songs: { include: { song: { select: { length: true } } } },
+          updatedAt: true,
+        },
+      },
+    },
+    orderBy: { updatedAt: "desc" },
+    take: 5,
+  });
+}
+
 export async function getSetlist(setlistId: Setlist["id"]) {
   return prisma.setlist.findUnique({
     where: { id: setlistId },
     include: {
+      band: {
+        select: { name: true },
+      },
       sets: {
         include: {
-          songs: { include: { song: true }, orderBy: { positionInSet: "asc" } },
+          songs: {
+            include: {
+              song: {
+                include: {
+                  feels: true,
+                  links: true,
+                },
+              },
+            },
+            orderBy: { positionInSet: "asc" },
+          },
         },
         orderBy: { positionInSetlist: "asc" },
       },
@@ -148,6 +201,47 @@ export async function updateSetlist(
   });
 }
 
+export async function updateMultiSetSetlist(
+  setlistId: Setlist["id"],
+  sets: Song["id"][][],
+) {
+  return await prisma.setlist.update({
+    where: { id: setlistId },
+    data: {
+      sets: {
+        deleteMany: {},
+        create: sets.map((set, i) => ({
+          positionInSetlist: i,
+          songs: {
+            create: set.map((songId, index) => ({
+              songId,
+              positionInSet: index,
+            })),
+          },
+        })),
+      },
+    },
+    include: {
+      sets: {
+        include: {
+          songs: {
+            include: {
+              song: {
+                include: {
+                  feels: true,
+                  links: true,
+                },
+              },
+            },
+            orderBy: { positionInSet: "asc" },
+          },
+        },
+        orderBy: { positionInSetlist: "asc" },
+      },
+    },
+  });
+}
+
 export async function deleteSetlist(setlistId: Setlist["id"]) {
   return prisma.setlist.delete({
     where: { id: setlistId },
@@ -186,7 +280,6 @@ export async function createSetlistAuto(
       bandId,
     },
   });
-  // const setlistId = setlist.id
   // get all songs filtered based on filter params
   const params = {
     ...(noBallads ? { tempos: [2, 3, 4, 5] } : null),
@@ -226,6 +319,91 @@ export async function createSetlistAuto(
   return setlist.id;
 }
 
+export async function createAutoSetlist(
+  bandId: Band["id"],
+  params: TAutoSetlist,
+) {
+  const {
+    artistPreference,
+    excludeBallads,
+    name,
+    numSets,
+    setLength,
+    wildCard,
+  } = params;
+  // create default setlist to attach sets to
+  const setlist = await prisma.setlist.create({
+    data: {
+      name,
+      bandId,
+    },
+  });
+  const bandName = await prisma.band.findUnique({
+    where: { id: bandId },
+    select: { name: true },
+  });
+  if (!bandName) {
+    throw new Response("Band not found", { status: 404 });
+  }
+
+  // get all songs (filtered by params if no wild card)
+  const songs = await prisma.song.findMany({
+    where: {
+      bandId,
+      ...(wildCard
+        ? {}
+        : {
+            author:
+              artistPreference === "no-covers"
+                ? {
+                    equals: bandName.name,
+                  }
+                : artistPreference === "covers"
+                ? {
+                    not: {
+                      equals: bandName.name,
+                    },
+                  }
+                : {},
+            tempo: excludeBallads
+              ? {
+                  gte: 80,
+                }
+              : {},
+          }),
+    },
+  });
+  // if wild card, include all songs. Otherwise, exclude songs with rank "exclude"
+  const availableSongs = songs.filter((song) =>
+    wildCard ? true : song.rank !== "exclude",
+  );
+  // split songs into sets by position so each desired set has an even distribution of openers and closers
+  const setsByPosition = createRandomSetsByPosition(availableSongs, numSets);
+
+  // trim above sets to desired minute length and sort songs so sets start with openers and end with closers
+  const setsByLength = Object.keys(setsByPosition).reduce(
+    (sets: Record<string, Song[]>, key) => ({
+      ...sets,
+      [key]: setOfLength(setsByPosition[key], setLength),
+    }),
+    {},
+  );
+
+  // sort by position
+  const sortedByPosition = sortSetsByPosition(setsByLength);
+
+  // create sets in db
+  Object.values(sortedByPosition).forEach(async (songs, i) => {
+    await createSet(
+      setlist.id,
+      songs.map((song) => song.id),
+      i,
+    );
+  });
+
+  return setlist;
+}
+
 // cloned setlist is created when editing
 // cloned setlist is manipulated, upon saving, use editedFromId to overwrite OG setlist
 export async function cloneSetlist(setlistId: Setlist["id"]) {
@@ -259,6 +437,29 @@ export async function cloneSetlist(setlistId: Setlist["id"]) {
   });
 }
 
+export const copySetlist = async (setlistId: Setlist["id"]) => {
+  const originalSetlist = await getSetlist(setlistId);
+  if (!originalSetlist) {
+    throw new Response("Original setlist not found", { status: 404 });
+  }
+  return await prisma.setlist.create({
+    data: {
+      name: `${originalSetlist.name} (clone)`,
+      bandId: originalSetlist.bandId,
+      sets: {
+        create: originalSetlist.sets.map((set) => ({
+          songs: {
+            create: set.songs.map((song) => ({
+              songId: song.songId,
+              positionInSet: song.positionInSet,
+            })),
+          },
+        })),
+      },
+    },
+  });
+};
+
 export async function overwriteSetlist(clonedSetlistId: string) {
   const clonedSetlist = await getSetlist(clonedSetlistId);
   if (!clonedSetlist?.editedFromId) {
@@ -287,4 +488,14 @@ export async function overwriteSetlist(clonedSetlistId: string) {
   // delete cloned setlist
   await deleteSetlist(clonedSetlistId);
   return originalSetlist?.id;
+}
+
+export async function updateSetlistName(
+  setlistId: Setlist["id"],
+  name: Setlist["name"],
+) {
+  return await prisma.setlist.update({
+    where: { id: setlistId },
+    data: { name },
+  });
 }

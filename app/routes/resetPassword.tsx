@@ -1,32 +1,33 @@
-import {
-  faChevronLeft,
-  faCircleXmark,
-  faKey,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import {
   Form,
+  Link,
   useActionData,
   useLoaderData,
-  Link as RemixLink,
   useNavigation,
 } from "@remix-run/react";
+import { Ban } from "lucide-react";
 import { useState } from "react";
 import { useSpinDelay } from "spin-delay";
 import invariant from "tiny-invariant";
 
+import { Button } from "@/components/ui/button";
 import {
-  Button,
-  ErrorMessage,
-  Field,
-  FlexList,
-  Input,
-  ItemBox,
-  Link,
-  PasswordStrength,
-} from "~/components";
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ErrorMessage, FlexList, PasswordStrength } from "~/components";
 import { deleteToken } from "~/models/token.server";
 import {
   compareToken,
@@ -57,6 +58,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
   return json({ email: user.email });
 }
+
+export const meta: MetaFunction = () => {
+  return [{ title: "Password Reset" }];
+};
 
 export async function action({ request }: ActionFunctionArgs) {
   const url = new URL(request.url);
@@ -109,15 +114,15 @@ export default function ResetPassword() {
 
   return (
     <div className="max-w-lg m-auto mt-8">
-      <FlexList pad={4}>
-        <FontAwesomeIcon icon={faKey} size="5x" />
-        <h1 className="text-center text-2xl font-bold">
-          Set new password for {email}
-        </h1>
-        <ItemBox>
-          <Form method="put">
+      <Card>
+        <CardHeader>
+          <CardTitle>Set a new password for {email}</CardTitle>
+        </CardHeader>
+        <Form method="put">
+          <CardContent>
             <FlexList>
-              <Field name="password" label="Password">
+              <div>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   name="password"
                   type="password"
@@ -127,9 +132,10 @@ export default function ResetPassword() {
                 {actionData?.errors.password ? (
                   <ErrorMessage message={actionData?.errors.password} />
                 ) : null}
-              </Field>
+              </div>
               <PasswordStrength tests={tests} strength={strength} />
-              <Field name="verifyPassword" label="Verify password">
+              <div>
+                <Label htmlFor="verifyPassword">Verify password</Label>
                 <Input
                   name="verifyPassword"
                   type="password"
@@ -138,48 +144,42 @@ export default function ResetPassword() {
                 {actionData?.errors?.verifyPassword ? (
                   <ErrorMessage message="Passwords must match" />
                 ) : null}
-              </Field>
-              <Button
-                kind="primary"
-                type="submit"
-                isDisabled={!isValid}
-                isSaving={isSubmitting}
-              >
-                Reset password
-              </Button>
-              <Link to="/login" kind="ghost" icon={faChevronLeft}>
-                Back to log in
-              </Link>
+              </div>
             </FlexList>
-          </Form>
-        </ItemBox>
-      </FlexList>
+          </CardContent>
+          <CardFooter className="flex-row">
+            <Button type="submit" disabled={!isValid || isSubmitting}>
+              {isSubmitting ? "Resetting password..." : "Reset password"}
+            </Button>
+            <Button value="ghost" asChild>
+              <Link to="/login">Back to log in</Link>
+            </Button>
+          </CardFooter>
+        </Form>
+      </Card>
     </div>
   );
 }
 
 export function ErrorBoundary() {
   return (
-    <div className="max-w-lg m-auto mt-8">
-      <FlexList pad={4}>
-        <FontAwesomeIcon icon={faCircleXmark} size="5x" />
-        <h1 className="text-center text-2xl font-bold">Oops...</h1>
-        <ItemBox>
-          <FlexList>
-            <p>It looks like this link is either incorrect or too old.</p>
-            <p>
-              If you'd like to request a new email,{" "}
-              <RemixLink
-                className="text-blue-500 underline"
-                to="/forgotPassword"
-              >
-                click here
-              </RemixLink>
-              .
-            </p>
-          </FlexList>
-        </ItemBox>
-      </FlexList>
+    <div className="max-w-lg m-auto mt-8 h-screen flex items-center justify-center p-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Ban />
+            Oops...
+          </CardTitle>
+          <CardDescription>
+            It looks like this link is either incorrect or too old.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button className="w-full" variant="link" asChild>
+            <Link to="/forgotPassword">Request a new email</Link>
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -1,4 +1,3 @@
-import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import type {
   LoaderFunctionArgs,
   MetaFunction,
@@ -6,6 +5,7 @@ import type {
 } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
+  Link,
   isRouteErrorResponse,
   useLoaderData,
   useLocation,
@@ -14,19 +14,23 @@ import {
 import pluralize from "pluralize";
 import invariant from "tiny-invariant";
 
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   CatchContainer,
-  Divider,
   ErrorContainer,
-  FlexHeader,
   FlexList,
-  Label,
-  Link,
-  MaxHeightContainer,
+  Header,
   MaxWidth,
-  Navbar,
-  Title,
 } from "~/components";
+import { H1, P } from "~/components/typography";
 import { getPublicSetlist } from "~/models/setlist.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -56,54 +60,54 @@ export default function PublicSetlist() {
   const { setlist } = useLoaderData<typeof loader>();
   const { search } = useLocation();
   const urlSearchParams = new URLSearchParams(search);
-  const setlistId = urlSearchParams.get("setlistId");
   const bandId = urlSearchParams.get("bandId");
+  const setlistId = urlSearchParams.get("setlistId");
 
   const setLength = (set: SerializeFrom<(typeof setlist)["sets"]>[number]) =>
     set.songs.reduce((acc, song) => (acc += song.song?.length || 0), 0);
 
   return (
-    <MaxHeightContainer
-      fullHeight
-      header={
-        <Navbar>
-          <FlexHeader>
-            <Title>{setlist.name}</Title>
-            <Link
-              to={`/${bandId}/setlist/${setlistId}`}
-              icon={faEllipsisV}
-              isCollapsing
-              kind="ghost"
-            >
-              Details
-            </Link>
-          </FlexHeader>
-        </Navbar>
-      }
-    >
-      <MaxWidth>
-        <FlexList pad={4}>
-          {setlist.sets.map((set) => (
-            <div key={set.id}>
-              <Label>
-                Set {set.positionInSetlist + 1} -{" "}
-                {pluralize("minutes", setLength(set), true)}
-              </Label>
-              <FlexList gap={0}>
-                <ul>
-                  {set.songs.map((song) => (
-                    <li key={song.songId}>
-                      {song.positionInSet + 1}. {song.song?.name}
-                    </li>
-                  ))}
-                </ul>
-                <Divider />
-              </FlexList>
+    <div className="bg-muted/40 h-full">
+      <div className="p-2 border-b sticky top-0 inset-x-0 z-10 bg-background">
+        <Header>
+          <div></div>
+          <FlexList direction="row" gap={2} items="center">
+            <div className="hidden md:block">
+              <Badge variant="secondary">bandMatch?.data?.memberRole</Badge>
             </div>
-          ))}
-        </FlexList>
+            <Button variant="secondary" asChild>
+              <Link to={`/${bandId}/setlists/${setlistId}`}>
+                Login to see full details
+              </Link>
+            </Button>
+          </FlexList>
+        </Header>
+      </div>
+      <MaxWidth>
+        <div className="p-2 space-y-2">
+          <H1>{setlist.name}</H1>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {setlist.sets.map((set, index) => (
+              <Card key={set.id}>
+                <CardHeader>
+                  <CardTitle className="text-lg">Set {index + 1}</CardTitle>
+                  <CardDescription>
+                    {pluralize("set", setLength(set), true)}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {set.songs.map((song, songIndex) => (
+                    <P key={song.songId}>
+                      {songIndex + 1}. {song.song?.name}
+                    </P>
+                  ))}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
       </MaxWidth>
-    </MaxHeightContainer>
+    </div>
   );
 }
 

@@ -1,5 +1,3 @@
-import { config } from "@fortawesome/fontawesome-svg-core";
-import faStylesheet from "@fortawesome/fontawesome-svg-core/styles.css";
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
@@ -16,14 +14,11 @@ import { Toast, ToastBar, Toaster, useToaster } from "react-hot-toast";
 import { HoneypotProvider } from "remix-utils/honeypot/react";
 import { themeChange } from "theme-change";
 
-import stylesheet from "~/tailwind.css";
+import stylesheet from "~/globals.css";
 
 import { getUser } from "./session.server";
 import { getFeatureFlags } from "./utils/featureflags.server";
 import { honeypot } from "./utils/honeypot.server";
-
-// Prevent fontawesome from dynamically adding its css since we are going to include it manually
-config.autoAddCss = false;
 
 export const links: LinksFunction = () => {
   return [
@@ -33,7 +28,6 @@ export const links: LinksFunction = () => {
       rel: "stylesheet",
       href: "https://fonts.googleapis.com/css2?family=Fascinate&family=Poppins:wght@100;400;700&display=swap",
     },
-    { rel: "stylesheet", href: faStylesheet },
     { rel: "stylesheet", href: stylesheet },
   ];
 };
@@ -69,19 +63,19 @@ export default function App() {
   }, []);
 
   return (
-    <html lang="en" className="h-full bg-base-300">
+    <html lang="en" className="h-full">
       <head>
         <meta title="Setlists" />
         <meta charSet="utf-8" />
         <meta
           name="viewport"
-          content="width=device-width,initial-scale=1, viewport-fit=cover"
+          content="width=device-width,initial-scale=1, maximum-scale=1, viewport-fit=cover"
         />
         <Meta />
         <link rel="manifest" href="/resources/manifest.webmanifest" />
         <Links />
       </head>
-      <body className="h-full">
+      <body className="h-full bg-muted/40">
         <Toaster>
           {(t) => {
             if (uniqueToasts.every((u) => u.id !== t.id)) return <></>;

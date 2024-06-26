@@ -1,5 +1,6 @@
 import type { Band, Feel, Setlist, Song } from "@prisma/client";
 import type { SerializeFrom } from "@remix-run/server-runtime";
+import { z } from "zod";
 
 import { prisma } from "~/db.server";
 import { getFields } from "~/utils/form";
@@ -21,8 +22,8 @@ export async function getSongs(bandId: Band["id"], params?: SongParams) {
   if (!band) {
     throw new Response("Band not found", { status: 404 });
   }
-  const coversOnly = params?.isCover;
-  const originalsOnly = typeof params?.isCover === "boolean" && !params.isCover;
+  // const coversOnly = params?.isCover;
+  // const originalsOnly = typeof params?.isCover === "boolean" && !params.isCover;
   const orderBy = getSortFromParam(params?.sort);
   return prisma.song.findMany({
     where: {
@@ -30,29 +31,40 @@ export async function getSongs(bandId: Band["id"], params?: SongParams) {
       name: {
         contains: params?.q,
       },
-      ...(coversOnly ? { author: { not: band.name } } : null),
-      ...(originalsOnly ? { author: { equals: band.name } } : null),
-      ...(params?.feels?.length
-        ? { feels: { some: { id: { in: params?.feels } } } }
-        : null),
-      ...(params?.tempos?.length ? { tempo: { in: params.tempos } } : null),
-      ...(params?.positions?.length
-        ? { position: { in: params.positions } }
-        : null),
+      // ...(coversOnly ? { author: { not: band.name } } : null),
+      // ...(originalsOnly ? { author: { equals: band.name } } : null),
+      // ...(params?.feels?.length
+      //   ? { feels: { some: { id: { in: params?.feels } } } }
+      //   : null),
+      // ...(params?.tempos?.length ? { tempo: { in: params.tempos } } : null),
+      // ...(params?.positions?.length
+      //   ? { position: { in: params.positions } }
+      //   : null),
     },
     orderBy,
+    include: {
+      feels: true,
+    },
+  });
+}
+
+export async function getRecentSongs(bandId: Band["id"]) {
+  return prisma.song.findMany({
+    where: { bandId },
+    orderBy: { updatedAt: "desc" },
+    include: {
+      feels: true,
+    },
+    take: 5,
   });
 }
 
 // ! not sure if this is a hack or not. making sure selected song belongs to selected band
 export async function getSong(
   songId: Song["id"],
-  bandId: Song["bandId"],
+  bandId: Band["id"],
   includeSets?: boolean,
 ) {
-  if (!bandId) {
-    return;
-  }
   const song = await prisma.band.findUnique({
     where: { id: bandId },
     select: {
@@ -62,14 +74,18 @@ export async function getSong(
       },
       setlists: {
         where: { sets: { some: { songs: { some: { songId } } } } },
-        select: { name: true, id: true, editedFromId: true },
+        include: {
+          sets: {
+            select: {
+              songs: { include: { song: { select: { length: true } } } },
+              updatedAt: true,
+            },
+          },
+        },
       },
     },
   });
-  if (!song) {
-    return;
-  }
-  return { song: song?.song[0], setlists: song.setlists };
+  return { song: song?.song[0], setlists: song?.setlists };
 }
 
 export async function getSongName(songId: Song["id"]) {
@@ -78,6 +94,35 @@ export async function getSongName(songId: Song["id"]) {
     select: { name: true },
   });
 }
+
+export const EditSongSchema = z.object({
+  name: z.string().min(1),
+  length: z.coerce.number().min(1).default(3),
+  keyLetter: z.string().min(1).max(2).default("C"),
+  isMinor: z
+    .string()
+    .transform((val) => val === "true")
+    .pipe(z.boolean()),
+  tempo: z.coerce.number().min(1).max(320).default(120),
+  feels: z.array(z.string()),
+  author: z.string().nullish(),
+  note: z.string().nullish(),
+  links: z.array(
+    z
+      .string()
+      .refine(
+        (value) =>
+          /^(https?):\/\/(?=.*\.[a-z]{2,})[^\s$.?#].[^\s]*$/i.test(value),
+        {
+          message: "Please enter a valid URL",
+        },
+      ),
+  ),
+  position: z.enum(["opener", "closer", "other"]).default("other"),
+  rank: z.enum(["exclude", "no_preference"]).default("no_preference"),
+  isCover: z.boolean().default(false),
+  showTempo: z.coerce.boolean().default(false),
+});
 
 export async function updateSong(
   songId: Song["id"],
@@ -108,6 +153,54 @@ export async function updateSong(
   });
 }
 
+export async function updateSongWithLinksAndFeels(
+  songId: Song["id"],
+  song: z.infer<typeof EditSongSchema>,
+) {
+  // remove all links from song
+  await prisma.link.deleteMany({
+    where: {
+      songId,
+    },
+  });
+
+  // update feels
+  const currentFeelIds = (
+    await prisma.song.findUnique({
+      where: { id: songId },
+      include: { feels: { select: { id: true } } },
+    })
+  )?.feels.map((feel) => feel.id);
+
+  const newFeels =
+    song.feels.filter((feelId) => !currentFeelIds?.includes(feelId)) || [];
+  const removedFeels =
+    currentFeelIds?.filter((feelId) => !song.feels.includes(feelId)) || [];
+
+  return prisma.song.update({
+    where: { id: songId },
+    data: {
+      name: song.name,
+      length: song.length,
+      keyLetter: song.keyLetter,
+      isMinor: song.isMinor,
+      tempo: song.showTempo ? song.tempo : null,
+      position: song.position,
+      rank: song.rank,
+      note: song.note,
+      author: song.author,
+      // add links back to song
+      links: {
+        create: song.links.map((link) => ({ href: link })),
+      },
+      feels: {
+        disconnect: removedFeels.map((feel) => ({ id: feel })),
+        connect: newFeels.map((feel) => ({ id: feel })),
+      },
+    },
+  });
+}
+
 export async function createSong(
   bandId: Band["id"],
   song: Omit<Song, "id" | "updatedAt" | "createdAt" | "bandId">,
@@ -124,6 +217,27 @@ export async function createSong(
             },
           }
         : {}),
+    },
+  });
+}
+
+export async function createSongWithFeels(
+  bandId: Band["id"],
+  song: Omit<Song, "id" | "updatedAt" | "createdAt" | "bandId"> & {
+    feels: Feel["id"][];
+    links?: string[];
+  },
+) {
+  return prisma.song.create({
+    data: {
+      ...song,
+      bandId,
+      links: {
+        create: song.links?.map((link) => ({ href: link })),
+      },
+      feels: {
+        connect: song.feels.map((feelId) => ({ id: feelId })),
+      },
     },
   });
 }
@@ -168,6 +282,9 @@ export async function getSongsNotInSetlist(
       name: {
         contains: params?.q,
       },
+    },
+    include: {
+      feels: true,
     },
     orderBy: { name: "asc" },
   });
