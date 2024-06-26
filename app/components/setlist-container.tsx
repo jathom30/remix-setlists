@@ -1,6 +1,7 @@
 import { Setlist, Song } from "@prisma/client";
 import { SerializeFrom } from "@remix-run/node";
 import { Eye } from "lucide-react";
+import pluralize from "pluralize";
 import { ReactNode } from "react";
 
 import { Card } from "@/components/ui/card";
@@ -31,9 +32,7 @@ export const SetlistContainer = ({
       <FlexList direction="row" items="center" justify="between" gap={2}>
         <Large>{setlist.name}</Large>
         <FlexList direction="row" items="center" gap={2}>
-          <Muted>
-            {setlist.sets.length} {setlist.sets.length === 1 ? "Set" : "Sets"}
-          </Muted>
+          <Muted>{pluralize("Set", setlist.sets.length, true)}</Muted>
         </FlexList>
       </FlexList>
       <FlexList direction="row" items="center" justify="between" gap={2}>

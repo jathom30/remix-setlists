@@ -40,6 +40,7 @@ import {
   Trash,
   X,
 } from "lucide-react";
+import pluralize from "pluralize";
 import { ReactNode, useEffect, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
 import invariant from "tiny-invariant";
@@ -595,8 +596,7 @@ export default function SetlistPage() {
                             Set {index + 1}
                           </Label>
                           <Muted>
-                            {totalSetLength(set)}{" "}
-                            {totalSetLength(set) === 1 ? "Minute" : "Minutes"}
+                            {pluralize("Minute", totalSetLength(set), true)}
                           </Muted>
                         </FlexList>
                         {set?.map((song, songIndex) => (
@@ -1229,9 +1229,7 @@ const SongDetailsSheet = ({
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <Label>Length</Label>
-                    <P>
-                      {song?.length} {song?.length === 1 ? "minute" : "minutes"}
-                    </P>
+                    <P>{pluralize("minute", song.length, true)}</P>
                   </div>
                   <div>
                     <Label>Key</Label>

@@ -1,5 +1,6 @@
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import pluralize from "pluralize";
 import invariant from "tiny-invariant";
 
 import {
@@ -43,8 +44,7 @@ export default function SetlistCondensedPage() {
             <CardHeader>
               <CardTitle className="text-lg">Set {index + 1}</CardTitle>
               <CardDescription>
-                {totalSetLength(set)}{" "}
-                {totalSetLength(set) === 1 ? "minute" : "minutes"}
+                {pluralize("minute", totalSetLength(set), true)}
               </CardDescription>
             </CardHeader>
             <CardContent>

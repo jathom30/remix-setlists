@@ -6,6 +6,7 @@ import {
 } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { Maximize, Minimize, Pencil, Trash } from "lucide-react";
+import pluralize from "pluralize";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 
@@ -120,9 +121,7 @@ export default function SongPage() {
           <div className="grid grid-cols-3 gap-4">
             <div>
               <Label>Length</Label>
-              <P>
-                {song.length} {song.length === 1 ? "minute" : "minutes"}
-              </P>
+              <P>{pluralize("minute", song.length, true)}</P>
             </div>
             <div>
               <Label>Key</Label>
@@ -160,8 +159,8 @@ export default function SongPage() {
           <CardHeader>
             <CardTitle>Setlists featuring this song</CardTitle>
             <CardDescription>
-              This song is featured in {setlists.length}{" "}
-              {setlists.length === 1 ? "setlist" : "setlists"}.
+              This song is featured in{" "}
+              {pluralize("setlist", setlists.length, true)}
             </CardDescription>
           </CardHeader>
           <CardContent>

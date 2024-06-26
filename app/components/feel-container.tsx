@@ -1,5 +1,6 @@
 import { Feel } from "@prisma/client";
 import { SerializeFrom } from "@remix-run/node";
+import pluralize from "pluralize";
 import { ReactNode } from "react";
 
 import { Card } from "@/components/ui/card";
@@ -23,9 +24,7 @@ export const FeelContainer = ({
           <Large>{feel.label}</Large>
         </FlexList>
         <FlexList direction="row" items="center" gap={2}>
-          <Muted>
-            {feel.songs.length} {feel.songs.length === 1 ? "song" : "songs"}
-          </Muted>
+          <Muted>{pluralize("song", feel.songs.length, true)}</Muted>
         </FlexList>
       </FlexList>
     </div>

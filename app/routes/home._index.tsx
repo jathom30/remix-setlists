@@ -2,6 +2,7 @@ import { faAdd } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import { NavLink, useLoaderData } from "@remix-run/react";
+import pluralize from "pluralize";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -72,8 +73,7 @@ export default function Home() {
                       }
                     </Badge>
                     <Badge variant="outline">
-                      {band.members.length}{" "}
-                      {band.members.length === 1 ? "Member" : "Members"}
+                      {pluralize("Member", band.members.length, true)}
                     </Badge>
                   </FlexList>
                 </CardHeader>

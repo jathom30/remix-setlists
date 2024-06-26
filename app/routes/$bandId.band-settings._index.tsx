@@ -338,7 +338,6 @@ const DeleteMemberDialog = ({
   const isOnlyAdmin =
     members.filter((m) => m.role === RoleEnum.ADMIN && m.id === user.id)
       .length === 1;
-  console.log(isOnlyAdmin);
 
   const [form, fields] = useForm({
     id: IntentSchema.Enum["remove-member"],

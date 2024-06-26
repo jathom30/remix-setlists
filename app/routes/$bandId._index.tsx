@@ -1,6 +1,7 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { Link, json, useLoaderData, useNavigate } from "@remix-run/react";
 import { AudioLines, Boxes, Dna, Link2, List, Settings } from "lucide-react";
+import pluralize from "pluralize";
 import { useEffect } from "react";
 import invariant from "tiny-invariant";
 
@@ -79,10 +80,7 @@ export default function BandId() {
           <Badge variant="secondary">
             {band.members.find((member) => member.userId === user.id)?.role}
           </Badge>
-          <Small>
-            {band.members.length}{" "}
-            {band.members.length === 1 ? "member" : "members"}
-          </Small>
+          <Small>{pluralize("member", band.members.length, true)}</Small>
         </CardContent>
       </Card>
       <div className="grid gap-2 md:grid-cols-2">
