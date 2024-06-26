@@ -10,8 +10,10 @@ export async function getFeels(bandId: Band["id"], query?: string) {
         contains: query?.trim(),
       },
     },
-    orderBy: { label: "asc" },
     include: { songs: { select: { id: true } } },
+    orderBy: {
+      label: "asc",
+    },
   });
 }
 

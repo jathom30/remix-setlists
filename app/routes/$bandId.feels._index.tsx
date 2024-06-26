@@ -101,7 +101,6 @@ export default function BandFeels() {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
-        {/* <SortSetlists value={sort || "updatedAt:desc"} onChange={setSort} /> */}
       </FlexList>
 
       {feels.length ? (

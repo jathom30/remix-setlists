@@ -1,24 +1,6 @@
-// import {
-//   faArrowDownWideShort,
-//   faArrowUpAZ,
-//   faArrowUpWideShort,
-//   faArrowUpZA,
-//   faPlusCircle,
-//   faSort,
-// } from "@fortawesome/free-solid-svg-icons";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import { Link, MetaFunction, useSearchParams } from "@remix-run/react";
-import {
-  ArrowDown01,
-  ArrowDownAZ,
-  ArrowUp01,
-  ArrowUpAZ,
-  ArrowUpDown,
-  CirclePlus,
-  SearchIcon,
-} from "lucide-react";
-import { useState } from "react";
+import { CirclePlus, SearchIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import invariant from "tiny-invariant";
 
@@ -30,29 +12,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { FlexList } from "~/components";
 import { SongContainer } from "~/components/song-container";
+import { SortItems } from "~/components/sort-items";
 import { H1 } from "~/components/typography";
 import { useLiveLoader } from "~/hooks";
 import { userPrefs } from "~/models/cookies.server";
@@ -77,10 +40,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const q = url.searchParams.get("query");
 
   let sort = url.searchParams.get("sort");
-  // const feelParams = url.searchParams.getAll("feels");
-  // const tempoParams = url.searchParams.getAll("tempos");
-  // const isCoverParam = url.searchParams.get("isCover");
-  // const positionParams = url.searchParams.getAll("positions");
 
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await userPrefs.parse(cookieHeader)) || {};
@@ -92,15 +51,12 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const songParams = {
     ...(q ? { q } : null),
     ...(sort ? { sort } : null),
-    // feels: feelParams,
-    // tempos: tempoParams.map((tempo) => parseInt(tempo)),
-    // ...(isCoverParam ? { isCover: isCoverParam === "true" } : null),
-    // positions: positionParams,
   };
 
   const songs = await getSongs(bandId, songParams);
   cookie.songSort = sort;
   await userPrefs.serialize(cookie);
+  console.log(sort);
   return json({ songs, sort });
 }
 
@@ -163,7 +119,7 @@ function SongsListNew() {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
-        <SortSetlists value={sort || "updatedAt:desc"} onChange={setSort} />
+        <SortItems value={sort || "updatedAt:desc"} onChange={setSort} />
       </FlexList>
 
       {songs.length ? (
@@ -202,98 +158,3 @@ function SongsListNew() {
     </div>
   );
 }
-
-const sortOptions = [
-  {
-    label: "Updated: Newest first",
-    value: "updatedAt:desc",
-    Icon: ArrowDown01,
-  },
-  {
-    label: "Updated: Oldest first",
-    value: "updatedAt:asc",
-    Icon: ArrowUp01,
-  },
-  { label: "Name: A-Z", value: "name:asc", Icon: ArrowDownAZ },
-  { label: "Name: Z-A", value: "name:desc", Icon: ArrowUpAZ },
-];
-
-const SortSetlists = ({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (val: string) => void;
-}) => {
-  const [open, setOpen] = useState(false);
-  return (
-    <div>
-      <div className="hidden sm:block">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="icon" variant="outline">
-              <ArrowUpDown className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>Setlist Sort</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuRadioGroup value={value} onValueChange={onChange}>
-                {sortOptions.map(({ label, value: val, Icon }) => (
-                  <DropdownMenuRadioItem key={val} value={val}>
-                    <Icon className="w-4 h-4 mr-2" />
-                    {label}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="sm:hidden">
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
-            <Button size="icon" variant="outline">
-              <ArrowUpDown className="w-4 h-4" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="bottom">
-            <SheetHeader>
-              <SheetTitle>Setlist Sort</SheetTitle>
-              <SheetDescription>
-                <RadioGroup
-                  value={value}
-                  onValueChange={(val) => {
-                    onChange(val);
-                    setOpen(false);
-                  }}
-                >
-                  <FlexList gap={0}>
-                    {sortOptions.map(({ label, value: val, Icon }) => (
-                      <div
-                        key={val}
-                        className="p-2 rounded hover:bg-accent hover:text-accent-foreground"
-                      >
-                        <FlexList direction="row" items="center" gap={2}>
-                          <RadioGroupItem value={val} id={val} />
-                          <Label
-                            className="w-full text-start flex"
-                            htmlFor={val}
-                          >
-                            <Icon className="w-4 h-4 mr-2" />
-                            {label}
-                          </Label>
-                        </FlexList>
-                      </div>
-                    ))}
-                  </FlexList>
-                </RadioGroup>
-              </SheetDescription>
-            </SheetHeader>
-          </SheetContent>
-        </Sheet>
-      </div>
-    </div>
-  );
-};

@@ -10,11 +10,6 @@ import {
 import { Form, Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import {
   AreaChart,
-  ArrowDown01,
-  ArrowDownAZ,
-  ArrowDownUp,
-  ArrowUp01,
-  ArrowUpAZ,
   Copy,
   EllipsisVertical,
   LinkIcon,
@@ -51,24 +46,14 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { FlexList } from "~/components";
 import { SetlistContainer } from "~/components/setlist-container";
+import { SortItems } from "~/components/sort-items";
 import { H1 } from "~/components/typography";
 import { useLiveLoader } from "~/hooks";
 import { userPrefs } from "~/models/cookies.server";
@@ -213,6 +198,13 @@ export default function Setlists() {
     });
   };
 
+  const setSort = (value: string) => {
+    setSearchParams((prev) => {
+      prev.set("sort", value);
+      return prev;
+    });
+  };
+
   return (
     <div className="p-2 space-y-2">
       <FlexList direction="row" items="center" justify="between" gap={2}>
@@ -238,7 +230,7 @@ export default function Setlists() {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
-        <SortSetlists value={sort || ""} onChange={console.log} />
+        <SortItems value={sort || "updatedAt:desc"} onChange={setSort} />
       </FlexList>
 
       {setlists.length ? (
@@ -281,108 +273,108 @@ export default function Setlists() {
   );
 }
 
-const sortOptions = [
-  {
-    label: "Updated: Newest first",
-    value: "updated-desc",
-    icon: <ArrowDown01 className="w-4 h-4" />,
-  },
-  {
-    label: "Updated: Oldest first",
-    value: "updated-asc",
-    icon: <ArrowUp01 className="w-4 h-4" />,
-  },
-  {
-    label: "Name: A-Z",
-    value: "name-asc",
-    icon: <ArrowDownAZ className="w-4 h-4" />,
-  },
-  {
-    label: "Name: Z-A",
-    value: "name-desc",
-    icon: <ArrowUpAZ className="w-4 h-4" />,
-  },
-];
+// const sortOptions = [
+//   {
+//     label: "Updated: Newest first",
+//     value: "updated-desc",
+//     icon: <ArrowDown01 className="w-4 h-4" />,
+//   },
+//   {
+//     label: "Updated: Oldest first",
+//     value: "updated-asc",
+//     icon: <ArrowUp01 className="w-4 h-4" />,
+//   },
+//   {
+//     label: "Name: A-Z",
+//     value: "name-asc",
+//     icon: <ArrowDownAZ className="w-4 h-4" />,
+//   },
+//   {
+//     label: "Name: Z-A",
+//     value: "name-desc",
+//     icon: <ArrowUpAZ className="w-4 h-4" />,
+//   },
+// ];
 
-const SortSetlists = ({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (val: string) => void;
-}) => {
-  return (
-    <div>
-      <div className="hidden sm:block">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="icon" variant="outline">
-              <ArrowDownUp className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>Setlist Sort</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuRadioGroup
-                defaultValue={value}
-                onValueChange={onChange}
-              >
-                {sortOptions.map(({ label, value: val, icon }) => (
-                  <DropdownMenuRadioItem
-                    key={val}
-                    value={val}
-                    className="flex flex-row gap-2"
-                  >
-                    {icon}
-                    {label}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="sm:hidden">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button size="icon" variant="outline">
-              <ArrowDownUp className="w-4 h-4" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="bottom">
-            <SheetHeader>
-              <SheetTitle>Setlist Sort</SheetTitle>
-              <SheetDescription>
-                <RadioGroup defaultValue={value} onValueChange={onChange}>
-                  <FlexList gap={0}>
-                    {sortOptions.map(({ label, value: val, icon }) => (
-                      <div
-                        key={val}
-                        className="p-2 rounded hover:bg-accent hover:text-accent-foreground"
-                      >
-                        <FlexList direction="row" items="center" gap={2}>
-                          <RadioGroupItem value={val} id={val} />
-                          <Label
-                            className="w-full text-start flex flex-row gap-2"
-                            htmlFor={val}
-                          >
-                            {icon}
-                            {label}
-                          </Label>
-                        </FlexList>
-                      </div>
-                    ))}
-                  </FlexList>
-                </RadioGroup>
-              </SheetDescription>
-            </SheetHeader>
-          </SheetContent>
-        </Sheet>
-      </div>
-    </div>
-  );
-};
+// const SortSetlists = ({
+//   value,
+//   onChange,
+// }: {
+//   value: string;
+//   onChange: (val: string) => void;
+// }) => {
+//   return (
+//     <div>
+//       <div className="hidden sm:block">
+//         <DropdownMenu>
+//           <DropdownMenuTrigger asChild>
+//             <Button size="icon" variant="outline">
+//               <ArrowDownUp className="h-4 w-4" />
+//             </Button>
+//           </DropdownMenuTrigger>
+//           <DropdownMenuContent>
+//             <DropdownMenuLabel>Setlist Sort</DropdownMenuLabel>
+//             <DropdownMenuSeparator />
+//             <DropdownMenuGroup>
+//               <DropdownMenuRadioGroup
+//                 defaultValue={value}
+//                 onValueChange={onChange}
+//               >
+//                 {sortOptions.map(({ label, value: val, icon }) => (
+//                   <DropdownMenuRadioItem
+//                     key={val}
+//                     value={val}
+//                     className="flex flex-row gap-2"
+//                   >
+//                     {icon}
+//                     {label}
+//                   </DropdownMenuRadioItem>
+//                 ))}
+//               </DropdownMenuRadioGroup>
+//             </DropdownMenuGroup>
+//           </DropdownMenuContent>
+//         </DropdownMenu>
+//       </div>
+//       <div className="sm:hidden">
+//         <Sheet>
+//           <SheetTrigger asChild>
+//             <Button size="icon" variant="outline">
+//               <ArrowDownUp className="w-4 h-4" />
+//             </Button>
+//           </SheetTrigger>
+//           <SheetContent side="bottom">
+//             <SheetHeader>
+//               <SheetTitle>Setlist Sort</SheetTitle>
+//               <SheetDescription>
+//                 <RadioGroup defaultValue={value} onValueChange={onChange}>
+//                   <FlexList gap={0}>
+//                     {sortOptions.map(({ label, value: val, icon }) => (
+//                       <div
+//                         key={val}
+//                         className="p-2 rounded hover:bg-accent hover:text-accent-foreground"
+//                       >
+//                         <FlexList direction="row" items="center" gap={2}>
+//                           <RadioGroupItem value={val} id={val} />
+//                           <Label
+//                             className="w-full text-start flex flex-row gap-2"
+//                             htmlFor={val}
+//                           >
+//                             {icon}
+//                             {label}
+//                           </Label>
+//                         </FlexList>
+//                       </div>
+//                     ))}
+//                   </FlexList>
+//                 </RadioGroup>
+//               </SheetDescription>
+//             </SheetHeader>
+//           </SheetContent>
+//         </Sheet>
+//       </div>
+//     </div>
+//   );
+// };
 
 const SetlistActions = ({ setlist }: { setlist: SerializeFrom<Setlist> }) => {
   const { domainUrl } = useLoaderData<typeof loader>();
