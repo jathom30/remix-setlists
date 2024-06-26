@@ -246,7 +246,12 @@ export default function BandRoute() {
       ? [{ to: `/${bandId}/band-settings/edit`, label: "Edit" }]
       : []),
     ...(isMembersRoute
-      ? [{ to: `/${bandId}/band-settings/members`, label: "Members" }]
+      ? [
+          {
+            to: `/${bandId}/band-settings/members/${memberId}`,
+            label: "Members",
+          },
+        ]
       : []),
   ];
 

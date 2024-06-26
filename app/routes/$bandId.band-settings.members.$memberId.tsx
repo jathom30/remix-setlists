@@ -27,6 +27,7 @@ import { getBand } from "~/models/band.server";
 import { getUserById } from "~/models/user.server";
 import { updateBandMemberRole } from "~/models/usersInBands.server";
 import { requireMemberOfRole } from "~/session.server";
+import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
 
 const MemberRoleSchema = z.object({
@@ -84,6 +85,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function BandSettingsMembers() {
   const { bandId } = useParams();
   const { member, canRemoveAsAdmin } = useLoaderData<typeof loader>();
+  const userRole = useMemberRole();
+  const disableSubmit = userRole === RoleEnum.SUB || !canRemoveAsAdmin;
+
   const [form, fields] = useForm({
     id: "member-role",
     defaultValue: {
@@ -181,7 +185,7 @@ export default function BandSettingsMembers() {
             </CardContent>
             <CardFooter>
               <div className="flex gap-2 flex-col w-full sm:items-end">
-                <Button size="sm" type="submit" disabled>
+                <Button size="sm" type="submit" disabled={disableSubmit}>
                   Update Role
                 </Button>
                 <Small>
