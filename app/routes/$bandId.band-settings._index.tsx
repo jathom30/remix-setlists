@@ -57,7 +57,7 @@ import {
   requireUser,
   requireUserId,
 } from "~/session.server";
-import { useMemberRole, useUser } from "~/utils";
+import { useMemberRole } from "~/utils";
 import { getDomainUrl } from "~/utils/assorted";
 import { RoleEnum } from "~/utils/enums";
 
@@ -339,10 +339,9 @@ const DeleteMemberDialog = ({
   onOpenChange: (open: boolean) => void;
 }) => {
   const { members } = useLoaderData<typeof loader>();
-  const user = useUser();
 
   const isOnlyAdmin =
-    members.filter((m) => m.role === RoleEnum.ADMIN && m.id === user.id)
+    members.filter((m) => m.role === RoleEnum.ADMIN && m.id === memberId)
       .length === 1;
 
   const [form, fields] = useForm({
