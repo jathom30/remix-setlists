@@ -374,7 +374,7 @@ export default function EditSong() {
                       if (!Array.isArray(linksControl.value)) {
                         return;
                       }
-                      linksControl.change([...linksControl.value, "https://"]);
+                      linksControl.change([...linksControl.value, ""]);
                     }}
                   >
                     Add Link

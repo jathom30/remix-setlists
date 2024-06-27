@@ -170,7 +170,7 @@ export default function SongPage() {
           </CardHeader>
           <CardContent>
             <div className="max-h-96 overflow-auto">
-              <FlexList gap={2}>
+              <FlexList gap={2} pad={1}>
                 {setlists.map((setlist) => (
                   <Link
                     to={`/${setlist.bandId}/setlists/${setlist.id}`}
@@ -228,7 +228,13 @@ export default function SongPage() {
           <CardContent>
             <FlexList items="start" gap={1}>
               {song.links.map((link) => (
-                <Button asChild variant="link" size="sm" key={link.id}>
+                <Button
+                  className="block w-full truncate"
+                  asChild
+                  variant="link"
+                  size="sm"
+                  key={link.id}
+                >
                   <a href={link.href} target="_blank" rel="noreferrer">
                     {link.href}
                   </a>
