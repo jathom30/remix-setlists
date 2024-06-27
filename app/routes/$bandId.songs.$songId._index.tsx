@@ -176,7 +176,9 @@ export default function SongPage() {
                     to={`/${setlist.bandId}/setlists/${setlist.id}`}
                     key={setlist.id}
                   >
-                    <SetlistContainer setlist={setlist} />
+                    <SetlistContainer.Card>
+                      <SetlistContainer.Setlist setlist={setlist} />
+                    </SetlistContainer.Card>
                   </Link>
                 ))}
               </FlexList>

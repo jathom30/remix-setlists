@@ -14,7 +14,6 @@ import {
 import pluralize from "pluralize";
 import invariant from "tiny-invariant";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -72,9 +71,6 @@ export default function PublicSetlist() {
         <Header>
           <div></div>
           <FlexList direction="row" gap={2} items="center">
-            <div className="hidden md:block">
-              <Badge variant="secondary">bandMatch?.data?.memberRole</Badge>
-            </div>
             <Button variant="secondary" asChild>
               <Link to={`/${bandId}/setlists/${setlistId}`}>
                 Login to see full details
