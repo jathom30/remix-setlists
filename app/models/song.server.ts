@@ -191,14 +191,15 @@ export async function updateSongWithLinksAndFeels(
       author: song.author,
       // add links back to song
       links: {
+        deleteMany: {},
         create: song.links.map((link) => {
-          if (!link.includes("http://")) {
-            link = `https://${link}`;
+          if (link.includes("http://")) {
+            return { href: link.replace("http://", "https://") };
           }
-          if (!link.includes("https://")) {
-            link = `https://${link}`;
+          if (link.includes("https://")) {
+            return { href: link };
           }
-          return { href: link };
+          return { href: `https://${link}` };
         }),
       },
       feels: {

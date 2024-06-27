@@ -1306,15 +1306,15 @@ const SongDetailsSheet = ({
                   <CardTitle>Links</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <FlexList items="start">
+                  <FlexList gap={1} items="start">
                     {song.links.map((link) => (
-                      <Button asChild variant="link" key={link.id}>
-                        <a
-                          className="truncate max-w-[200px]"
-                          href={link.href}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
+                      <Button
+                        className="block w-full truncate"
+                        asChild
+                        variant="link"
+                        key={link.id}
+                      >
+                        <a href={link.href} target="_blank" rel="noreferrer">
                           {link.href}
                         </a>
                       </Button>

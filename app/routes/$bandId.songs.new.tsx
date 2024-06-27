@@ -81,13 +81,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const song = await createSongWithFeels(bandId, {
     feels: submission.value.feels,
     links: submission.value.links.map((link) => {
-      if (!link.includes("http://")) {
-        link = `https://${link}`;
+      if (link.includes("http://")) {
+        return link.replace("http://", "https://");
       }
-      if (!link.includes("https://")) {
-        return `https://${link}`;
+      if (link.includes("https://")) {
+        return link;
       }
-      return link;
+      return `https://${link}`;
     }),
     isCover: submission.value.isCover,
     isMinor: submission.value.isMinor,
