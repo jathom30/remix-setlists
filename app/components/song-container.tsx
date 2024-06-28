@@ -34,14 +34,18 @@ export const SongContainer = ({
   return (
     <div className="flex-grow">
       <FlexList direction="row" items="center" justify="between" gap={2}>
-        <Large>{song.name}</Large>
+        <Large className="truncate max-w-[200px]">{song.name}</Large>
         <FlexList direction="row" items="center" gap={2}>
-          {song.tempo ? <Muted>{song.tempo} BPM</Muted> : null}
-          <Muted>{pluralize("min", song.length, true)}</Muted>
+          {song.tempo ? (
+            <Muted className="whitespace-nowrap">{song.tempo} BPM</Muted>
+          ) : null}
+          <Muted className="whitespace-nowrap">
+            {pluralize("min", song.length, true)}
+          </Muted>
         </FlexList>
       </FlexList>
       <FlexList direction="row" items="center" justify="between" gap={2}>
-        <Small>{song.author}</Small>
+        <Small className="truncate max-w-[150px]">{song.author}</Small>
         <FlexList direction="row" gap={2} items="center">
           {song?.feels?.map((feel) => (
             <TooltipProvider key={feel.id}>
@@ -68,7 +72,7 @@ export const SongContainer = ({
               </Tooltip>
             </TooltipProvider>
           ) : null}
-          <Badge variant="outline">
+          <Badge className="whitespace-nowrap" variant="outline">
             {song.keyLetter} {song.isMinor ? "Minor" : "Major"}
           </Badge>
         </FlexList>
@@ -78,7 +82,7 @@ export const SongContainer = ({
 };
 
 export const SongContainerCard = ({ children }: { children: ReactNode }) => (
-  <Card className="p-1 px-2 hover:outline">{children}</Card>
+  <Card className="p-1 px-2 overflow-x-auto hover:outline">{children}</Card>
 );
 
 SongContainer.Card = SongContainerCard;

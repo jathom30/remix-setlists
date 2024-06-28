@@ -1,5 +1,13 @@
-import { type ReactNode } from 'react'
+import { type ReactNode } from "react";
 
-export function Muted({ children }: { children: ReactNode }) {
-	return <p className="text-sm text-muted-foreground">{children}</p>
+export function Muted({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <p className={`text-sm text-muted-foreground ${className}`}>{children}</p>
+  );
 }

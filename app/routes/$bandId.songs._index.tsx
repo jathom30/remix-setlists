@@ -111,10 +111,6 @@ export default function SongsList() {
   const showToast = () => {
     toast("Songs updated!", {
       duration: 2000,
-      style: {
-        // backgroundColor: getColor("success"),
-        // color: getColor("success-content"),
-      },
     });
   };
   const { songs, sort } = useLiveLoader<typeof loader>(showToast);
