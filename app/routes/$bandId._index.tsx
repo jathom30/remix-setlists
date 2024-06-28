@@ -14,11 +14,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { FlexList } from "~/components";
+import { FlexHeader, FlexList } from "~/components";
 import { FeelContainer } from "~/components/feel-container";
 import { SetlistContainer } from "~/components/setlist-container";
 import { SongContainer } from "~/components/song-container";
 import { H1, Small, P } from "~/components/typography";
+import { prisma } from "~/db.server";
 import { getBand } from "~/models/band.server";
 import { getMostRecentFeels } from "~/models/feel.server";
 import { getRecentSetlists } from "~/models/setlist.server";
@@ -35,10 +36,24 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!band) {
     throw new Response("Band not found", { status: 404 });
   }
+  const setlistCount = await prisma.setlist.count({
+    where: { bandId },
+  });
+  const songCount = await prisma.song.count({
+    where: { bandId },
+  });
+  const feelCount = await prisma.feel.count({
+    where: { bandId },
+  });
+  const counts = {
+    setlists: setlistCount,
+    songs: songCount,
+    feels: feelCount,
+  };
   const setlists = await getRecentSetlists(bandId);
   const songs = await getRecentSongs(bandId);
   const feels = await getMostRecentFeels(bandId);
-  return json({ setlists, songs, band, feels });
+  return json({ setlists, songs, band, feels, counts });
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -46,7 +61,8 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export default function BandId() {
-  const { setlists, songs, band, feels } = useLoaderData<typeof loader>();
+  const { setlists, songs, band, feels, counts } =
+    useLoaderData<typeof loader>();
   const user = useUser();
   const role = useMemberRole();
   const isSub = role === RoleEnum.SUB;
@@ -54,26 +70,41 @@ export default function BandId() {
     <div className="p-2 space-y-2">
       <H1>Band Home</H1>
       <Card>
-        <CardHeader>
-          <CardTitle className="flex gap-2 items-center">
-            <Avatar>
-              <AvatarImage src={band.icon?.path || ""} alt={band.name} />
-              <AvatarFallback>
-                {band.name.charAt(0)?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            {band.name}
-          </CardTitle>
-          <CardDescription>
-            Created on {new Date(band.createdAt).toLocaleDateString()}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col items-start gap-2">
-          <Badge variant="secondary">
-            {band.members.find((member) => member.userId === user.id)?.role}
-          </Badge>
-          <Small>{pluralize("member", band.members.length, true)}</Small>
-        </CardContent>
+        <FlexHeader items="start">
+          <div>
+            <CardHeader>
+              <CardTitle className="flex gap-2 items-center whitespace-nowrap">
+                <Avatar>
+                  <AvatarImage src={band.icon?.path || ""} alt={band.name} />
+                  <AvatarFallback>
+                    {band.name.charAt(0)?.toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                {band.name}
+              </CardTitle>
+              <CardDescription>
+                Created on {new Date(band.createdAt).toLocaleDateString()}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col items-start gap-2">
+              <Small>{pluralize("member", band.members.length, true)}</Small>
+            </CardContent>
+          </div>
+          <div className="flex flex-col flex-wrap items-end justify-end gap-2 p-6 pl-0 pb-0 md:flex-row">
+            <Badge variant="secondary">
+              {band.members.find((member) => member.userId === user.id)?.role}
+            </Badge>
+            <Badge variant="outline">
+              {pluralize("setlist", counts.setlists, true)}
+            </Badge>
+            <Badge variant="outline">
+              {pluralize("songs", counts.songs, true)}
+            </Badge>
+            <Badge variant="outline">
+              {pluralize("feels", counts.feels, true)}
+            </Badge>
+          </div>
+        </FlexHeader>
       </Card>
       <div className="grid gap-2 md:grid-cols-2">
         <Card>
