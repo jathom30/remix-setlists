@@ -13,7 +13,7 @@ export const DraggableSong = ({
 }: {
   song: SerializeFrom<Song & { feels: Feel[] }>;
   songIndex: number;
-  children: ReactNode;
+  children?: ReactNode;
 }) => {
   return (
     <Draggable draggableId={song.id} key={song.id} index={songIndex}>

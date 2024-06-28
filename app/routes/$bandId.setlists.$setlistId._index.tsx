@@ -106,6 +106,7 @@ import { getSongs } from "~/models/song.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { getDomainUrl } from "~/utils/assorted";
 import { DroppableIdEnums, TSet, compareSets, onDragEnd } from "~/utils/dnd";
+import { totalSetLength } from "~/utils/sets";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
@@ -344,7 +345,6 @@ export default function SetlistPage() {
   }, []);
 
   const isDesktop = windowWidth > 900;
-  console.log(isDesktop);
 
   const availableSongs = getAvailableSongs(setlist, allSongs);
 
@@ -479,9 +479,6 @@ export default function SetlistPage() {
   };
 
   const { containerRef, top } = useContainerHeight();
-
-  const totalSetLength = (set: SerializeFrom<Song>[]) =>
-    set.reduce((total, song) => total + song.length, 0);
 
   if (isDesktop) {
     return (
