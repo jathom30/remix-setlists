@@ -1,6 +1,7 @@
 import { Feel, Song } from "@prisma/client";
 import { SerializeFrom } from "@remix-run/node";
 import { ChevronFirst, ChevronLast } from "lucide-react";
+import pluralize from "pluralize";
 import { ReactNode } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -36,7 +37,7 @@ export const SongContainer = ({
         <Large>{song.name}</Large>
         <FlexList direction="row" items="center" gap={2}>
           {song.tempo ? <Muted>{song.tempo} BPM</Muted> : null}
-          <Muted>{song.length} minutes</Muted>
+          <Muted>{pluralize("min", song.length, true)}</Muted>
         </FlexList>
       </FlexList>
       <FlexList direction="row" items="center" justify="between" gap={2}>

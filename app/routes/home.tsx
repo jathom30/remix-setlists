@@ -11,7 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { FlexList, MaxWidth } from "~/components";
+import { FlexList, Header, MaxWidth } from "~/components";
 import { UserAvatarMenu } from "~/components/user-avatar-menu";
 import { getBands } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
@@ -34,25 +34,29 @@ export default function Home() {
   return (
     <div className="bg-muted/40 h-full">
       <div className="sticky border-b top-0 z-10 bg-background inset-x-0 flex items-center justify-between p-2 gap-2">
-        <Button variant="secondary" size="sm" asChild>
-          <Link to="/home">
-            <FlexList direction="row" gap={2}>
-              <Boxes className="w-4 h-4" />
-              Bands
-            </FlexList>
-          </Link>
-        </Button>
-        <FlexList direction="row" items="center" gap={2}>
-          {!pathname.includes("add-band") ? (
-            <Button size="sm" asChild>
-              <Link to="add-band">
-                <CirclePlus className="w-4 h-4 mr-2" />
-                Add Band
+        <MaxWidth>
+          <Header>
+            <Button variant="secondary" size="sm" asChild>
+              <Link to="/home">
+                <FlexList direction="row" gap={2}>
+                  <Boxes className="w-4 h-4" />
+                  Bands
+                </FlexList>
               </Link>
             </Button>
-          ) : null}
-          <UserAvatarMenu />
-        </FlexList>
+            <FlexList direction="row" items="center" gap={2}>
+              {!pathname.includes("add-band") ? (
+                <Button size="sm" asChild>
+                  <Link to="add-band">
+                    <CirclePlus className="w-4 h-4 mr-2" />
+                    Add Band
+                  </Link>
+                </Button>
+              ) : null}
+              <UserAvatarMenu />
+            </FlexList>
+          </Header>
+        </MaxWidth>
       </div>
       <MaxWidth>
         <Breadcrumb className="p-2 pb-0">
