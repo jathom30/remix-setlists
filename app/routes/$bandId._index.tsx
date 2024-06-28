@@ -85,7 +85,7 @@ export default function BandId() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <FlexList items="start" gap={2}>
+          <FlexList direction="row" items="center" gap={2}>
             <Badge variant="secondary">
               {band.members.find((member) => member.userId === user.id)?.role}
             </Badge>
