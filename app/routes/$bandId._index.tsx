@@ -71,7 +71,7 @@ export default function BandId() {
       <H1>Band Home</H1>
       <Card>
         <CardHeader>
-          <CardTitle className="flex gap-2 items-center whitespace-nowrap">
+          <CardTitle className="flex gap-2 items-center">
             <Avatar>
               <AvatarImage src={band.icon?.path || ""} alt={band.name} />
               <AvatarFallback>
