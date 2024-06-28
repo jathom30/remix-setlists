@@ -434,7 +434,7 @@ const AddMemberDialog = () => {
             onClick={() => onCopy(qrCodeAddress)}
             onMouseLeave={() => setShowSuccess(false)}
           >
-            <span className="truncate max-w-[300px]">
+            <span className="truncate max-w-[250px]">
               {showSuccess ? "Copied!" : qrCodeAddress}
             </span>
             {showSuccess ? (
