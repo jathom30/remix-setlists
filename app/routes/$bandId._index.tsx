@@ -70,30 +70,28 @@ export default function BandId() {
     <div className="p-2 space-y-2">
       <H1>Band Home</H1>
       <Card>
-        <FlexHeader items="start">
-          <div>
-            <CardHeader>
-              <CardTitle className="flex gap-2 items-center whitespace-nowrap">
-                <Avatar>
-                  <AvatarImage src={band.icon?.path || ""} alt={band.name} />
-                  <AvatarFallback>
-                    {band.name.charAt(0)?.toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                {band.name}
-              </CardTitle>
-              <CardDescription>
-                Created on {new Date(band.createdAt).toLocaleDateString()}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col items-start gap-2">
-              <Small>{pluralize("member", band.members.length, true)}</Small>
-            </CardContent>
-          </div>
-          <div className="flex flex-col flex-wrap items-end justify-end gap-2 p-6 pl-0 pb-0 md:flex-row">
+        <CardHeader>
+          <CardTitle className="flex gap-2 items-center whitespace-nowrap">
+            <Avatar>
+              <AvatarImage src={band.icon?.path || ""} alt={band.name} />
+              <AvatarFallback>
+                {band.name.charAt(0)?.toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            {band.name}
+          </CardTitle>
+          <CardDescription>
+            Created on {new Date(band.createdAt).toLocaleDateString()}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <FlexList items="start" gap={2}>
             <Badge variant="secondary">
               {band.members.find((member) => member.userId === user.id)?.role}
             </Badge>
+            <Small>{pluralize("member", band.members.length, true)}</Small>
+          </FlexList>
+          <FlexList direction="row" gap={2} wrap>
             <Badge variant="outline">
               {pluralize("setlist", counts.setlists, true)}
             </Badge>
@@ -103,8 +101,8 @@ export default function BandId() {
             <Badge variant="outline">
               {pluralize("feels", counts.feels, true)}
             </Badge>
-          </div>
-        </FlexHeader>
+          </FlexList>
+        </CardContent>
       </Card>
       <div className="grid gap-2 md:grid-cols-2">
         <Card>
