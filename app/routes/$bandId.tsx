@@ -258,25 +258,27 @@ export default function BandRoute() {
   return (
     <div className="h-full">
       <div className="p-2 border-b sticky top-0 inset-x-0 z-10 bg-background">
-        <Header>
-          <div>
-            <div className="md:hidden">
-              <MainNavSheet
-                band={bandMatch?.data?.band}
-                role={bandMatch?.data?.memberRole}
-              />
+        <MaxWidth>
+          <Header>
+            <div>
+              <div className="md:hidden">
+                <MainNavSheet
+                  band={bandMatch?.data?.band}
+                  role={bandMatch?.data?.memberRole}
+                />
+              </div>
+              <div className="hidden md:block">
+                <MainNav />
+              </div>
             </div>
-            <div className="hidden md:block">
-              <MainNav />
-            </div>
-          </div>
-          <FlexList direction="row" gap={2} items="center">
-            <div className="hidden md:block">
-              <Badge variant="secondary">{bandMatch?.data?.memberRole}</Badge>
-            </div>
-            <UserAvatarMenu />
-          </FlexList>
-        </Header>
+            <FlexList direction="row" gap={2} items="center">
+              <div className="hidden md:block">
+                <Badge variant="secondary">{bandMatch?.data?.memberRole}</Badge>
+              </div>
+              <UserAvatarMenu />
+            </FlexList>
+          </Header>
+        </MaxWidth>
       </div>
       <MaxWidth>
         <Breadcrumb className="p-2 pb-0">

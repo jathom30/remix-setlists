@@ -90,6 +90,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { FlexList, MaxWidth } from "~/components";
+import { DraggableSong } from "~/components/dnd";
 import { SongContainer } from "~/components/song-container";
 import { H1, Muted, P } from "~/components/typography";
 import { useContainerHeight } from "~/hooks/use-container-height";
@@ -116,7 +117,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     throw new Response("Setlist not found", { status: 404 });
   }
 
-  // const availableSongs = await getSongsNotInSetlist(bandId, setlistId);
   const allSongs = await getSongs(bandId);
 
   const domainUrl = getDomainUrl(request);
@@ -331,6 +331,20 @@ export default function SetlistPage() {
     songId: string;
   }>();
   const [query, setQuery] = useState("");
+  const [windowWidth, setWindowWidth] = useState(0);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const isDesktop = windowWidth > 900;
+  console.log(isDesktop);
 
   const availableSongs = getAvailableSongs(setlist, allSongs);
 
@@ -469,6 +483,195 @@ export default function SetlistPage() {
   const totalSetLength = (set: SerializeFrom<Song>[]) =>
     set.reduce((total, song) => total + song.length, 0);
 
+  if (isDesktop) {
+    return (
+      <div
+        ref={containerRef}
+        style={{
+          height: `calc(100svh - ${top}px)`,
+        }}
+        className="gap-2 flex flex-col"
+      >
+        <FlexList
+          direction="row"
+          items="center"
+          pad={{ x: 2, t: 2 }}
+          gap={2}
+          justify="between"
+        >
+          <H1>{setlist.name}</H1>
+          <SetlistActions
+            showAvailableSongs={showAvailableSongs}
+            onShowAvailableSongChange={setShowAvailableSongs}
+            isDesktop={isDesktop}
+          />
+        </FlexList>
+        <DragDropContext key={setlist.id} onDragEnd={handleDragEnd}>
+          <div className="grid h-full grid-cols-3 gap-2 p-2 overflow-hidden max-w-5xl">
+            <Card className="h-full flex-grow px-2 flex flex-col gap-2 overflow-auto w-full">
+              <div className="pt-2 sticky space-y-2 top-0 inset-x-0 bg-card">
+                <CardDescription>Available Songs</CardDescription>
+                <div className="relative ml-auto flex-1 md:grow-0">
+                  <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Search..."
+                    className="w-full rounded-lg bg-background pl-8"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                </div>
+                <Separator />
+              </div>
+              <Droppable droppableId={DroppableIdEnums.Enum["available-songs"]}>
+                {(dropProvided, dropSnapshot) => (
+                  <div
+                    className="h-full"
+                    ref={dropProvided.innerRef}
+                    {...dropProvided.droppableProps}
+                  >
+                    {filteredSongs.map((song, songIndex) => (
+                      <Draggable
+                        draggableId={song.id}
+                        key={song.id}
+                        index={songIndex}
+                      >
+                        {(dragprovided) => (
+                          <div
+                            className="py-1"
+                            ref={dragprovided.innerRef}
+                            {...dragprovided.dragHandleProps}
+                            {...dragprovided.draggableProps}
+                          >
+                            <SongContainer.Song.Card>
+                              <SongContainer.Song.Song song={song} />
+                            </SongContainer.Song.Card>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {filteredSongs.length === 0 ? (
+                      <Card
+                        className={`outline-dashed outline-border flex items-center justify-center  border-none h-5/6 ${
+                          dropSnapshot.isDraggingOver ? "outline-primary" : ""
+                        }`}
+                      >
+                        <CardDescription className="text-center">
+                          No songs found
+                        </CardDescription>
+                      </Card>
+                    ) : null}
+                    {dropProvided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </Card>
+            <div className="h-full w-full p-1 flex flex-col gap-2 col-span-2 overflow-auto">
+              {Object.entries(sets)
+                .filter(
+                  ([setId]) =>
+                    setId !== DroppableIdEnums.Enum["available-songs"],
+                )
+                .map(([setId, set], index) => (
+                  <div key={setId} className="pb-4">
+                    <Droppable droppableId={setId}>
+                      {(dropProvided, dropSnapshot) => (
+                        <div
+                          ref={dropProvided.innerRef}
+                          {...dropProvided.droppableProps}
+                          className={
+                            dropSnapshot.isDraggingOver
+                              ? "outline outline-primary outline-offset-2 rounded bg-card"
+                              : ""
+                          }
+                        >
+                          <FlexList
+                            direction="row"
+                            items="center"
+                            justify="between"
+                          >
+                            <Label
+                              className={
+                                dropSnapshot.isDraggingOver ? "font-bold" : ""
+                              }
+                            >
+                              Set {index + 1}
+                            </Label>
+                            <Muted>
+                              {pluralize("Minute", totalSetLength(set), true)}
+                            </Muted>
+                          </FlexList>
+                          {set?.map((song, songIndex) => (
+                            <DraggableSong
+                              key={song.id}
+                              song={song}
+                              songIndex={songIndex}
+                            >
+                              <SongActions
+                                song={song}
+                                onSwap={() =>
+                                  setSongToSwap({
+                                    setId,
+                                    songId: song.id,
+                                  })
+                                }
+                                onRemove={() =>
+                                  handleRemoveSong(setId, song.id)
+                                }
+                              />
+                            </DraggableSong>
+                          ))}
+                          {dropProvided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </div>
+                ))}
+              <Droppable droppableId={DroppableIdEnums.Enum["new-set"]}>
+                {(dropProvided, dropSnapshot) => (
+                  <div
+                    ref={dropProvided.innerRef}
+                    {...dropProvided.droppableProps}
+                  >
+                    <Card
+                      className={`outline-dashed outline-border  border-none ${
+                        dropSnapshot.isDraggingOver ? "outline-primary" : ""
+                      }`}
+                    >
+                      <CardHeader>
+                        <CardDescription className="text-center">
+                          Drag songs here to create a new set
+                        </CardDescription>
+                      </CardHeader>
+                    </Card>
+                    {dropProvided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </div>
+          </div>
+        </DragDropContext>
+        {isChangedSetlist ? (
+          <div className="sticky bottom-0 inset-x-0 bg-card">
+            <Card className="p-2">
+              <FlexList justify="end" direction="row" gap={2}>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSets(defaultSets);
+                    setIsChangedSetlist(false);
+                  }}
+                >
+                  Revert
+                </Button>
+                <Button onClick={onSubmit}>Save Changes?</Button>
+              </FlexList>
+            </Card>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
   return (
     <div
       ref={containerRef}
@@ -603,42 +806,22 @@ export default function SetlistPage() {
                           </Muted>
                         </FlexList>
                         {set?.map((song, songIndex) => (
-                          <Draggable
-                            draggableId={song.id}
+                          <DraggableSong
                             key={song.id}
-                            index={songIndex}
+                            song={song}
+                            songIndex={songIndex}
                           >
-                            {(dragprovided) => (
-                              <div
-                                className="py-1"
-                                ref={dragprovided.innerRef}
-                                {...dragprovided.dragHandleProps}
-                                {...dragprovided.draggableProps}
-                              >
-                                <SongContainer.Card>
-                                  <FlexList
-                                    direction="row"
-                                    items="center"
-                                    gap={2}
-                                  >
-                                    <SongContainer.Song song={song} />
-                                    <SongActions
-                                      song={song}
-                                      onSwap={() =>
-                                        setSongToSwap({
-                                          setId,
-                                          songId: song.id,
-                                        })
-                                      }
-                                      onRemove={() =>
-                                        handleRemoveSong(setId, song.id)
-                                      }
-                                    />
-                                  </FlexList>
-                                </SongContainer.Card>
-                              </div>
-                            )}
-                          </Draggable>
+                            <SongActions
+                              song={song}
+                              onSwap={() =>
+                                setSongToSwap({
+                                  setId,
+                                  songId: song.id,
+                                })
+                              }
+                              onRemove={() => handleRemoveSong(setId, song.id)}
+                            />
+                          </DraggableSong>
                         ))}
                         {dropProvided.placeholder}
                       </div>
@@ -704,9 +887,11 @@ export default function SetlistPage() {
 const SetlistActions = ({
   showAvailableSongs,
   onShowAvailableSongChange,
+  isDesktop = false,
 }: {
   showAvailableSongs: boolean;
   onShowAvailableSongChange: (show: boolean) => void;
+  isDesktop?: boolean;
 }) => {
   const { setlist, setlistLink } = useLoaderData<typeof loader>();
   const [showEditName, setShowEditName] = useState(false);
@@ -730,12 +915,16 @@ const SetlistActions = ({
             <DropdownMenuLabel>Setlist Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem
-                onClick={() => onShowAvailableSongChange(!showAvailableSongs)}
-              >
-                <AudioLines className="h-4 w-4 mr-2" />
-                {showAvailableSongs ? "Hide Available Song Panel" : "Add Songs"}
-              </DropdownMenuItem>
+              {!isDesktop ? (
+                <DropdownMenuItem
+                  onClick={() => onShowAvailableSongChange(!showAvailableSongs)}
+                >
+                  <AudioLines className="h-4 w-4 mr-2" />
+                  {showAvailableSongs
+                    ? "Hide Available Song Panel"
+                    : "Add Songs"}
+                </DropdownMenuItem>
+              ) : null}
               <DropdownMenuItem onClick={() => setShowEditName(true)}>
                 <Pencil className="h-4 w-4 mr-2" />
                 Edit Name
@@ -1347,41 +1536,43 @@ const SongSwapSheet = ({
   );
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="space-y-2" side="bottom">
-        <div className="pt-2 sticky space-y-2 top-0 inset-x-0 bg-card">
-          <FlexList direction="row" items="center" gap={2} justify="between">
-            <CardDescription>Available Songs</CardDescription>
-          </FlexList>
-          <div className="relative ml-auto flex-1 md:grow-0">
-            <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search..."
-              className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
+      <SheetContent side="bottom">
+        <MaxWidth className="space-y-2">
+          <div className="pt-2 sticky space-y-2 top-0 inset-x-0 bg-card">
+            <FlexList direction="row" items="center" gap={2} justify="between">
+              <CardDescription>Available Songs</CardDescription>
+            </FlexList>
+            <div className="relative ml-auto flex-1 md:grow-0">
+              <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search..."
+                className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
+            <Separator />
           </div>
-          <Separator />
-        </div>
-        {filteredSongs.map((song) => (
-          <button
-            className="w-full"
-            key={song.id}
-            onClick={() => onSubmit(song)}
-          >
-            <SongContainer.Song.Card key={song.id}>
-              <SongContainer.Song.Song song={song} />
-            </SongContainer.Song.Card>
-          </button>
-        ))}
-        {filteredSongs.length === 0 ? (
-          <Card className="outline-dashed outline-border flex items-center justify-center  border-none h-12">
-            <CardDescription className="text-center">
-              No songs found
-            </CardDescription>
-          </Card>
-        ) : null}
+          {filteredSongs.map((song) => (
+            <button
+              className="w-full"
+              key={song.id}
+              onClick={() => onSubmit(song)}
+            >
+              <SongContainer.Song.Card key={song.id}>
+                <SongContainer.Song.Song song={song} />
+              </SongContainer.Song.Card>
+            </button>
+          ))}
+          {filteredSongs.length === 0 ? (
+            <Card className="outline-dashed outline-border flex items-center justify-center  border-none h-12">
+              <CardDescription className="text-center">
+                No songs found
+              </CardDescription>
+            </Card>
+          ) : null}
+        </MaxWidth>
       </SheetContent>
     </Sheet>
   );
