@@ -427,13 +427,16 @@ const AddMemberDialog = () => {
             them scan the QR code.
           </DialogDescription>
         </DialogHeader>
-        <FlexList gap={2}>
+        <div className="space-y-2">
           <Button
+            className="w-full"
             variant="outline"
             onClick={() => onCopy(qrCodeAddress)}
             onMouseLeave={() => setShowSuccess(false)}
           >
-            {showSuccess ? "Copied!" : qrCodeAddress}
+            <span className="truncate max-w-[300px]">
+              {showSuccess ? "Copied!" : qrCodeAddress}
+            </span>
             {showSuccess ? (
               <Check className="w-4 h-4 ml-2" />
             ) : (
@@ -463,7 +466,7 @@ const AddMemberDialog = () => {
               </DialogFooter>
             </FlexList>
           </Form>
-        </FlexList>
+        </div>
       </DialogContent>
     </Dialog>
   );
