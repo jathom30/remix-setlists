@@ -31,7 +31,7 @@ export const SongSwapSheet = ({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom">
         <MaxWidth className="space-y-2 max-h-[70vh] overflow-auto">
-          <div className="pt-2 sticky space-y-2 top-0 inset-x-0 bg-card">
+          <div className="pt-2 px-1 sticky space-y-2 top-0 inset-x-0 bg-card">
             <FlexList direction="row" items="center" gap={2} justify="between">
               <CardDescription>Available Songs</CardDescription>
             </FlexList>
@@ -47,7 +47,7 @@ export const SongSwapSheet = ({
             </div>
             <Separator />
           </div>
-          <div className="p-1">
+          <div className="p-1 space-y-0.5">
             {filteredSongs.map((song) => (
               <button
                 className="w-full"
