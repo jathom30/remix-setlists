@@ -47,7 +47,7 @@ export const SongSwapSheet = ({
             </div>
             <Separator />
           </div>
-          <div className="p-1 space-y-0.5">
+          <div className="p-1 space-y-1">
             {filteredSongs.map((song) => (
               <button
                 className="w-full"
