@@ -30,9 +30,13 @@ export const SetlistContainer = ({
   return (
     <div className="flex-grow">
       <FlexList direction="row" items="center" justify="between" gap={2}>
-        <Large>{setlist.name}</Large>
+        <Large className="truncate max-w-[250px] sm:max-w-none">
+          {setlist.name}
+        </Large>
         <FlexList direction="row" items="center" gap={2}>
-          <Muted>{pluralize("Set", setlist.sets.length, true)}</Muted>
+          <Muted className="whitespace-nowrap">
+            {pluralize("Set", setlist.sets.length, true)}
+          </Muted>
         </FlexList>
       </FlexList>
       <FlexList direction="row" items="center" justify="between" gap={2}>
