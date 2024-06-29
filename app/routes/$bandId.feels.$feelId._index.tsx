@@ -102,18 +102,20 @@ export default function BandFeel() {
         </CardHeader>
         <CardContent>
           <FlexList>
-            <FlexList direction="row" items="center" justify="end" gap={2}>
-              <div className="relative ml-auto flex-1 md:grow-0">
-                <SearchIcon className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search..."
-                  className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-              </div>
-            </FlexList>
+            {feel.songs.length > 1 ? (
+              <FlexList direction="row" items="center" justify="end" gap={2}>
+                <div className="relative ml-auto flex-1 md:grow-0">
+                  <SearchIcon className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Search..."
+                    className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                </div>
+              </FlexList>
+            ) : null}
             <FlexList gap={2}>
               {feel.songs.map((song) => (
                 <Link key={song.id} to={`/${feel.bandId}/songs/${song.id}`}>
