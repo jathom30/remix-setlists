@@ -34,7 +34,9 @@ export const SongContainer = ({
   return (
     <div className="flex-grow">
       <FlexList direction="row" items="center" justify="between" gap={2}>
-        <Large className="truncate max-w-[200px]">{song.name}</Large>
+        <Large className="truncate max-w-[200px] sm:max-w-none">
+          {song.name}
+        </Large>
         <FlexList direction="row" items="center" gap={2}>
           {song.tempo ? (
             <Muted className="whitespace-nowrap">{song.tempo} BPM</Muted>
@@ -45,7 +47,9 @@ export const SongContainer = ({
         </FlexList>
       </FlexList>
       <FlexList direction="row" items="center" justify="between" gap={2}>
-        <Small className="truncate max-w-[150px]">{song.author}</Small>
+        <Small className="truncate max-w-[200px] sm:max-w-none">
+          {song.author}
+        </Small>
         <FlexList direction="row" gap={2} items="center">
           {song?.feels?.map((feel) => (
             <TooltipProvider key={feel.id}>
