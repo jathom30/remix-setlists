@@ -1,4 +1,3 @@
-import { parseWithZod } from "@conform-to/zod";
 import {
   DragDropContext,
   Draggable,
@@ -11,95 +10,30 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   SerializeFrom,
-  json,
-  redirect,
 } from "@remix-run/node";
-import { Link, useFetcher, useLoaderData } from "@remix-run/react";
-import {
-  AreaChart,
-  AudioLines,
-  Check,
-  Copy,
-  EllipsisVertical,
-  ExternalLink,
-  Link as LinkIcon,
-  Pencil,
-  Search,
-  Shrink,
-  Trash,
-  X,
-} from "lucide-react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
+import { Search, X } from "lucide-react";
 import pluralize from "pluralize";
 import { useEffect, useState } from "react";
-import { QRCode } from "react-qrcode-logo";
-import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { FlexList } from "~/components";
 import { DraggableSong } from "~/components/dnd";
 import { AvailableSongsCardDesktop } from "~/components/dnd/available-songs-card-desktop";
-import { CloneSetlistForm } from "~/components/setlists/clone-setlist-form";
-import { CreatePublicLinkForm } from "~/components/setlists/create-public-link-form";
-import { DeleteSetlistForm } from "~/components/setlists/delete-setlist-form";
-import { EditNameForm } from "~/components/setlists/edit-name-form";
-import {
-  ActionSetSchema,
-  CloneSetlistSchema,
-  CreatePublicLinkSchema,
-  DeleteSetlistSchema,
-  FormSchema,
-  IntentSchema,
-  RemovePublicLinkSchema,
-  SetlistNameSchema,
-} from "~/components/setlists/form-schemas";
-import { RemovePublicLinkForm } from "~/components/setlists/remove-public-link-form";
+import { setlistAction } from "~/components/setlists/action.server";
+import { setlistLoader } from "~/components/setlists/loader.server";
 import { ResizableSetlistContainer } from "~/components/setlists/resizeable-setlist-container";
+import { SetlistActions } from "~/components/setlists/setlist-actions";
 import { SongActions } from "~/components/setlists/song-actions";
 import { SongSwapSheet } from "~/components/setlists/song-swap-sheet";
 import { SongContainer } from "~/components/song-container";
 import { H1, Muted } from "~/components/typography";
 import { useContainerHeight } from "~/hooks/use-container-height";
-import {
-  copySetlist,
-  deleteSetlist,
-  getSetlist,
-  updateMultiSetSetlist,
-  updateSetlist,
-  updateSetlistName,
-} from "~/models/setlist.server";
-import { getSongs } from "~/models/song.server";
-import { requireNonSubMember, requireUserId } from "~/session.server";
-import { getDomainUrl } from "~/utils/assorted";
 import {
   DroppableIdEnums,
   TSet,
@@ -110,119 +44,16 @@ import {
 } from "~/utils/dnd";
 import { totalSetLength } from "~/utils/sets";
 
-export async function loader({ request, params }: LoaderFunctionArgs) {
-  await requireUserId(request);
-  const { setlistId, bandId } = params;
-  invariant(setlistId, "setlistId is required");
-  invariant(bandId, "bandId is required");
-  const setlist = await getSetlist(setlistId);
-  if (!setlist) {
-    throw new Response("Setlist not found", { status: 404 });
-  }
-
-  const allSongs = await getSongs(bandId);
-
-  const domainUrl = getDomainUrl(request);
-  const setlistLink = `${domainUrl}/${setlist.bandId}/setlists/${setlist.id}`;
-
-  const publicSearchParams = new URLSearchParams();
-  publicSearchParams.set("bandId", bandId);
-  publicSearchParams.set("setlistId", setlistId);
-  const setlistPublicUrl = `${domainUrl}/publicSetlist?${publicSearchParams.toString()}`;
-  return json({
-    setlist,
-    setlistLink,
-    allSongs,
-    ...(setlist.isPublic ? { setlistPublicUrl } : {}),
-  });
+export async function loader(args: LoaderFunctionArgs) {
+  return await setlistLoader(args);
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: data?.setlist.name || "Setlist Detail" }];
 };
 
-export async function action({ request, params }: ActionFunctionArgs) {
-  await requireUserId(request);
-  const { setlistId, bandId } = params;
-  invariant(setlistId, "setlistId is required");
-  invariant(bandId, "bandId is required");
-  await requireNonSubMember(request, bandId);
-
-  const formData = await request.formData();
-  const intent = formData.get("intent");
-
-  if (intent === IntentSchema.Enum["update-setlist"]) {
-    const submission = parseWithZod(formData, { schema: FormSchema });
-    if (submission.status !== "success") {
-      return submission.reply();
-    }
-    const parsedSets = ActionSetSchema.parse(JSON.parse(submission.value.sets));
-    const sets = Object.values(parsedSets);
-    const updatedSetlist = await updateMultiSetSetlist(setlistId, sets);
-    return json({ updatedSetlist });
-  }
-
-  if (intent === IntentSchema.Enum["update-name"]) {
-    const submission = parseWithZod(formData, { schema: SetlistNameSchema });
-    if (submission.status !== "success") {
-      return submission.reply();
-    }
-
-    const updatedSetlist = await updateSetlistName(
-      setlistId,
-      submission.value.setlist_name,
-    );
-    return json({ updatedSetlist });
-  }
-
-  if (intent === IntentSchema.Enum["delete-setlist"]) {
-    const submission = parseWithZod(formData, { schema: DeleteSetlistSchema });
-    if (submission.status !== "success") {
-      return submission.reply();
-    }
-    // delete setlist
-    await deleteSetlist(setlistId);
-    return redirect(`/${bandId}/setlists`);
-  }
-
-  if (intent === IntentSchema.Enum["clone-setlist"]) {
-    const submission = parseWithZod(formData, { schema: CloneSetlistSchema });
-    if (submission.status !== "success") {
-      return submission.reply();
-    }
-    // clone setlist
-    const newSetlist = await copySetlist(setlistId);
-    if (!newSetlist) {
-      throw new Response("Failed to clone setlist", { status: 500 });
-    }
-    return redirect(`/${bandId}/setlists/${newSetlist.id}`);
-  }
-
-  if (intent === IntentSchema.Enum["create-public-link"]) {
-    const submission = parseWithZod(formData, {
-      schema: CreatePublicLinkSchema,
-    });
-    if (submission.status !== "success") {
-      return submission.reply();
-    }
-    // create public link
-    await updateSetlist(setlistId, { isPublic: true });
-    return json(submission.payload);
-  }
-
-  if (intent === IntentSchema.Enum["remove-public-link"]) {
-    const submission = parseWithZod(formData, {
-      schema: RemovePublicLinkSchema,
-    });
-    if (submission.status !== "success") {
-      return submission.reply();
-    }
-    // create public link
-    await updateSetlist(setlistId, { isPublic: false });
-    return json(submission.payload);
-  }
-
-  return null;
+export async function action(args: ActionFunctionArgs) {
+  return setlistAction(args);
 }
 
 const FetcherDataSchema = z.object({
@@ -777,279 +608,3 @@ export default function SetlistPage() {
     </div>
   );
 }
-
-const SetlistActions = ({
-  showAvailableSongs,
-  onShowAvailableSongChange,
-  isDesktop = false,
-}: {
-  showAvailableSongs: boolean;
-  onShowAvailableSongChange: (show: boolean) => void;
-  isDesktop?: boolean;
-}) => {
-  const { setlist, setlistLink } = useLoaderData<typeof loader>();
-  const [showEditName, setShowEditName] = useState(false);
-  const [showDelete, setShowDelete] = useState(false);
-  const [showClone, setShowClone] = useState(false);
-  const [showPublicLink, setShowPublicLink] = useState(false);
-
-  const onCopy = (textToCopy: string) =>
-    navigator.clipboard.writeText(textToCopy);
-
-  return (
-    <div>
-      <div className="hidden sm:block">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary" size="icon">
-              <EllipsisVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Setlist Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              {!isDesktop ? (
-                <DropdownMenuItem
-                  onClick={() => onShowAvailableSongChange(!showAvailableSongs)}
-                >
-                  <AudioLines className="h-4 w-4 mr-2" />
-                  {showAvailableSongs
-                    ? "Hide Available Song Panel"
-                    : "Add Songs"}
-                </DropdownMenuItem>
-              ) : null}
-              <DropdownMenuItem onClick={() => setShowEditName(true)}>
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit Name
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="metrics">
-                  <AreaChart className="h-4 w-4 mr-2" />
-                  Metrics
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onCopy(setlistLink)}>
-                <LinkIcon className="h-4 w-4 mr-2" />
-                Copy Link
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowPublicLink(true)}>
-                <ExternalLink className="h-4 w-4 mr-2" />
-                {setlist.isPublic ? "View Public Link" : "Create Public Link"}
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="condensed">
-                  <Shrink className="h-4 w-4 mr-2" />
-                  Condensed View
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowClone(true)}>
-                <Copy className="h-4 w-4 mr-2" />
-                Clone Setlist
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowDelete(true)}>
-                <Trash className="h-4 w-4 mr-2" />
-                Delete Setlist
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="sm:hidden">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="secondary" size="icon">
-              <EllipsisVertical className="h-4 w-4" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle>Setlist Actions</SheetTitle>
-            </SheetHeader>
-            <FlexList gap={0}>
-              <SheetClose asChild>
-                <Button
-                  variant="ghost"
-                  onClick={() => onShowAvailableSongChange(!showAvailableSongs)}
-                >
-                  <AudioLines className="h-4 w-4 mr-2" />
-                  {showAvailableSongs
-                    ? "Hide Available Song Panel"
-                    : "Add Songs"}
-                </Button>
-              </SheetClose>
-              <SheetClose asChild>
-                <Button onClick={() => setShowEditName(true)} variant="ghost">
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Edit Name
-                </Button>
-              </SheetClose>
-              <SheetClose asChild>
-                <Button variant="ghost" asChild>
-                  <Link to="metrics">
-                    <AreaChart className="h-4 w-4 mr-2" />
-                    Metrics
-                  </Link>
-                </Button>
-              </SheetClose>
-              <SheetClose asChild>
-                <Button variant="ghost" onClick={() => onCopy(setlistLink)}>
-                  <LinkIcon className="h-4 w-4 mr-2" />
-                  Copy Link
-                </Button>
-              </SheetClose>
-              <SheetClose asChild>
-                <Button variant="ghost" onClick={() => setShowPublicLink(true)}>
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  {setlist.isPublic ? "View Public Link" : "Create Public Link"}
-                </Button>
-              </SheetClose>
-              <SheetClose asChild>
-                <Button variant="ghost" asChild>
-                  <Link to="condensed">
-                    <Shrink className="h-4 w-4 mr-2" />
-                    Condensed View
-                  </Link>
-                </Button>
-              </SheetClose>
-              <SheetClose asChild>
-                <Button variant="ghost" onClick={() => setShowClone(true)}>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Clone Setlist
-                </Button>
-              </SheetClose>
-              <SheetClose asChild>
-                <Button variant="ghost" onClick={() => setShowDelete(true)}>
-                  <Trash className="h-4 w-4 mr-2" />
-                  Delete Setlist
-                </Button>
-              </SheetClose>
-            </FlexList>
-          </SheetContent>
-        </Sheet>
-      </div>
-      <Dialog open={showEditName} onOpenChange={setShowEditName}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Name</DialogTitle>
-            <DialogDescription>Edit the name of the setlist</DialogDescription>
-          </DialogHeader>
-          <EditNameForm name={setlist.name}>
-            <DialogFooter>
-              <Button type="submit" onClick={() => setShowEditName(false)}>
-                Save
-              </Button>
-            </DialogFooter>
-          </EditNameForm>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={showDelete} onOpenChange={setShowDelete}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Setlist?</DialogTitle>
-            <DialogDescription>
-              This is a perminent action and cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DeleteSetlistForm>
-            <DialogFooter>
-              <Button variant="destructive" type="submit">
-                Delete
-              </Button>
-            </DialogFooter>
-          </DeleteSetlistForm>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={showClone} onOpenChange={setShowClone}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Clone Setlist</DialogTitle>
-            <DialogDescription>
-              Clone this setlist to create a new identical one.
-            </DialogDescription>
-          </DialogHeader>
-          <CloneSetlistForm>
-            <DialogFooter>
-              <Button type="submit" onClick={() => setShowClone(false)}>
-                Clone
-              </Button>
-            </DialogFooter>
-          </CloneSetlistForm>
-        </DialogContent>
-      </Dialog>
-
-      <PublicLink open={showPublicLink} onOpenChange={setShowPublicLink} />
-    </div>
-  );
-};
-
-const PublicLink = ({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) => {
-  const loaderData = useLoaderData<typeof loader>();
-  const publicLink = loaderData.setlistPublicUrl;
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  const title = publicLink ? "Public Link" : "Create Public Link";
-  const description = publicLink
-    ? "Copy the link below to share"
-    : "Creating a public link will allow anyone with the link to view a read-only version of the setlist.";
-
-  const onCopy = (textToCopy: string) =>
-    navigator.clipboard.writeText(textToCopy).then(() => setShowSuccess(true));
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
-        {publicLink ? (
-          <FlexList gap={2}>
-            <Button
-              variant="outline"
-              onClick={() => onCopy(publicLink)}
-              onMouseLeave={() => setShowSuccess(false)}
-            >
-              {showSuccess ? (
-                "Copied!"
-              ) : (
-                <span className="truncate max-w-[200px]">{publicLink}</span>
-              )}
-              {showSuccess ? (
-                <Check className="w-4 h-4 ml-2" />
-              ) : (
-                <ExternalLink className="w-4 h-4 ml-2" />
-              )}
-            </Button>
-            <FlexList items="center" gap={0}>
-              <QRCode value={publicLink} />
-            </FlexList>
-          </FlexList>
-        ) : null}
-        {publicLink ? (
-          <RemovePublicLinkForm>
-            <DialogFooter>
-              <Button type="submit" variant="secondary">
-                Remove Public Link
-              </Button>
-            </DialogFooter>
-          </RemovePublicLinkForm>
-        ) : (
-          <CreatePublicLinkForm>
-            <DialogFooter>
-              <Button type="submit">Create</Button>
-            </DialogFooter>
-          </CreatePublicLinkForm>
-        )}
-      </DialogContent>
-    </Dialog>
-  );
-};
