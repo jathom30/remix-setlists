@@ -647,10 +647,18 @@ export default function SetlistPage() {
               </Droppable>
             </div>
           </div>
+          <SongSwapSheet
+            open={Boolean(songToSwap)}
+            onSubmit={handleSwapSong}
+            onOpenChange={() => setSongToSwap(undefined)}
+            availableSongs={
+              sets[DroppableIdEnums.Enum["available-songs"]] || []
+            }
+          />
         </DragDropContext>
         {isChangedSetlist ? (
-          <div className="sticky bottom-0 inset-x-0 bg-card">
-            <Card className="p-2">
+          <div className="sticky bottom-2 inset-x-0 bg-card">
+            <Card className="p-2 mx-2">
               <FlexList justify="end" direction="row" gap={2}>
                 <Button
                   variant="outline"
@@ -858,7 +866,7 @@ export default function SetlistPage() {
       </DragDropContext>
       {isChangedSetlist ? (
         <div className="sticky bottom-2 inset-x-0 bg-card">
-          <Card className="p-2">
+          <Card className="p-2 mx-1">
             <FlexList direction="row" gap={2}>
               <Button
                 className="w-full"
@@ -1551,17 +1559,19 @@ const SongSwapSheet = ({
             </div>
             <Separator />
           </div>
-          {filteredSongs.map((song) => (
-            <button
-              className="w-full"
-              key={song.id}
-              onClick={() => onSubmit(song)}
-            >
-              <SongContainer.Song.Card key={song.id}>
-                <SongContainer.Song.Song song={song} />
-              </SongContainer.Song.Card>
-            </button>
-          ))}
+          <div className="p-1">
+            {filteredSongs.map((song) => (
+              <button
+                className="w-full"
+                key={song.id}
+                onClick={() => onSubmit(song)}
+              >
+                <SongContainer.Song.Card key={song.id}>
+                  <SongContainer.Song.Song song={song} />
+                </SongContainer.Song.Card>
+              </button>
+            ))}
+          </div>
           {filteredSongs.length === 0 ? (
             <Card className="outline-dashed outline-border flex items-center justify-center  border-none h-12">
               <CardDescription className="text-center">
