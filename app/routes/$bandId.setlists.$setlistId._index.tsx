@@ -1,4 +1,3 @@
-import { getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import {
   DragDropContext,
@@ -6,7 +5,7 @@ import {
   DropResult,
   Droppable,
 } from "@hello-pangea/dnd";
-import { Feel, Link as PLink, Set, Setlist, Song } from "@prisma/client";
+import { Feel, Song } from "@prisma/client";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -15,46 +14,29 @@ import {
   json,
   redirect,
 } from "@remix-run/node";
-import {
-  Form,
-  Link,
-  useFetcher,
-  useLoaderData,
-  useParams,
-} from "@remix-run/react";
+import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import {
   AreaChart,
   AudioLines,
   Check,
-  CircleMinus,
   Copy,
   EllipsisVertical,
   ExternalLink,
   Link as LinkIcon,
-  Maximize,
-  MicVocal,
-  Minimize,
   Pencil,
-  Replace,
   Search,
   Shrink,
   Trash,
   X,
 } from "lucide-react";
 import pluralize from "pluralize";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { QRCode } from "react-qrcode-logo";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -74,12 +56,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
@@ -89,10 +65,29 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { FlexList, MaxWidth } from "~/components";
+import { FlexList } from "~/components";
 import { DraggableSong } from "~/components/dnd";
+import { AvailableSongsCardDesktop } from "~/components/dnd/available-songs-card-desktop";
+import { CloneSetlistForm } from "~/components/setlists/clone-setlist-form";
+import { CreatePublicLinkForm } from "~/components/setlists/create-public-link-form";
+import { DeleteSetlistForm } from "~/components/setlists/delete-setlist-form";
+import { EditNameForm } from "~/components/setlists/edit-name-form";
+import {
+  ActionSetSchema,
+  CloneSetlistSchema,
+  CreatePublicLinkSchema,
+  DeleteSetlistSchema,
+  FormSchema,
+  IntentSchema,
+  RemovePublicLinkSchema,
+  SetlistNameSchema,
+} from "~/components/setlists/form-schemas";
+import { RemovePublicLinkForm } from "~/components/setlists/remove-public-link-form";
+import { ResizableSetlistContainer } from "~/components/setlists/resizeable-setlist-container";
+import { SongActions } from "~/components/setlists/song-actions";
+import { SongSwapSheet } from "~/components/setlists/song-swap-sheet";
 import { SongContainer } from "~/components/song-container";
-import { H1, Muted, P } from "~/components/typography";
+import { H1, Muted } from "~/components/typography";
 import { useContainerHeight } from "~/hooks/use-container-height";
 import {
   copySetlist,
@@ -105,7 +100,14 @@ import {
 import { getSongs } from "~/models/song.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { getDomainUrl } from "~/utils/assorted";
-import { DroppableIdEnums, TSet, compareSets, onDragEnd } from "~/utils/dnd";
+import {
+  DroppableIdEnums,
+  TSet,
+  TSong,
+  compareSets,
+  getAvailableSongs,
+  onDragEnd,
+} from "~/utils/dnd";
 import { totalSetLength } from "~/utils/sets";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -131,7 +133,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     setlist,
     setlistLink,
     allSongs,
-    // availableSongs,
     ...(setlist.isPublic ? { setlistPublicUrl } : {}),
   });
 }
@@ -139,44 +140,6 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: data?.setlist.name || "Setlist Detail" }];
 };
-
-const IntentSchema = z.enum([
-  "update-setlist",
-  "update-name",
-  "delete-setlist",
-  "clone-setlist",
-  "create-public-link",
-  "remove-public-link",
-  "remove-song",
-]);
-
-const FormSchema = z.object({
-  sets: z.string(),
-  intent: z.literal(IntentSchema.Enum["update-setlist"]),
-});
-
-const ActionSetSchema = z.record(z.array(z.string()));
-
-const SetlistNameSchema = z
-  .object({
-    setlist_name: z.string().min(1),
-    intent: z.literal(IntentSchema.Enum["update-name"]),
-  })
-  .required();
-
-const DeleteSetlistSchema = z.object({
-  intent: z.literal(IntentSchema.Enum["delete-setlist"]),
-});
-const CloneSetlistSchema = z.object({
-  intent: z.literal(IntentSchema.Enum["clone-setlist"]),
-});
-
-const CreatePublicLinkSchema = z.object({
-  intent: z.literal(IntentSchema.Enum["create-public-link"]),
-});
-const RemovePublicLinkSchema = z.object({
-  intent: z.literal(IntentSchema.Enum["remove-public-link"]),
-});
 
 export async function action({ request, params }: ActionFunctionArgs) {
   await requireUserId(request);
@@ -305,23 +268,6 @@ const FetcherDataSchema = z.object({
     ),
   }),
 });
-
-type TSong = SerializeFrom<Song & { feels: Feel[]; links?: PLink[] }>;
-
-const getAvailableSongs = (
-  setlist: SerializeFrom<
-    Setlist & { sets: (Set & { songs: { song: Song | null }[] })[] }
-  >,
-  allSongs: SerializeFrom<Song & { feels: Feel[]; links?: PLink[] }>[],
-) => {
-  const setlistSongIds = setlist.sets.reduce((songs: string[], set) => {
-    const songsInSet = set.songs
-      .map((song) => song.song?.id)
-      .filter((id): id is string => Boolean(id));
-    return [...songs, ...songsInSet];
-  }, []);
-  return allSongs.filter((song) => !setlistSongIds.includes(song.id));
-};
 
 export default function SetlistPage() {
   const { setlist, allSongs } = useLoaderData<typeof loader>();
@@ -505,64 +451,7 @@ export default function SetlistPage() {
         </FlexList>
         <DragDropContext key={setlist.id} onDragEnd={handleDragEnd}>
           <div className="grid h-full grid-cols-3 gap-2 p-2 overflow-hidden max-w-5xl">
-            <Card className="h-full flex-grow px-2 flex flex-col gap-2 overflow-auto w-full">
-              <div className="pt-2 sticky space-y-2 top-0 inset-x-0 bg-card">
-                <CardDescription>Available Songs</CardDescription>
-                <div className="relative ml-auto flex-1 md:grow-0">
-                  <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="search"
-                    placeholder="Search..."
-                    className="w-full rounded-lg bg-background pl-8"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                  />
-                </div>
-                <Separator />
-              </div>
-              <Droppable droppableId={DroppableIdEnums.Enum["available-songs"]}>
-                {(dropProvided, dropSnapshot) => (
-                  <div
-                    className="h-full"
-                    ref={dropProvided.innerRef}
-                    {...dropProvided.droppableProps}
-                  >
-                    {filteredSongs.map((song, songIndex) => (
-                      <Draggable
-                        draggableId={song.id}
-                        key={song.id}
-                        index={songIndex}
-                      >
-                        {(dragprovided) => (
-                          <div
-                            className="py-1"
-                            ref={dragprovided.innerRef}
-                            {...dragprovided.dragHandleProps}
-                            {...dragprovided.draggableProps}
-                          >
-                            <SongContainer.Song.Card>
-                              <SongContainer.Song.Song song={song} />
-                            </SongContainer.Song.Card>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {filteredSongs.length === 0 ? (
-                      <Card
-                        className={`outline-dashed outline-border flex items-center justify-center  border-none h-5/6 ${
-                          dropSnapshot.isDraggingOver ? "outline-primary" : ""
-                        }`}
-                      >
-                        <CardDescription className="text-center">
-                          No songs found
-                        </CardDescription>
-                      </Card>
-                    ) : null}
-                    {dropProvided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </Card>
+            <AvailableSongsCardDesktop songs={filteredSongs} />
             <div className="h-full w-full p-1 flex flex-col gap-2 col-span-2 overflow-auto">
               {Object.entries(sets)
                 .filter(
@@ -699,7 +588,7 @@ export default function SetlistPage() {
         />
       </FlexList>
       <DragDropContext key={setlist.id} onDragEnd={handleDragEnd}>
-        <ResizableContainer
+        <ResizableSetlistContainer
           show={showAvailableSongs}
           availableSongs={
             <Card className="h-full px-2 rounded-b-none flex flex-col gap-2 overflow-auto">
@@ -856,7 +745,7 @@ export default function SetlistPage() {
               )}
             </Droppable>
           </div>
-        </ResizableContainer>
+        </ResizableSetlistContainer>
         <SongSwapSheet
           open={Boolean(songToSwap)}
           onSubmit={handleSwapSong}
@@ -1096,101 +985,6 @@ const SetlistActions = ({
   );
 };
 
-const EditNameForm = ({
-  name,
-  children,
-}: {
-  name: string;
-  children: ReactNode;
-}) => {
-  const [form, fields] = useForm({
-    id: IntentSchema.Enum["update-name"],
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: SetlistNameSchema });
-    },
-    defaultValue: {
-      setlist_name: name,
-      intent: IntentSchema.Enum["update-name"],
-    },
-  });
-
-  return (
-    <Form
-      method="put"
-      id={form.id}
-      onSubmit={form.onSubmit}
-      noValidate={form.noValidate}
-      className="space-y-4"
-    >
-      <div>
-        <Label htmlFor={fields.setlist_name.name}>Setlist Name</Label>
-        <Input
-          {...getInputProps(fields.setlist_name, { type: "text" })}
-          placeholder="Setlist name"
-        />
-        <div
-          className="text-sm text-destructive"
-          id={fields.setlist_name.errorId}
-        >
-          {fields.setlist_name.errors}
-        </div>
-      </div>
-      <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
-      {children}
-    </Form>
-  );
-};
-
-const DeleteSetlistForm = ({ children }: { children: ReactNode }) => {
-  const [form, fields] = useForm({
-    id: IntentSchema.Enum["delete-setlist"],
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: DeleteSetlistSchema });
-    },
-    defaultValue: {
-      intent: IntentSchema.Enum["delete-setlist"],
-    },
-  });
-
-  return (
-    <Form
-      method="delete"
-      id={form.id}
-      onSubmit={form.onSubmit}
-      noValidate={form.noValidate}
-      className="space-y-4"
-    >
-      <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
-      {children}
-    </Form>
-  );
-};
-
-const CloneSetlistForm = ({ children }: { children: ReactNode }) => {
-  const [form, fields] = useForm({
-    id: IntentSchema.Enum["clone-setlist"],
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: CloneSetlistSchema });
-    },
-    defaultValue: {
-      intent: IntentSchema.Enum["clone-setlist"],
-    },
-  });
-
-  return (
-    <Form
-      method="post"
-      id={form.id}
-      onSubmit={form.onSubmit}
-      noValidate={form.noValidate}
-      className="space-y-4"
-    >
-      <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
-      {children}
-    </Form>
-  );
-};
-
 const PublicLink = ({
   open,
   onOpenChange,
@@ -1257,330 +1051,5 @@ const PublicLink = ({
         )}
       </DialogContent>
     </Dialog>
-  );
-};
-
-const CreatePublicLinkForm = ({ children }: { children: ReactNode }) => {
-  const [form, fields] = useForm({
-    id: IntentSchema.Enum["create-public-link"],
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: CreatePublicLinkSchema });
-    },
-    defaultValue: {
-      intent: IntentSchema.Enum["create-public-link"],
-    },
-  });
-  return (
-    <Form
-      method="put"
-      id={form.id}
-      onSubmit={form.onSubmit}
-      noValidate={form.noValidate}
-    >
-      <Input {...getInputProps(fields.intent, { type: "hidden" })} />
-      {children}
-    </Form>
-  );
-};
-
-const RemovePublicLinkForm = ({ children }: { children: ReactNode }) => {
-  const [form, fields] = useForm({
-    id: IntentSchema.Enum["remove-public-link"],
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: RemovePublicLinkSchema });
-    },
-    defaultValue: {
-      intent: IntentSchema.Enum["remove-public-link"],
-    },
-  });
-  return (
-    <Form
-      method="put"
-      id={form.id}
-      onSubmit={form.onSubmit}
-      noValidate={form.noValidate}
-    >
-      <Input {...getInputProps(fields.intent, { type: "hidden" })} />
-      {children}
-    </Form>
-  );
-};
-
-const ResizableContainer = ({
-  show,
-  children,
-  availableSongs,
-}: {
-  show: boolean;
-  children: ReactNode;
-  availableSongs: ReactNode;
-}) => {
-  if (!show) return children;
-  return (
-    <ResizablePanelGroup direction="vertical">
-      <ResizablePanel>{children}</ResizablePanel>
-      <ResizableHandle withHandle className="bg-inherit" />
-      <ResizablePanel defaultSize={40}>{availableSongs}</ResizablePanel>
-    </ResizablePanelGroup>
-  );
-};
-
-const SongActions = ({
-  song,
-  onRemove,
-  onSwap,
-}: {
-  song: TSong;
-  onRemove: () => void;
-  onSwap: () => void;
-}) => {
-  const { setlistId } = useParams();
-  const [showDetails, setShowDetails] = useState(false);
-  return (
-    <div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <EllipsisVertical className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Song Actions</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DropdownMenuItem onClick={() => setShowDetails(true)}>
-              <MicVocal className="h-4 w-4 mr-2" />
-              Details
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                to={{
-                  pathname: `/${song.bandId}/songs/${song.id}/edit`,
-                  search: `?redirectTo=${`/${song.bandId}/setlists/${setlistId}`}`,
-                }}
-              >
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onSwap}>
-              <Replace className="h-4 w-4 mr-2" />
-              Swap
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onRemove}>
-              <CircleMinus className="h-4 w-4 mr-2" />
-              Remove
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <SongDetailsSheet
-        song={song}
-        open={showDetails}
-        onOpenChange={setShowDetails}
-      />
-    </div>
-  );
-};
-
-const SongDetailsSheet = ({
-  song,
-  open,
-  onOpenChange,
-}: {
-  song: TSong;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) => {
-  const { setlistId } = useParams();
-  const [expandNotes, setExpandNotes] = useState(false);
-
-  const splitNote = song.note?.split("\n");
-  return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom">
-        <MaxWidth>
-          <div className="space-y-2 max-h-[70vh] overflow-auto">
-            <div className="sticky top-0 bg-card p-2 pt-4">
-              <FlexList direction="row" justify="between" items="center">
-                <H1>Song Details</H1>
-                <Button asChild>
-                  <Link
-                    to={{
-                      pathname: `/${song.bandId}/songs/${song.id}/edit`,
-                      search: `?redirectTo=${`/${song.bandId}/setlists/${setlistId}`}`,
-                    }}
-                  >
-                    <Pencil className="w-4 h-4 mr-2" />
-                    Edit Song
-                  </Link>
-                </Button>
-              </FlexList>
-            </div>
-            <Card>
-              <CardHeader>
-                <CardTitle>{song.name}</CardTitle>
-                <CardDescription>{song.author}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <Label>Length</Label>
-                    <P>{pluralize("minute", song.length, true)}</P>
-                  </div>
-                  <div>
-                    <Label>Key</Label>
-                    <P>
-                      {song.keyLetter} {song.isMinor ? "Minor" : "Major"}
-                    </P>
-                  </div>
-                  <div>
-                    <Label>Tempo</Label>
-                    <P>{song.tempo} BPM</P>
-                  </div>
-                </div>
-                {song.feels?.length ? (
-                  <div className="pt-4">
-                    <Label>Feels</Label>
-                    <FlexList direction="row" wrap>
-                      {song.feels?.map((feel) => (
-                        <P key={feel.id}>
-                          <span className="flex flex-row items-center gap-1">
-                            <span
-                              className="w-4 h-4 rounded-full"
-                              style={{ background: feel.color || undefined }}
-                            />
-                            {feel.label}
-                          </span>
-                        </P>
-                      ))}
-                    </FlexList>
-                  </div>
-                ) : null}
-              </CardContent>
-            </Card>
-            {splitNote?.length ? (
-              <Card>
-                <CardHeader>
-                  <FlexList direction="row" justify="between" items="center">
-                    <CardTitle>Lyrics/Notes</CardTitle>
-                    <Button
-                      onClick={() => setExpandNotes((prev) => !prev)}
-                      variant="ghost"
-                      title={
-                        expandNotes
-                          ? "Collapse note section"
-                          : "Expand note section"
-                      }
-                    >
-                      {expandNotes ? (
-                        <Maximize className="w-4 h-4" />
-                      ) : (
-                        <Minimize className="w-4 h-4" />
-                      )}
-                    </Button>
-                  </FlexList>
-                </CardHeader>
-                <CardContent>
-                  {expandNotes ? (
-                    splitNote.map((note, i) => <P key={i}>{note}</P>)
-                  ) : (
-                    <ScrollArea className="p-2 h-24">
-                      {splitNote.map((note, i) => (
-                        <P key={i}>{note}</P>
-                      ))}
-                    </ScrollArea>
-                  )}
-                </CardContent>
-              </Card>
-            ) : null}
-            {song.links?.length ? (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Links</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <FlexList gap={1} items="start">
-                    {song.links.map((link) => (
-                      <Button
-                        className="block w-full truncate"
-                        asChild
-                        variant="link"
-                        key={link.id}
-                      >
-                        <a href={link.href} target="_blank" rel="noreferrer">
-                          {link.href}
-                        </a>
-                      </Button>
-                    ))}
-                  </FlexList>
-                </CardContent>
-              </Card>
-            ) : null}
-          </div>
-        </MaxWidth>
-      </SheetContent>
-    </Sheet>
-  );
-};
-
-const SongSwapSheet = ({
-  availableSongs,
-  onSubmit,
-  onOpenChange,
-  open,
-}: {
-  availableSongs: SerializeFrom<Song & { feels: Feel[] }>[];
-  onSubmit: (newSongId: SerializeFrom<Song & { feels: Feel[] }>) => void;
-  onOpenChange: (open: boolean) => void;
-  open: boolean;
-}) => {
-  const [query, setQuery] = useState("");
-  const filteredSongs = availableSongs.filter((song) =>
-    song.name.toLowerCase().includes(query.toLowerCase()),
-  );
-  return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom">
-        <MaxWidth className="space-y-2 max-h-[70vh] overflow-auto">
-          <div className="pt-2 sticky space-y-2 top-0 inset-x-0 bg-card">
-            <FlexList direction="row" items="center" gap={2} justify="between">
-              <CardDescription>Available Songs</CardDescription>
-            </FlexList>
-            <div className="relative ml-auto flex-1 md:grow-0">
-              <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search..."
-                className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </div>
-            <Separator />
-          </div>
-          <div className="p-1">
-            {filteredSongs.map((song) => (
-              <button
-                className="w-full"
-                key={song.id}
-                onClick={() => onSubmit(song)}
-              >
-                <SongContainer.Song.Card key={song.id}>
-                  <SongContainer.Song.Song song={song} />
-                </SongContainer.Song.Card>
-              </button>
-            ))}
-          </div>
-          {filteredSongs.length === 0 ? (
-            <Card className="outline-dashed outline-border flex items-center justify-center  border-none h-12">
-              <CardDescription className="text-center">
-                No songs found
-              </CardDescription>
-            </Card>
-          ) : null}
-        </MaxWidth>
-      </SheetContent>
-    </Sheet>
   );
 };

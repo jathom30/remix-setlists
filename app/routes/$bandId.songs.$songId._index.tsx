@@ -159,34 +159,6 @@ export default function SongPage() {
           ) : null}
         </CardContent>
       </Card>
-      {setlists?.length ? (
-        <Card>
-          <CardHeader>
-            <CardTitle>Setlists featuring this song</CardTitle>
-            <CardDescription>
-              This song is featured in{" "}
-              {pluralize("setlist", setlists.length, true)}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="max-h-96 overflow-auto">
-              <FlexList gap={2} pad={1}>
-                {setlists.map((setlist) => (
-                  <Link
-                    to={`/${setlist.bandId}/setlists/${setlist.id}`}
-                    key={setlist.id}
-                  >
-                    <SetlistContainer.Card>
-                      <SetlistContainer.Setlist setlist={setlist} />
-                    </SetlistContainer.Card>
-                  </Link>
-                ))}
-              </FlexList>
-            </div>
-          </CardContent>
-        </Card>
-      ) : null}
-
       {splitNote?.length ? (
         <Card>
           <CardHeader>
@@ -241,6 +213,34 @@ export default function SongPage() {
                 </Button>
               ))}
             </FlexList>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {setlists?.length ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Setlists featuring this song</CardTitle>
+            <CardDescription>
+              This song is featured in{" "}
+              {pluralize("setlist", setlists.length, true)}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="max-h-96 overflow-auto">
+              <FlexList gap={2} pad={1}>
+                {setlists.map((setlist) => (
+                  <Link
+                    to={`/${setlist.bandId}/setlists/${setlist.id}`}
+                    key={setlist.id}
+                  >
+                    <SetlistContainer.Card>
+                      <SetlistContainer.Setlist setlist={setlist} />
+                    </SetlistContainer.Card>
+                  </Link>
+                ))}
+              </FlexList>
+            </div>
           </CardContent>
         </Card>
       ) : null}
