@@ -205,7 +205,7 @@ export default function BandSettingsMembers() {
               <div>
                 <Large>Band Controls</Large>
                 <ul>
-                  <li>
+                  <li className="flex items-center">
                     {isAdmin ? (
                       <CircleCheck className="mr-2 text-primary" />
                     ) : (
@@ -213,7 +213,7 @@ export default function BandSettingsMembers() {
                     )}
                     Can add and remove members.
                   </li>
-                  <li>
+                  <li className="flex items-center">
                     {isAdmin ? (
                       <CircleCheck className="mr-2 text-primary" />
                     ) : (
@@ -221,7 +221,7 @@ export default function BandSettingsMembers() {
                     )}
                     Can update band details such as name and avatar.
                   </li>
-                  <li>
+                  <li className="flex items-center">
                     {isAdmin ? (
                       <CircleCheck className="mr-2 text-primary" />
                     ) : (
@@ -234,11 +234,11 @@ export default function BandSettingsMembers() {
               <div>
                 <Large>Setlist Controls</Large>
                 <ul>
-                  <li>
+                  <li className="flex items-center">
                     <CircleCheck className="mr-2 text-primary" />
                     Can see setlists
                   </li>
-                  <li>
+                  <li className="flex items-center">
                     {!isSub ? (
                       <CircleCheck className="mr-2 text-primary" />
                     ) : (
@@ -246,7 +246,7 @@ export default function BandSettingsMembers() {
                     )}
                     Can create setlists
                   </li>
-                  <li>
+                  <li className="flex items-center">
                     {!isSub ? (
                       <CircleCheck className="mr-2 text-primary" />
                     ) : (
@@ -254,7 +254,7 @@ export default function BandSettingsMembers() {
                     )}
                     Can edit setlists
                   </li>
-                  <li>
+                  <li className="flex items-center">
                     {!isSub ? (
                       <CircleCheck className="mr-2 text-primary" />
                     ) : (
@@ -267,11 +267,11 @@ export default function BandSettingsMembers() {
               <div>
                 <Large>Song Controls</Large>
                 <ul>
-                  <li>
+                  <li className="flex items-center">
                     <CircleCheck className="mr-2 text-primary" />
                     Can see songs
                   </li>
-                  <li>
+                  <li className="flex items-center">
                     {!isSub ? (
                       <CircleCheck className="mr-2 text-primary" />
                     ) : (
@@ -279,7 +279,7 @@ export default function BandSettingsMembers() {
                     )}
                     Can create songs
                   </li>
-                  <li>
+                  <li className="flex items-center">
                     {!isSub ? (
                       <CircleCheck className="mr-2 text-primary" />
                     ) : (
@@ -287,7 +287,7 @@ export default function BandSettingsMembers() {
                     )}
                     Can edit songs
                   </li>
-                  <li>
+                  <li className="flex items-center">
                     {!isSub ? (
                       <CircleCheck className="mr-2 text-primary" />
                     ) : (
