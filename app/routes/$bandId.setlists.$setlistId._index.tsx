@@ -1534,7 +1534,7 @@ const SongSwapSheet = ({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom">
-        <MaxWidth className="space-y-2">
+        <MaxWidth className="space-y-2 max-h-[70vh] overflow-auto">
           <div className="pt-2 sticky space-y-2 top-0 inset-x-0 bg-card">
             <FlexList direction="row" items="center" gap={2} justify="between">
               <CardDescription>Available Songs</CardDescription>
