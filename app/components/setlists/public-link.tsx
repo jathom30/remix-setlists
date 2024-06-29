@@ -12,8 +12,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useMemberRole } from "~/utils";
+import { RoleEnum } from "~/utils/enums";
 
 import { FlexList } from "../FlexList";
+import { P } from "../typography";
 
 import { CreatePublicLinkForm } from "./create-public-link-form";
 import { setlistLoader } from "./loader.server";
@@ -29,6 +32,8 @@ export const PublicLink = ({
   const loaderData = useLoaderData<typeof setlistLoader>();
   const publicLink = loaderData.setlistPublicUrl;
   const [showSuccess, setShowSuccess] = useState(false);
+  const role = useMemberRole();
+  const isSub = role === RoleEnum.SUB;
 
   const title = publicLink ? "Public Link" : "Create Public Link";
   const description = publicLink
@@ -68,20 +73,27 @@ export const PublicLink = ({
             </FlexList>
           </FlexList>
         ) : null}
-        {publicLink ? (
-          <RemovePublicLinkForm>
-            <DialogFooter>
-              <Button type="submit" variant="secondary">
-                Remove Public Link
-              </Button>
-            </DialogFooter>
-          </RemovePublicLinkForm>
+        {!isSub ? (
+          publicLink ? (
+            <RemovePublicLinkForm>
+              <DialogFooter>
+                <Button type="submit" variant="secondary">
+                  Remove Public Link
+                </Button>
+              </DialogFooter>
+            </RemovePublicLinkForm>
+          ) : (
+            <CreatePublicLinkForm>
+              <DialogFooter>
+                <Button type="submit">Create</Button>
+              </DialogFooter>
+            </CreatePublicLinkForm>
+          )
         ) : (
-          <CreatePublicLinkForm>
-            <DialogFooter>
-              <Button type="submit">Create</Button>
-            </DialogFooter>
-          </CreatePublicLinkForm>
+          <P>
+            As a sub of this band, you are not authorized to create public
+            links.
+          </P>
         )}
       </DialogContent>
     </Dialog>

@@ -38,6 +38,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useMemberRole } from "~/utils";
+import { RoleEnum } from "~/utils/enums";
 
 import { FlexList } from "../FlexList";
 
@@ -57,6 +59,8 @@ export const SetlistActions = ({
   isDesktop?: boolean;
 }) => {
   const { setlist, setlistLink } = useLoaderData<typeof setlistLoader>();
+  const role = useMemberRole();
+  const isSub = role === RoleEnum.SUB;
   const [showEditName, setShowEditName] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showClone, setShowClone] = useState(false);
@@ -88,10 +92,12 @@ export const SetlistActions = ({
                     : "Add Songs"}
                 </DropdownMenuItem>
               ) : null}
-              <DropdownMenuItem onClick={() => setShowEditName(true)}>
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit Name
-              </DropdownMenuItem>
+              {!isSub ? (
+                <DropdownMenuItem onClick={() => setShowEditName(true)}>
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Edit Name
+                </DropdownMenuItem>
+              ) : null}
               <DropdownMenuItem asChild>
                 <Link to="metrics">
                   <AreaChart className="h-4 w-4 mr-2" />
@@ -112,14 +118,18 @@ export const SetlistActions = ({
                   Condensed View
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowClone(true)}>
-                <Copy className="h-4 w-4 mr-2" />
-                Clone Setlist
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowDelete(true)}>
-                <Trash className="h-4 w-4 mr-2" />
-                Delete Setlist
-              </DropdownMenuItem>
+              {!isSub ? (
+                <>
+                  <DropdownMenuItem onClick={() => setShowClone(true)}>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Clone Setlist
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowDelete(true)}>
+                    <Trash className="h-4 w-4 mr-2" />
+                    Delete Setlist
+                  </DropdownMenuItem>
+                </>
+              ) : null}
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -147,12 +157,14 @@ export const SetlistActions = ({
                     : "Add Songs"}
                 </Button>
               </SheetClose>
-              <SheetClose asChild>
-                <Button onClick={() => setShowEditName(true)} variant="ghost">
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Edit Name
-                </Button>
-              </SheetClose>
+              {!isSub ? (
+                <SheetClose asChild>
+                  <Button onClick={() => setShowEditName(true)} variant="ghost">
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit Name
+                  </Button>
+                </SheetClose>
+              ) : null}
               <SheetClose asChild>
                 <Button variant="ghost" asChild>
                   <Link to="metrics">
@@ -181,18 +193,22 @@ export const SetlistActions = ({
                   </Link>
                 </Button>
               </SheetClose>
-              <SheetClose asChild>
-                <Button variant="ghost" onClick={() => setShowClone(true)}>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Clone Setlist
-                </Button>
-              </SheetClose>
-              <SheetClose asChild>
-                <Button variant="ghost" onClick={() => setShowDelete(true)}>
-                  <Trash className="h-4 w-4 mr-2" />
-                  Delete Setlist
-                </Button>
-              </SheetClose>
+              {!isSub ? (
+                <>
+                  <SheetClose asChild>
+                    <Button variant="ghost" onClick={() => setShowClone(true)}>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Clone Setlist
+                    </Button>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Button variant="ghost" onClick={() => setShowDelete(true)}>
+                      <Trash className="h-4 w-4 mr-2" />
+                      Delete Setlist
+                    </Button>
+                  </SheetClose>
+                </>
+              ) : null}
             </FlexList>
           </SheetContent>
         </Sheet>
