@@ -21,7 +21,9 @@ export const FeelContainer = ({
             className="w-4 h-4 rounded-full border"
             style={{ background: feel.color || undefined }}
           />
-          <Large>{feel.label}</Large>
+          <Large className="truncate max-w-[250px] sm:max-w-none">
+            {feel.label}
+          </Large>
         </FlexList>
         <FlexList direction="row" items="center" gap={2}>
           <Muted>{pluralize("song", feel.songs.length, true)}</Muted>
