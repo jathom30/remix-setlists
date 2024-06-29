@@ -34,7 +34,7 @@ export const SongContainer = ({
   return (
     <div className="flex-grow">
       <FlexList direction="row" items="center" justify="between" gap={2}>
-        <Large className="truncate max-w-[250px] sm:max-w-none">
+        <Large className="truncate max-w-[200px] sm:max-w-none">
           {song.name}
         </Large>
         <FlexList direction="row" items="center" gap={2}>
