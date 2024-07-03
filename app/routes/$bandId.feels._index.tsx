@@ -15,7 +15,13 @@ import {
   useParams,
   useSearchParams,
 } from "@remix-run/react";
-import { EllipsisVertical, Pencil, SearchIcon, Trash } from "lucide-react";
+import {
+  CirclePlus,
+  EllipsisVertical,
+  Pencil,
+  SearchIcon,
+  Trash,
+} from "lucide-react";
 import { ReactNode, useState } from "react";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -53,6 +59,7 @@ import { deleteFeel, getFeels } from "~/models/feel.server";
 import { requireNonSubMember, requireUser } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
+import { createToastHeaders } from "~/utils/toast.server";
 
 const IntentSchema = z.enum(["delete-feel"]);
 
@@ -89,6 +96,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
       return submission.reply();
     }
     await deleteFeel(submission.value.feel_id);
+    const toastHeaders = await createToastHeaders({
+      title: "Deleted!",
+      description: "This feel has been deleted successfully.",
+      type: "success",
+    });
+    return json({ success: true }, { headers: toastHeaders });
   }
   return null;
 }
@@ -113,7 +126,10 @@ export default function BandFeels() {
         <H1>Feels</H1>
         {!isSub ? (
           <Button asChild>
-            <Link to="new">Create Feel</Link>
+            <Link to="new">
+              <CirclePlus className="h-4 w-4 mr-2" />
+              Create Feel
+            </Link>
           </Button>
         ) : null}
       </FlexList>

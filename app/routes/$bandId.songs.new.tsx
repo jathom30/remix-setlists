@@ -10,7 +10,6 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   json,
-  redirect,
 } from "@remix-run/node";
 import {
   Form,
@@ -51,6 +50,7 @@ import { getBandWithFeels } from "~/models/band.server";
 import { createSongWithFeels } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
 import { keyLetters } from "~/utils/songConstants";
+import { redirectWithToast } from "~/utils/toast.server";
 
 export const meta: MetaFunction = () => [
   {
@@ -101,7 +101,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
     tempo: submission.value.showTempo ? submission.value.tempo : null,
   });
 
-  return redirect(`/${bandId}/songs/${song.id}`);
+  return redirectWithToast(`/${bandId}/songs/${song.id}`, {
+    title: "Song created!",
+    description: "Your song has been created successfully.",
+    type: "success",
+  });
 }
 
 const CreateSongSchema = z.object({

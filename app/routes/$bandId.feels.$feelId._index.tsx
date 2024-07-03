@@ -3,7 +3,6 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   json,
-  redirect,
 } from "@remix-run/node";
 import { Form, Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import { SearchIcon, Trash } from "lucide-react";
@@ -35,6 +34,7 @@ import { SongContainer } from "~/components/song-container";
 import { H1, Muted } from "~/components/typography";
 import { deleteFeel, getFeelWithSongs } from "~/models/feel.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
+import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
@@ -59,7 +59,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
   await requireNonSubMember(request, bandId);
 
   await deleteFeel(feelId);
-  return redirect(`/${bandId}/feels`);
+  return redirectWithToast(`/${bandId}/feels`, {
+    title: "Feel Deleted",
+    description: "The feel has been deleted successfully.",
+    type: "success",
+  });
 }
 
 export default function BandFeel() {

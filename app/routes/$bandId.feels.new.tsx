@@ -4,7 +4,6 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-  redirect,
 } from "@remix-run/node";
 import { Form, Link, useActionData, useParams } from "@remix-run/react";
 import { HexColorPicker } from "react-colorful";
@@ -24,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { H1 } from "~/components/typography";
 import { createFeel } from "~/models/feel.server";
 import { requireNonSubMember } from "~/session.server";
+import { redirectWithToast } from "~/utils/toast.server";
 
 const CreateFeelSchema = z.object({
   label: z.string().min(1),
@@ -55,7 +55,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
     bandId,
     submission.value.color,
   );
-  return redirect(`/${bandId}/feels/${feel.id}`);
+  return redirectWithToast(`/${bandId}/feels/${feel.id}`, {
+    title: "Feel Created",
+    description: "Your feel has been created successfully.",
+    type: "success",
+  });
 }
 
 export default function BandFeelCreate() {

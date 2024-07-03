@@ -4,7 +4,6 @@ import {
   Link,
   useLoaderData,
   json,
-  redirect,
   Form,
   useActionData,
   useNavigation,
@@ -15,7 +14,7 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
 } from "@remix-run/server-runtime";
-import { Boxes, CircleMinus, CirclePlus, Settings } from "lucide-react";
+import { Boxes, CircleMinus, CirclePlus, Settings, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -63,6 +62,7 @@ import {
 } from "~/models/usersInBands.server";
 import { requireUserId } from "~/session.server";
 import { RoleEnum } from "~/utils/enums";
+import { redirectWithToast } from "~/utils/toast.server";
 
 const IntentEnums = z.enum([
   "user-details",
@@ -220,7 +220,11 @@ export async function action({ request }: ActionFunctionArgs) {
       return submission.reply();
     }
     await removeMemberFromBand(submission.value.band_id, userId);
-    return redirect(".");
+    return redirectWithToast(".", {
+      title: "Left Band",
+      description: "You have left the band successfully.",
+      type: "success",
+    });
   }
 
   if (intent === IntentEnums.Enum["new-band"]) {
@@ -234,7 +238,11 @@ export async function action({ request }: ActionFunctionArgs) {
         formErrors: ["An error occurred while creating the band."],
       });
     }
-    return redirect(`/${band.id}`);
+    return redirectWithToast(`/${band.id}`, {
+      title: "Band Created",
+      description: "Your band has been created successfully.",
+      type: "success",
+    });
   }
 
   if (intent === IntentEnums.Enum["add-band"]) {
@@ -248,7 +256,11 @@ export async function action({ request }: ActionFunctionArgs) {
         fieldErrors: { band_code: [band.error] },
       });
     }
-    return redirect(`/${band.id}`);
+    return redirectWithToast(`/${band.id}`, {
+      title: "Band Joined",
+      description: "You have joined the band successfully.",
+      type: "success",
+    });
   }
 
   if (intent === IntentEnums.Enum["delete-account"]) {
@@ -276,7 +288,11 @@ export async function action({ request }: ActionFunctionArgs) {
     );
 
     await deleteUserById(submission.value.user_id);
-    return redirect("/login");
+    return redirectWithToast("/login", {
+      title: "Account Deleted",
+      description: "Your account has been deleted successfully.",
+      type: "success",
+    });
   }
 
   if (intent === IntentEnums.Enum["change-theme"]) {
@@ -810,7 +826,10 @@ const DeleteAccountDialog = ({ userId }: { userId: string }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="destructive">Delete Account</Button>
+        <Button variant="destructive">
+          <Trash className="h-4 w-4 mr-2" />
+          Delete Account
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

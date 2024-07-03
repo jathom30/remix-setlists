@@ -29,6 +29,7 @@ import { updateBandMemberRole } from "~/models/usersInBands.server";
 import { requireMemberOfRole } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
+import { createToastHeaders } from "~/utils/toast.server";
 
 const MemberRoleSchema = z.object({
   member_id: z.string(),
@@ -79,7 +80,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
     submission.value.member_id,
     submission.value.role,
   );
-  return null;
+  const toastHeaders = await createToastHeaders({
+    title: "Updated!",
+    description: "This member's role has been updated successfully.",
+    type: "success",
+  });
+  return json(null, { headers: toastHeaders });
 }
 
 export default function BandSettingsMembers() {

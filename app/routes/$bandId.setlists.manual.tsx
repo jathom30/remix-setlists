@@ -10,7 +10,6 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   json,
-  redirect,
 } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { Search } from "lucide-react";
@@ -48,6 +47,7 @@ import { getSongs } from "~/models/song.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { DroppableIdEnums, TSet, onDragEnd } from "~/utils/dnd";
 import { totalSetLength } from "~/utils/sets";
+import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
@@ -85,7 +85,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
   )?.[1];
   const setlist = await createMultiSetSetlist(bandId, sets, name);
 
-  return redirect(`/${bandId}/setlists/${setlist.id}`);
+  return redirectWithToast(`/${bandId}/setlists/${setlist.id}`, {
+    title: "Setlist created!",
+    description: "Your setlist has been created successfully.",
+    type: "success",
+  });
 }
 
 export default function ManualCreateSetlist() {

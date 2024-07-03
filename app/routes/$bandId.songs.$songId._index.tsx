@@ -2,7 +2,6 @@ import {
   type LoaderFunctionArgs,
   json,
   ActionFunctionArgs,
-  redirect,
   MetaFunction,
 } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
@@ -38,6 +37,7 @@ import { SetlistContainer } from "~/components/setlist-container";
 import { H1, Muted, P } from "~/components/typography";
 import { deleteSong, getSong } from "~/models/song.server";
 import { requireUser } from "~/session.server";
+import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUser(request);
@@ -71,7 +71,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
     if (!response) {
       throw new Response("Song not found", { status: 404 });
     }
-    return redirect(`/${bandId}/songs`);
+    return redirectWithToast(`/${bandId}/songs`, {
+      title: "Song Deleted",
+      description: "The song has been deleted successfully.",
+      type: "success",
+    });
   }
 
   return null;
