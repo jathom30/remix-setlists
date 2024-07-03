@@ -49,6 +49,8 @@ import { H1, Muted } from "~/components/typography";
 import { getBandWithFeels } from "~/models/band.server";
 import { createSongWithFeels } from "~/models/song.server";
 import { requireNonSubMember } from "~/session.server";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { keyLetters } from "~/utils/songConstants";
 import { redirectWithToast } from "~/utils/toast.server";
 
@@ -100,7 +102,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     note: submission.value.note || null,
     tempo: submission.value.showTempo ? submission.value.tempo : null,
   });
-
+  emitter.emit(emitterKeys.songs);
+  emitter.emit(emitterKeys.dashboard);
   return redirectWithToast(`/${bandId}/songs/${song.id}`, {
     title: "Song created!",
     description: "Your song has been created successfully.",

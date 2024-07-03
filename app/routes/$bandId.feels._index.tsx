@@ -8,13 +8,7 @@ import {
   SerializeFrom,
   json,
 } from "@remix-run/node";
-import {
-  Form,
-  Link,
-  useLoaderData,
-  useParams,
-  useSearchParams,
-} from "@remix-run/react";
+import { Form, Link, useParams, useSearchParams } from "@remix-run/react";
 import {
   CirclePlus,
   EllipsisVertical,
@@ -23,6 +17,7 @@ import {
   Trash,
 } from "lucide-react";
 import { ReactNode, useState } from "react";
+import { toast } from "sonner";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -55,9 +50,12 @@ import { Input } from "@/components/ui/input";
 import { FlexList } from "~/components";
 import { FeelContainer } from "~/components/feel-container";
 import { H1 } from "~/components/typography";
+import { useLiveLoader } from "~/hooks";
 import { deleteFeel, getFeels } from "~/models/feel.server";
 import { requireNonSubMember, requireUser } from "~/session.server";
 import { useMemberRole } from "~/utils";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { RoleEnum } from "~/utils/enums";
 import { createToastHeaders } from "~/utils/toast.server";
 
@@ -101,13 +99,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
       description: "This feel has been deleted successfully.",
       type: "success",
     });
+    emitter.emit(emitterKeys.feels);
+    emitter.emit(emitterKeys.dashboard);
     return json({ success: true }, { headers: toastHeaders });
   }
   return null;
 }
 
 export default function BandFeels() {
-  const { feels } = useLoaderData<typeof loader>();
+  const { feels } = useLiveLoader<typeof loader>(() => toast("Feels updated"));
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
 

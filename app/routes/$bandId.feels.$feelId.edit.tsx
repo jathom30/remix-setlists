@@ -31,6 +31,8 @@ import { FlexList } from "~/components";
 import { H1, Muted } from "~/components/typography";
 import { getFeel, updateFeel } from "~/models/feel.server";
 import { requireUserId } from "~/session.server";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { redirectWithToast } from "~/utils/toast.server";
 
 const EditFeelSchema = z.object({
@@ -75,6 +77,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (!feel) {
     throw new Response("Feel not found", { status: 404 });
   }
+  emitter.emit(emitterKeys.feels);
+  emitter.emit(emitterKeys.dashboard);
   return redirectWithToast(redirectTo ?? `/${bandId}/feels/${feel.id}`, {
     title: "Feel Updated",
     description: "Your feel has been updated successfully.",

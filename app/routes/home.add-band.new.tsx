@@ -18,6 +18,8 @@ import { Label } from "@/components/ui/label";
 import { H1 } from "~/components/typography";
 import { createBand } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { redirectWithToast } from "~/utils/toast.server";
 
 const FormSchema = z
@@ -39,6 +41,8 @@ export async function action({ request }: ActionFunctionArgs) {
     return submission.reply();
   }
   const band = await createBand({ name: submission.value.name }, userId);
+  emitter.emit(emitterKeys.bands);
+  emitter.emit(emitterKeys.dashboard);
   return redirectWithToast(`/${band.id}`, {
     title: "Band Created",
     description: "Your band has been created successfully.",

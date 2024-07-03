@@ -2,4 +2,4 @@
 
 - drag/drop whole sets <- should have
 - Remove auto focus on modal inputs
-- live loader fix
+- updating setlist should updated updatedAt in db

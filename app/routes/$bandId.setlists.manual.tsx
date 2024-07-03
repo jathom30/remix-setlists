@@ -46,6 +46,8 @@ import { createMultiSetSetlist } from "~/models/setlist.server";
 import { getSongs } from "~/models/song.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { DroppableIdEnums, TSet, onDragEnd } from "~/utils/dnd";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { totalSetLength } from "~/utils/sets";
 import { redirectWithToast } from "~/utils/toast.server";
 
@@ -85,6 +87,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
   )?.[1];
   const setlist = await createMultiSetSetlist(bandId, sets, name);
 
+  emitter.emit(emitterKeys.setlists);
+  emitter.emit(emitterKeys.dashboard);
   return redirectWithToast(`/${bandId}/setlists/${setlist.id}`, {
     title: "Setlist created!",
     description: "Your setlist has been created successfully.",

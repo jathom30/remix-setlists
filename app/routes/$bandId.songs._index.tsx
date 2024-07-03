@@ -16,7 +16,7 @@ import {
   Trash,
 } from "lucide-react";
 import { ReactNode, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -55,6 +55,8 @@ import { userPrefs } from "~/models/cookies.server";
 import { deleteSong, getSongs } from "~/models/song.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { RoleEnum } from "~/utils/enums";
 import { createToastHeaders } from "~/utils/toast.server";
 
@@ -109,18 +111,17 @@ export async function action({ request, params }: ActionFunctionArgs) {
       description: "This song has been deleted successfully.",
       type: "success",
     });
+    emitter.emit(emitterKeys.songs);
+    emitter.emit(emitterKeys.dashboard);
     return json({ success: true }, { headers: toastHeaders });
   }
   return null;
 }
 
 export default function SongsList() {
-  const showToast = () => {
-    toast("Songs updated!", {
-      duration: 2000,
-    });
-  };
-  const { songs, sort } = useLiveLoader<typeof loader>(showToast);
+  const { songs, sort } = useLiveLoader<typeof loader>(() =>
+    toast("Songs updated"),
+  );
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
 

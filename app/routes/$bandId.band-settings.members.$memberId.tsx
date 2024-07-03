@@ -28,6 +28,8 @@ import { getUserById } from "~/models/user.server";
 import { updateBandMemberRole } from "~/models/usersInBands.server";
 import { requireMemberOfRole } from "~/session.server";
 import { useMemberRole } from "~/utils";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { RoleEnum } from "~/utils/enums";
 import { createToastHeaders } from "~/utils/toast.server";
 
@@ -85,6 +87,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     description: "This member's role has been updated successfully.",
     type: "success",
   });
+  emitter.emit(emitterKeys.band_settings);
   return json(null, { headers: toastHeaders });
 }
 

@@ -23,6 +23,8 @@ import { Label } from "@/components/ui/label";
 import { H1, Muted } from "~/components/typography";
 import { updateBandByCode } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -55,6 +57,8 @@ export async function action({ request }: ActionFunctionArgs) {
   if ("error" in band) {
     return submission.reply({ fieldErrors: { code: [band.error] } });
   }
+  emitter.emit(emitterKeys.bands);
+  emitter.emit(emitterKeys.dashboard);
   return redirectWithToast(`/${band.id}`, {
     title: "Joined Band",
     description: "You have successfully joined the band.",

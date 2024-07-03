@@ -21,7 +21,7 @@ import {
   Trash,
 } from "lucide-react";
 import { ReactNode, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -67,6 +67,8 @@ import {
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { getDomainUrl } from "~/utils/assorted";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { RoleEnum } from "~/utils/enums";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -176,20 +178,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
   }
 
+  emitter.emit(emitterKeys.setlists);
+  emitter.emit(emitterKeys.dashboard);
   return null;
 }
 
 export default function Setlists() {
-  const showToast = () => {
-    toast("Setlists updated!", {
-      duration: 2000,
-      // style: {
-      //   backgroundColor: getColor("success"),
-      //   color: getColor("success-content"),
-      // },
-    });
-  };
-  const { setlists, sort } = useLiveLoader<typeof loader>(showToast);
+  const { setlists, sort } = useLiveLoader<typeof loader>(() =>
+    toast("Setlists updated!"),
+  );
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
 

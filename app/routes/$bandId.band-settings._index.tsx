@@ -10,6 +10,7 @@ import { Form, Link, useLoaderData } from "@remix-run/react";
 import { Check, Copy, EllipsisVertical, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
 import { QRCode } from "react-qrcode-logo";
+import { toast } from "sonner";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -43,6 +44,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { FlexList } from "~/components";
 import { H1, P, Small, Large, H3 } from "~/components/typography";
+import { useLiveLoader } from "~/hooks";
 import {
   deleteBand,
   getBand,
@@ -58,6 +60,8 @@ import {
 } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { getDomainUrl } from "~/utils/assorted";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { RoleEnum } from "~/utils/enums";
 import { redirectWithToast } from "~/utils/toast.server";
 
@@ -126,6 +130,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
       });
     }
     await deleteBand(submission.value.band_id);
+    emitter.emit(emitterKeys.band_settings);
+    emitter.emit(emitterKeys.dashboard);
     return redirectWithToast("/", {
       title: "Deleted!",
       description: "This band has been deleted successfully.",
@@ -155,6 +161,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     );
     // After removal of a member, we should update the band's code
     await updateBandCode(submission.value.band_id);
+    emitter.emit(emitterKeys.dashboard);
     return null;
   }
 
@@ -170,7 +177,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function BandSettings() {
-  const { band, members } = useLoaderData<typeof loader>();
+  const { band, members } = useLiveLoader<typeof loader>(() =>
+    toast("Band updated"),
+  );
   const memberRole = useMemberRole();
   const isAdmin = memberRole === RoleEnum.ADMIN;
 

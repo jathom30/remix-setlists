@@ -47,6 +47,8 @@ import {
   updateSongWithLinksAndFeels,
 } from "~/models/song.server";
 import { requireUser } from "~/session.server";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { keyLetters } from "~/utils/songConstants";
 import { redirectWithToast } from "~/utils/toast.server";
 
@@ -91,6 +93,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (!song) {
     throw new Response("Song not found", { status: 404 });
   }
+  emitter.emit(emitterKeys.songs);
+  emitter.emit(emitterKeys.dashboard);
   return redirectWithToast(redirectTo ?? `/${bandId}/songs/${songId}`, {
     title: "Song updated!",
     description: "This song has been updated successfully.",

@@ -33,6 +33,8 @@ import { getBand, updateBandName } from "~/models/band.server";
 import { updateBandIcon } from "~/models/bandIcon.server";
 import { uploadImage } from "~/models/cloudinary.server";
 import { requireUserId } from "~/session.server";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { redirectWithToast } from "~/utils/toast.server";
 
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 3; // 3MB
@@ -106,6 +108,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     await updateBandIcon(bandId, { path: file });
   }
 
+  emitter.emit(emitterKeys.band_settings);
   return redirectWithToast(`/${bandId}/band-settings`, {
     title: "Band Updated",
     description: "Your band has been updated successfully.",
