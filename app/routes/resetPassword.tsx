@@ -37,6 +37,7 @@ import {
 } from "~/models/user.server";
 import { getPasswordError, passwordStrength } from "~/utils/assorted";
 import { decrypt } from "~/utils/encryption.server";
+import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
@@ -99,7 +100,11 @@ export async function action({ request }: ActionFunctionArgs) {
   await updateUserPassword(user.id, password);
   await deleteToken(user.id);
   await updateUser(user.id, { locked: false });
-  return redirect("/login");
+  return redirectWithToast("/login", {
+    title: "Password updated!",
+    description: "You can now log in with your new password.",
+    type: "success",
+  });
 }
 
 export default function ResetPassword() {

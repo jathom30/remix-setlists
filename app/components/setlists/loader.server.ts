@@ -16,7 +16,7 @@ export async function setlistLoader({ request, params }: LoaderFunctionArgs) {
     throw new Response("Setlist not found", { status: 404 });
   }
 
-  const allSongs = await getSongs(bandId);
+  const allSongs = await getSongs(bandId, { sort: "name:asc" });
 
   const domainUrl = getDomainUrl(request);
   const setlistLink = `${domainUrl}/${setlist.bandId}/setlists/${setlist.id}`;

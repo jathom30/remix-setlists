@@ -56,6 +56,7 @@ import { deleteSong, getSongs } from "~/models/song.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
+import { createToastHeaders } from "~/utils/toast.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
@@ -103,6 +104,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
       return submission.reply();
     }
     await deleteSong(submission.value.song_id);
+    const toastHeaders = await createToastHeaders({
+      title: "Deleted!",
+      description: "This song has been deleted successfully.",
+      type: "success",
+    });
+    return json({ success: true }, { headers: toastHeaders });
   }
   return null;
 }

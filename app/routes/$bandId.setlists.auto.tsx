@@ -4,7 +4,6 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-  redirect,
 } from "@remix-run/node";
 import { Form, Link, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
@@ -26,6 +25,7 @@ import { H1, Muted } from "~/components/typography";
 import { createAutoSetlist } from "~/models/setlist.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { AutoSetlistSchema } from "~/utils/setlists";
+import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId } = params;
@@ -49,7 +49,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return submission.reply();
   }
   const setlist = await createAutoSetlist(bandId, submission.value);
-  return redirect(`/${bandId}/setlists/${setlist.id}`);
+  return redirectWithToast(`/${bandId}/setlists/${setlist.id}`, {
+    title: "Setlist Created",
+    description: "Your setlist has been created successfully.",
+    type: "success",
+  });
 }
 
 export default function SetlistAuto() {

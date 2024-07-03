@@ -11,6 +11,7 @@ import {
   Trash,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -66,8 +67,10 @@ export const SetlistActions = ({
   const [showClone, setShowClone] = useState(false);
   const [showPublicLink, setShowPublicLink] = useState(false);
 
-  const onCopy = (textToCopy: string) =>
+  const onCopy = (textToCopy: string) => {
     navigator.clipboard.writeText(textToCopy);
+    toast.success("Link copied to clipboard");
+  };
 
   return (
     <div>

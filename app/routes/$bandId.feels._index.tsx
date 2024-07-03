@@ -59,6 +59,7 @@ import { deleteFeel, getFeels } from "~/models/feel.server";
 import { requireNonSubMember, requireUser } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { RoleEnum } from "~/utils/enums";
+import { createToastHeaders } from "~/utils/toast.server";
 
 const IntentSchema = z.enum(["delete-feel"]);
 
@@ -95,6 +96,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
       return submission.reply();
     }
     await deleteFeel(submission.value.feel_id);
+    const toastHeaders = await createToastHeaders({
+      title: "Deleted!",
+      description: "This feel has been deleted successfully.",
+      type: "success",
+    });
+    return json({ success: true }, { headers: toastHeaders });
   }
   return null;
 }

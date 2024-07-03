@@ -5,7 +5,6 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   json,
-  redirect,
 } from "@remix-run/node";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
@@ -24,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { H1, Muted } from "~/components/typography";
 import { updateBandByCode } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
+import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireUserId(request);
@@ -55,7 +55,11 @@ export async function action({ request }: ActionFunctionArgs) {
   if ("error" in band) {
     return submission.reply({ fieldErrors: { code: [band.error] } });
   }
-  return redirect(`/${band.id}`);
+  return redirectWithToast(`/${band.id}`, {
+    title: "Joined Band",
+    description: "You have successfully joined the band.",
+    type: "success",
+  });
 }
 
 export default function BandExisting() {

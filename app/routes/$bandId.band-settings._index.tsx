@@ -5,7 +5,6 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   json,
-  redirect,
 } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { Check, Copy, EllipsisVertical, Pencil, Trash } from "lucide-react";
@@ -60,6 +59,7 @@ import {
 import { useMemberRole } from "~/utils";
 import { getDomainUrl } from "~/utils/assorted";
 import { RoleEnum } from "~/utils/enums";
+import { redirectWithToast } from "~/utils/toast.server";
 
 const IntentSchema = z.enum([
   "delete-band",
@@ -126,7 +126,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
       });
     }
     await deleteBand(submission.value.band_id);
-    return redirect("/");
+    return redirectWithToast("/", {
+      title: "Deleted!",
+      description: "This band has been deleted successfully.",
+      type: "success",
+    });
   }
 
   if (intent === IntentSchema.Enum["remove-member"]) {

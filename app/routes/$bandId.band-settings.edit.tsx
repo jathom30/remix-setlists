@@ -6,7 +6,6 @@ import {
   MetaFunction,
   UploadHandler,
   json,
-  redirect,
   unstable_composeUploadHandlers,
   unstable_createMemoryUploadHandler,
   unstable_parseMultipartFormData,
@@ -34,6 +33,7 @@ import { getBand, updateBandName } from "~/models/band.server";
 import { updateBandIcon } from "~/models/bandIcon.server";
 import { uploadImage } from "~/models/cloudinary.server";
 import { requireUserId } from "~/session.server";
+import { redirectWithToast } from "~/utils/toast.server";
 
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 3; // 3MB
 
@@ -106,7 +106,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
     await updateBandIcon(bandId, { path: file });
   }
 
-  return redirect(`/${bandId}/band-settings`);
+  return redirectWithToast(`/${bandId}/band-settings`, {
+    title: "Band Updated",
+    description: "Your band has been updated successfully.",
+    type: "success",
+  });
 }
 
 export default function BandSettingsEdit() {

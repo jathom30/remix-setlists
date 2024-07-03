@@ -5,7 +5,6 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   json,
-  redirect,
 } from "@remix-run/node";
 import {
   Form,
@@ -32,6 +31,7 @@ import { FlexList } from "~/components";
 import { H1, Muted } from "~/components/typography";
 import { getFeel, updateFeel } from "~/models/feel.server";
 import { requireUserId } from "~/session.server";
+import { redirectWithToast } from "~/utils/toast.server";
 
 const EditFeelSchema = z.object({
   feel_id: z.string(),
@@ -75,7 +75,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (!feel) {
     throw new Response("Feel not found", { status: 404 });
   }
-  return redirect(redirectTo ?? `/${bandId}/feels/${feel.id}`);
+  return redirectWithToast(redirectTo ?? `/${bandId}/feels/${feel.id}`, {
+    title: "Feel Updated",
+    description: "Your feel has been updated successfully.",
+    type: "success",
+  });
 }
 
 export default function EditFeelPage() {

@@ -5,7 +5,6 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   json,
-  redirect,
 } from "@remix-run/node";
 import {
   Form,
@@ -49,6 +48,7 @@ import {
 } from "~/models/song.server";
 import { requireUser } from "~/session.server";
 import { keyLetters } from "~/utils/songConstants";
+import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUser(request);
@@ -91,7 +91,11 @@ export async function action({ request, params }: ActionFunctionArgs) {
   if (!song) {
     throw new Response("Song not found", { status: 404 });
   }
-  return redirect(redirectTo ?? `/${bandId}/songs/${songId}`);
+  return redirectWithToast(redirectTo ?? `/${bandId}/songs/${songId}`, {
+    title: "Song updated!",
+    description: "This song has been updated successfully.",
+    type: "success",
+  });
 }
 
 export default function EditSong() {

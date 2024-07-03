@@ -1,5 +1,5 @@
 import { parseWithZod } from "@conform-to/zod";
-import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
+import { ActionFunctionArgs, json } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
 import {
@@ -10,6 +10,7 @@ import {
   updateSetlistName,
 } from "~/models/setlist.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
+import { createToastHeaders, redirectWithToast } from "~/utils/toast.server";
 
 import {
   ActionSetSchema,
@@ -40,7 +41,14 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
     const parsedSets = ActionSetSchema.parse(JSON.parse(submission.value.sets));
     const sets = Object.values(parsedSets);
     const updatedSetlist = await updateMultiSetSetlist(setlistId, sets);
-    return json({ updatedSetlist });
+
+    const toastHeaders = await createToastHeaders({
+      title: "Updated!",
+      description: "This setlist has been updated successfully.",
+      type: "success",
+    });
+
+    return json({ updatedSetlist }, { headers: toastHeaders });
   }
 
   if (intent === IntentSchema.Enum["update-name"]) {
@@ -53,7 +61,12 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
       setlistId,
       submission.value.setlist_name,
     );
-    return json({ updatedSetlist });
+    const toastHeaders = await createToastHeaders({
+      title: "Name updated!",
+      description: "This setlist name been updated successfully.",
+      type: "success",
+    });
+    return json({ updatedSetlist }, { headers: toastHeaders });
   }
 
   if (intent === IntentSchema.Enum["delete-setlist"]) {
@@ -63,7 +76,12 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
     }
     // delete setlist
     await deleteSetlist(setlistId);
-    return redirect(`/${bandId}/setlists`);
+
+    return redirectWithToast(`/${bandId}/setlists`, {
+      title: "Setlist deleted!",
+      description: "This set has been deleted successfully.",
+      type: "success",
+    });
   }
 
   if (intent === IntentSchema.Enum["clone-setlist"]) {
@@ -76,7 +94,11 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
     if (!newSetlist) {
       throw new Response("Failed to clone setlist", { status: 500 });
     }
-    return redirect(`/${bandId}/setlists/${newSetlist.id}`);
+    return redirectWithToast(`/${bandId}/setlists/${newSetlist.id}`, {
+      title: "Setlist cloned!",
+      description: "This setlist has been cloned successfully.",
+      type: "success",
+    });
   }
 
   if (intent === IntentSchema.Enum["create-public-link"]) {
@@ -88,7 +110,12 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
     }
     // create public link
     await updateSetlist(setlistId, { isPublic: true });
-    return json(submission.payload);
+    const toastHeaders = await createToastHeaders({
+      title: "Link created!",
+      description: "This setlist's publ;ic link has been created.",
+      type: "success",
+    });
+    return json(submission.payload, { headers: toastHeaders });
   }
 
   if (intent === IntentSchema.Enum["remove-public-link"]) {
@@ -100,7 +127,12 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
     }
     // create public link
     await updateSetlist(setlistId, { isPublic: false });
-    return json(submission.payload);
+    const toastHeaders = await createToastHeaders({
+      title: "Link removed!",
+      description: "This setlist is no longer public.",
+      type: "success",
+    });
+    return json(submission.payload, { headers: toastHeaders });
   }
 
   return null;
