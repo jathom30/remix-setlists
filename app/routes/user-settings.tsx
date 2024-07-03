@@ -15,7 +15,7 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
 } from "@remix-run/server-runtime";
-import { Boxes, CircleMinus, CirclePlus, Settings } from "lucide-react";
+import { Boxes, CircleMinus, CirclePlus, Settings, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -810,7 +810,10 @@ const DeleteAccountDialog = ({ userId }: { userId: string }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="destructive">Delete Account</Button>
+        <Button variant="destructive">
+          <Trash className="h-4 w-4 mr-2" />
+          Delete Account
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

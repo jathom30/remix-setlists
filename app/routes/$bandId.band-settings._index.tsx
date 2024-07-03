@@ -262,7 +262,10 @@ const DeleteBandDialog = ({ bandId }: { bandId: string }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="destructive">Delete Band</Button>
+        <Button variant="destructive">
+          <Trash className="w-4 h-4 mr-2" />
+          Delete Band
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

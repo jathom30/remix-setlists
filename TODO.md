@@ -3,4 +3,3 @@
 - drag/drop whole sets <- should have
 - Remove auto focus on modal inputs
 - toasts
-- unify add icon

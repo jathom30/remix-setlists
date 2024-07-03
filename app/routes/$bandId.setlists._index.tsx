@@ -15,7 +15,7 @@ import {
   EllipsisVertical,
   LinkIcon,
   Pencil,
-  Plus,
+  CirclePlus,
   Search,
   Shrink,
   Trash,
@@ -216,7 +216,7 @@ export default function Setlists() {
         {!isSub ? (
           <Button asChild>
             <Link to="new">
-              <Plus className=" w-4 h-4 mr-2" />
+              <CirclePlus className=" w-4 h-4 mr-2" />
               Create Setlist
             </Link>
           </Button>
