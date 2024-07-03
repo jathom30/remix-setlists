@@ -3,13 +3,19 @@ import type { Band, User } from "@prisma/client";
 import { prisma } from "~/db.server";
 import { contrastColor, generateRandomHex } from "~/utils/assorted";
 
-export async function getBands(userId: User["id"]) {
+export async function getBands(
+  userId: User["id"],
+  params: { q?: string } = {},
+) {
   return prisma.band.findMany({
     where: {
       members: {
         some: {
           userId,
         },
+      },
+      name: {
+        contains: params.q,
       },
     },
     select: {

@@ -1,7 +1,7 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, Outlet, useLocation } from "@remix-run/react";
-import { Boxes, ChevronRight, CirclePlus } from "lucide-react";
+import { Boxes, ChevronRight } from "lucide-react";
 
 import {
   Breadcrumb,
@@ -45,14 +45,6 @@ export default function Home() {
               </Link>
             </Button>
             <FlexList direction="row" items="center" gap={2}>
-              {!pathname.includes("add-band") ? (
-                <Button size="sm" asChild>
-                  <Link to="add-band">
-                    <CirclePlus className="w-4 h-4 mr-2" />
-                    Add Band
-                  </Link>
-                </Button>
-              ) : null}
               <UserAvatarMenu />
             </FlexList>
           </Header>
