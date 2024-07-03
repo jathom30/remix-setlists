@@ -61,6 +61,8 @@ import {
   removeMemberFromBand,
 } from "~/models/usersInBands.server";
 import { requireUserId } from "~/session.server";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { RoleEnum } from "~/utils/enums";
 import { redirectWithToast } from "~/utils/toast.server";
 
@@ -220,6 +222,8 @@ export async function action({ request }: ActionFunctionArgs) {
       return submission.reply();
     }
     await removeMemberFromBand(submission.value.band_id, userId);
+    emitter.emit(emitterKeys.bands);
+    emitter.emit(emitterKeys.dashboard);
     return redirectWithToast(".", {
       title: "Left Band",
       description: "You have left the band successfully.",

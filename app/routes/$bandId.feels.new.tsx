@@ -23,6 +23,8 @@ import { Label } from "@/components/ui/label";
 import { H1 } from "~/components/typography";
 import { createFeel } from "~/models/feel.server";
 import { requireNonSubMember } from "~/session.server";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { redirectWithToast } from "~/utils/toast.server";
 
 const CreateFeelSchema = z.object({
@@ -55,6 +57,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     bandId,
     submission.value.color,
   );
+  emitter.emit(emitterKeys.feels);
+  emitter.emit(emitterKeys.dashboard);
   return redirectWithToast(`/${bandId}/feels/${feel.id}`, {
     title: "Feel Created",
     description: "Your feel has been created successfully.",

@@ -24,6 +24,8 @@ import { Switch } from "@/components/ui/switch";
 import { H1, Muted } from "~/components/typography";
 import { createAutoSetlist } from "~/models/setlist.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { AutoSetlistSchema } from "~/utils/setlists";
 import { redirectWithToast } from "~/utils/toast.server";
 
@@ -49,6 +51,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return submission.reply();
   }
   const setlist = await createAutoSetlist(bandId, submission.value);
+
+  emitter.emit(emitterKeys.setlists, "hello");
+  emitter.emit(emitterKeys.dashboard);
   return redirectWithToast(`/${bandId}/setlists/${setlist.id}`, {
     title: "Setlist Created",
     description: "Your setlist has been created successfully.",

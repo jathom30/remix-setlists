@@ -34,6 +34,8 @@ import { SongContainer } from "~/components/song-container";
 import { H1, Muted } from "~/components/typography";
 import { deleteFeel, getFeelWithSongs } from "~/models/feel.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -59,6 +61,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
   await requireNonSubMember(request, bandId);
 
   await deleteFeel(feelId);
+  emitter.emit(emitterKeys.feels);
+  emitter.emit(emitterKeys.dashboard);
   return redirectWithToast(`/${bandId}/feels`, {
     title: "Feel Deleted",
     description: "The feel has been deleted successfully.",

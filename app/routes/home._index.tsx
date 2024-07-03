@@ -1,12 +1,8 @@
 import { LoaderFunctionArgs, MetaFunction, json } from "@remix-run/node";
-import {
-  Link,
-  NavLink,
-  useLoaderData,
-  useSearchParams,
-} from "@remix-run/react";
+import { Link, NavLink, useSearchParams } from "@remix-run/react";
 import { CirclePlus, SearchIcon } from "lucide-react";
 import pluralize from "pluralize";
+import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +11,7 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { FlexList } from "~/components";
 import { H1, H3, Small } from "~/components/typography";
+import { useLiveLoader } from "~/hooks";
 import { getBands } from "~/models/band.server";
 import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
@@ -36,7 +33,7 @@ export const meta: MetaFunction<typeof loader> = () => {
 };
 
 export default function Home() {
-  const { bands } = useLoaderData<typeof loader>();
+  const { bands } = useLiveLoader<typeof loader>(() => toast("Bands updated"));
   const user = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("query") ?? "";

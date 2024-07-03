@@ -10,6 +10,8 @@ import {
   updateSetlistName,
 } from "~/models/setlist.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { createToastHeaders, redirectWithToast } from "~/utils/toast.server";
 
 import {
@@ -47,7 +49,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
       description: "This setlist has been updated successfully.",
       type: "success",
     });
-
+    emitter.emit(emitterKeys.setlists);
     return json({ updatedSetlist }, { headers: toastHeaders });
   }
 
@@ -66,6 +68,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
       description: "This setlist name been updated successfully.",
       type: "success",
     });
+    emitter.emit(emitterKeys.setlists);
     return json({ updatedSetlist }, { headers: toastHeaders });
   }
 
@@ -76,6 +79,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
     }
     // delete setlist
     await deleteSetlist(setlistId);
+    emitter.emit(emitterKeys.setlists);
 
     return redirectWithToast(`/${bandId}/setlists`, {
       title: "Setlist deleted!",
@@ -94,6 +98,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
     if (!newSetlist) {
       throw new Response("Failed to clone setlist", { status: 500 });
     }
+    emitter.emit(emitterKeys.setlists);
     return redirectWithToast(`/${bandId}/setlists/${newSetlist.id}`, {
       title: "Setlist cloned!",
       description: "This setlist has been cloned successfully.",
@@ -110,6 +115,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
     }
     // create public link
     await updateSetlist(setlistId, { isPublic: true });
+    emitter.emit(emitterKeys.setlists);
     const toastHeaders = await createToastHeaders({
       title: "Link created!",
       description: "This setlist's publ;ic link has been created.",
@@ -132,6 +138,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
       description: "This setlist is no longer public.",
       type: "success",
     });
+    emitter.emit(emitterKeys.setlists);
     return json(submission.payload, { headers: toastHeaders });
   }
 

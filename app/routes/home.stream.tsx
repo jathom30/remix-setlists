@@ -4,5 +4,5 @@ import { createEventStream } from "~/utils/create-event-stream.server";
 import { emitterKeys } from "~/utils/emitter-keys";
 
 export function loader({ request }: LoaderFunctionArgs) {
-  return createEventStream(request, emitterKeys.setlists);
+  return createEventStream(request, emitterKeys.bands);
 }

@@ -37,6 +37,8 @@ import { SetlistContainer } from "~/components/setlist-container";
 import { H1, Muted, P } from "~/components/typography";
 import { deleteSong, getSong } from "~/models/song.server";
 import { requireUser } from "~/session.server";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -71,6 +73,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
     if (!response) {
       throw new Response("Song not found", { status: 404 });
     }
+    emitter.emit(emitterKeys.songs);
+    emitter.emit(emitterKeys.dashboard);
     return redirectWithToast(`/${bandId}/songs`, {
       title: "Song Deleted",
       description: "The song has been deleted successfully.",

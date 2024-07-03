@@ -1,7 +1,8 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Link, json, useLoaderData } from "@remix-run/react";
+import { Link, json } from "@remix-run/react";
 import { AudioLines, Boxes, Dna, Link2, List, Settings } from "lucide-react";
 import pluralize from "pluralize";
+import { toast } from "sonner";
 import invariant from "tiny-invariant";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,6 +21,7 @@ import { SetlistContainer } from "~/components/setlist-container";
 import { SongContainer } from "~/components/song-container";
 import { H1, Small, P } from "~/components/typography";
 import { prisma } from "~/db.server";
+import { useLiveLoader } from "~/hooks";
 import { getBand } from "~/models/band.server";
 import { getMostRecentFeels } from "~/models/feel.server";
 import { getRecentSetlists } from "~/models/setlist.server";
@@ -61,8 +63,9 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 };
 
 export default function BandId() {
-  const { setlists, songs, band, feels, counts } =
-    useLoaderData<typeof loader>();
+  const { setlists, songs, band, feels, counts } = useLiveLoader<typeof loader>(
+    () => toast("We've updated your dashboard with the latest data."),
+  );
   const user = useUser();
   const role = useMemberRole();
   const isSub = role === RoleEnum.SUB;
