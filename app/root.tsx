@@ -9,12 +9,11 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import { useEffect } from "react";
 import { HoneypotProvider } from "remix-utils/honeypot/react";
-import { themeChange } from "theme-change";
 
 import { EpicToaster } from "@/components/ui/sonner";
 import stylesheet from "~/globals.css";
+import sonnerStyles from "~/sonner.css";
 
 import { useToast } from "./hooks/use-toast";
 import { userPrefs } from "./models/cookies.server";
@@ -27,6 +26,7 @@ export const links: LinksFunction = () => {
   return [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
     { rel: "preconnect", href: "https://fonts.gstatic.com" },
+    { rel: "stylesheet", href: sonnerStyles },
     {
       rel: "stylesheet",
       href: "https://fonts.googleapis.com/css2?family=Fascinate&family=Poppins:wght@100;400;700&display=swap",
@@ -62,23 +62,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function App() {
   const { honeyportInputProps, theme, toast } = useLoaderData<typeof loader>();
-  useEffect(() => {
-    themeChange(false);
-    // 👆 false parameter is required for react project
-  });
 
-  // const { toasts } = useToaster();
   useToast(toast);
-
-  // a unique array of toasts based on messages
-  // This is a bit of a hack. For some reason the server is double firing toasts.
-  // This is a quick fix to only show one message instead of a duplicate.
-  // const uniqueToasts = toasts.reduce((unique: Toast[], toast) => {
-  //   if (!unique.some((u) => u.message === toast.message)) {
-  //     unique.push(toast);
-  //   }
-  //   return unique;
-  // }, []);
 
   return (
     <html lang="en" className={`${theme} h-full`}>
@@ -94,12 +79,6 @@ export default function App() {
         <Links />
       </head>
       <body className="h-full bg-card/95">
-        {/* <OgToaster>
-          {(t) => {
-            if (uniqueToasts.every((u) => u.id !== t.id)) return <></>;
-            return <ToastBar toast={t} />;
-          }}
-        </OgToaster> */}
         <EpicToaster />
         <HoneypotProvider {...honeyportInputProps}>
           <Outlet />
