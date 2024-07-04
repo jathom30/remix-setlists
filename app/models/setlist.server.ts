@@ -208,6 +208,7 @@ export async function updateMultiSetSetlist(
   return await prisma.setlist.update({
     where: { id: setlistId },
     data: {
+      updatedAt: new Date(),
       sets: {
         deleteMany: {},
         create: sets.map((set, i) => ({
