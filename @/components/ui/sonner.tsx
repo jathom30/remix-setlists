@@ -14,7 +14,6 @@ const EpicToaster = ({ theme, ...props }: ToasterProps) => {
     <Sonner
       theme={theme}
       richColors
-      duration={1200000}
       icons={{
         success: <CheckCircle />,
         error: <CircleAlert />,
