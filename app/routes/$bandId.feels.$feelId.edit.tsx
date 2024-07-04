@@ -43,11 +43,15 @@ const EditFeelSchema = z.object({
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
-  const { feelId } = params;
+  const { feelId, bandId } = params;
   invariant(feelId, "feelId is required");
+  invariant(bandId, "bandId is required");
   const feel = await getFeel(feelId);
   if (!feel) {
     throw new Response("Feel not found", { status: 404 });
+  }
+  if (feel.bandId !== bandId) {
+    throw new Response("Feel does not belong to this band.", { status: 403 });
   }
   return json({ feel });
 }

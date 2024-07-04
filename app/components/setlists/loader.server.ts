@@ -15,6 +15,11 @@ export async function setlistLoader({ request, params }: LoaderFunctionArgs) {
   if (!setlist) {
     throw new Response("Setlist not found", { status: 404 });
   }
+  if (setlist.bandId !== bandId) {
+    throw new Response("Setlist does not belong to this band.", {
+      status: 403,
+    });
+  }
 
   const allSongs = await getSongs(bandId, { sort: "name:asc" });
 

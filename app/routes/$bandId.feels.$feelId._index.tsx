@@ -40,12 +40,16 @@ import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
-  const { feelId } = params;
+  const { feelId, bandId } = params;
   invariant(feelId, "feelId is required");
+  invariant(bandId, "bandId is required");
   const query = new URL(request.url).searchParams.get("query") || "";
   const feel = await getFeelWithSongs(feelId, query);
   if (!feel) {
     throw new Response("Not Found", { status: 404 });
+  }
+  if (feel.bandId !== bandId) {
+    throw new Response("Feel does not belong to this band.", { status: 403 });
   }
   return json({ feel });
 }
