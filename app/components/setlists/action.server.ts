@@ -50,6 +50,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
       type: "success",
     });
     emitter.emit(emitterKeys.setlists);
+    emitter.emit(emitterKeys.dashboard);
     return json({ updatedSetlist }, { headers: toastHeaders });
   }
 
@@ -69,6 +70,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
       type: "success",
     });
     emitter.emit(emitterKeys.setlists);
+    emitter.emit(emitterKeys.dashboard);
     return json({ updatedSetlist }, { headers: toastHeaders });
   }
 
@@ -80,6 +82,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
     // delete setlist
     await deleteSetlist(setlistId);
     emitter.emit(emitterKeys.setlists);
+    emitter.emit(emitterKeys.dashboard);
 
     return redirectWithToast(`/${bandId}/setlists`, {
       title: "Setlist deleted!",
@@ -99,6 +102,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
       throw new Response("Failed to clone setlist", { status: 500 });
     }
     emitter.emit(emitterKeys.setlists);
+    emitter.emit(emitterKeys.dashboard);
     return redirectWithToast(`/${bandId}/setlists/${newSetlist.id}`, {
       title: "Setlist cloned!",
       description: "This setlist has been cloned successfully.",
@@ -116,6 +120,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
     // create public link
     await updateSetlist(setlistId, { isPublic: true });
     emitter.emit(emitterKeys.setlists);
+    emitter.emit(emitterKeys.dashboard);
     const toastHeaders = await createToastHeaders({
       title: "Link created!",
       description: "This setlist's publ;ic link has been created.",
@@ -139,6 +144,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
       type: "success",
     });
     emitter.emit(emitterKeys.setlists);
+    emitter.emit(emitterKeys.dashboard);
     return json(submission.payload, { headers: toastHeaders });
   }
 
