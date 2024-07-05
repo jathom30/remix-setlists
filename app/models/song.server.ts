@@ -103,7 +103,7 @@ export const EditSongSchema = z.object({
     .string()
     .transform((val) => val === "true")
     .pipe(z.boolean()),
-  tempo: z.coerce.number().min(1).max(320).default(120),
+  tempo: z.coerce.number().min(1).max(420).default(120),
   feels: z.array(z.string()),
   author: z.string().nullish(),
   note: z.string().nullish(),

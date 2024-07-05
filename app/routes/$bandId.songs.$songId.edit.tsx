@@ -241,7 +241,7 @@ export default function EditSong() {
                     onChange={(e) => tempoControl.change(e.target.value)}
                     onFocus={tempoControl.focus}
                     onBlur={tempoControl.blur}
-                    max={320}
+                    max={420}
                     min={1}
                     step={1}
                   />
@@ -254,7 +254,7 @@ export default function EditSong() {
                     onFocus={tempoControl.focus}
                     onBlur={tempoControl.blur}
                     min={1}
-                    max={320}
+                    max={420}
                     step={1}
                   />
                   <div
