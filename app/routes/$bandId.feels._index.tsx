@@ -10,6 +10,10 @@ import {
 } from "@remix-run/node";
 import { Form, Link, useParams, useSearchParams } from "@remix-run/react";
 import {
+  ArrowDown01,
+  ArrowDownAZ,
+  ArrowUp01,
+  ArrowUpAZ,
   CirclePlus,
   EllipsisVertical,
   Pencil,
@@ -49,6 +53,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { FlexList } from "~/components";
 import { FeelContainer } from "~/components/feel-container";
+import { SortItems } from "~/components/sort-items";
 import { H1 } from "~/components/typography";
 import { useLiveLoader } from "~/hooks";
 import { deleteFeel, getFeels } from "~/models/feel.server";
@@ -57,6 +62,7 @@ import { useMemberRole } from "~/utils";
 import { emitterKeys } from "~/utils/emitter-keys";
 import { emitter } from "~/utils/emitter.server";
 import { RoleEnum } from "~/utils/enums";
+import { updateSortCookie } from "~/utils/sort-cookie.server";
 import { createToastHeaders } from "~/utils/toast.server";
 
 const IntentSchema = z.enum(["delete-feel"]);
@@ -65,9 +71,19 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUser(request);
   const { bandId } = params;
   invariant(bandId, "bandId is required");
-  const query = new URL(request.url).searchParams.get("query") || "";
-  const feels = await getFeels(bandId, query);
-  return json({ feels });
+  const url = new URL(request.url);
+  const query = url.searchParams.get("query") || "";
+  const sortQuery = url.searchParams.get("sort");
+
+  const { header, sort } = await updateSortCookie({
+    request,
+    sortQuery,
+    cookieKey: "feelSort",
+    defaultSort: "label:asc",
+  });
+
+  const feels = await getFeels(bandId, query, sort || "");
+  return json({ feels, sort }, { headers: header });
 }
 
 export const meta: MetaFunction<typeof loader> = () => {
@@ -107,7 +123,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function BandFeels() {
-  const { feels } = useLiveLoader<typeof loader>(() => toast("Feels updated"));
+  const { feels, sort } = useLiveLoader<typeof loader>(() =>
+    toast("Feels updated"),
+  );
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
 
@@ -116,6 +134,13 @@ export default function BandFeels() {
   const setQuery = (value: string) => {
     setSearchParams((prev) => {
       prev.set("query", value);
+      return prev;
+    });
+  };
+
+  const setSort = (value: string) => {
+    setSearchParams((prev) => {
+      prev.set("sort", value);
       return prev;
     });
   };
@@ -145,6 +170,24 @@ export default function BandFeels() {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
+        <SortItems
+          options={[
+            {
+              label: "Updated: Newest first",
+              value: "updatedAt:desc",
+              Icon: ArrowDown01,
+            },
+            {
+              label: "Updated: Oldest first",
+              value: "updatedAt:asc",
+              Icon: ArrowUp01,
+            },
+            { label: "Name: A-Z", value: "label:asc", Icon: ArrowDownAZ },
+            { label: "Name: Z-A", value: "label:desc", Icon: ArrowUpAZ },
+          ]}
+          value={sort || "updatedAt:desc"}
+          onChange={setSort}
+        />
       </FlexList>
 
       {feels.length ? (

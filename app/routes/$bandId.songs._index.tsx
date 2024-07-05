@@ -51,13 +51,13 @@ import { SongContainer } from "~/components/song-container";
 import { SortItems } from "~/components/sort-items";
 import { H1 } from "~/components/typography";
 import { useLiveLoader } from "~/hooks";
-import { userPrefs } from "~/models/cookies.server";
 import { deleteSong, getSongs } from "~/models/song.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { emitterKeys } from "~/utils/emitter-keys";
 import { emitter } from "~/utils/emitter.server";
 import { RoleEnum } from "~/utils/enums";
+import { updateSortCookie } from "~/utils/sort-cookie.server";
 import { createToastHeaders } from "~/utils/toast.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -68,14 +68,13 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const url = new URL(request.url);
   const q = url.searchParams.get("query");
 
-  let sort = url.searchParams.get("sort");
-
-  const cookieHeader = request.headers.get("Cookie");
-  const cookie = (await userPrefs.parse(cookieHeader)) || {};
-
-  if (cookie && typeof cookie === "object" && "songSort" in cookie) {
-    sort = String(cookie.songSort);
-  }
+  const sortQuery = url.searchParams.get("sort");
+  const { header, sort } = await updateSortCookie({
+    request,
+    sortQuery,
+    defaultSort: "updatedAt:desc",
+    cookieKey: "songSort",
+  });
 
   const songParams = {
     ...(q ? { q } : null),
@@ -83,9 +82,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   };
 
   const songs = await getSongs(bandId, songParams);
-  cookie.songSort = sort;
-  await userPrefs.serialize(cookie);
-  return json({ songs, sort });
+  return json({ songs, sort }, { headers: header });
 }
 
 export const meta: MetaFunction<typeof loader> = () => {
