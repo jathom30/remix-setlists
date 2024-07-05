@@ -119,7 +119,9 @@ export const EditSongSchema = z.object({
       ),
   ),
   position: z.enum(["opener", "closer", "other"]).default("other"),
-  rank: z.enum(["exclude", "no_preference"]).default("no_preference"),
+  rank: z
+    .enum(["exclude", "include", "no_preference"])
+    .default("no_preference"),
   isCover: z.boolean().default(false),
   showTempo: z.coerce.boolean().default(false),
 });
