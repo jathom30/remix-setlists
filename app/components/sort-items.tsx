@@ -100,7 +100,7 @@ export const SortItems = ({
                   }}
                 >
                   <FlexList gap={0}>
-                    {(options || sortOptions).map(
+                    {(options ?? sortOptions).map(
                       ({ label, value: val, Icon }) => (
                         <div
                           key={val}
