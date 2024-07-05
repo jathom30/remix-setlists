@@ -440,6 +440,10 @@ export default function EditSong() {
                       <Label htmlFor="exclude">Always Exclude</Label>
                     </FlexList>
                     <FlexList direction="row" gap={2}>
+                      <RadioGroupItem id="exclude" value="include" />
+                      <Label htmlFor="exclude">Always include</Label>
+                    </FlexList>
+                    <FlexList direction="row" gap={2}>
                       <RadioGroupItem
                         id="no_preference"
                         value="no_preference"

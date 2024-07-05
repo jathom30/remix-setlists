@@ -393,6 +393,41 @@ export async function createAutoSetlist(
   // sort by position
   const sortedByPosition = sortSetsByPosition(setsByLength);
 
+  // songs not included in sets
+  const extraSongs = availableSongs.filter(
+    (song) =>
+      !Object.values(sortedByPosition)
+        .flat()
+        .some((s) => s.id === song.id),
+  );
+  const alwaysIncludeSongs = extraSongs.filter(
+    (song) => song.rank === "include",
+  );
+
+  // replace songs in sets with always include songs
+  while (alwaysIncludeSongs.length > 0) {
+    Object.values(sortedByPosition).forEach((set) => {
+      const extraSong = alwaysIncludeSongs.pop();
+      if (extraSong) {
+        // check extra song position
+        const extraSongPosition = extraSong.position;
+        // replace song at random index
+        const randomIndex = Math.floor(Math.random() * set.length);
+        const randomSong = set[randomIndex];
+        if (randomSong.position === extraSongPosition) {
+          set[randomIndex] = extraSong;
+        } else {
+          // find index of song with same position as extra song
+          const songWithPositionIndex = set.findIndex(
+            (song) => song.position === extraSongPosition,
+          );
+          // replace song with extra song
+          set[songWithPositionIndex] = extraSong;
+        }
+      }
+    });
+  }
+
   // create sets in db
   Object.values(sortedByPosition).forEach(async (songs, i) => {
     await createSet(
