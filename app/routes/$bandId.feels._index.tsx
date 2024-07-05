@@ -139,7 +139,6 @@ export default function BandFeels() {
   };
 
   const setSort = (value: string) => {
-    console.log(value);
     setSearchParams((prev) => {
       prev.set("sort", value);
       return prev;

@@ -31,7 +31,7 @@ import {
 
 import { FlexList } from "./FlexList";
 
-const sortOptions = [
+export const sortOptions = [
   {
     label: "Updated: Newest first",
     value: "updatedAt:desc",
@@ -71,7 +71,7 @@ export const SortItems = ({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuRadioGroup value={value} onValueChange={onChange}>
-                {sortOptions.map(({ label, value: val, Icon }) => (
+                {ops.map(({ label, value: val, Icon }) => (
                   <DropdownMenuRadioItem key={val} value={val}>
                     <Icon className="w-4 h-4 mr-2" />
                     {label}
