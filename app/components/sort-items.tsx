@@ -57,7 +57,6 @@ export const SortItems = ({
 }) => {
   const [open, setOpen] = useState(false);
   const ops = options ?? sortOptions;
-  console.log(ops);
   return (
     <div>
       <div className="hidden sm:block">
