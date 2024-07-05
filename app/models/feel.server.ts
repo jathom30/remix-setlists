@@ -1,8 +1,14 @@
 import type { Band, Feel } from "@prisma/client";
 
 import { prisma } from "~/db.server";
+import { getSortFromParam } from "~/utils/params";
 
-export async function getFeels(bandId: Band["id"], query?: string) {
+export async function getFeels(
+  bandId: Band["id"],
+  query?: string,
+  sort?: string,
+) {
+  const orderBy = getSortFromParam(sort);
   return prisma.feel.findMany({
     where: {
       bandId,
@@ -11,9 +17,7 @@ export async function getFeels(bandId: Band["id"], query?: string) {
       },
     },
     include: { songs: { select: { id: true } } },
-    orderBy: {
-      label: "asc",
-    },
+    orderBy,
   });
 }
 

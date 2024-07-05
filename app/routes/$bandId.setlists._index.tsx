@@ -57,7 +57,6 @@ import { SetlistContainer } from "~/components/setlist-container";
 import { SortItems } from "~/components/sort-items";
 import { H1 } from "~/components/typography";
 import { useLiveLoader } from "~/hooks";
-import { userPrefs } from "~/models/cookies.server";
 import {
   copySetlist,
   deleteSetlist,
@@ -70,6 +69,7 @@ import { getDomainUrl } from "~/utils/assorted";
 import { emitterKeys } from "~/utils/emitter-keys";
 import { emitter } from "~/utils/emitter.server";
 import { RoleEnum } from "~/utils/enums";
+import { updateSortCookie } from "~/utils/sort-cookie.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireUserId(request);
@@ -80,17 +80,17 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const urlSearchParams = new URL(request.url).searchParams;
   const q = urlSearchParams.get("query");
   const intent = urlSearchParams.get("intent");
-  let sort = urlSearchParams.get("sort");
+  const sortQuery = urlSearchParams.get("sort");
   if (intent === "clear") {
     urlSearchParams.delete("query");
   }
 
-  const cookieHeader = request.headers.get("Cookie");
-  const cookie = (await userPrefs.parse(cookieHeader)) || {};
-
-  if (cookie && typeof cookie === "object" && "setlistSort" in cookie) {
-    sort = String(cookie.setlistSort);
-  }
+  const { header, sort } = await updateSortCookie({
+    request,
+    sortQuery,
+    cookieKey: "setlistSort",
+    defaultSort: "updatedAt:desc",
+  });
 
   const filterParams = {
     ...(q ? { q } : null),
@@ -98,11 +98,14 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   };
 
   const setlists = await getSetlists(bandId, filterParams);
-  return json({
-    setlists,
-    sort,
-    domainUrl,
-  });
+  return json(
+    {
+      setlists,
+      sort,
+      domainUrl,
+    },
+    { headers: header },
+  );
 }
 
 export const meta: MetaFunction<typeof loader> = () => {
