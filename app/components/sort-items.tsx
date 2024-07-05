@@ -56,6 +56,8 @@ export const SortItems = ({
   onChange: (val: string) => void;
 }) => {
   const [open, setOpen] = useState(false);
+  const ops = options ?? sortOptions;
+  console.log(ops);
   return (
     <div>
       <div className="hidden sm:block">
@@ -100,25 +102,23 @@ export const SortItems = ({
                   }}
                 >
                   <FlexList gap={0}>
-                    {(options ?? sortOptions).map(
-                      ({ label, value: val, Icon }) => (
-                        <div
-                          key={val}
-                          className="p-2 rounded hover:bg-accent hover:text-accent-foreground"
-                        >
-                          <FlexList direction="row" items="center" gap={2}>
-                            <RadioGroupItem value={val} id={val} />
-                            <Label
-                              className="w-full text-start flex"
-                              htmlFor={val}
-                            >
-                              <Icon className="w-4 h-4 mr-2" />
-                              {label}
-                            </Label>
-                          </FlexList>
-                        </div>
-                      ),
-                    )}
+                    {ops.map(({ label, value: val, Icon }) => (
+                      <div
+                        key={val}
+                        className="p-2 rounded hover:bg-accent hover:text-accent-foreground"
+                      >
+                        <FlexList direction="row" items="center" gap={2}>
+                          <RadioGroupItem value={val} id={val} />
+                          <Label
+                            className="w-full text-start flex"
+                            htmlFor={val}
+                          >
+                            <Icon className="w-4 h-4 mr-2" />
+                            {label}
+                          </Label>
+                        </FlexList>
+                      </div>
+                    ))}
                   </FlexList>
                 </RadioGroup>
               </SheetDescription>
