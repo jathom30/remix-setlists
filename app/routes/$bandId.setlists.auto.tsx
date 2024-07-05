@@ -20,13 +20,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { FlexList } from "~/components";
 import { H1, Muted } from "~/components/typography";
 import { createAutoSetlist } from "~/models/setlist.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { emitterKeys } from "~/utils/emitter-keys";
 import { emitter } from "~/utils/emitter.server";
-import { AutoSetlistSchema } from "~/utils/setlists";
+import { AutoSetlistSchema, TAutoSetlist } from "~/utils/setlists";
 import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -63,7 +65,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function SetlistAuto() {
   const { bandId } = useParams();
-  const [form, fields] = useForm({
+  const [form, fields] = useForm<TAutoSetlist>({
     id: "auto-setlist-create",
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: AutoSetlistSchema });
@@ -73,16 +75,19 @@ export default function SetlistAuto() {
       numSets: 1,
       setLength: 50,
       artistPreference: "no-preference",
-      excludeBallads: false,
+      showMinTempo: false,
+      minTempo: 35,
       wildCard: false,
     },
     shouldValidate: "onBlur",
-    // shouldRevalidate: "onInput",
   });
 
   const artistPreference = useInputControl(fields.artistPreference);
-  const excludeBallads = useInputControl(fields.excludeBallads);
+  const showMinTempo = useInputControl(fields.showMinTempo);
+  const minTempo = useInputControl(fields.minTempo);
   const wildCard = useInputControl(fields.wildCard);
+
+  console.log(form.allErrors, form.value);
 
   return (
     <Form
@@ -195,28 +200,61 @@ export default function SetlistAuto() {
             <div>
               <div className="flex items-center gap-2">
                 <Checkbox
-                  id={fields.excludeBallads.id}
-                  name={fields.excludeBallads.name}
-                  value={excludeBallads.value}
+                  id={fields.showMinTempo.id}
+                  name={fields.showMinTempo.name}
+                  value={showMinTempo.value}
                   onCheckedChange={(checked) => {
                     if (typeof checked !== "boolean") return;
-                    excludeBallads.change(checked ? "true" : "");
+                    showMinTempo.change(checked ? "true" : "");
                   }}
-                  onBlur={excludeBallads.blur}
-                  onFocus={excludeBallads.focus}
+                  onBlur={showMinTempo.blur}
+                  onFocus={showMinTempo.focus}
                 />
-                <Label htmlFor={fields.excludeBallads.id}>
-                  Exclude ballads
+                <Label htmlFor={fields.showMinTempo.id}>
+                  Minimum Tempo Threshold
                 </Label>
               </div>
-              <Muted>Will exclude all songs below 80 bpm</Muted>
+              <Muted>
+                Set a minimum tempo you'd like your setlist to reach. Leave
+                unchecked to allow all tempos.
+              </Muted>
               <div
                 className="text-sm text-destructive"
-                id={fields.excludeBallads.errorId}
+                id={fields.showMinTempo.errorId}
               >
-                {fields.excludeBallads.errors}
+                {fields.showMinTempo.errors}
               </div>
             </div>
+            {showMinTempo.value ? (
+              <FlexList gap={2}>
+                <Input
+                  type="number"
+                  value={minTempo.value}
+                  onChange={(e) => minTempo.change(e.target.value)}
+                  onFocus={minTempo.focus}
+                  onBlur={minTempo.blur}
+                  min={0}
+                  max={420}
+                  step={1}
+                />
+                <Slider
+                  name={fields.minTempo.name}
+                  value={[Number(minTempo.value)]}
+                  onValueChange={(val) => minTempo.change(String(val[0]))}
+                  onFocus={minTempo.focus}
+                  onBlur={minTempo.blur}
+                  min={0}
+                  max={420}
+                  step={1}
+                />
+                <div
+                  className="text-sm text-destructive"
+                  id={fields.minTempo.errorId}
+                >
+                  {fields.minTempo.errors}
+                </div>
+              </FlexList>
+            ) : null}
           </CardContent>
         </Card>
         <Card>

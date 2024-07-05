@@ -119,7 +119,7 @@ const CreateSongSchema = z.object({
     .string()
     .transform((val) => val === "true")
     .pipe(z.boolean()),
-  tempo: z.coerce.number().min(1).max(320).default(120),
+  tempo: z.coerce.number().min(1).max(420).default(120),
   feels: z.array(z.string()),
   author: z.string().nullish(),
   note: z.string().nullish(),
@@ -275,7 +275,7 @@ export default function CreateSongRoute() {
                       onChange={(e) => tempoControl.change(e.target.value)}
                       onFocus={tempoControl.focus}
                       onBlur={tempoControl.blur}
-                      max={320}
+                      max={420}
                       min={1}
                       step={1}
                     />
@@ -288,7 +288,7 @@ export default function CreateSongRoute() {
                       onFocus={tempoControl.focus}
                       onBlur={tempoControl.blur}
                       min={1}
-                      max={320}
+                      max={420}
                       step={1}
                     />
                     <div

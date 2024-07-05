@@ -326,7 +326,8 @@ export async function createAutoSetlist(
 ) {
   const {
     artistPreference,
-    excludeBallads,
+    showMinTempo,
+    minTempo,
     name,
     numSets,
     setLength,
@@ -348,7 +349,7 @@ export async function createAutoSetlist(
   }
 
   // get all songs (filtered by params if no wild card)
-  const songs = await prisma.song.findMany({
+  const allSongs = await prisma.song.findMany({
     where: {
       bandId,
       ...(wildCard
@@ -366,14 +367,19 @@ export async function createAutoSetlist(
                     },
                   }
                 : {},
-            tempo: excludeBallads
-              ? {
-                  gte: 80,
-                }
-              : {},
           }),
     },
   });
+
+  // filter songs by tempo if showMinTempo is true
+  const songs = allSongs.filter((song) => {
+    if (showMinTempo && typeof minTempo === "number") {
+      if (song.tempo === null) return true;
+      return song.tempo >= minTempo;
+    }
+    return true;
+  });
+
   // if wild card, include all songs. Otherwise, exclude songs with rank "exclude"
   const availableSongs = songs.filter((song) =>
     wildCard ? true : song.rank !== "exclude",
