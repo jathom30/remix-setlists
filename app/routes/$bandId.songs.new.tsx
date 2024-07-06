@@ -477,6 +477,10 @@ export default function CreateSongRoute() {
                         <Label htmlFor="exclude">Always Exclude</Label>
                       </FlexList>
                       <FlexList direction="row" gap={2}>
+                        <RadioGroupItem id="include" value="include" />
+                        <Label htmlFor="include">Always include</Label>
+                      </FlexList>
+                      <FlexList direction="row" gap={2}>
                         <RadioGroupItem
                           id="no_preference"
                           value="no_preference"
