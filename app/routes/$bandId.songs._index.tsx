@@ -48,9 +48,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { FlexList } from "~/components";
 import { SongContainer } from "~/components/song-container";
+import {
+  SongFilters,
+  getFeels,
+  getPosition,
+  getTempo,
+} from "~/components/song-filters";
 import { SortItems } from "~/components/sort-items";
 import { H1 } from "~/components/typography";
 import { useLiveLoader } from "~/hooks";
+import { getThinFeels } from "~/models/feel.server";
 import { deleteSong, getSongs } from "~/models/song.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
@@ -82,7 +89,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   };
 
   const songs = await getSongs(bandId, songParams);
-  return json({ songs, sort }, { headers: header });
+  const feels = await getThinFeels(bandId);
+  return json({ songs, sort, feels }, { headers: header });
 }
 
 export const meta: MetaFunction<typeof loader> = () => {
@@ -116,13 +124,25 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function SongsList() {
-  const { songs, sort } = useLiveLoader<typeof loader>(() =>
+  const { songs, sort, feels } = useLiveLoader<typeof loader>(() =>
     toast("Songs updated"),
   );
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
 
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const tempoParam = searchParams.get("tempo");
+  const tempo = getTempo(tempoParam);
+
+  const positionParam = searchParams.get("position");
+  const position = getPosition(positionParam);
+
+  const feelsParam = searchParams.get("feels");
+  const feelsFilter = getFeels(feelsParam);
+
+  const artistParam = searchParams.get("artist") ?? "";
+
   const query = searchParams.get("query") ?? "";
   const setQuery = (value: string) => {
     setSearchParams((prev) => {
@@ -137,6 +157,34 @@ export default function SongsList() {
       return prev;
     });
   };
+
+  const filteredSongs = songs.filter((song) => {
+    if (tempo.min && (song.tempo || 0) < tempo.min) {
+      return false;
+    }
+    if (tempo.max && (song.tempo || 0) > tempo.max) {
+      return false;
+    }
+    if (
+      position.length &&
+      !position.includes(song.position as "opener" | "closer" | "other")
+    ) {
+      return false;
+    }
+    if (
+      feelsFilter.length &&
+      !song.feels.some((f) => feelsFilter.includes(f.id))
+    ) {
+      return false;
+    }
+    if (
+      artistParam &&
+      !song.author?.toLowerCase().includes(artistParam.toLowerCase())
+    ) {
+      return false;
+    }
+    return true;
+  });
 
   return (
     <div className="p-2 space-y-2">
@@ -163,12 +211,13 @@ export default function SongsList() {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
+        <SongFilters feelOptions={feels} />
         <SortItems value={sort || "updatedAt:desc"} onChange={setSort} />
       </FlexList>
 
-      {songs.length ? (
+      {filteredSongs.length ? (
         <FlexList gap={1}>
-          {songs.map((song) => (
+          {filteredSongs.map((song) => (
             <SongContainer.Card key={song.id}>
               <FlexList direction="row" items="center" gap={2}>
                 <Link className="w-full" key={song.id} to={song.id}>

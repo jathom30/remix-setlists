@@ -21,6 +21,13 @@ export async function getFeels(
   });
 }
 
+export async function getThinFeels(bandId: Band["id"]) {
+  return prisma.feel.findMany({
+    where: { bandId },
+    orderBy: { label: "asc" },
+  });
+}
+
 export async function getMostRecentFeels(bandId: Band["id"]) {
   return prisma.feel.findMany({
     where: { bandId },
