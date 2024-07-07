@@ -32,11 +32,11 @@ export const MultiSelectFeel = ({
 
   const displayValue = values.length
     ? values
-        .map((val) => feels.find((feel) => feel.id === val)?.label)
+        ?.map((val) => feels?.find((feel) => feel.id === val)?.label)
         .join(", ")
     : "Select feel...";
 
-  const filteredFeels = feels.filter((feel) =>
+  const filteredFeels = feels?.filter((feel) =>
     feel.label.toLowerCase().includes(query.toLowerCase()),
   );
   return (
@@ -64,7 +64,7 @@ export const MultiSelectFeel = ({
           <CommandList>
             <CommandEmpty>No feels found.</CommandEmpty>
             <CommandGroup>
-              {filteredFeels.map((feel) => (
+              {filteredFeels?.map((feel) => (
                 <CommandItem
                   key={feel.id}
                   value={feel.id}

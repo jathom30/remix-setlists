@@ -13,7 +13,7 @@ export interface FlexListProps {
 
 export const FlexList = ({
   children,
-  gap = 4,
+  gap = 2,
   pad,
   items,
   direction = "col",
