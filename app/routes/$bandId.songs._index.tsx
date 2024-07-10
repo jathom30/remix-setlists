@@ -48,12 +48,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { FlexList } from "~/components";
 import { SongContainer } from "~/components/song-container";
-import {
-  SongFilters,
-  getFeels,
-  getPosition,
-  getTempo,
-} from "~/components/song-filters";
+import { SongFilters, useSongFilters } from "~/components/song-filters";
 import { SortItems } from "~/components/sort-items";
 import { H1 } from "~/components/typography";
 import { useLiveLoader } from "~/hooks";
@@ -132,16 +127,15 @@ export default function SongsList() {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const tempoParam = searchParams.get("tempo");
-  const tempo = getTempo(tempoParam);
-
-  const positionParam = searchParams.get("position");
-  const position = getPosition(positionParam);
-
-  const feelsParam = searchParams.get("feels");
-  const feelsFilter = getFeels(feelsParam);
-
-  const artistParam = searchParams.get("artist") ?? "";
+  const {
+    filters: { artist, selectedFeels, position, tempo },
+    filterParams: { artistParam, feelsParam, positionParam, tempoParam },
+    hasFilters,
+    onClear,
+    onSubmit,
+    onChange,
+    submitOnChange,
+  } = useSongFilters();
 
   const query = searchParams.get("query") ?? "";
   const setQuery = (value: string) => {
@@ -159,21 +153,21 @@ export default function SongsList() {
   };
 
   const filteredSongs = songs.filter((song) => {
-    if (tempo.min && (song.tempo || 0) < tempo.min) {
+    if (tempoParam.min && (song.tempo || 0) < tempoParam.min) {
       return false;
     }
-    if (tempo.max && (song.tempo || 0) > tempo.max) {
+    if (tempoParam.max && (song.tempo || 0) > tempoParam.max) {
       return false;
     }
     if (
-      position.length &&
-      !position.includes(song.position as "opener" | "closer" | "other")
+      positionParam.length &&
+      !positionParam.includes(song.position as "opener" | "closer" | "other")
     ) {
       return false;
     }
     if (
-      feelsFilter.length &&
-      !song.feels.some((f) => feelsFilter.includes(f.id))
+      feelsParam.length &&
+      !song.feels.some((f) => feelsParam.includes(f.id))
     ) {
       return false;
     }
@@ -211,46 +205,81 @@ export default function SongsList() {
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
-        <SongFilters feelOptions={feels} />
+        <div className="md:hidden">
+          <SongFilters
+            onClear={onClear}
+            onSubmit={onSubmit}
+            hasFilters={hasFilters}
+          >
+            <SongFilters.Body
+              feelOptions={feels}
+              filters={{
+                artist,
+                position,
+                tempo,
+                feels: selectedFeels,
+              }}
+              onChange={onChange}
+            />
+          </SongFilters>
+        </div>
         <SortItems value={sort || "updatedAt:desc"} onChange={setSort} />
       </FlexList>
-
-      {filteredSongs.length ? (
-        <FlexList gap={1}>
-          {filteredSongs.map((song) => (
-            <SongContainer.Card key={song.id}>
-              <FlexList direction="row" items="center" gap={2}>
-                <Link className="w-full" key={song.id} to={song.id}>
-                  <SongContainer.Song song={song} />
-                </Link>
-                <SongActions song={song} />
-              </FlexList>
-            </SongContainer.Card>
-          ))}
-        </FlexList>
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>No Songs Found</CardTitle>
-            <CardDescription>
-              {query
-                ? "We couldn't find any songs matching your search."
-                : "This band has no songs yet."}
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            {query ? (
-              <Button onClick={() => setQuery("")} variant="secondary">
-                Clear search
-              </Button>
-            ) : !isSub ? (
-              <Button asChild>
-                <Link to="new">Create your first song here</Link>
-              </Button>
-            ) : null}
-          </CardFooter>
-        </Card>
-      )}
+      <div className="flex gap-2">
+        <div className="hidden md:block">
+          <Card className="p-2 space-y-2">
+            <SongFilters.Body
+              feelOptions={feels}
+              filters={{
+                artist,
+                position,
+                tempo,
+                feels: selectedFeels,
+              }}
+              onChange={submitOnChange}
+            />
+            <Button variant="secondary" className="w-full" onClick={onClear}>
+              Clear
+            </Button>
+          </Card>
+        </div>
+        {filteredSongs.length ? (
+          <FlexList gap={1} width="full">
+            {filteredSongs.map((song) => (
+              <SongContainer.Card key={song.id}>
+                <FlexList direction="row" items="center" gap={2}>
+                  <Link className="w-full" key={song.id} to={song.id}>
+                    <SongContainer.Song song={song} />
+                  </Link>
+                  <SongActions song={song} />
+                </FlexList>
+              </SongContainer.Card>
+            ))}
+          </FlexList>
+        ) : (
+          <Card className="w-full">
+            <CardHeader>
+              <CardTitle>No Songs Found</CardTitle>
+              <CardDescription>
+                {query
+                  ? "We couldn't find any songs matching your search."
+                  : "This band has no songs yet."}
+              </CardDescription>
+            </CardHeader>
+            <CardFooter>
+              {query ? (
+                <Button onClick={() => setQuery("")} variant="secondary">
+                  Clear search
+                </Button>
+              ) : !isSub ? (
+                <Button asChild>
+                  <Link to="new">Create your first song here</Link>
+                </Button>
+              ) : null}
+            </CardFooter>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }
