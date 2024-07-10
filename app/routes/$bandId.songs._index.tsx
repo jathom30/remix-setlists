@@ -23,6 +23,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Card,
+  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -227,20 +228,27 @@ export default function SongsList() {
       </FlexList>
       <div className="flex gap-2">
         <div className="hidden md:block">
-          <Card className="p-2 space-y-2">
-            <SongFilters.Body
-              feelOptions={feels}
-              filters={{
-                artist,
-                position,
-                tempo,
-                feels: selectedFeels,
-              }}
-              onChange={submitOnChange}
-            />
-            <Button variant="secondary" className="w-full" onClick={onClear}>
-              Clear
-            </Button>
+          <Card>
+            <CardHeader className="p-4">
+              <CardDescription>Song Filters</CardDescription>
+            </CardHeader>
+            <CardContent className="px-4">
+              <SongFilters.Body
+                feelOptions={feels}
+                filters={{
+                  artist,
+                  position,
+                  tempo,
+                  feels: selectedFeels,
+                }}
+                onChange={submitOnChange}
+              />
+            </CardContent>
+            <CardFooter className="p-4 pt-0">
+              <Button variant="secondary" className="w-full" onClick={onClear}>
+                Clear
+              </Button>
+            </CardFooter>
           </Card>
         </div>
         {filteredSongs.length ? (
