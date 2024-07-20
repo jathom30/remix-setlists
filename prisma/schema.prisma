@@ -21,6 +21,7 @@ model User {
 
   password Password?
   bands    UsersInBands[]
+  setlistNotes SetlistNote[]
 }
 
 model Password {
@@ -94,6 +95,7 @@ model Setlist {
   band   Band   @relation(fields: [bandId], references: [id], onDelete: Cascade)
   bandId String
   sets   Set[]
+  notes  SetlistNote[]
 }
 
 model Set {
@@ -161,4 +163,16 @@ model Feel {
 
   band   Band   @relation(fields: [bandId], references: [id], onDelete: Cascade)
   bandId String
+}
+
+model SetlistNote {
+  id        String  @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy User?   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdById String
+
+  setlist Setlist @relation(fields: [setlistId], references: [id], onDelete: Cascade)
+  setlistId String
 }
