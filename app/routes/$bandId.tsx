@@ -137,6 +137,8 @@ export default function BandRoute() {
     isSetlistDetailRoute && pathname.includes("condensed");
   const isSetlistMetricsRoute =
     isSetlistDetailRoute && pathname.includes("metrics");
+  const isSetlistNotesRoute =
+    isSetlistDetailRoute && pathname.includes("notes");
 
   // songs routes
   const isSongsRoute = isBandRoute && pathname.includes("songs");
@@ -171,7 +173,7 @@ export default function BandRoute() {
       ? [
           {
             to: `/${bandId}/setlists/${setlistId}`,
-            label: setlistMatch.data.setlist.name,
+            label: setlistMatch?.data.setlist.name,
           },
         ]
       : []),
@@ -185,6 +187,9 @@ export default function BandRoute() {
       : []),
     ...(isSetlistMetricsRoute
       ? [{ to: `/${bandId}/setlists/${setlistId}/metrics`, label: "Metrics" }]
+      : []),
+    ...(isSetlistNotesRoute
+      ? [{ to: `/${bandId}/setlists/${setlistId}/notes`, label: "Notes" }]
       : []),
     ...(isCreateSetlistsRoute
       ? [{ to: `/${bandId}/setlists/new`, label: "Create" }]
@@ -206,7 +211,7 @@ export default function BandRoute() {
       ? [
           {
             to: `/${bandId}/songs/${songMatch.data.song.id}`,
-            label: songMatch.data.song.name,
+            label: songMatch?.data.song.name,
           },
         ]
       : []),
@@ -226,14 +231,14 @@ export default function BandRoute() {
       ? [
           {
             to: `/${bandId}/feels/${feelMatch.data.feel.id}`,
-            label: feelMatch.data.feel.label,
+            label: feelMatch?.data.feel.label,
           },
         ]
       : []),
     ...(isEditFeelRoute
       ? [
           {
-            to: `/${bandId}/feels/${feelMatch.data.feel.id}/edit`,
+            to: `/${bandId}/feels/${feelMatch?.data.feel.id}/edit`,
             label: "Edit",
           },
         ]

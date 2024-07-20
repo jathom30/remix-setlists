@@ -2,6 +2,7 @@ import type { BandIcon } from "@prisma/client";
 import { useMatches } from "@remix-run/react";
 import type { SerializeFrom } from "@remix-run/server-runtime";
 import { useMemo } from "react";
+import { z } from "zod";
 
 import type { User } from "~/models/user.server";
 
@@ -83,16 +84,21 @@ export function useFeatureFlags(): Record<FeatureFlagKey, boolean> {
   return data.featureFlags as Record<FeatureFlagKey, boolean>;
 }
 
-function isMemberRole(role: unknown): role is RoleEnum {
-  return Boolean(role && typeof role === "string");
-}
+const MemberRoleSchema = z.object({
+  memberRole: z.union([
+    z.literal("ADMIN"),
+    z.literal("MEMBER"),
+    z.literal("SUB"),
+  ]),
+});
 
 export function useMemberRole(): RoleEnum {
   const data = useMatchesData("routes/$bandId");
-  if (!data || !isMemberRole(data.memberRole)) {
+  const parsedData = MemberRoleSchema.safeParse(data);
+  if (!parsedData.success) {
     return RoleEnum.SUB;
   }
-  return data.memberRole;
+  return parsedData.data.memberRole as RoleEnum;
 }
 
 export function useUser(): User {

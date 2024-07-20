@@ -6,6 +6,7 @@ import {
   EllipsisVertical,
   ExternalLink,
   LinkIcon,
+  NotebookPen,
   Pencil,
   Shrink,
   Trash,
@@ -96,6 +97,14 @@ export const SetlistActions = ({
                 </DropdownMenuItem>
               ) : null}
               {!isSub ? (
+                <DropdownMenuItem asChild>
+                  <Link to="notes">
+                    <NotebookPen className="h-4 w-4 mr-2" />
+                    Notes
+                  </Link>
+                </DropdownMenuItem>
+              ) : null}
+              {!isSub ? (
                 <DropdownMenuItem onClick={() => setShowEditName(true)}>
                   <Pencil className="h-4 w-4 mr-2" />
                   Edit Name
@@ -160,6 +169,16 @@ export const SetlistActions = ({
                     : "Add Songs"}
                 </Button>
               </SheetClose>
+              {!isSub ? (
+                <SheetClose asChild>
+                  <Button variant="ghost" asChild>
+                    <Link to="notes">
+                      <NotebookPen className="h-4 w-4 mr-2" />
+                      Notes
+                    </Link>
+                  </Button>
+                </SheetClose>
+              ) : null}
               {!isSub ? (
                 <SheetClose asChild>
                   <Button onClick={() => setShowEditName(true)} variant="ghost">
