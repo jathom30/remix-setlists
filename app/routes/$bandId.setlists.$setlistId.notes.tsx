@@ -7,13 +7,9 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
-import {
-  useActionData,
-  useFetcher,
-  useLoaderData,
-  useParams,
-} from "@remix-run/react";
+import { useFetcher, useLoaderData, useParams } from "@remix-run/react";
 import { CirclePlus } from "lucide-react";
+import { useState } from "react";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -250,24 +246,10 @@ const EditSetlistNote = ({
   content: string;
   noteId: string;
 }) => {
-  const lastResult = useActionData<typeof action>();
   const fetcher = useFetcher({
     key: noteId,
   });
-
-  const [form, fields] = useForm({
-    id: noteId,
-    lastResult: fetcher.state === "idle" ? lastResult : null,
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema: EditNoteSchema });
-    },
-    shouldRevalidate: "onSubmit",
-    defaultValue: {
-      content,
-      intent: NoteIntentEnum.Enum.edit,
-      noteId,
-    },
-  });
+  const [formContent, setFormContent] = useState(content);
 
   return (
     <Dialog>
@@ -279,18 +261,22 @@ const EditSetlistNote = ({
         <DialogDescription>
           Add a note to the setlist for your bandmates to see.
         </DialogDescription>
-        <fetcher.Form method="post" {...getFormProps(form)}>
+        <fetcher.Form method="post">
           <div className="space-y-2">
             <Textarea
+              name="content"
               placeholder="Setlist note..."
-              {...getInputProps(fields.content, { type: "text" })}
+              value={formContent}
+              onChange={(e) => setFormContent(e.target.value)}
             />
-            <div className="text-sm text-destructive">
-              {fields.content.errors}
-            </div>
           </div>
-          <input hidden {...getInputProps(fields.intent, { type: "hidden" })} />
-          <input hidden {...getInputProps(fields.noteId, { type: "hidden" })} />
+          <input
+            hidden
+            name="intent"
+            value={NoteIntentEnum.Enum.edit}
+            type="hidden"
+          />
+          <input hidden name="noteId" value={noteId} type="hidden" />
           <DialogFooter>
             <DialogClose asChild>
               <Button type="submit" disabled={fetcher.state !== "idle"}>
