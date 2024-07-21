@@ -29,7 +29,7 @@ export const SongSwapSheet = ({
   );
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom">
+      <SheetContent side="bottom" onOpenAutoFocus={(e) => e.preventDefault()}>
         <MaxWidth className="space-y-2 max-h-[70vh] overflow-auto">
           <div className="pt-2 px-1 sticky space-y-2 top-0 inset-x-0 bg-card">
             <FlexList direction="row" items="center" gap={2} justify="between">
