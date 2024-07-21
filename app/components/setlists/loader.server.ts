@@ -1,13 +1,14 @@
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
+import { getUnseenNotes } from "~/models/setlist-notes";
 import { getSetlist } from "~/models/setlist.server";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
 import { getDomainUrl } from "~/utils/assorted";
 
 export async function setlistLoader({ request, params }: LoaderFunctionArgs) {
-  await requireUserId(request);
+  const userId = await requireUserId(request);
   const { setlistId, bandId } = params;
   invariant(setlistId, "setlistId is required");
   invariant(bandId, "bandId is required");
@@ -20,6 +21,8 @@ export async function setlistLoader({ request, params }: LoaderFunctionArgs) {
       status: 403,
     });
   }
+
+  const unseenNotes = await getUnseenNotes(setlistId, userId);
 
   const allSongs = await getSongs(bandId, { sort: "name:asc" });
 
@@ -34,6 +37,7 @@ export async function setlistLoader({ request, params }: LoaderFunctionArgs) {
     setlist,
     setlistLink,
     allSongs,
+    unseenNotesCount: unseenNotes.length,
     ...(setlist.isPublic ? { setlistPublicUrl } : {}),
   });
 }

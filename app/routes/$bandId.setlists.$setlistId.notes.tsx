@@ -6,6 +6,7 @@ import {
   json,
   LoaderFunctionArgs,
   MetaFunction,
+  SerializeFrom,
 } from "@remix-run/node";
 import { useFetcher, useLoaderData, useParams } from "@remix-run/react";
 import { CirclePlus } from "lucide-react";
@@ -28,6 +29,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { FlexList } from "~/components";
 import { H1, Muted, P, Small } from "~/components/typography";
@@ -36,6 +46,7 @@ import {
   deleteSetlistNote,
   editSetlistNote,
   getSetlistNotes,
+  markAllNotesAsSeen,
 } from "~/models/setlist-notes";
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
@@ -63,7 +74,7 @@ const EditNoteSchema = z.object({
 });
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  await requireUserId(request);
+  const userId = await requireUserId(request);
   const { setlistId, bandId } = params;
   invariant(setlistId, "setlistId is required");
   invariant(bandId, "bandId is required");
@@ -73,7 +84,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 
   const notes = await getSetlistNotes(setlistId);
-
+  await markAllNotesAsSeen(setlistId, userId);
   return json({ setlist, notes });
 }
 
@@ -121,7 +132,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function SetlistNotes() {
   const { notes } = useLoaderData<typeof loader>();
 
-  const user = useUser();
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
 
@@ -133,44 +143,54 @@ export default function SetlistNotes() {
       </FlexList>
 
       <FlexList gap={1}>
-        {notes.map((note) => {
-          const isCreatedToday =
-            new Date(note.createdAt).toDateString() ===
-            new Date().toDateString();
-          const displayDate = isCreatedToday
-            ? new Date(note.createdAt).toLocaleTimeString()
-            : new Date(note.createdAt).toLocaleDateString();
-          const isMyNote = note.createdBy?.id === user.id;
-          return (
-            <Card key={note.id}>
-              <CardHeader>
-                <FlexList direction="row" items="center">
-                  <Small>{note.createdBy?.name}</Small>
-                  <Muted>{displayDate}</Muted>
-                </FlexList>
-              </CardHeader>
-              <CardContent>
-                <FlexList gap={1}>
-                  {note.content.split("\n").map((item) => (
-                    <P key={item}>{item}</P>
-                  ))}
-                </FlexList>
-              </CardContent>
-              {isMyNote ? (
-                <CardFooter>
-                  <FlexList direction="row">
-                    <EditSetlistNote content={note.content} noteId={note.id} />
-                    <DeleteNote noteId={note.id} />
-                  </FlexList>
-                </CardFooter>
-              ) : null}
-            </Card>
-          );
-        })}
+        {notes.map((note) => (
+          <NoteContainer key={note.id} note={note} />
+        ))}
       </FlexList>
     </div>
   );
 }
+
+const NoteContainer = ({
+  note,
+}: {
+  note: SerializeFrom<Awaited<ReturnType<typeof getSetlistNotes>>[number]>;
+}) => {
+  const user = useUser();
+
+  const isCreatedToday =
+    new Date(note.createdAt).toDateString() === new Date().toDateString();
+  const displayDate = isCreatedToday
+    ? new Date(note.createdAt).toLocaleTimeString()
+    : new Date(note.createdAt).toLocaleDateString();
+  const isMyNote = note.createdBy?.id === user.id;
+
+  return (
+    <Card key={note.id}>
+      <CardHeader>
+        <FlexList direction="row" items="center">
+          <Small>{note.createdBy?.name}</Small>
+          <Muted>{displayDate}</Muted>
+        </FlexList>
+      </CardHeader>
+      <CardContent>
+        <FlexList gap={1}>
+          {note.content.split("\n").map((item) => (
+            <P key={item}>{item}</P>
+          ))}
+        </FlexList>
+      </CardContent>
+      {isMyNote ? (
+        <CardFooter>
+          <FlexList direction="row">
+            <EditSetlistNote content={note.content} noteId={note.id} />
+            <DeleteNote noteId={note.id} />
+          </FlexList>
+        </CardFooter>
+      ) : null}
+    </Card>
+  );
+};
 
 const NewSetlistNote = () => {
   const { setlistId } = useParams();
@@ -192,20 +212,20 @@ const NewSetlistNote = () => {
   });
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Sheet>
+      <SheetTrigger asChild>
         <Button>
           <CirclePlus className="h-4 w-4 mr-2" />
           Add Note
         </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogTitle>Add Note</DialogTitle>
-        <DialogDescription>
+      </SheetTrigger>
+      <SheetContent side="bottom">
+        <SheetTitle>Add Note</SheetTitle>
+        <SheetDescription>
           Add a note to the setlist for your bandmates to see.
-        </DialogDescription>
+        </SheetDescription>
         <fetcher.Form method="post" {...getFormProps(form)}>
-          <div className="space-y-2">
+          <div className="space-y-2 py-2">
             <Textarea
               placeholder="Setlist note..."
               {...getInputProps(fields.content, { type: "text" })}
@@ -226,16 +246,16 @@ const NewSetlistNote = () => {
               {...getInputProps(fields.setlistId, { type: "hidden" })}
             />
           </div>
-          <DialogFooter>
-            <DialogClose asChild>
+          <SheetFooter>
+            <SheetClose asChild>
               <Button type="submit" disabled={fetcher.state !== "idle"}>
                 Add Note
               </Button>
-            </DialogClose>
-          </DialogFooter>
+            </SheetClose>
+          </SheetFooter>
         </fetcher.Form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
 
@@ -252,17 +272,17 @@ const EditSetlistNote = ({
   const [formContent, setFormContent] = useState(content);
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Sheet>
+      <SheetTrigger asChild>
         <Button variant="ghost">Edit</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogTitle>Edit Note</DialogTitle>
-        <DialogDescription>
+      </SheetTrigger>
+      <SheetContent side="bottom">
+        <SheetTitle>Edit Note</SheetTitle>
+        <SheetDescription>
           Add a note to the setlist for your bandmates to see.
-        </DialogDescription>
+        </SheetDescription>
         <fetcher.Form method="post">
-          <div className="space-y-2">
+          <div className="space-y-2 py-2">
             <Textarea
               name="content"
               placeholder="Setlist note..."
@@ -277,16 +297,16 @@ const EditSetlistNote = ({
             type="hidden"
           />
           <input hidden name="noteId" value={noteId} type="hidden" />
-          <DialogFooter>
-            <DialogClose asChild>
+          <SheetFooter>
+            <SheetClose asChild>
               <Button type="submit" disabled={fetcher.state !== "idle"}>
                 Update Note
               </Button>
-            </DialogClose>
-          </DialogFooter>
+            </SheetClose>
+          </SheetFooter>
         </fetcher.Form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
 

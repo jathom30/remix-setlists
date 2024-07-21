@@ -14,6 +14,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -60,7 +61,8 @@ export const SetlistActions = ({
   onShowAvailableSongChange: (show: boolean) => void;
   isDesktop?: boolean;
 }) => {
-  const { setlist, setlistLink } = useLoaderData<typeof setlistLoader>();
+  const { setlist, setlistLink, unseenNotesCount } =
+    useLoaderData<typeof setlistLoader>();
   const role = useMemberRole();
   const isSub = role === RoleEnum.SUB;
   const [showEditName, setShowEditName] = useState(false);
@@ -78,8 +80,11 @@ export const SetlistActions = ({
       <div className="hidden sm:block">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="secondary" size="icon">
+            <Button className="relative" variant="secondary" size="icon">
               <EllipsisVertical className="h-4 w-4" />
+              {unseenNotesCount ? (
+                <div className="rounded-full bg-primary top-1 right-1 w-2 h-2 absolute" />
+              ) : null}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -96,14 +101,17 @@ export const SetlistActions = ({
                     : "Add Songs"}
                 </DropdownMenuItem>
               ) : null}
-              {!isSub ? (
-                <DropdownMenuItem asChild>
-                  <Link to="notes">
+              <DropdownMenuItem asChild>
+                <Link className="flex justify-between" to="notes">
+                  <div className="flex items-center">
                     <NotebookPen className="h-4 w-4 mr-2" />
                     Notes
-                  </Link>
-                </DropdownMenuItem>
-              ) : null}
+                  </div>
+                  {unseenNotesCount ? (
+                    <Badge className="ml-2">{unseenNotesCount}</Badge>
+                  ) : null}
+                </Link>
+              </DropdownMenuItem>
               {!isSub ? (
                 <DropdownMenuItem onClick={() => setShowEditName(true)}>
                   <Pencil className="h-4 w-4 mr-2" />
@@ -149,8 +157,11 @@ export const SetlistActions = ({
       <div className="sm:hidden">
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="secondary" size="icon">
+            <Button className="relative" variant="secondary" size="icon">
               <EllipsisVertical className="h-4 w-4" />
+              {unseenNotesCount ? (
+                <div className="rounded-full bg-primary top-1 right-1 w-2 h-2 absolute" />
+              ) : null}
             </Button>
           </SheetTrigger>
           <SheetContent>
@@ -169,16 +180,17 @@ export const SetlistActions = ({
                     : "Add Songs"}
                 </Button>
               </SheetClose>
-              {!isSub ? (
-                <SheetClose asChild>
-                  <Button variant="ghost" asChild>
-                    <Link to="notes">
-                      <NotebookPen className="h-4 w-4 mr-2" />
-                      Notes
-                    </Link>
-                  </Button>
-                </SheetClose>
-              ) : null}
+              <SheetClose asChild>
+                <Button variant="ghost" asChild>
+                  <Link to="notes">
+                    <NotebookPen className="h-4 w-4 mr-2" />
+                    Notes
+                    {unseenNotesCount ? (
+                      <Badge className="ml-2">{unseenNotesCount}</Badge>
+                    ) : null}
+                  </Link>
+                </Button>
+              </SheetClose>
               {!isSub ? (
                 <SheetClose asChild>
                   <Button onClick={() => setShowEditName(true)} variant="ghost">

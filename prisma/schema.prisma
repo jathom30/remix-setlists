@@ -22,6 +22,7 @@ model User {
   password Password?
   bands    UsersInBands[]
   setlistNotes SetlistNote[]
+  seenNotes UsersInSetlistNotes[]
 }
 
 model Password {
@@ -175,4 +176,13 @@ model SetlistNote {
 
   setlist Setlist @relation(fields: [setlistId], references: [id], onDelete: Cascade)
   setlistId String
+  seenBy   UsersInSetlistNotes[]
+}
+
+model UsersInSetlistNotes {
+  user     User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+  setlistNote  SetlistNote?  @relation(fields: [setlistNoteId], references: [id], onDelete: Cascade)
+  setlistNoteId String
+  @@id([userId, setlistNoteId])
 }
