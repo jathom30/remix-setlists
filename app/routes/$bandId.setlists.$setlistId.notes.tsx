@@ -51,6 +51,8 @@ import {
 import { getSetlist } from "~/models/setlist.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { useMemberRole, useUser } from "~/utils";
+import { emitterKeys } from "~/utils/emitter-keys";
+import { emitter } from "~/utils/emitter.server";
 import { RoleEnum } from "~/utils/enums";
 
 const NoteIntentEnum = z.enum(["create", "delete", "edit"]);
@@ -124,8 +126,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
       content: submission.value.content,
       id: submission.value.noteId,
     });
-    return submission.reply();
   }
+  emitter.emit(emitterKeys.setlist_notes);
   return null;
 }
 
