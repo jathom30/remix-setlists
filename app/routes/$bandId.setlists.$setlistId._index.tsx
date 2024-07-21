@@ -11,7 +11,7 @@ import {
   MetaFunction,
   SerializeFrom,
 } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { useFetcher } from "@remix-run/react";
 import { Search, X } from "lucide-react";
 import pluralize from "pluralize";
 import { useEffect, useState } from "react";
@@ -33,6 +33,7 @@ import { SongActions } from "~/components/setlists/song-actions";
 import { SongSwapSheet } from "~/components/setlists/song-swap-sheet";
 import { SongContainer } from "~/components/song-container";
 import { H1, Muted } from "~/components/typography";
+import { useLiveLoader } from "~/hooks";
 import { useContainerHeight } from "~/hooks/use-container-height";
 import {
   DroppableIdEnums,
@@ -101,7 +102,8 @@ const FetcherDataSchema = z.object({
 });
 
 export default function SetlistPage() {
-  const { setlist, allSongs } = useLoaderData<typeof loader>();
+  const { setlist, allSongs } = useLiveLoader<typeof loader>();
+
   const fetcher = useFetcher({ key: `setlist-${setlist.id}` });
   const [showAvailableSongs, setShowAvailableSongs] = useState(false);
   const [songToSwap, setSongToSwap] = useState<{
