@@ -39,6 +39,22 @@ export async function getUnseenNotes(setlistId: Setlist["id"], userId: string) {
   });
 }
 
+export async function getUnseenNotesCount(
+  setlistId: Setlist["id"],
+  userId: string,
+) {
+  return prisma.setlistNote.count({
+    where: {
+      setlistId,
+      seenBy: {
+        none: {
+          userId,
+        },
+      },
+    },
+  });
+}
+
 export async function markAllNotesAsSeen(
   setlistId: Setlist["id"],
   userId: string,

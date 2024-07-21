@@ -1,7 +1,7 @@
 import { LoaderFunctionArgs, json } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
-import { getUnseenNotes } from "~/models/setlist-notes";
+import { getUnseenNotesCount } from "~/models/setlist-notes";
 import { getSetlist } from "~/models/setlist.server";
 import { getSongs } from "~/models/song.server";
 import { requireUserId } from "~/session.server";
@@ -22,7 +22,7 @@ export async function setlistLoader({ request, params }: LoaderFunctionArgs) {
     });
   }
 
-  const unseenNotes = await getUnseenNotes(setlistId, userId);
+  const unseenNotesCount = await getUnseenNotesCount(setlistId, userId);
 
   const allSongs = await getSongs(bandId, { sort: "name:asc" });
 
@@ -37,7 +37,7 @@ export async function setlistLoader({ request, params }: LoaderFunctionArgs) {
     setlist,
     setlistLink,
     allSongs,
-    unseenNotesCount: unseenNotes.length,
+    unseenNotesCount,
     ...(setlist.isPublic ? { setlistPublicUrl } : {}),
   });
 }
