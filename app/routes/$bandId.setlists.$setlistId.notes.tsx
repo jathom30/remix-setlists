@@ -8,9 +8,10 @@ import {
   MetaFunction,
   SerializeFrom,
 } from "@remix-run/node";
-import { useFetcher, useLoaderData, useParams } from "@remix-run/react";
+import { useFetcher, useParams } from "@remix-run/react";
 import { CirclePlus } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -41,6 +42,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { FlexList } from "~/components";
 import { H1, Muted, P, Small } from "~/components/typography";
+import { useLiveLoader } from "~/hooks";
 import {
   createSetlistNote,
   deleteSetlistNote,
@@ -132,7 +134,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function SetlistNotes() {
-  const { notes } = useLoaderData<typeof loader>();
+  const { notes } = useLiveLoader<typeof loader>(() => {
+    toast.success("Notes updated");
+  });
 
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
