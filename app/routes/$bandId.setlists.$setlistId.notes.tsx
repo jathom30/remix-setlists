@@ -30,6 +30,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import {
   Sheet,
   SheetClose,
@@ -40,7 +41,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
-import { FlexList } from "~/components";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { FlexList, MaxWidth } from "~/components";
 import { H1, Muted, P, Small } from "~/components/typography";
 import { useLiveLoader } from "~/hooks";
 import {
@@ -187,7 +194,8 @@ const NoteContainer = ({
         </FlexList>
       </CardContent>
       {isMyNote ? (
-        <CardFooter>
+        <CardFooter className="flex justify-between items-center">
+          <SeenBy seenBy={note.seenBy} />
           <FlexList direction="row">
             <EditSetlistNote content={note.content} noteId={note.id} />
             <DeleteNote noteId={note.id} />
@@ -195,6 +203,43 @@ const NoteContainer = ({
         </CardFooter>
       ) : null}
     </Card>
+  );
+};
+
+const SeenBy = ({
+  seenBy,
+}: {
+  seenBy: SerializeFrom<
+    Awaited<ReturnType<typeof getSetlistNotes>>[number]
+  >["seenBy"];
+}) => {
+  const user = useUser();
+  const seenByOthers = seenBy.filter((seen) => seen.userId !== user.id);
+
+  if (seenByOthers.length === 0) {
+    return null;
+  }
+  return (
+    <FlexList direction="row">
+      <Label>Seen by:</Label>
+      <Small>{seenByOthers[0].user?.name}</Small>
+      {seenByOthers.length > 1 ? (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Small>+{seenByOthers.length - 1}</Small>
+            </TooltipTrigger>
+            <TooltipContent>
+              <FlexList>
+                {seenByOthers.map((seen) => (
+                  <Small key={seen.userId}>{seen.user?.name}</Small>
+                ))}
+              </FlexList>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ) : null}
+    </FlexList>
   );
 };
 
@@ -225,41 +270,43 @@ const NewSetlistNote = () => {
           Add Note
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom">
-        <SheetTitle>Add Note</SheetTitle>
-        <SheetDescription>
-          Add a note to the setlist for your bandmates to see.
-        </SheetDescription>
-        <fetcher.Form method="post" {...getFormProps(form)}>
-          <div className="space-y-2 py-2">
-            <Textarea
-              placeholder="Setlist note..."
-              {...getInputProps(fields.content, { type: "text" })}
-            />
-            <div className="text-sm text-destructive">
-              {fields.content.errors}
+      <SheetContent side="bottom" onOpenAutoFocus={(e) => e.preventDefault()}>
+        <MaxWidth>
+          <SheetTitle>Add Note</SheetTitle>
+          <SheetDescription>
+            Add a note to the setlist for your bandmates to see.
+          </SheetDescription>
+          <fetcher.Form method="post" {...getFormProps(form)}>
+            <div className="space-y-2 py-2">
+              <Textarea
+                placeholder="Setlist note..."
+                {...getInputProps(fields.content, { type: "text" })}
+              />
+              <div className="text-sm text-destructive">
+                {fields.content.errors}
+              </div>
+              <input
+                hidden
+                {...getInputProps(fields.intent, { type: "hidden" })}
+              />
+              <input
+                hidden
+                {...getInputProps(fields.userId, { type: "hidden" })}
+              />
+              <input
+                hidden
+                {...getInputProps(fields.setlistId, { type: "hidden" })}
+              />
             </div>
-            <input
-              hidden
-              {...getInputProps(fields.intent, { type: "hidden" })}
-            />
-            <input
-              hidden
-              {...getInputProps(fields.userId, { type: "hidden" })}
-            />
-            <input
-              hidden
-              {...getInputProps(fields.setlistId, { type: "hidden" })}
-            />
-          </div>
-          <SheetFooter>
-            <SheetClose asChild>
-              <Button type="submit" disabled={fetcher.state !== "idle"}>
-                Add Note
-              </Button>
-            </SheetClose>
-          </SheetFooter>
-        </fetcher.Form>
+            <SheetFooter>
+              <SheetClose asChild>
+                <Button type="submit" disabled={fetcher.state !== "idle"}>
+                  Add Note
+                </Button>
+              </SheetClose>
+            </SheetFooter>
+          </fetcher.Form>
+        </MaxWidth>
       </SheetContent>
     </Sheet>
   );
@@ -282,35 +329,37 @@ const EditSetlistNote = ({
       <SheetTrigger asChild>
         <Button variant="ghost">Edit</Button>
       </SheetTrigger>
-      <SheetContent side="bottom">
-        <SheetTitle>Edit Note</SheetTitle>
-        <SheetDescription>
-          Add a note to the setlist for your bandmates to see.
-        </SheetDescription>
-        <fetcher.Form method="post">
-          <div className="space-y-2 py-2">
-            <Textarea
-              name="content"
-              placeholder="Setlist note..."
-              value={formContent}
-              onChange={(e) => setFormContent(e.target.value)}
+      <SheetContent side="bottom" onOpenAutoFocus={(e) => e.preventDefault()}>
+        <MaxWidth>
+          <SheetTitle>Edit Note</SheetTitle>
+          <SheetDescription>
+            Add a note to the setlist for your bandmates to see.
+          </SheetDescription>
+          <fetcher.Form method="post">
+            <div className="space-y-2 py-2">
+              <Textarea
+                name="content"
+                placeholder="Setlist note..."
+                value={formContent}
+                onChange={(e) => setFormContent(e.target.value)}
+              />
+            </div>
+            <input
+              hidden
+              name="intent"
+              value={NoteIntentEnum.Enum.edit}
+              type="hidden"
             />
-          </div>
-          <input
-            hidden
-            name="intent"
-            value={NoteIntentEnum.Enum.edit}
-            type="hidden"
-          />
-          <input hidden name="noteId" value={noteId} type="hidden" />
-          <SheetFooter>
-            <SheetClose asChild>
-              <Button type="submit" disabled={fetcher.state !== "idle"}>
-                Update Note
-              </Button>
-            </SheetClose>
-          </SheetFooter>
-        </fetcher.Form>
+            <input hidden name="noteId" value={noteId} type="hidden" />
+            <SheetFooter>
+              <SheetClose asChild>
+                <Button type="submit" disabled={fetcher.state !== "idle"}>
+                  Update Note
+                </Button>
+              </SheetClose>
+            </SheetFooter>
+          </fetcher.Form>
+        </MaxWidth>
       </SheetContent>
     </Sheet>
   );

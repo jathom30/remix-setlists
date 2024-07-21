@@ -17,6 +17,7 @@ export async function getSetlistNotes(setlistId: Setlist["id"]) {
       seenBy: {
         select: {
           userId: true,
+          user: true,
         },
       },
     },

@@ -343,7 +343,7 @@ const SetlistActions = ({ setlist }: { setlist: SerializeFrom<Setlist> }) => {
         </DropdownMenuContent>
       </DropdownMenu>
       <Dialog open={showEditName} onOpenChange={setShowEditName}>
-        <DialogContent>
+        <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>Edit Name</DialogTitle>
             <DialogDescription>Edit the name of the setlist</DialogDescription>
