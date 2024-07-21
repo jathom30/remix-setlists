@@ -195,7 +195,7 @@ const NoteContainer = ({
       </CardContent>
       {isMyNote ? (
         <CardFooter className="flex justify-between items-center">
-          <SeenBy seenBy={note.seenBy} />
+          <SeenBy seenBy={note.seenBy} createdBy={note.createdBy?.id} />
           <FlexList direction="row">
             <EditSetlistNote content={note.content} noteId={note.id} />
             <DeleteNote noteId={note.id} />
@@ -208,13 +208,17 @@ const NoteContainer = ({
 
 const SeenBy = ({
   seenBy,
+  createdBy,
 }: {
   seenBy: SerializeFrom<
     Awaited<ReturnType<typeof getSetlistNotes>>[number]
   >["seenBy"];
+  createdBy?: string;
 }) => {
   const user = useUser();
-  const seenByOthers = seenBy.filter((seen) => seen.userId !== user.id);
+  const seenByOthers = seenBy.filter(
+    (seen) => seen.userId !== user.id && seen.userId !== createdBy,
+  );
 
   if (seenByOthers.length === 0) {
     return null;
