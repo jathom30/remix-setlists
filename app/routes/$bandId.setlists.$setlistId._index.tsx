@@ -176,6 +176,7 @@ export default function SetlistPage() {
   const [isChangedSetlist, setIsChangedSetlist] = useState(false);
 
   const handleDragEnd = (drop: DropResult) => {
+    if (isSub) return;
     setSets((prev) => {
       const updatedSets = onDragEnd(drop, sets)(prev);
       setIsChangedSetlist(compareSets(defaultSets, updatedSets));
