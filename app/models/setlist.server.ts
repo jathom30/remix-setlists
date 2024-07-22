@@ -76,6 +76,9 @@ export async function getSetlists(
           updatedAt: true,
         },
       },
+      notes: {
+        select: { id: true, seenBy: true },
+      },
     },
     orderBy,
   });

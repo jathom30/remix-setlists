@@ -35,6 +35,7 @@ import { SongContainer } from "~/components/song-container";
 import { H1, Muted } from "~/components/typography";
 import { useLiveLoader } from "~/hooks";
 import { useContainerHeight } from "~/hooks/use-container-height";
+import { useMemberRole } from "~/utils";
 import {
   DroppableIdEnums,
   TSet,
@@ -43,6 +44,7 @@ import {
   getAvailableSongs,
   onDragEnd,
 } from "~/utils/dnd";
+import { RoleEnum } from "~/utils/enums";
 import { totalSetLength } from "~/utils/sets";
 
 export async function loader(args: LoaderFunctionArgs) {
@@ -103,6 +105,8 @@ const FetcherDataSchema = z.object({
 
 export default function SetlistPage() {
   const { setlist, allSongs } = useLiveLoader<typeof loader>();
+  const role = useMemberRole();
+  const isSub = role === RoleEnum.SUB;
 
   const fetcher = useFetcher({ key: `setlist-${setlist.id}` });
   const [showAvailableSongs, setShowAvailableSongs] = useState(false);
@@ -391,7 +395,9 @@ export default function SetlistPage() {
                 >
                   Revert
                 </Button>
-                <Button onClick={onSubmit}>Save Changes?</Button>
+                {!isSub ? (
+                  <Button onClick={onSubmit}>Save Changes?</Button>
+                ) : null}
               </FlexList>
             </Card>
           </div>
@@ -600,9 +606,11 @@ export default function SetlistPage() {
               >
                 Revert
               </Button>
-              <Button className="w-full" onClick={onSubmit}>
-                Save Changes?
-              </Button>
+              {!isSub ? (
+                <Button className="w-full" onClick={onSubmit}>
+                  Save Changes?
+                </Button>
+              ) : null}
             </FlexList>
           </Card>
         </div>

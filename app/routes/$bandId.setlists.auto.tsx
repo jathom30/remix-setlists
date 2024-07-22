@@ -87,8 +87,6 @@ export default function SetlistAuto() {
   const minTempo = useInputControl(fields.minTempo);
   const wildCard = useInputControl(fields.wildCard);
 
-  console.log(form.allErrors, form.value);
-
   return (
     <Form
       method="post"

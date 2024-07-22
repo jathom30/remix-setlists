@@ -137,6 +137,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
   }
   emitter.emit(emitterKeys.setlist_notes);
+  emitter.emit(emitterKeys.setlists);
   return null;
 }
 

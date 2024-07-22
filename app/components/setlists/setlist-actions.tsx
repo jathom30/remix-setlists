@@ -33,11 +33,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
@@ -88,19 +88,62 @@ export const SetlistActions = ({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Setlist Actions</DropdownMenuLabel>
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              {!isDesktop ? (
-                <DropdownMenuItem
-                  onClick={() => onShowAvailableSongChange(!showAvailableSongs)}
-                >
-                  <AudioLines className="h-4 w-4 mr-2" />
-                  {showAvailableSongs
-                    ? "Hide Available Song Panel"
-                    : "Add Songs"}
-                </DropdownMenuItem>
+              {!isSub ? (
+                <>
+                  {!isDesktop ? (
+                    <DropdownMenuItem
+                      onClick={() =>
+                        onShowAvailableSongChange(!showAvailableSongs)
+                      }
+                    >
+                      <AudioLines className="h-4 w-4 mr-2" />
+                      {showAvailableSongs
+                        ? "Hide Available Song Panel"
+                        : "Add Songs"}
+                    </DropdownMenuItem>
+                  ) : null}
+                  <DropdownMenuItem onClick={() => setShowClone(true)}>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Clone Setlist
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowDelete(true)}>
+                    <Trash className="h-4 w-4 mr-2" />
+                    Delete Setlist
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowEditName(true)}>
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit Name
+                  </DropdownMenuItem>
+                </>
               ) : null}
+              <DropdownMenuItem onClick={() => onCopy(setlistLink)}>
+                <LinkIcon className="h-4 w-4 mr-2" />
+                Copy Link
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setShowPublicLink(true)}>
+                <ExternalLink className="h-4 w-4 mr-2" />
+                {setlist.isPublic ? "View Public Link" : "Create Public Link"}
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+
+            <DropdownMenuLabel>Links</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem asChild>
+                <Link to="condensed">
+                  <Shrink className="h-4 w-4 mr-2" />
+                  Condensed View
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="metrics">
+                  <AreaChart className="h-4 w-4 mr-2" />
+                  Metrics
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link className="flex justify-between" to="notes">
                   <div className="flex items-center">
@@ -112,44 +155,6 @@ export const SetlistActions = ({
                   ) : null}
                 </Link>
               </DropdownMenuItem>
-              {!isSub ? (
-                <DropdownMenuItem onClick={() => setShowEditName(true)}>
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Edit Name
-                </DropdownMenuItem>
-              ) : null}
-              <DropdownMenuItem asChild>
-                <Link to="metrics">
-                  <AreaChart className="h-4 w-4 mr-2" />
-                  Metrics
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onCopy(setlistLink)}>
-                <LinkIcon className="h-4 w-4 mr-2" />
-                Copy Link
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setShowPublicLink(true)}>
-                <ExternalLink className="h-4 w-4 mr-2" />
-                {setlist.isPublic ? "View Public Link" : "Create Public Link"}
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link to="condensed">
-                  <Shrink className="h-4 w-4 mr-2" />
-                  Condensed View
-                </Link>
-              </DropdownMenuItem>
-              {!isSub ? (
-                <>
-                  <DropdownMenuItem onClick={() => setShowClone(true)}>
-                    <Copy className="h-4 w-4 mr-2" />
-                    Clone Setlist
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setShowDelete(true)}>
-                    <Trash className="h-4 w-4 mr-2" />
-                    Delete Setlist
-                  </DropdownMenuItem>
-                </>
-              ) : null}
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -165,70 +170,24 @@ export const SetlistActions = ({
             </Button>
           </SheetTrigger>
           <SheetContent>
-            <SheetHeader>
-              <SheetTitle>Setlist Actions</SheetTitle>
-            </SheetHeader>
+            <SheetTitle>Actions</SheetTitle>
+            <Separator className="mb-2" />
             <FlexList gap={0}>
-              <SheetClose asChild>
-                <Button
-                  variant="ghost"
-                  onClick={() => onShowAvailableSongChange(!showAvailableSongs)}
-                >
-                  <AudioLines className="h-4 w-4 mr-2" />
-                  {showAvailableSongs
-                    ? "Hide Available Song Panel"
-                    : "Add Songs"}
-                </Button>
-              </SheetClose>
-              <SheetClose asChild>
-                <Button variant="ghost" asChild>
-                  <Link to="notes">
-                    <NotebookPen className="h-4 w-4 mr-2" />
-                    Notes
-                    {unseenNotesCount ? (
-                      <Badge className="ml-2">{unseenNotesCount}</Badge>
-                    ) : null}
-                  </Link>
-                </Button>
-              </SheetClose>
-              {!isSub ? (
-                <SheetClose asChild>
-                  <Button onClick={() => setShowEditName(true)} variant="ghost">
-                    <Pencil className="h-4 w-4 mr-2" />
-                    Edit Name
-                  </Button>
-                </SheetClose>
-              ) : null}
-              <SheetClose asChild>
-                <Button variant="ghost" asChild>
-                  <Link to="metrics">
-                    <AreaChart className="h-4 w-4 mr-2" />
-                    Metrics
-                  </Link>
-                </Button>
-              </SheetClose>
-              <SheetClose asChild>
-                <Button variant="ghost" onClick={() => onCopy(setlistLink)}>
-                  <LinkIcon className="h-4 w-4 mr-2" />
-                  Copy Link
-                </Button>
-              </SheetClose>
-              <SheetClose asChild>
-                <Button variant="ghost" onClick={() => setShowPublicLink(true)}>
-                  <ExternalLink className="h-4 w-4 mr-2" />
-                  {setlist.isPublic ? "View Public Link" : "Create Public Link"}
-                </Button>
-              </SheetClose>
-              <SheetClose asChild>
-                <Button variant="ghost" asChild>
-                  <Link to="condensed">
-                    <Shrink className="h-4 w-4 mr-2" />
-                    Condensed View
-                  </Link>
-                </Button>
-              </SheetClose>
               {!isSub ? (
                 <>
+                  <SheetClose asChild>
+                    <Button
+                      variant="ghost"
+                      onClick={() =>
+                        onShowAvailableSongChange(!showAvailableSongs)
+                      }
+                    >
+                      <AudioLines className="h-4 w-4 mr-2" />
+                      {showAvailableSongs
+                        ? "Hide Available Song Panel"
+                        : "Add Songs"}
+                    </Button>
+                  </SheetClose>
                   <SheetClose asChild>
                     <Button variant="ghost" onClick={() => setShowClone(true)}>
                       <Copy className="h-4 w-4 mr-2" />
@@ -241,8 +200,63 @@ export const SetlistActions = ({
                       Delete Setlist
                     </Button>
                   </SheetClose>
+                  <SheetClose asChild>
+                    <Button
+                      onClick={() => setShowEditName(true)}
+                      variant="ghost"
+                    >
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Edit Name
+                    </Button>
+                  </SheetClose>
                 </>
               ) : null}
+              <SheetClose asChild>
+                <Button variant="ghost" onClick={() => onCopy(setlistLink)}>
+                  <LinkIcon className="h-4 w-4 mr-2" />
+                  Copy Link
+                </Button>
+              </SheetClose>
+              <SheetClose asChild>
+                <Button variant="ghost" onClick={() => setShowPublicLink(true)}>
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  {setlist.isPublic ? "View Public Link" : "Create Public Link"}
+                </Button>
+              </SheetClose>
+            </FlexList>
+
+            <SheetTitle>Links</SheetTitle>
+            <Separator className="mb-2" />
+            <FlexList gap={0}>
+              <SheetClose asChild>
+                <Button variant="ghost" asChild>
+                  <Link to="notes">
+                    <NotebookPen className="h-4 w-4 mr-2" />
+                    Notes
+                    {unseenNotesCount ? (
+                      <Badge className="ml-2">{unseenNotesCount}</Badge>
+                    ) : null}
+                  </Link>
+                </Button>
+              </SheetClose>
+
+              <SheetClose asChild>
+                <Button variant="ghost" asChild>
+                  <Link to="metrics">
+                    <AreaChart className="h-4 w-4 mr-2" />
+                    Metrics
+                  </Link>
+                </Button>
+              </SheetClose>
+
+              <SheetClose asChild>
+                <Button variant="ghost" asChild>
+                  <Link to="condensed">
+                    <Shrink className="h-4 w-4 mr-2" />
+                    Condensed View
+                  </Link>
+                </Button>
+              </SheetClose>
             </FlexList>
           </SheetContent>
         </Sheet>

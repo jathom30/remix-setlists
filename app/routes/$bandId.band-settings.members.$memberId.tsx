@@ -95,7 +95,6 @@ export default function BandSettingsMembers() {
   const { bandId } = useParams();
   const { member, canRemoveAsAdmin } = useLoaderData<typeof loader>();
   const userRole = useMemberRole();
-  const disableSubmit = userRole === RoleEnum.SUB || !canRemoveAsAdmin;
 
   const [form, fields] = useForm({
     id: "member-role",
@@ -112,6 +111,10 @@ export default function BandSettingsMembers() {
   });
 
   const role = useInputControl(fields.role);
+  const disableSubmit =
+    userRole === RoleEnum.SUB ||
+    !canRemoveAsAdmin ||
+    role.value === member.role;
 
   const memberRoleDisplay = {
     ADMIN: "Admin",

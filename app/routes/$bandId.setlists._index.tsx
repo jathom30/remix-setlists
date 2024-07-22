@@ -1,6 +1,5 @@
 import { getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Setlist } from "@prisma/client";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -19,12 +18,14 @@ import {
   Search,
   Shrink,
   Trash,
+  NotebookPen,
 } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { toast } from "sonner";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -64,7 +65,7 @@ import {
   updateSetlistName,
 } from "~/models/setlist.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
-import { useMemberRole } from "~/utils";
+import { useMemberRole, useUser } from "~/utils";
 import { getDomainUrl } from "~/utils/assorted";
 import { emitterKeys } from "~/utils/emitter-keys";
 import { emitter } from "~/utils/emitter.server";
@@ -277,56 +278,41 @@ export default function Setlists() {
   );
 }
 
-const SetlistActions = ({ setlist }: { setlist: SerializeFrom<Setlist> }) => {
+const SetlistActions = ({
+  setlist,
+}: {
+  setlist: SerializeFrom<Awaited<ReturnType<typeof getSetlists>>[number]>;
+}) => {
   const { domainUrl } = useLoaderData<typeof loader>();
   const [showEditName, setShowEditName] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showClone, setShowClone] = useState(false);
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
+  const user = useUser();
 
   const onCopy = (textToCopy: string) =>
     navigator.clipboard.writeText(textToCopy);
+
+  const unseenNotesCount = setlist.notes.filter((note) =>
+    note.seenBy.every((person) => person.userId !== user.id),
+  ).length;
 
   return (
     <div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button className="relative" variant="ghost" size="icon">
             <EllipsisVertical className="h-4 w-4" />
+            {unseenNotesCount ? (
+              <div className="rounded-full bg-primary top-1 right-1 w-2 h-2 absolute" />
+            ) : null}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Setlist Actions</DropdownMenuLabel>
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            {!isSub ? (
-              <DropdownMenuItem onClick={() => setShowEditName(true)}>
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit Name
-              </DropdownMenuItem>
-            ) : null}
-            <DropdownMenuItem asChild>
-              <Link to={`/${setlist.bandId}/setlists/${setlist.id}/metrics`}>
-                <AreaChart className="h-4 w-4 mr-2" />
-                Metrics
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() =>
-                onCopy(`${domainUrl}/${setlist.bandId}/setlists/${setlist.id}`)
-              }
-            >
-              <LinkIcon className="h-4 w-4 mr-2" />
-              Copy Link
-            </DropdownMenuItem>
-
-            <DropdownMenuItem asChild>
-              <Link to={`/${setlist.bandId}/setlists/${setlist.id}/condensed`}>
-                <Shrink className="h-4 w-4 mr-2" />
-                Condensed View
-              </Link>
-            </DropdownMenuItem>
             {!isSub ? (
               <>
                 <DropdownMenuItem onClick={() => setShowClone(true)}>
@@ -337,8 +323,50 @@ const SetlistActions = ({ setlist }: { setlist: SerializeFrom<Setlist> }) => {
                   <Trash className="h-4 w-4 mr-2" />
                   Delete Setlist
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowEditName(true)}>
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Edit Name
+                </DropdownMenuItem>
               </>
             ) : null}
+            <DropdownMenuItem
+              onClick={() =>
+                onCopy(`${domainUrl}/${setlist.bandId}/setlists/${setlist.id}`)
+              }
+            >
+              <LinkIcon className="h-4 w-4 mr-2" />
+              Copy Link
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuLabel>Links</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem asChild>
+              <Link to={`/${setlist.bandId}/setlists/${setlist.id}/condensed`}>
+                <Shrink className="h-4 w-4 mr-2" />
+                Condensed View
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to={`/${setlist.bandId}/setlists/${setlist.id}/metrics`}>
+                <AreaChart className="h-4 w-4 mr-2" />
+                Metrics
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                className="flex justify-between"
+                to={`/${setlist.bandId}/setlists/${setlist.id}/notes`}
+              >
+                <div className="flex items-center">
+                  <NotebookPen className="h-4 w-4 mr-2" />
+                  Notes
+                </div>
+                {unseenNotesCount ? (
+                  <Badge className="ml-2">{unseenNotesCount}</Badge>
+                ) : null}
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
