@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
@@ -157,6 +158,13 @@ export default function SetlistNotes() {
       </FlexList>
 
       <FlexList gap={1}>
+        {notes.length === 0 ? (
+          <Card>
+            <CardHeader>
+              <CardDescription>No notes yet</CardDescription>
+            </CardHeader>
+          </Card>
+        ) : null}
         {notes.map((note) => (
           <NoteContainer key={note.id} note={note} />
         ))}
