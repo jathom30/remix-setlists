@@ -56,9 +56,11 @@ export const MainNavSheet = ({
       <SheetContent side="left">
         <SheetHeader>
           <SheetTitle>{band?.name || "setlists.pro"}</SheetTitle>
-          <SheetDescription>
-            You are {role === "ADMIN" ? "an" : "a"}{" "}
-            <Badge variant="outline">{role}</Badge> in this band
+          <SheetDescription asChild>
+            <span>
+              You are {role === "ADMIN" ? "an" : "a"}{" "}
+              <Badge variant="outline">{role}</Badge> in this band
+            </span>
           </SheetDescription>
           <Separator />
         </SheetHeader>
