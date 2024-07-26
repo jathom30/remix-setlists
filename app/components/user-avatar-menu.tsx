@@ -23,6 +23,7 @@ import { FlexList } from "./FlexList";
 
 export const UserAvatarMenu = () => {
   const user = useUser();
+
   return (
     <div>
       <div className="hidden sm:block">
@@ -45,6 +46,11 @@ export const UserAvatarMenu = () => {
             <DropdownMenuItem asChild>
               <Link to="/user-settings">User Settings</Link>
             </DropdownMenuItem>
+            {user.isAdmin ? (
+              <DropdownMenuItem asChild>
+                <Link to="/admin">Admin</Link>
+              </DropdownMenuItem>
+            ) : null}
             <form method="post" action="/logout">
               <DropdownMenuItem asChild className="w-full">
                 <button type="submit">Logout</button>
@@ -76,6 +82,13 @@ export const UserAvatarMenu = () => {
                   <Link to="/user-settings">User Settings</Link>
                 </Button>
               </SheetClose>
+              {user.isAdmin ? (
+                <SheetClose asChild>
+                  <Button variant="outline" asChild>
+                    <Link to="/admin">Admin</Link>
+                  </Button>
+                </SheetClose>
+              ) : null}
               <form method="post" action="/logout">
                 <Button variant="ghost" type="submit" className="w-full">
                   Logout
