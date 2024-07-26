@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CatchContainer, ErrorContainer, MaxWidth } from "~/components";
-import { verifyAccount } from "~/email/verify";
+import { verifyAccount } from "~/email/verify.server";
 import { generateTokenLink, verifyLogin } from "~/models/user.server";
 import { createUserSession, getUser } from "~/session.server";
 import { safeRedirect, validateEmail } from "~/utils";
@@ -152,7 +152,10 @@ export default function LoginPage() {
                     className="input input-bordered w-full"
                   />
                   {actionData?.errors?.email ? (
-                    <div className="pt-1 text-error" id="email-error">
+                    <div
+                      className="pt-1 text-destructive text-sm"
+                      id="email-error"
+                    >
                       {actionData.errors.email}
                     </div>
                   ) : null}

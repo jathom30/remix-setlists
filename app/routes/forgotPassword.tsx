@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ErrorMessage, FlexList } from "~/components";
 import { Small } from "~/components/typography";
-import { passwordReset } from "~/email/password";
+import { passwordReset } from "~/email/password.server";
 import { generateTokenLink, getUserByEmail } from "~/models/user.server";
 import { validateEmail } from "~/utils";
 import { getDomainUrl } from "~/utils/assorted";
@@ -28,7 +28,7 @@ export const meta: MetaFunction = () => {
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const email = formData.get("email");
-  invariant(process.env.SENDGRID_API_KEY, "sendgrid api key must be set");
+  invariant(process.env.RESEND_API_KEY, "resend api key must be set");
 
   if (!validateEmail(email)) {
     return json(
