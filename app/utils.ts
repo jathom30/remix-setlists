@@ -101,14 +101,17 @@ export function useMemberRole(): RoleEnum {
   return parsedData.data.memberRole as RoleEnum;
 }
 
-export function useUser(): User {
+export const ADMIN_EMAIL = "jathom30@gmail.com";
+
+export function useUser(): User & { isAdmin: boolean } {
   const maybeUser = useOptionalUser();
   if (!maybeUser) {
     throw new Error(
       "No user found in root loader, but user is required by useUser. If user is optional, try useOptionalUser instead.",
     );
   }
-  return maybeUser;
+  const isAdmin = maybeUser.email === ADMIN_EMAIL;
+  return { ...maybeUser, isAdmin };
 }
 
 export function validateEmail(email: unknown): email is string {

@@ -34,16 +34,16 @@ import { UserAvatarMenu } from "~/components/user-avatar-menu";
 import { getBandHome, getBands } from "~/models/band.server";
 import { userPrefs } from "~/models/cookies.server";
 import { getMemberRole } from "~/models/usersInBands.server";
-import { requireUserId } from "~/session.server";
+import { requireUser } from "~/session.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  const userId = await requireUserId(request);
+  const user = await requireUser(request);
   const { bandId } = params;
   invariant(bandId, "bandId not found");
   const [band, memberRole, bands] = await Promise.all([
     getBandHome(bandId),
-    getMemberRole(bandId, userId),
-    getBands(userId),
+    getMemberRole(bandId, user.id),
+    getBands(user.id),
   ]);
 
   const cookieHeader = request.headers.get("Cookie");
