@@ -10,15 +10,15 @@ export async function getVerifiedUsers() {
         include: {
           band: {
             include: {
-              // setlists: {
-              //   include: {
-              //     sets: {
-              //       include: {
-              //         songs: true
-              //       }
-              //     },
-              //   },
-              // },
+              setlists: {
+                include: {
+                  sets: {
+                    include: {
+                      songs: true,
+                    },
+                  },
+                },
+              },
               song: {
                 include: {
                   feels: true,
