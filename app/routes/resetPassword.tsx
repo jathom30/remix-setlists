@@ -152,12 +152,16 @@ export default function ResetPassword() {
               </div>
             </FlexList>
           </CardContent>
-          <CardFooter className="flex-row">
-            <Button type="submit" disabled={!isValid || isSubmitting}>
+          <CardFooter className="flex-col gap-2">
+            <Button
+              className="w-full"
+              type="submit"
+              disabled={!isValid || isSubmitting}
+            >
               {isSubmitting ? "Resetting password..." : "Reset password"}
             </Button>
-            <Button value="ghost" asChild>
-              <Link to="/login">Back to log in</Link>
+            <Button className="w-full" variant="ghost" asChild>
+              <Link to="/login">Back to login</Link>
             </Button>
           </CardFooter>
         </Form>

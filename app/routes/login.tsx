@@ -152,7 +152,10 @@ export default function LoginPage() {
                     className="input input-bordered w-full"
                   />
                   {actionData?.errors?.email ? (
-                    <div className="pt-1 text-error" id="email-error">
+                    <div
+                      className="pt-1 text-destructive text-sm"
+                      id="email-error"
+                    >
                       {actionData.errors.email}
                     </div>
                   ) : null}
