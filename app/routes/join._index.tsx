@@ -33,7 +33,7 @@ import {
   FlexList,
   PasswordStrength,
 } from "~/components";
-import { verifyAccount } from "~/email/verify";
+import { verifyAccount } from "~/email/verify.server";
 import {
   createUser,
   generateTokenLink,
@@ -66,8 +66,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const email = formData.get("email");
   const password = formData.get("password");
   const name = formData.get("name");
-  // const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
-  invariant(process.env.SENDGRID_API_KEY, "sendgrid api key must be set");
+  invariant(process.env.RESEND_API_KEY, "resend api key must be set");
 
   if (!validateEmail(email)) {
     return json(

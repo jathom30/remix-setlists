@@ -80,6 +80,7 @@
     "react-select": "^5.7.0",
     "react-tiny-popover": "^7.2.4",
     "remix-utils": "^7.5.0",
+    "resend": "^3.5.0",
     "sonner": "^1.5.0",
     "spin-delay": "^1.2.0",
     "tailwind-merge": "^2.3.0",

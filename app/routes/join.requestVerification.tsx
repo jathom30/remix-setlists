@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ErrorMessage, FlexList } from "~/components";
-import { verifyAccount } from "~/email/verify";
+import { verifyAccount } from "~/email/verify.server";
 import { generateTokenLink, getUserByEmail } from "~/models/user.server";
 import { getUser } from "~/session.server";
 import { validateEmail } from "~/utils";
