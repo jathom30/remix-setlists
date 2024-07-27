@@ -2,8 +2,6 @@ import type { Band, User } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 
-import { updateBandCode } from "./band.server";
-
 export async function updateBandMemberRole(
   bandId: Band["id"],
   memberId: User["id"],
@@ -42,8 +40,6 @@ export async function removeMemberFromBand(
       members: true,
     },
   });
-  // after memeber is removed, update band code so they cannot re-add themselves
-  await updateBandCode(bandId);
   // if user removed the last member of the band, delete the band
   if (band.members.length === 0) {
     await prisma.band.delete({ where: { id: bandId } });

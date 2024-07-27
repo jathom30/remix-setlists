@@ -31,6 +31,7 @@ export default function Home() {
   const isAddBandRoute = pathname.includes("add-band");
   const isNewBandRoute = isAddBandRoute && pathname.includes("new");
   const isExistingBandRoute = isAddBandRoute && pathname.includes("existing");
+  const isAddFromLink = pathname.includes("add-to-band");
   return (
     <div className="bg-muted/40 h-full">
       <div className="sticky border-b top-0 z-10 bg-background inset-x-0 flex items-center justify-between p-2 gap-2">
@@ -93,6 +94,20 @@ export default function Home() {
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
                     <Link to="/home/add-band/existing">Join</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
+            {/* should only see this UI if there was an error joining */}
+            {isAddFromLink ? (
+              <>
+                <BreadcrumbSeparator>
+                  <ChevronRight className="w-4 h-4" />
+                </BreadcrumbSeparator>
+
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link to="/home/add-band/existing">Error Joining Band</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </>

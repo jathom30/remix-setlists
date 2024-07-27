@@ -60,6 +60,12 @@ model Band {
   song  Song[]
 }
 
+model BandToken {
+  hash      String
+  bandId    String   @unique
+  createdAt DateTime @default(now())
+}
+
 model UsersInBands {
   user     User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   String
