@@ -173,7 +173,11 @@ export default function BandSettingsAddMember() {
                 hidden
                 {...getInputProps(fields.intent, { type: "hidden" })}
               />
-              <Button type="submit">Send invite</Button>
+              <div className="flex sm:block sm:ml-auto">
+                <Button className=" grow" type="submit">
+                  Send invite
+                </Button>
+              </div>
             </FlexList>
           </Form>
         </CardContent>
@@ -194,14 +198,16 @@ export default function BandSettingsAddMember() {
               onClick={() => onCopy(magicLink)}
               onMouseLeave={() => setShowSuccess(false)}
             >
-              <span className="truncate max-w-[250px]">
+              <span className="truncate">
                 {showSuccess ? "Copied!" : magicLink}
               </span>
-              {showSuccess ? (
-                <Check className="w-4 h-4 ml-2" />
-              ) : (
-                <Copy className="w-4 h-4 ml-2" />
-              )}
+              <div className="grow">
+                {showSuccess ? (
+                  <Check className="w-4 h-4 ml-2" />
+                ) : (
+                  <Copy className="w-4 h-4 ml-2" />
+                )}
+              </div>
             </Button>
             <FlexList items="center">
               <QRCode size={300} value={magicLink} />
