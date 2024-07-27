@@ -109,10 +109,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
     const domainUrl = getDomainUrl(request);
     // generate token link and send email
-    const link = await generateJoinBandLink(bandId, domainUrl);
+    const magicLink = await generateJoinBandLink(bandId, domainUrl);
     emails.forEach(async (email) => {
       // send email
-      await addToBandEmail(email, link, band.name);
+      await addToBandEmail(email, magicLink, band.name);
     });
 
     return json({ success: true });

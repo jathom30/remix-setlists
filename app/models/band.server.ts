@@ -184,6 +184,40 @@ export async function updateBandByCode(code: Band["code"], userId: User["id"]) {
   return band;
 }
 
+export async function addUserToBand(userId: User["id"], bandId: Band["id"]) {
+  const band = await getBand(bandId);
+  if (!band) {
+    throw new Response("Band not found", { status: 404 });
+  }
+  const userInBand = await prisma.usersInBands.findUnique({
+    where: {
+      userId_bandId: {
+        userId,
+        bandId,
+      },
+    },
+  });
+  if (userInBand) {
+    return { error: "User already in band" };
+  }
+  return await prisma.user.update({
+    where: { id: userId },
+    data: {
+      bands: {
+        create: [
+          {
+            role: "SUB",
+            band: {
+              connect: { id: bandId },
+            },
+            bandName: band.name,
+          },
+        ],
+      },
+    },
+  });
+}
+
 export async function deleteBand(bandId: Band["id"]) {
   await prisma.band.delete({
     where: { id: bandId },
@@ -233,8 +267,17 @@ export async function generateJoinBandLink(
     await generateBandToken(bandId, token);
   }
   const url = new URL(domainUrl);
-  url.pathname = "/home/add-band/existing";
+  url.pathname = "/home/add-to-band";
   url.searchParams.set("token", encrypt(token));
+  url.searchParams.set("bandId", bandId);
 
   return url.toString();
+}
+
+export async function compareBandToken(token: string, bandId: Band["id"]) {
+  const bandToken = await getBandToken(bandId);
+  if (!bandToken) {
+    throw new Error("Band token not found");
+  }
+  return bcrypt.compare(token, bandToken.hash);
 }
