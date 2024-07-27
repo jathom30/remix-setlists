@@ -162,7 +162,7 @@ export const addToBandEmail = async (
         <tbody>
           <tr>
             <td style="padding:18px 0px 18px 0px; line-height:22px; text-align:inherit;" height="100%" valign="top" bgcolor="" role="module-content"><div><div style="font-family: inherit; text-align: center"><strong>You've been invited to join ${bandName} on Setlists.pro!</strong></div>
-    <div style="font-family: inherit; text-align: left">Click the link below to start contributing! The link will expire in 10 minutes. Reach out to your invitee for a new link if yours expires.</div><div></div></div></td>
+    <div style="font-family: inherit; text-align: left">Click the link below to start contributing!</div><div></div></div></td>
           </tr>
         </tbody>
       </table><table border="0" cellpadding="0" cellspacing="0" class="module" data-role="module-button" data-type="button" role="module" style="table-layout:fixed;" width="100%" data-muid="d93731f4-1833-41eb-a52a-3c8dbb21c05c">
