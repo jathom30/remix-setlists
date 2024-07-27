@@ -158,6 +158,8 @@ export default function BandRoute() {
   const isBandSettingsRoute = isBandRoute && pathname.includes("band-settings");
   const isEditBandSettingsRoute =
     isBandSettingsRoute && pathname.includes("edit");
+  const isAddMemberRoute =
+    isBandSettingsRoute && pathname.includes("add-member");
   const isMembersRoute =
     isBandSettingsRoute && memberId && pathname.includes("members");
 
@@ -250,6 +252,14 @@ export default function BandRoute() {
     ...(isEditBandSettingsRoute
       ? [{ to: `/${bandId}/band-settings/edit`, label: "Edit" }]
       : []),
+    ...(isAddMemberRoute
+      ? [
+          {
+            to: `/${bandId}/band-settings/add-member`,
+            label: "Add Member",
+          },
+        ]
+      : []),
     ...(isMembersRoute
       ? [
           {
@@ -304,13 +314,13 @@ const MobileBreadcrumbsList = ({
   const getCrumbs = () => {
     if (initialCrumbs.length > 3) {
       const crumbsLength = initialCrumbs.length;
-      const first = initialCrumbs.slice(0, 1);
-      const last = initialCrumbs.slice(crumbsLength - 1);
-      const rest = initialCrumbs.slice(1, crumbsLength - 1);
+      const [secondToLast] = initialCrumbs.slice(crumbsLength - 2);
+      const [last] = initialCrumbs.slice(crumbsLength - 1);
+      const rest = initialCrumbs.slice(0, crumbsLength - 2);
       return {
-        start: first[0],
+        start: secondToLast,
         rest,
-        end: last[0],
+        end: last,
       };
     }
     return initialCrumbs;
@@ -336,16 +346,6 @@ const MobileBreadcrumbsList = ({
       ) : (
         <>
           <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link to={crumbs.start.to}>{crumbs.start.label}</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-
-          <BreadcrumbSeparator>
-            <ChevronRight size={16} />
-          </BreadcrumbSeparator>
-
-          <BreadcrumbItem>
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-1">
                 <BreadcrumbEllipsis className="h-4 w-4" />
@@ -361,6 +361,16 @@ const MobileBreadcrumbsList = ({
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+          </BreadcrumbItem>
+
+          <BreadcrumbSeparator>
+            <ChevronRight size={16} />
+          </BreadcrumbSeparator>
+
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to={crumbs.start.to}>{crumbs.start.label}</Link>
+            </BreadcrumbLink>
           </BreadcrumbItem>
 
           <BreadcrumbSeparator>

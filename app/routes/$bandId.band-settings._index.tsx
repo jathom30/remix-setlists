@@ -7,9 +7,8 @@ import {
   json,
 } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
-import { Check, Copy, EllipsisVertical, Pencil, Trash } from "lucide-react";
+import { EllipsisVertical, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
-import { QRCode } from "react-qrcode-logo";
 import { toast } from "sonner";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -43,7 +42,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { FlexList } from "~/components";
-import { H1, P, Small, Large, H3 } from "~/components/typography";
+import { H1, P, H3 } from "~/components/typography";
 import { useLiveLoader } from "~/hooks";
 import {
   deleteBand,
@@ -53,11 +52,7 @@ import {
 } from "~/models/band.server";
 import { getUsersById } from "~/models/user.server";
 import { removeMemberFromBand } from "~/models/usersInBands.server";
-import {
-  requireAdminMember,
-  requireUser,
-  requireUserId,
-} from "~/session.server";
+import { requireUser, requireUserId } from "~/session.server";
 import { useMemberRole } from "~/utils";
 import { getDomainUrl } from "~/utils/assorted";
 import { emitterKeys } from "~/utils/emitter-keys";
@@ -109,7 +104,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: `${data?.band.name} Settings` || "Band Settings" }];
 };
 
-export async function action({ request, params }: ActionFunctionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
   const user = await requireUser(request);
   const formData = await request.formData();
   const intent = formData.get("intent");
@@ -165,14 +160,6 @@ export async function action({ request, params }: ActionFunctionArgs) {
     return null;
   }
 
-  if (intent === IntentSchema.Enum["generate-code"]) {
-    const { bandId } = params;
-    invariant(bandId, "bandId is required");
-    await requireAdminMember(request, bandId);
-    await updateBandCode(bandId);
-    return null;
-  }
-
   return null;
 }
 
@@ -214,7 +201,12 @@ export default function BandSettings() {
         <CardHeader>
           <FlexList direction="row" items="center" justify="between">
             <CardTitle>Members</CardTitle>
-            {isAdmin ? <AddMemberDialog /> : null}
+            {isAdmin ? (
+              <Button variant="outline" asChild>
+                <Link to="add-member">Add Member</Link>
+              </Button>
+            ) : null}
+            {/* {isAdmin ? <AddMemberDialog /> : null} */}
           </FlexList>
           <CardDescription>Manage the members of your band.</CardDescription>
         </CardHeader>
@@ -420,70 +412,70 @@ const DeleteMemberDialog = ({
   );
 };
 
-const AddMemberDialog = () => {
-  const {
-    qrCodeAddress,
-    band: { code },
-  } = useLoaderData<typeof loader>();
-  const [showSuccess, setShowSuccess] = useState(false);
+// const AddMemberDialog = () => {
+//   const {
+//     qrCodeAddress,
+//     band: { code },
+//   } = useLoaderData<typeof loader>();
+//   const [showSuccess, setShowSuccess] = useState(false);
 
-  const onCopy = (textToCopy: string) => {
-    navigator.clipboard.writeText(textToCopy).then(() => setShowSuccess(true));
-  };
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Add Member</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add Member</DialogTitle>
-          <DialogDescription>
-            Members can be added by either sending them the link below or having
-            them scan the QR code.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-2">
-          <Button
-            className="w-full"
-            variant="outline"
-            onClick={() => onCopy(qrCodeAddress)}
-            onMouseLeave={() => setShowSuccess(false)}
-          >
-            <span className="truncate max-w-[250px]">
-              {showSuccess ? "Copied!" : qrCodeAddress}
-            </span>
-            {showSuccess ? (
-              <Check className="w-4 h-4 ml-2" />
-            ) : (
-              <Copy className="w-4 h-4 ml-2" />
-            )}
-          </Button>
-          <FlexList items="center" gap={0}>
-            <QRCode value={qrCodeAddress} />
-            <Large>{code}</Large>
-          </FlexList>
-          <Form method="put">
-            <FlexList>
-              <Small>
-                You may, at any time, update the code associated with this band
-                to invalidate any old invites or prevent unwanted members from
-                joining or rejoining this band.
-              </Small>
-              <input
-                type="hidden"
-                name="intent"
-                value={IntentSchema.Enum["generate-code"]}
-              />
-              <DialogFooter>
-                <Button type="submit" variant="secondary">
-                  Generate new code
-                </Button>
-              </DialogFooter>
-            </FlexList>
-          </Form>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-};
+//   const onCopy = (textToCopy: string) => {
+//     navigator.clipboard.writeText(textToCopy).then(() => setShowSuccess(true));
+//   };
+//   return (
+//     <Dialog>
+//       <DialogTrigger asChild>
+//         <Button variant="outline">Add Member</Button>
+//       </DialogTrigger>
+//       <DialogContent>
+//         <DialogHeader>
+//           <DialogTitle>Add Member</DialogTitle>
+//           <DialogDescription>
+//             Members can be added by either sending them the link below or having
+//             them scan the QR code.
+//           </DialogDescription>
+//         </DialogHeader>
+//         <div className="space-y-2">
+//           <Button
+//             className="w-full"
+//             variant="outline"
+//             onClick={() => onCopy(qrCodeAddress)}
+//             onMouseLeave={() => setShowSuccess(false)}
+//           >
+//             <span className="truncate max-w-[250px]">
+//               {showSuccess ? "Copied!" : qrCodeAddress}
+//             </span>
+//             {showSuccess ? (
+//               <Check className="w-4 h-4 ml-2" />
+//             ) : (
+//               <Copy className="w-4 h-4 ml-2" />
+//             )}
+//           </Button>
+//           <FlexList items="center" gap={0}>
+//             <QRCode value={qrCodeAddress} />
+//             <Large>{code}</Large>
+//           </FlexList>
+//           <Form method="put">
+//             <FlexList>
+//               <Small>
+//                 You may, at any time, update the code associated with this band
+//                 to invalidate any old invites or prevent unwanted members from
+//                 joining or rejoining this band.
+//               </Small>
+//               <input
+//                 type="hidden"
+//                 name="intent"
+//                 value={IntentSchema.Enum["generate-code"]}
+//               />
+//               <DialogFooter>
+//                 <Button type="submit" variant="secondary">
+//                   Generate new code
+//                 </Button>
+//               </DialogFooter>
+//             </FlexList>
+//           </Form>
+//         </div>
+//       </DialogContent>
+//     </Dialog>
+//   );
+// };

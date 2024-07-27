@@ -1,7 +1,11 @@
+import crypto from "crypto";
+
 import type { Band, User } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
 import { contrastColor, generateRandomHex } from "~/utils/assorted";
+import { encrypt } from "~/utils/encryption.server";
 
 export async function getBands(
   userId: User["id"],
@@ -184,4 +188,53 @@ export async function deleteBand(bandId: Band["id"]) {
   await prisma.band.delete({
     where: { id: bandId },
   });
+}
+
+export async function generateBandToken(bandId: Band["id"], token: string) {
+  const band = await getBand(bandId);
+  if (!band) {
+    throw new Response("Band not found", { status: 404 });
+  }
+  // hash the code and store it in the database
+  const hash = await bcrypt.hash(token, 10);
+  // upsert the hash
+  return prisma.bandToken.upsert({
+    where: { bandId },
+    create: {
+      bandId,
+      hash,
+    },
+    update: {
+      hash,
+    },
+  });
+}
+
+async function getBandToken(bandId: Band["id"]) {
+  return prisma.bandToken.findUnique({
+    where: { bandId },
+  });
+}
+
+export async function generateJoinBandLink(
+  bandId: Band["id"],
+  domainUrl: string,
+) {
+  const band = await getBand(bandId);
+  if (!band) {
+    throw new Response("Band not found", { status: 404 });
+  }
+  // create new token form email
+  const token = crypto.randomBytes(32).toString("hex");
+  // save hash to db
+  const bandToken = await getBandToken(bandId);
+
+  if (bandToken) {
+    await generateBandToken(bandId, token);
+  }
+  const url = new URL(domainUrl);
+  url.pathname = "/home/add-band/existing";
+  url.searchParams.set("token", encrypt(token));
+
+  return url.toString();
 }
