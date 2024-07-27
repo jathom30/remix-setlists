@@ -144,7 +144,8 @@ export async function updateBandName(bandId: Band["id"], name: Band["name"]) {
 }
 
 export async function updateBandCode(bandId: Band["id"]) {
-  const code = Math.random().toString(36).substring(2, 8)?.toUpperCase();
+  const code = crypto.randomBytes(32).toString("hex");
+  await generateBandToken(bandId, code);
   return prisma.band.update({
     where: { id: bandId },
     data: { code },
@@ -258,17 +259,18 @@ export async function generateJoinBandLink(
   if (!band) {
     throw new Response("Band not found", { status: 404 });
   }
-  // create new token form email
-  const token = crypto.randomBytes(32).toString("hex");
-  // save hash to db
-  const bandToken = await getBandToken(bandId);
+  const { code } = band;
 
-  if (bandToken) {
-    await generateBandToken(bandId, token);
+  // get band token
+  const currentToken = await getBandToken(bandId);
+
+  //  if no token, generate one
+  if (!currentToken) {
+    await generateBandToken(bandId, code);
   }
   const url = new URL(domainUrl);
   url.pathname = "/home/add-to-band";
-  url.searchParams.set("token", encrypt(token));
+  url.searchParams.set("token", encrypt(code));
   url.searchParams.set("bandId", bandId);
 
   return url.toString();

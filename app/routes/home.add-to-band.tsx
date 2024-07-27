@@ -59,7 +59,7 @@ export default function AddToBand() {
           <CardDescription>
             {error === "Token does not match"
               ? "The token provided does not match the band you are trying to join."
-              : "An error occurred while trying to join the band."}
+              : "An error occurred while trying to join this band."}
           </CardDescription>
         </CardHeader>
         <CardContent>

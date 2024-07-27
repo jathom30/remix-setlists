@@ -21,11 +21,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FlexList } from "~/components";
-import { H1, Large, Muted, Small } from "~/components/typography";
+import { H1, Muted } from "~/components/typography";
 import { addToBandEmail } from "~/email/add-to-band.server";
 import {
   generateJoinBandLink,
@@ -76,9 +75,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     throw new Response("Band not found", { status: 404 });
   }
   const domainUrl = getDomainUrl(request);
-  const qrCodeAddress = `${domainUrl}/home/add-band/existing?code=${band.code}`;
+  // generate token link and send email
+  const magicLink = await generateJoinBandLink(bandId, domainUrl);
 
-  return json({ qrCodeAddress, band });
+  return json({ magicLink, band });
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -122,7 +122,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function BandSettingsAddMember() {
-  const { qrCodeAddress, band } = useLoaderData<typeof loader>();
+  const { magicLink } = useLoaderData<typeof loader>();
   const [showSuccess, setShowSuccess] = useState(false);
 
   const onCopy = (textToCopy: string) => {
@@ -191,11 +191,11 @@ export default function BandSettingsAddMember() {
             <Button
               className="w-full"
               variant="outline"
-              onClick={() => onCopy(qrCodeAddress)}
+              onClick={() => onCopy(magicLink)}
               onMouseLeave={() => setShowSuccess(false)}
             >
               <span className="truncate max-w-[250px]">
-                {showSuccess ? "Copied!" : qrCodeAddress}
+                {showSuccess ? "Copied!" : magicLink}
               </span>
               {showSuccess ? (
                 <Check className="w-4 h-4 ml-2" />
@@ -203,26 +203,28 @@ export default function BandSettingsAddMember() {
                 <Copy className="w-4 h-4 ml-2" />
               )}
             </Button>
-            <FlexList items="center" gap={0}>
-              <QRCode value={qrCodeAddress} />
-              <Large>{band.code}</Large>
+            <FlexList items="center">
+              <QRCode size={300} value={magicLink} />
             </FlexList>
-            <Form method="put">
-              <FlexList>
-                <Small>
-                  You may, at any time, update the code associated with this
-                  band to invalidate any old invites or prevent unwanted members
-                  from joining or rejoining this band.
-                </Small>
-                <input type="hidden" name="intent" value="generate-code" />
-                <DialogFooter>
-                  <Button type="submit" variant="secondary">
-                    Generate new code
-                  </Button>
-                </DialogFooter>
-              </FlexList>
-            </Form>
           </FlexList>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Reset Invite Links</CardTitle>
+          <CardDescription>
+            This will invalidate all existing invite links for this band.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form method="put">
+            <FlexList>
+              <input type="hidden" name="intent" value="generate-code" />
+              <Button type="submit" variant="secondary">
+                Reset Invite Link
+              </Button>
+            </FlexList>
+          </Form>
         </CardContent>
       </Card>
     </div>
