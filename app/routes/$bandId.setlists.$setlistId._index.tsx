@@ -470,7 +470,7 @@ export default function SetlistPage() {
                     {filteredSongs.map((song, songIndex) => (
                       <Draggable
                         draggableId={song.id}
-                        key={song.id}
+                        key={`${song.id}-${songIndex}`}
                         index={songIndex}
                       >
                         {(dragprovided) => (
