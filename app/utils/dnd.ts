@@ -28,14 +28,24 @@ export const getAvailableSongs = (
 };
 
 export const onDragEnd = (
-  { destination, source }: DropResult,
+  { destination, source, draggableId }: DropResult,
   sets: TSet,
 ): ((prev: TSet) => TSet) => {
   if (!destination) return (state: TSet) => state;
+  // find source index from sets and draggableId
+  const getSourceIndex = () => {
+    const index = sets[source.droppableId].findIndex(
+      (song) => song.id === draggableId,
+    );
+    if (index === -1) return source.index;
+    return index;
+  };
+  const sourceIndex = getSourceIndex();
+
   // Make sure we're actually moving the item
   if (
     source.droppableId === destination.droppableId &&
-    destination.index === source.index
+    destination.index === sourceIndex
   )
     return (state: TSet) => state;
 
@@ -43,16 +53,16 @@ export const onDragEnd = (
   const start = sets[source.droppableId];
   const end = sets[destination.droppableId];
 
-  // If start is the same as end, we're in the same column
+  // If start is the same as end, we're in the same set
   if (start === end) {
     // Move the item within the list
     // Start by making a new list without the dragged item
-    const newList = start.filter((_, idx) => idx !== source.index);
+    const newList = start.filter((_, idx) => idx !== sourceIndex);
 
     // Then insert the item at the right location
-    newList.splice(destination.index, 0, start[source.index]);
+    newList.splice(destination.index, 0, start[sourceIndex]);
 
-    // Then create a new copy of the column object
+    // Then create a new copy of the set object
     const newCol = { [source.droppableId]: newList };
 
     // Update the state
@@ -64,11 +74,11 @@ export const onDragEnd = (
     // create a new set id
     const newSetId = `set-${Date.now()}`;
     // add the song to the set
-    const newSet = { [newSetId]: [start[source.index]] };
+    const newSet = { [newSetId]: [start[sourceIndex]] };
     // update the state
     return (state: TSet) => {
       // remove song from the available songs
-      const newStartList = start.filter((_, idx) => idx !== source.index);
+      const newStartList = start.filter((_, idx) => idx !== sourceIndex);
       const newStartCol = { [source.droppableId]: newStartList };
       const newSets = { ...state, ...newStartCol, ...newSet };
       return Object.keys(newSets).reduce((acc: TSet, key) => {
@@ -88,7 +98,7 @@ export const onDragEnd = (
 
   // If start is different from end, we need to update multiple columns
   // Filter the start list like before
-  const newStartList = start.filter((_, idx) => idx !== source.index);
+  const newStartList = start.filter((_, idx) => idx !== sourceIndex);
 
   // Create a new start column
   const newStartCol = { [source.droppableId]: newStartList };
@@ -97,7 +107,7 @@ export const onDragEnd = (
   const newEndList = end;
 
   // Insert the item into the end list
-  newEndList.splice(destination.index, 0, start[source.index]);
+  newEndList.splice(destination.index, 0, start[sourceIndex]);
 
   // Create a new end column
   const newEndCol = { [destination.droppableId]: newEndList };
