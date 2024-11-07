@@ -289,7 +289,11 @@ export default function SetlistPage() {
         </FlexList>
         <DragDropContext key={setlist.id} onDragEnd={handleDragEnd}>
           <div className="grid h-full grid-cols-3 gap-2 p-2 overflow-hidden max-w-5xl">
-            <AvailableSongsCardDesktop songs={filteredSongs} />
+            <AvailableSongsCardDesktop
+              query={query}
+              setQuery={setQuery}
+              songs={filteredSongs}
+            />
             <div className="h-full w-full p-1 flex flex-col gap-2 col-span-2 overflow-auto">
               {Object.entries(sets)
                 .filter(
