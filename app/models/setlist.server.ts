@@ -333,6 +333,7 @@ export async function createAutoSetlist(
     minTempo,
     name,
     numSets,
+    excludedFeelIds,
     setLength,
     wildCard,
   } = params;
@@ -372,10 +373,21 @@ export async function createAutoSetlist(
                 : {},
           }),
     },
+    include: {
+      feels: {
+        select: { id: true },
+      },
+    },
   });
 
-  // filter songs by tempo if showMinTempo is true
+  // filter songs by tempo if showMinTempo is true and exclude songs with excludedFeelIds
   const songs = allSongs.filter((song) => {
+    if (
+      excludedFeelIds.some((feelId) =>
+        song.feels.some((feel) => feel.id === feelId),
+      )
+    )
+      return false;
     if (showMinTempo && typeof minTempo === "number") {
       if (song.tempo === null) return true;
       return song.tempo >= minTempo;

@@ -2,10 +2,11 @@ import { getInputProps, useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import {
   ActionFunctionArgs,
+  json,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
-import { Form, Link, useParams } from "@remix-run/react";
+import { Form, Link, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { FlexList } from "~/components";
+import { MultiSelectFeel } from "~/components/multi-select-feel";
 import { H1, Muted } from "~/components/typography";
+import { getFeels } from "~/models/feel.server";
 import { createAutoSetlist } from "~/models/setlist.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { emitterKeys } from "~/utils/emitter-keys";
@@ -35,7 +38,8 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const { bandId } = params;
   invariant(bandId, "bandId not found");
   await requireNonSubMember(request, bandId);
-  return null;
+  const feels = await getFeels(bandId);
+  return json({ feels });
 }
 
 export const meta: MetaFunction<typeof loader> = () => {
@@ -64,6 +68,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function SetlistAuto() {
+  const { feels } = useLoaderData<typeof loader>();
   const { bandId } = useParams();
   const [form, fields] = useForm<TAutoSetlist>({
     id: "auto-setlist-create",
@@ -76,6 +81,7 @@ export default function SetlistAuto() {
       setLength: 50,
       artistPreference: "no-preference",
       showMinTempo: false,
+      excludedFeelIds: [],
       minTempo: 35,
       wildCard: false,
     },
@@ -86,6 +92,7 @@ export default function SetlistAuto() {
   const showMinTempo = useInputControl(fields.showMinTempo);
   const minTempo = useInputControl(fields.minTempo);
   const wildCard = useInputControl(fields.wildCard);
+  const excludedFeelIds = useInputControl(fields.excludedFeelIds);
 
   return (
     <Form
@@ -194,6 +201,23 @@ export default function SetlistAuto() {
                 {fields.artistPreference.errors}
               </div>
             </div>
+
+            <FlexList gap={1}>
+              <Label>Feels to exclude</Label>
+              <MultiSelectFeel
+                feels={feels}
+                values={
+                  Array.isArray(excludedFeelIds.value)
+                    ? excludedFeelIds.value
+                    : []
+                }
+                onChange={(newFeels) => excludedFeelIds.change(newFeels)}
+              />
+              <Muted>
+                Exclude certain feels from your setlist. This will prevent songs
+                with those feels from being included.
+              </Muted>
+            </FlexList>
 
             <div>
               <div className="flex items-center gap-2">

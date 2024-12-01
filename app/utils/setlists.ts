@@ -214,6 +214,7 @@ export const AutoSetlistSchema = z.object({
   setLength: z.coerce.number(),
   numSets: z.coerce.number(),
   artistPreference: z.enum(["covers", "no-covers", "no-preference"]),
+  excludedFeelIds: z.array(z.string()),
   showMinTempo: z.coerce.boolean(),
   minTempo: z.coerce.number().optional(),
   wildCard: z.coerce.boolean(),
