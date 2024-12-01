@@ -8,6 +8,7 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useLocation,
 } from "@remix-run/react";
 import { HoneypotProvider } from "remix-utils/honeypot/react";
 
@@ -62,11 +63,12 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function App() {
   const { honeyportInputProps, theme, toast } = useLoaderData<typeof loader>();
-
+  const { pathname } = useLocation();
+  const isRootRoute = pathname === "/";
   useToast(toast);
 
   return (
-    <html lang="en" className={`${theme} h-full`}>
+    <html lang="en" className={`${!isRootRoute ? theme : ""} h-full`}>
       <head>
         <meta title="Setlists" />
         <meta charSet="utf-8" />
