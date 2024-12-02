@@ -123,8 +123,7 @@ export default function SongsList() {
   const { songs, sort, feels } = useLiveLoader<typeof loader>(() =>
     toast("Songs updated"),
   );
-  const memberRole = useMemberRole();
-  const isSub = memberRole === RoleEnum.SUB;
+  const isSub = useMemberRole() === RoleEnum.SUB;
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -259,7 +258,7 @@ export default function SongsList() {
                   <Link className="w-full" key={song.id} to={song.id}>
                     <SongContainer.Song song={song} />
                   </Link>
-                  <SongActions song={song} />
+                  {!isSub ? <SongActions song={song} /> : null}
                 </FlexList>
               </SongContainer.Card>
             ))}
@@ -294,7 +293,6 @@ export default function SongsList() {
 
 const SongActions = ({ song }: { song: SerializeFrom<Song> }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const isSub = useMemberRole() === RoleEnum.SUB;
   return (
     <div>
       <DropdownMenu>
@@ -318,12 +316,10 @@ const SongActions = ({ song }: { song: SerializeFrom<Song> }) => {
                 Edit
               </Link>
             </DropdownMenuItem>
-            {!isSub ? (
-              <DropdownMenuItem onClick={() => setShowDeleteDialog(true)}>
-                <Trash className="h-4 w-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            ) : null}
+            <DropdownMenuItem onClick={() => setShowDeleteDialog(true)}>
+              <Trash className="h-4 w-4 mr-2" />
+              Delete
+            </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>

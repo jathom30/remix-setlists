@@ -105,8 +105,7 @@ const FetcherDataSchema = z.object({
 
 export default function SetlistPage() {
   const { setlist, allSongs } = useLiveLoader<typeof loader>();
-  const role = useMemberRole();
-  const isSub = role === RoleEnum.SUB;
+  const isSub = useMemberRole() === RoleEnum.SUB;
 
   const fetcher = useFetcher({ key: `setlist-${setlist.id}` });
   const [showAvailableSongs, setShowAvailableSongs] = useState(false);

@@ -40,7 +40,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { FlexList, MaxWidth } from "~/components";
+import { FlexList, Header, MaxWidth } from "~/components";
 import { H1, H4, P, Muted } from "~/components/typography";
 import { UserAvatarMenu } from "~/components/user-avatar-menu";
 import {
@@ -325,13 +325,17 @@ export default function UserSettings() {
   return (
     <div className="bg-muted/40">
       <div className="sticky border-b top-0 z-10 bg-background inset-x-0 flex items-center justify-between p-2 gap-2">
-        <Button variant="ghost" size="sm" asChild>
-          <Link to="/home">
-            <Boxes className="pr-2" />
-            My Bands
-          </Link>
-        </Button>
-        <UserAvatarMenu />
+        <MaxWidth>
+          <Header>
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/home">
+                <Boxes className="pr-2" />
+                My Bands
+              </Link>
+            </Button>
+            <UserAvatarMenu />
+          </Header>
+        </MaxWidth>
       </div>
       <MaxWidth className="p-2 space-y-2">
         <H1>User Settings</H1>

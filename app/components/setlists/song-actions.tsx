@@ -18,7 +18,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useMemberRole } from "~/utils";
 import { TSong } from "~/utils/dnd";
+import { RoleEnum } from "~/utils/enums";
 
 import { SongDetailsSheet } from "./song-details-sheet";
 
@@ -33,6 +35,8 @@ export const SongActions = ({
 }) => {
   const { setlistId } = useParams();
   const [showDetails, setShowDetails] = useState(false);
+  const isSub = useMemberRole() === RoleEnum.SUB;
+
   return (
     <div>
       <DropdownMenu>
@@ -49,25 +53,30 @@ export const SongActions = ({
               <MicVocal className="h-4 w-4 mr-2" />
               Details
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link
-                to={{
-                  pathname: `/${song.bandId}/songs/${song.id}/edit`,
-                  search: `?redirectTo=${`/${song.bandId}/setlists/${setlistId}`}`,
-                }}
-              >
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onSwap}>
-              <Replace className="h-4 w-4 mr-2" />
-              Swap
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onRemove}>
-              <CircleMinus className="h-4 w-4 mr-2" />
-              Remove
-            </DropdownMenuItem>
+            {!isSub ? (
+              <>
+                {" "}
+                <DropdownMenuItem asChild>
+                  <Link
+                    to={{
+                      pathname: `/${song.bandId}/songs/${song.id}/edit`,
+                      search: `?redirectTo=${`/${song.bandId}/setlists/${setlistId}`}`,
+                    }}
+                  >
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onSwap}>
+                  <Replace className="h-4 w-4 mr-2" />
+                  Swap
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onRemove}>
+                  <CircleMinus className="h-4 w-4 mr-2" />
+                  Remove
+                </DropdownMenuItem>
+              </>
+            ) : null}
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>

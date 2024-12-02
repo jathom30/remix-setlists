@@ -37,8 +37,10 @@ import { SetlistContainer } from "~/components/setlist-container";
 import { H1, Muted, P } from "~/components/typography";
 import { deleteSong, getSong } from "~/models/song.server";
 import { requireUser } from "~/session.server";
+import { useMemberRole } from "~/utils";
 import { emitterKeys } from "~/utils/emitter-keys";
 import { emitter } from "~/utils/emitter.server";
+import { RoleEnum } from "~/utils/enums";
 import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -88,6 +90,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 export default function SongPage() {
   const { song, setlists } = useLoaderData<typeof loader>();
   const [expandNotes, setExpandNotes] = useState(false);
+  const isSub = useMemberRole() === RoleEnum.SUB;
 
   const splitNote = song.note?.split("\n");
   const position =
@@ -118,12 +121,14 @@ export default function SongPage() {
     <div className="p-2 space-y-2">
       <FlexList direction="row" justify="between" items="center">
         <H1>Song</H1>
-        <Button asChild>
-          <Link to="edit">
-            <Pencil className="w-4 h-4 mr-2" />
-            Edit Song
-          </Link>
-        </Button>
+        {!isSub ? (
+          <Button asChild>
+            <Link to="edit">
+              <Pencil className="w-4 h-4 mr-2" />
+              Edit Song
+            </Link>
+          </Button>
+        ) : null}
       </FlexList>
       <Card>
         <CardHeader>
@@ -275,19 +280,21 @@ export default function SongPage() {
           </FlexList>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Danger Zone</CardTitle>
-          <CardDescription>
-            Deleting this song is a perminant action and cannot be undone. It
-            will be removed from all setlists and will no longer be available
-            for use.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <DeleteSongDialog />
-        </CardFooter>
-      </Card>
+      {!isSub ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Danger Zone</CardTitle>
+            <CardDescription>
+              Deleting this song is a perminant action and cannot be undone. It
+              will be removed from all setlists and will no longer be available
+              for use.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <DeleteSongDialog />
+          </CardFooter>
+        </Card>
+      ) : null}
     </div>
   );
 }

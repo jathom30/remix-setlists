@@ -126,8 +126,7 @@ export default function BandFeels() {
   const { feels, sort } = useLiveLoader<typeof loader>(() =>
     toast("Feels updated"),
   );
-  const memberRole = useMemberRole();
-  const isSub = memberRole === RoleEnum.SUB;
+  const isSub = useMemberRole() === RoleEnum.SUB;
 
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("query") ?? "";
@@ -198,7 +197,7 @@ export default function BandFeels() {
                 <Link className="w-full" key={feel.id} to={feel.id}>
                   <FeelContainer.Feel feel={feel} />
                 </Link>
-                <FeelActions feel={feel} />
+                {!isSub ? <FeelActions feel={feel} /> : null}
               </FlexList>
             </FeelContainer.Card>
           ))}

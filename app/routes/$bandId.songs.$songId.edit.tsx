@@ -5,6 +5,7 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   json,
+  redirect,
 } from "@remix-run/node";
 import {
   Form,
@@ -46,17 +47,24 @@ import {
   getSong,
   updateSongWithLinksAndFeels,
 } from "~/models/song.server";
-import { requireUser } from "~/session.server";
+import { getMemberRole } from "~/models/usersInBands.server";
+import { requireNonSubMember, requireUserId } from "~/session.server";
 import { emitterKeys } from "~/utils/emitter-keys";
 import { emitter } from "~/utils/emitter.server";
+import { RoleEnum } from "~/utils/enums";
 import { keyLetters } from "~/utils/songConstants";
 import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  await requireUser(request);
+  const userId = await requireUserId(request);
   const { bandId, songId } = params;
   invariant(bandId, "bandId is required");
   invariant(songId, "songId is required");
+  const memberRole = await getMemberRole(bandId, userId);
+
+  if (memberRole === RoleEnum.SUB) {
+    return redirect(`/${bandId}/songs/${songId}`);
+  }
 
   const response = await getSong(songId, bandId);
   const band = await getBandWithFeels(bandId);
@@ -79,6 +87,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId, songId } = params;
   invariant(bandId, "bandId is required");
   invariant(songId, "songId is required");
+  await requireNonSubMember(request, bandId);
 
   const searchParams = new URL(request.url).searchParams;
   const redirectTo = searchParams.get("redirectTo");

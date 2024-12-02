@@ -14,7 +14,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { useMemberRole } from "~/utils";
 import { TSong } from "~/utils/dnd";
+import { RoleEnum } from "~/utils/enums";
 
 import { FlexList } from "../FlexList";
 import { MaxWidth } from "../MaxWidth";
@@ -31,6 +33,7 @@ export const SongDetailsSheet = ({
 }) => {
   const { setlistId } = useParams();
   const [expandNotes, setExpandNotes] = useState(false);
+  const isSub = useMemberRole() === RoleEnum.SUB;
 
   const splitNote = song.note?.split("\n");
   return (
@@ -41,17 +44,19 @@ export const SongDetailsSheet = ({
             <div className="sticky top-0 bg-card p-2 pt-4">
               <FlexList direction="row" justify="between" items="center">
                 <H1>Song Details</H1>
-                <Button asChild>
-                  <Link
-                    to={{
-                      pathname: `/${song.bandId}/songs/${song.id}/edit`,
-                      search: `?redirectTo=${`/${song.bandId}/setlists/${setlistId}`}`,
-                    }}
-                  >
-                    <Pencil className="w-4 h-4 mr-2" />
-                    Edit Song
-                  </Link>
-                </Button>
+                {!isSub ? (
+                  <Button asChild>
+                    <Link
+                      to={{
+                        pathname: `/${song.bandId}/songs/${song.id}/edit`,
+                        search: `?redirectTo=${`/${song.bandId}/setlists/${setlistId}`}`,
+                      }}
+                    >
+                      <Pencil className="w-4 h-4 mr-2" />
+                      Edit Song
+                    </Link>
+                  </Button>
+                ) : null}
               </FlexList>
             </div>
             <Card>

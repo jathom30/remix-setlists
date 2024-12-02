@@ -5,6 +5,7 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   json,
+  redirect,
 } from "@remix-run/node";
 import {
   Form,
@@ -30,9 +31,11 @@ import { Label } from "@/components/ui/label";
 import { FlexList } from "~/components";
 import { H1, Muted } from "~/components/typography";
 import { getFeel, updateFeel } from "~/models/feel.server";
-import { requireUserId } from "~/session.server";
+import { getMemberRole } from "~/models/usersInBands.server";
+import { requireNonSubMember, requireUserId } from "~/session.server";
 import { emitterKeys } from "~/utils/emitter-keys";
 import { emitter } from "~/utils/emitter.server";
+import { RoleEnum } from "~/utils/enums";
 import { redirectWithToast } from "~/utils/toast.server";
 
 const EditFeelSchema = z.object({
@@ -42,10 +45,15 @@ const EditFeelSchema = z.object({
 });
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  await requireUserId(request);
+  const userId = await requireUserId(request);
   const { feelId, bandId } = params;
   invariant(feelId, "feelId is required");
   invariant(bandId, "bandId is required");
+  const memberRole = await getMemberRole(bandId, userId);
+
+  if (memberRole === RoleEnum.SUB) {
+    return redirect(`/${bandId}/feels/${feelId}`);
+  }
   const feel = await getFeel(feelId);
   if (!feel) {
     throw new Response("Feel not found", { status: 404 });
@@ -65,6 +73,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const { feelId, bandId } = params;
   invariant(feelId, "feelId is required");
   invariant(bandId, "bandId is required");
+  await requireNonSubMember(request, bandId);
   const formData = await request.formData();
 
   const searchParams = new URL(request.url).searchParams;

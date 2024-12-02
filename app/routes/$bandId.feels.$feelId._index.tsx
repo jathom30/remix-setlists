@@ -34,8 +34,10 @@ import { SongContainer } from "~/components/song-container";
 import { H1, Muted } from "~/components/typography";
 import { deleteFeel, getFeelWithSongs } from "~/models/feel.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
+import { useMemberRole } from "~/utils";
 import { emitterKeys } from "~/utils/emitter-keys";
 import { emitter } from "~/utils/emitter.server";
+import { RoleEnum } from "~/utils/enums";
 import { redirectWithToast } from "~/utils/toast.server";
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
@@ -76,7 +78,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export default function BandFeel() {
   const { feel } = useLoaderData<typeof loader>();
-
+  const isSub = useMemberRole() === RoleEnum.SUB;
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("query") ?? "";
   const setQuery = (value: string) => {
@@ -90,9 +92,11 @@ export default function BandFeel() {
     <div className="p-2 space-y-2">
       <FlexList direction="row" items="center" justify="between">
         <H1>Feel</H1>
-        <Button asChild>
-          <Link to="edit">Update Feel</Link>
-        </Button>
+        {!isSub ? (
+          <Button asChild>
+            <Link to="edit">Update Feel</Link>
+          </Button>
+        ) : null}
       </FlexList>
       <Card>
         <CardHeader>
@@ -147,19 +151,21 @@ export default function BandFeel() {
           </FlexList>
         </CardContent>
       </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Danger Zone</CardTitle>
-          <CardDescription>
-            Deleting this feel is a perminant action and cannot be undone. It
-            will be removed from all songs and will no longer be available for
-            use.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <DeleteFeelDialog />
-        </CardFooter>
-      </Card>
+      {!isSub ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Danger Zone</CardTitle>
+            <CardDescription>
+              Deleting this feel is a perminant action and cannot be undone. It
+              will be removed from all songs and will no longer be available for
+              use.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <DeleteFeelDialog />
+          </CardFooter>
+        </Card>
+      ) : null}
     </div>
   );
 }
