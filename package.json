@@ -67,7 +67,6 @@
     "cloudinary": "^1.33.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
-    "configcat-js-ssr": "^8.1.0",
     "crypto-js": "^4.2.0",
     "framer-motion": "^9.0.4",
     "isbot": "^3.7.0",

@@ -7,7 +7,6 @@ import { z } from "zod";
 import type { User } from "~/models/user.server";
 
 import { RoleEnum } from "./utils/enums";
-import { FeatureFlagKey, featureFlagKeys } from "./utils/featureflags.server";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -65,23 +64,6 @@ export function useOptionalUser(): User | undefined {
     return undefined;
   }
   return data.user;
-}
-
-export function useFeatureFlags(): Record<FeatureFlagKey, boolean> {
-  const data = useMatchesData("root");
-  // If there's no data or no feature flags, return the default flags as all false
-  if (!data || !data.featureFlags || typeof data.featureFlags !== "object") {
-    const defaultFlags = Object.keys(featureFlagKeys).reduce(
-      (acc, flag) => {
-        acc[flag as FeatureFlagKey] = false;
-        return acc;
-      },
-      {} as Record<FeatureFlagKey, boolean>,
-    );
-
-    return defaultFlags;
-  }
-  return data.featureFlags as Record<FeatureFlagKey, boolean>;
 }
 
 const MemberRoleSchema = z.object({

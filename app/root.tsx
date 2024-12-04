@@ -18,7 +18,6 @@ import sonnerStyles from "~/sonner.css?url";
 import { useToast } from "./hooks/use-toast";
 import { userPrefs } from "./models/cookies.server";
 import { getUser } from "./session.server";
-import { getFeatureFlags } from "./utils/featureflags.server";
 import { honeypot } from "./utils/honeypot.server";
 import { combineHeaders, getToast } from "./utils/toast.server";
 
@@ -37,8 +36,6 @@ export const links: LinksFunction = () => {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUser(request);
-  // loading the feature flags here so that they are available to all routes via useFeatureFlags
-  const featureFlags = await getFeatureFlags(user);
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await userPrefs.parse(cookieHeader)) || {};
 
@@ -46,7 +43,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   return json(
     {
       user,
-      featureFlags,
       honeyportInputProps: honeypot.getInputProps(),
       theme: cookie.theme,
       toast,
