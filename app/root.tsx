@@ -2,7 +2,6 @@ import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
@@ -13,8 +12,8 @@ import {
 import { HoneypotProvider } from "remix-utils/honeypot/react";
 
 import { EpicToaster } from "@/components/ui/sonner";
-import stylesheet from "~/globals.css";
-import sonnerStyles from "~/sonner.css";
+import stylesheet from "~/globals.css?url";
+import sonnerStyles from "~/sonner.css?url";
 
 import { useToast } from "./hooks/use-toast";
 import { userPrefs } from "./models/cookies.server";
@@ -88,7 +87,6 @@ export default function App() {
         <div id="modal-portal" />
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
       </body>
     </html>
   );
