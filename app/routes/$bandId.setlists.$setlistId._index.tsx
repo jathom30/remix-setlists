@@ -12,13 +12,18 @@ import {
   SerializeFrom,
 } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
-import { Search, X } from "lucide-react";
+import { FoldVertical, Search, UnfoldVertical, X } from "lucide-react";
 import pluralize from "pluralize";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -147,6 +152,7 @@ export default function SetlistPage() {
       song.name.toLowerCase().includes(query.toLowerCase()),
     ) || [];
 
+  const [collapsed, setCollapsed] = useState<string[]>(Object.keys(sets));
   // update sets when fetcher is done
   useEffect(() => {
     if (!fetcher.data || fetcher.state !== "loading") return;
@@ -293,65 +299,96 @@ export default function SetlistPage() {
               setQuery={setQuery}
               songs={filteredSongs}
             />
-            <div className="h-full w-full p-1 flex flex-col gap-2 col-span-2 overflow-auto">
+            <div className="h-full w-full px-1 flex flex-col gap-2 col-span-2 overflow-auto">
               {Object.entries(sets)
                 .filter(
                   ([setId]) =>
                     setId !== DroppableIdEnums.Enum["available-songs"],
                 )
                 .map(([setId, set], index) => (
-                  <div key={setId} className="pb-4">
-                    <Droppable droppableId={setId}>
-                      {(dropProvided, dropSnapshot) => (
-                        <div
-                          ref={dropProvided.innerRef}
-                          {...dropProvided.droppableProps}
-                          className={
-                            dropSnapshot.isDraggingOver
-                              ? "outline outline-primary outline-offset-2 rounded bg-card"
-                              : ""
-                          }
-                        >
-                          <FlexList
-                            direction="row"
-                            items="center"
-                            justify="between"
+                  <div key={setId}>
+                    <Collapsible
+                      open={collapsed.includes(setId)}
+                      onOpenChange={(val) =>
+                        setCollapsed((prev) =>
+                          val
+                            ? [...prev, setId]
+                            : prev.filter((id) => id !== setId),
+                        )
+                      }
+                    >
+                      <Droppable droppableId={setId}>
+                        {(dropProvided, dropSnapshot) => (
+                          <div
+                            ref={dropProvided.innerRef}
+                            {...dropProvided.droppableProps}
+                            className={
+                              dropSnapshot.isDraggingOver
+                                ? "outline outline-primary outline-offset-2 rounded bg-card"
+                                : ""
+                            }
                           >
-                            <Label
-                              className={
-                                dropSnapshot.isDraggingOver ? "font-bold" : ""
-                              }
-                            >
-                              Set {index + 1}
-                            </Label>
-                            <Muted>
-                              {pluralize("Minute", totalSetLength(set), true)}
-                            </Muted>
-                          </FlexList>
-                          {set?.map((song, songIndex) => (
-                            <DraggableSong
-                              key={song.id}
-                              song={song}
-                              songIndex={songIndex}
-                            >
-                              <SongActions
-                                song={song}
-                                onSwap={() =>
-                                  setSongToSwap({
-                                    setId,
-                                    songId: song.id,
-                                  })
-                                }
-                                onRemove={() =>
-                                  handleRemoveSong(setId, song.id)
-                                }
-                              />
-                            </DraggableSong>
-                          ))}
-                          {dropProvided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
+                            <div className="sticky top-0 bg-background border-b flex gap-2 pb-1 items-center">
+                              <CollapsibleTrigger asChild>
+                                <Button size="icon" variant="ghost">
+                                  {collapsed.includes(setId) ? (
+                                    <FoldVertical size={20} />
+                                  ) : (
+                                    <UnfoldVertical size={20} />
+                                  )}
+                                </Button>
+                              </CollapsibleTrigger>
+                              <FlexList
+                                direction="row"
+                                items="center"
+                                justify="between"
+                                width="full"
+                              >
+                                <Label
+                                  className={
+                                    dropSnapshot.isDraggingOver
+                                      ? "font-bold"
+                                      : ""
+                                  }
+                                >
+                                  Set {index + 1}
+                                </Label>
+                                <Muted>
+                                  {pluralize(
+                                    "Minute",
+                                    totalSetLength(set),
+                                    true,
+                                  )}
+                                </Muted>
+                              </FlexList>
+                            </div>
+                            <CollapsibleContent>
+                              {set?.map((song, songIndex) => (
+                                <DraggableSong
+                                  key={song.id}
+                                  song={song}
+                                  songIndex={songIndex}
+                                >
+                                  <SongActions
+                                    song={song}
+                                    onSwap={() =>
+                                      setSongToSwap({
+                                        setId,
+                                        songId: song.id,
+                                      })
+                                    }
+                                    onRemove={() =>
+                                      handleRemoveSong(setId, song.id)
+                                    }
+                                  />
+                                </DraggableSong>
+                              ))}
+                            </CollapsibleContent>
+                            {dropProvided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                    </Collapsible>
                   </div>
                 ))}
               <Droppable droppableId={DroppableIdEnums.Enum["new-set"]}>
@@ -508,62 +545,89 @@ export default function SetlistPage() {
             </Card>
           }
         >
-          <div className="h-full p-2 rounded-b-none flex flex-col gap-2 overflow-auto">
+          <div className="h-full px-2 rounded-b-none flex flex-col gap-1 overflow-auto">
             {Object.entries(sets)
               .filter(
                 ([setId]) => setId !== DroppableIdEnums.Enum["available-songs"],
               )
               .map(([setId, set], index) => (
-                <div key={setId} className="pb-4">
-                  <Droppable droppableId={setId}>
-                    {(dropProvided, dropSnapshot) => (
-                      <div
-                        ref={dropProvided.innerRef}
-                        {...dropProvided.droppableProps}
-                        className={
-                          dropSnapshot.isDraggingOver
-                            ? "outline outline-primary outline-offset-2 rounded bg-card"
-                            : ""
-                        }
-                      >
-                        <FlexList
-                          direction="row"
-                          items="center"
-                          justify="between"
+                <div key={setId}>
+                  <Collapsible
+                    open={collapsed.includes(setId)}
+                    onOpenChange={(val) =>
+                      setCollapsed((prev) =>
+                        val
+                          ? [...prev, setId]
+                          : prev.filter((id) => id !== setId),
+                      )
+                    }
+                  >
+                    <Droppable droppableId={setId}>
+                      {(dropProvided, dropSnapshot) => (
+                        <div
+                          ref={dropProvided.innerRef}
+                          {...dropProvided.droppableProps}
+                          className={
+                            dropSnapshot.isDraggingOver
+                              ? "outline outline-primary outline-offset-2 rounded bg-card"
+                              : ""
+                          }
                         >
-                          <Label
-                            className={
-                              dropSnapshot.isDraggingOver ? "font-bold" : ""
-                            }
-                          >
-                            Set {index + 1}
-                          </Label>
-                          <Muted>
-                            {pluralize("Minute", totalSetLength(set), true)}
-                          </Muted>
-                        </FlexList>
-                        {set?.map((song, songIndex) => (
-                          <DraggableSong
-                            key={song.id}
-                            song={song}
-                            songIndex={songIndex}
-                          >
-                            <SongActions
-                              song={song}
-                              onSwap={() =>
-                                setSongToSwap({
-                                  setId,
-                                  songId: song.id,
-                                })
-                              }
-                              onRemove={() => handleRemoveSong(setId, song.id)}
-                            />
-                          </DraggableSong>
-                        ))}
-                        {dropProvided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
+                          <div className="sticky top-0 bg-background border-b flex gap-2 pb-1 items-center">
+                            <CollapsibleTrigger asChild>
+                              <Button size="icon" variant="ghost">
+                                {collapsed.includes(setId) ? (
+                                  <FoldVertical size={20} />
+                                ) : (
+                                  <UnfoldVertical size={20} />
+                                )}
+                              </Button>
+                            </CollapsibleTrigger>
+                            <FlexList
+                              direction="row"
+                              items="center"
+                              justify="between"
+                              width="full"
+                            >
+                              <Label
+                                className={
+                                  dropSnapshot.isDraggingOver ? "font-bold" : ""
+                                }
+                              >
+                                Set {index + 1}
+                              </Label>
+                              <Muted>
+                                {pluralize("Minute", totalSetLength(set), true)}
+                              </Muted>
+                            </FlexList>
+                          </div>
+                          <CollapsibleContent>
+                            {set?.map((song, songIndex) => (
+                              <DraggableSong
+                                key={song.id}
+                                song={song}
+                                songIndex={songIndex}
+                              >
+                                <SongActions
+                                  song={song}
+                                  onSwap={() =>
+                                    setSongToSwap({
+                                      setId,
+                                      songId: song.id,
+                                    })
+                                  }
+                                  onRemove={() =>
+                                    handleRemoveSong(setId, song.id)
+                                  }
+                                />
+                              </DraggableSong>
+                            ))}
+                          </CollapsibleContent>
+                          {dropProvided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
+                  </Collapsible>
                 </div>
               ))}
             <Droppable droppableId={DroppableIdEnums.Enum["new-set"]}>

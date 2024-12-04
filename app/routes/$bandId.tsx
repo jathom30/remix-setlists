@@ -271,7 +271,7 @@ export default function BandRoute() {
   ];
 
   return (
-    <div className="h-full bg-muted/40">
+    <div className="h-full bg-background">
       <div className="p-2 border-b sticky top-0 inset-x-0 z-10 bg-background">
         <MaxWidth>
           <Header>
