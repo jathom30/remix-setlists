@@ -5,7 +5,7 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   SerializeFrom,
-  json,
+  data,
 } from "@remix-run/node";
 import { Form, Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import {
@@ -99,7 +99,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   };
 
   const setlists = await getSetlists(bandId, filterParams);
-  return json(
+  return data(
     {
       setlists,
       sort,
@@ -188,9 +188,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
 }
 
 export default function Setlists() {
-  const { setlists, sort } = useLiveLoader<typeof loader>(() =>
-    toast("Setlists updated!"),
-  );
+  const {
+    data: { setlists, sort },
+  } = useLiveLoader<typeof loader>(() => toast("Setlists updated!"));
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
 
@@ -283,7 +283,9 @@ const SetlistActions = ({
 }: {
   setlist: SerializeFrom<Awaited<ReturnType<typeof getSetlists>>[number]>;
 }) => {
-  const { domainUrl } = useLoaderData<typeof loader>();
+  const {
+    data: { domainUrl },
+  } = useLoaderData<typeof loader>();
   const [showEditName, setShowEditName] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showClone, setShowClone] = useState(false);

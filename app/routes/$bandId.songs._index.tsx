@@ -5,7 +5,7 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   SerializeFrom,
-  json,
+  data,
 } from "@remix-run/node";
 import { Form, Link, MetaFunction, useSearchParams } from "@remix-run/react";
 import {
@@ -86,7 +86,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const songs = await getSongs(bandId, songParams);
   const feels = await getThinFeels(bandId);
-  return json({ songs, sort, feels }, { headers: header });
+  return data({ songs, sort, feels }, { headers: header });
 }
 
 export const meta: MetaFunction<typeof loader> = () => {
@@ -114,15 +114,15 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
     emitter.emit(emitterKeys.songs);
     emitter.emit(emitterKeys.dashboard);
-    return json({ success: true }, { headers: toastHeaders });
+    return data({ success: true }, { headers: toastHeaders });
   }
   return null;
 }
 
 export default function SongsList() {
-  const { songs, sort, feels } = useLiveLoader<typeof loader>(() =>
-    toast("Songs updated"),
-  );
+  const {
+    data: { songs, sort, feels },
+  } = useLiveLoader<typeof loader>(() => toast("Songs updated"));
   const isSub = useMemberRole() === RoleEnum.SUB;
 
   const [searchParams, setSearchParams] = useSearchParams();

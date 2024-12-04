@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node";
+import { LoaderFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
 import { getUnseenNotesCount } from "~/models/setlist-notes";
@@ -33,11 +33,11 @@ export async function setlistLoader({ request, params }: LoaderFunctionArgs) {
   publicSearchParams.set("bandId", bandId);
   publicSearchParams.set("setlistId", setlistId);
   const setlistPublicUrl = `${domainUrl}/publicSetlist?${publicSearchParams.toString()}`;
-  return json({
+  return {
     setlist,
     setlistLink,
     allSongs,
     unseenNotesCount,
     ...(setlist.isPublic ? { setlistPublicUrl } : {}),
-  });
+  };
 }

@@ -1,5 +1,5 @@
 import { parseWithZod } from "@conform-to/zod";
-import { ActionFunctionArgs, json } from "@remix-run/node";
+import { ActionFunctionArgs, data } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
 import {
@@ -51,7 +51,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
     });
     emitter.emit(emitterKeys.setlists);
     emitter.emit(emitterKeys.dashboard);
-    return json({ updatedSetlist }, { headers: toastHeaders });
+    return data({ updatedSetlist }, { headers: toastHeaders });
   }
 
   if (intent === IntentSchema.Enum["update-name"]) {
@@ -71,7 +71,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
     });
     emitter.emit(emitterKeys.setlists);
     emitter.emit(emitterKeys.dashboard);
-    return json({ updatedSetlist }, { headers: toastHeaders });
+    return data({ updatedSetlist }, { headers: toastHeaders });
   }
 
   if (intent === IntentSchema.Enum["delete-setlist"]) {
@@ -126,7 +126,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
       description: "This setlist's publ;ic link has been created.",
       type: "success",
     });
-    return json(submission.payload, { headers: toastHeaders });
+    return data(submission.payload, { headers: toastHeaders });
   }
 
   if (intent === IntentSchema.Enum["remove-public-link"]) {
@@ -145,7 +145,7 @@ export async function setlistAction({ request, params }: ActionFunctionArgs) {
     });
     emitter.emit(emitterKeys.setlists);
     emitter.emit(emitterKeys.dashboard);
-    return json(submission.payload, { headers: toastHeaders });
+    return data(submission.payload, { headers: toastHeaders });
   }
 
   return null;
