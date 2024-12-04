@@ -2,7 +2,6 @@ import { getInputProps, useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import {
   ActionFunctionArgs,
-  json,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
@@ -39,7 +38,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   invariant(bandId, "bandId not found");
   await requireNonSubMember(request, bandId);
   const feels = await getFeels(bandId);
-  return json({ feels });
+  return { feels };
 }
 
 export const meta: MetaFunction<typeof loader> = () => {

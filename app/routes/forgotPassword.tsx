@@ -1,6 +1,5 @@
-import { json } from "@remix-run/node";
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Form, Link, useActionData } from "@remix-run/react";
+import { data, Form, Link, useActionData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { Button } from "@/components/ui/button";
@@ -31,7 +30,7 @@ export async function action({ request }: ActionFunctionArgs) {
   invariant(process.env.RESEND_API_KEY, "resend api key must be set");
 
   if (!validateEmail(email)) {
-    return json(
+    return data(
       { errors: { email: "Email is invalid" }, email: null },
       { status: 400 },
     );
@@ -40,7 +39,7 @@ export async function action({ request }: ActionFunctionArgs) {
   // check if user email exists before sending email
   const user = await getUserByEmail(email);
   if (!user) {
-    return json({
+    return data({
       errors: { email: "User does not exist with this email" },
       email: null,
     });
@@ -51,13 +50,13 @@ export async function action({ request }: ActionFunctionArgs) {
   const magicLink = await generateTokenLink(email, "resetPassword", domainUrl);
   passwordReset(email, magicLink);
 
-  return json({ errors: null, email });
+  return data({ errors: null, email });
 }
 
 export default function ForgotPassword() {
   const actionData = useActionData<typeof action>();
-  const emailError = actionData?.errors?.email;
-  const emailSuccess = actionData?.email;
+  const emailError = actionData?.data.errors?.email;
+  const emailSuccess = actionData?.data.email;
 
   return (
     <div className="max-w-lg m-auto mt-8">

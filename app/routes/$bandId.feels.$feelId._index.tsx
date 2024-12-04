@@ -2,7 +2,6 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-  json,
 } from "@remix-run/node";
 import { Form, Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import { SearchIcon, Trash } from "lucide-react";
@@ -53,7 +52,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (feel.bandId !== bandId) {
     throw new Response("Feel does not belong to this band.", { status: 403 });
   }
-  return json({ feel });
+  return { feel };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -93,8 +92,8 @@ export default function BandFeel() {
       <FlexList direction="row" items="center" justify="between">
         <H1>Feel</H1>
         {!isSub ? (
-          <Button asChild>
-            <Link to="edit">Update Feel</Link>
+          <Button variant="secondary" asChild>
+            <Link to="edit">Edit Feel</Link>
           </Button>
         ) : null}
       </FlexList>

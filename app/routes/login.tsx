@@ -3,7 +3,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { data, redirect } from "@remix-run/node";
 import {
   Form,
   Link,
@@ -38,7 +38,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUser(request);
 
   if (user?.verified) return redirect("/home");
-  return json({});
+  return {};
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -47,7 +47,7 @@ export async function action({ request }: ActionFunctionArgs) {
     honeypot.check(formData);
   } catch (error) {
     if (error instanceof Error) {
-      throw json({ message: error.message }, { status: 400 });
+      throw data({ message: error.message }, { status: 400 });
     }
   }
   const email = formData.get("email");
@@ -56,21 +56,21 @@ export async function action({ request }: ActionFunctionArgs) {
   const remember = formData.get("remember");
 
   if (!validateEmail(email)) {
-    return json(
+    return data(
       { errors: { email: "Email is invalid", password: null } },
       { status: 400 },
     );
   }
 
   if (typeof password !== "string" || password.length === 0) {
-    return json(
+    return data(
       { errors: { email: null, password: "Password is required" } },
       { status: 400 },
     );
   }
 
   if (password.length < 8) {
-    return json(
+    return data(
       { errors: { email: null, password: "Password is too short" } },
       { status: 400 },
     );
@@ -79,7 +79,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const user = await verifyLogin(email, password);
 
   if (!user) {
-    return json(
+    return data(
       { errors: { email: "Invalid email or password", password: null } },
       { status: 400 },
     );
@@ -116,9 +116,9 @@ export default function LoginPage() {
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
-    if (actionData?.errors?.email) {
+    if (actionData?.data.errors?.email) {
       emailRef.current?.focus();
-    } else if (actionData?.errors?.password) {
+    } else if (actionData?.data.errors?.password) {
       passwordRef.current?.focus();
     }
   }, [actionData]);
@@ -147,16 +147,18 @@ export default function LoginPage() {
                     name="email"
                     type="email"
                     autoComplete="email"
-                    aria-invalid={actionData?.errors?.email ? true : undefined}
+                    aria-invalid={
+                      actionData?.data.errors?.email ? true : undefined
+                    }
                     aria-describedby="email-error"
                     className="input input-bordered w-full"
                   />
-                  {actionData?.errors?.email ? (
+                  {actionData?.data.errors?.email ? (
                     <div
                       className="pt-1 text-destructive text-sm"
                       id="email-error"
                     >
-                      {actionData.errors.email}
+                      {actionData.data.errors.email}
                     </div>
                   ) : null}
                 </div>
@@ -173,14 +175,14 @@ export default function LoginPage() {
                     type="password"
                     autoComplete="current-password"
                     aria-invalid={
-                      actionData?.errors?.password ? true : undefined
+                      actionData?.data.errors?.password ? true : undefined
                     }
                     aria-describedby="password-error"
                     className="input input-bordered w-full"
                   />
-                  {actionData?.errors?.password ? (
+                  {actionData?.data.errors?.password ? (
                     <div className="pt-1 text-error" id="password-error">
-                      {actionData.errors.password}
+                      {actionData.data.errors.password}
                     </div>
                   ) : null}
                 </div>

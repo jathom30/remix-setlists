@@ -3,7 +3,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import {
   Form,
   Link,
@@ -57,7 +57,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!isMatchingToken) {
     throw new Response("token does not match", { status: 404 });
   }
-  return json({ email: user.email });
+  return { email: user.email };
 }
 
 export const meta: MetaFunction = () => {
@@ -87,14 +87,14 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const passwordError = getPasswordError(tests);
   if (passwordError) {
-    return json({
+    return {
       errors: { password: passwordError, verifyPassword: null },
-    });
+    };
   }
   if (password !== verifyPassword) {
-    return json({
+    return {
       errors: { password: null, verifyPassword: "passwords must match" },
-    });
+    };
   }
 
   await updateUserPassword(user.id, password);

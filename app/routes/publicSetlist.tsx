@@ -3,7 +3,6 @@ import type {
   MetaFunction,
   SerializeFrom,
 } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import {
   Link,
   isRouteErrorResponse,
@@ -38,7 +37,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   invariant(setlistId, "setlistId not found");
 
   const setlist = await getPublicSetlist(setlistId);
-  return json({ setlist });
+  return { setlist };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {

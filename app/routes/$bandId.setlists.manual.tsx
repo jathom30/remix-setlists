@@ -9,7 +9,6 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-  json,
 } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { Search } from "lucide-react";
@@ -58,7 +57,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   await requireNonSubMember(request, bandId);
   const songs = await getSongs(bandId);
 
-  return json({ songs });
+  return { songs };
 }
 
 export const meta: MetaFunction<typeof loader> = () => {

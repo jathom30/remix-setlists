@@ -1,4 +1,4 @@
-import { json, LoaderFunctionArgs, redirect } from "@remix-run/node";
+import { LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { Boxes } from "lucide-react";
 
@@ -32,7 +32,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   const users = await getVerifiedUsers();
-  return json({ users });
+  return { users };
 }
 
 export default function AdminIndex() {

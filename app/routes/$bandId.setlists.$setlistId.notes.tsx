@@ -3,7 +3,6 @@ import { parseWithZod } from "@conform-to/zod";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import {
   ActionFunctionArgs,
-  json,
   LoaderFunctionArgs,
   MetaFunction,
   SerializeFrom,
@@ -97,7 +96,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const notes = await getSetlistNotes(setlistId);
   await markAllNotesAsSeen(setlistId, userId);
-  return json({ setlist, notes });
+  return { setlist, notes };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {

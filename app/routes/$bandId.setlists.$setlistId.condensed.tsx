@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction, json } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import pluralize from "pluralize";
 import invariant from "tiny-invariant";
@@ -24,9 +24,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!setlist) {
     throw new Response("Setlist not found", { status: 404 });
   }
-  return json({
-    setlist,
-  });
+  return { setlist };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {

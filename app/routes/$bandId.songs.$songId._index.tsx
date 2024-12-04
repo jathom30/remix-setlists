@@ -1,6 +1,5 @@
 import {
   type LoaderFunctionArgs,
-  json,
   ActionFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
@@ -55,7 +54,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!song) {
     throw new Response("Song not found", { status: 404 });
   }
-  return json({ song, setlists });
+  return { song, setlists };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {

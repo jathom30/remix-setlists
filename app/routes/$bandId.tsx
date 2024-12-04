@@ -1,5 +1,4 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import {
   Link,
   Outlet,
@@ -55,7 +54,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   }
 
   // used in useMemberRole hook in child routes
-  return json({ band, memberRole, bands, sideMenuPref });
+  return { band, memberRole, bands, sideMenuPref };
 }
 
 const BandSchema = z.object({

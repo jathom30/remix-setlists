@@ -2,7 +2,6 @@ import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import {
   ActionFunctionArgs,
-  json,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
@@ -78,7 +77,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   // generate token link and send email
   const magicLink = await generateJoinBandLink(bandId, domainUrl);
 
-  return json({ magicLink, band });
+  return { magicLink, band };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -115,7 +114,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
       await addToBandEmail(email, magicLink, band.name);
     });
 
-    return json({ success: true });
+    return { success: true };
   }
 
   return null;

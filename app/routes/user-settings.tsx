@@ -1,9 +1,9 @@
 import { getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
+import { redirect } from "@remix-run/node";
 import {
   Link,
   useLoaderData,
-  json,
   Form,
   useActionData,
   useNavigation,
@@ -171,7 +171,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const cookieHeader = request.headers.get("Cookie");
   const cookie = (await userPrefs.parse(cookieHeader)) || {};
 
-  return json({ user, theme: cookie.theme });
+  return { user, theme: cookie.theme };
 }
 
 export const meta: MetaFunction = () => {
@@ -314,7 +314,8 @@ export async function action({ request }: ActionFunctionArgs) {
     const responseInit = {
       headers: { "Set-Cookie": await userPrefs.serialize(cookie) },
     };
-    return json(null, responseInit);
+    return redirect(".", responseInit);
+    // return data(null, responseInit);
   }
 
   return null;
