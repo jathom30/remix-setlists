@@ -9,7 +9,6 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-  json,
 } from "@remix-run/node";
 import {
   Form,
@@ -68,7 +67,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!band) {
     throw new Response("Band not found", { status: 404 });
   }
-  return json({ band });
+  return { band };
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {

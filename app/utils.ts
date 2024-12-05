@@ -1,13 +1,11 @@
 import type { BandIcon } from "@prisma/client";
 import { useMatches } from "@remix-run/react";
-import type { SerializeFrom } from "@remix-run/server-runtime";
 import { useMemo } from "react";
 import { z } from "zod";
 
 import type { User } from "~/models/user.server";
 
 import { RoleEnum } from "./utils/enums";
-import { FeatureFlagKey, featureFlagKeys } from "./utils/featureflags.server";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -67,23 +65,6 @@ export function useOptionalUser(): User | undefined {
   return data.user;
 }
 
-export function useFeatureFlags(): Record<FeatureFlagKey, boolean> {
-  const data = useMatchesData("root");
-  // If there's no data or no feature flags, return the default flags as all false
-  if (!data || !data.featureFlags || typeof data.featureFlags !== "object") {
-    const defaultFlags = Object.keys(featureFlagKeys).reduce(
-      (acc, flag) => {
-        acc[flag as FeatureFlagKey] = false;
-        return acc;
-      },
-      {} as Record<FeatureFlagKey, boolean>,
-    );
-
-    return defaultFlags;
-  }
-  return data.featureFlags as Record<FeatureFlagKey, boolean>;
-}
-
 const MemberRoleSchema = z.object({
   memberRole: z.union([
     z.literal("ADMIN"),
@@ -120,7 +101,7 @@ export function validateEmail(email: unknown): email is string {
 
 const isBand = (
   data: unknown,
-): data is { band: { icon: SerializeFrom<BandIcon>; name: string } } => {
+): data is { band: { icon: BandIcon; name: string } } => {
   const bandData = data && typeof data === "object" && "band" in data;
   return Boolean(bandData);
 };

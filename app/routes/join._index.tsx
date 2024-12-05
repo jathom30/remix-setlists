@@ -3,7 +3,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { data, redirect } from "@remix-run/node";
 import {
   Form,
   Link,
@@ -51,7 +51,7 @@ import { honeypot } from "~/utils/honeypot.server";
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getUserId(request);
   if (userId) return redirect("/");
-  return json({});
+  return {};
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -60,7 +60,7 @@ export async function action({ request }: ActionFunctionArgs) {
     honeypot.check(formData);
   } catch (error) {
     if (error instanceof Error) {
-      throw json({ message: error.message }, { status: 400 });
+      throw data({ message: error.message }, { status: 400 });
     }
   }
   const email = formData.get("email");
@@ -69,21 +69,21 @@ export async function action({ request }: ActionFunctionArgs) {
   invariant(process.env.RESEND_API_KEY, "resend api key must be set");
 
   if (!validateEmail(email)) {
-    return json(
+    return data(
       { errors: { email: "Email is invalid", password: null, name: null } },
       { status: 400 },
     );
   }
 
   if (typeof password !== "string" || password.length === 0) {
-    return json(
+    return data(
       { errors: { email: null, password: "Password is required", name: null } },
       { status: 400 },
     );
   }
 
   if (typeof name !== "string" || name.length === 0) {
-    return json(
+    return data(
       { errors: { email: null, password: null, name: "Name is required" } },
       { status: 400 },
     );
@@ -93,7 +93,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const passwordError = getPasswordError(tests);
 
   if (passwordError) {
-    return json(
+    return data(
       {
         errors: {
           email: null,
@@ -108,7 +108,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const existingUser = await getUserByEmail(email);
   if (existingUser) {
-    return json(
+    return data(
       {
         errors: {
           email: "A user already exists with this email",
@@ -150,9 +150,9 @@ export default function Join() {
   const { tests, strength } = passwordStrength(password);
 
   React.useEffect(() => {
-    if (actionData?.errors?.email) {
+    if (actionData?.data.errors?.email) {
       emailRef.current?.focus();
-    } else if (actionData?.errors?.password) {
+    } else if (actionData?.data.errors?.password) {
       passwordRef.current?.focus();
     }
   }, [actionData]);
@@ -184,13 +184,15 @@ export default function Join() {
                     autoFocus={true}
                     name="name"
                     type="text"
-                    aria-invalid={actionData?.errors?.name ? true : undefined}
+                    aria-invalid={
+                      actionData?.data.errors?.name ? true : undefined
+                    }
                     aria-describedby="name-error"
                     className="input input-bordered w-full"
                   />
-                  {actionData?.errors?.name ? (
+                  {actionData?.data.errors?.name ? (
                     <div className="pt-1 text-error" id="email-error">
-                      {actionData.errors.name}
+                      {actionData.data.errors.name}
                     </div>
                   ) : null}
                 </div>
@@ -209,13 +211,15 @@ export default function Join() {
                     name="email"
                     type="email"
                     autoComplete="email"
-                    aria-invalid={actionData?.errors?.email ? true : undefined}
+                    aria-invalid={
+                      actionData?.data.errors?.email ? true : undefined
+                    }
                     aria-describedby="email-error"
                     className="input input-bordered w-full"
                   />
-                  {actionData?.errors?.email ? (
+                  {actionData?.data.errors?.email ? (
                     <div className="pt-1 text-error" id="email-error">
-                      {actionData.errors.email}
+                      {actionData.data.errors.email}
                     </div>
                   ) : null}
                 </div>
@@ -235,7 +239,7 @@ export default function Join() {
                     onChange={(e) => setPassword(e.target.value)}
                     autoComplete="new-password"
                     aria-invalid={
-                      actionData?.errors?.password ? true : undefined
+                      actionData?.data.errors?.password ? true : undefined
                     }
                     aria-describedby="password-error"
                     className="input input-bordered w-full"
@@ -243,9 +247,9 @@ export default function Join() {
                   <div className="pt-2">
                     <PasswordStrength tests={tests} strength={strength} />
                   </div>
-                  {actionData?.errors?.password ? (
+                  {actionData?.data.errors?.password ? (
                     <div className="pt-1 text-error" id="password-error">
-                      {actionData.errors.password}
+                      {actionData.data.errors.password}
                     </div>
                   ) : null}
                 </div>

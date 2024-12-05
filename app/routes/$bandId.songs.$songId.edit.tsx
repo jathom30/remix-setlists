@@ -4,7 +4,6 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-  json,
   redirect,
 } from "@remix-run/node";
 import {
@@ -41,12 +40,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { FlexList } from "~/components";
 import { MultiSelectFeel } from "~/components/multi-select-feel";
 import { H1, Muted } from "~/components/typography";
+import { EditSongSchema } from "~/domain/song";
 import { getBandWithFeels } from "~/models/band.server";
-import {
-  EditSongSchema,
-  getSong,
-  updateSongWithLinksAndFeels,
-} from "~/models/song.server";
+import { getSong, updateSongWithLinksAndFeels } from "~/models/song.server";
 import { getMemberRole } from "~/models/usersInBands.server";
 import { requireNonSubMember, requireUserId } from "~/session.server";
 import { emitterKeys } from "~/utils/emitter-keys";
@@ -76,7 +72,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!song) {
     throw new Response("Song not found", { status: 404 });
   }
-  return json({ song, setlists, band });
+  return { song, setlists, band };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {

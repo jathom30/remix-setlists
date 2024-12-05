@@ -4,14 +4,12 @@ import {
   DropResult,
   Droppable,
 } from "@hello-pangea/dnd";
-import { Feel, Song } from "@prisma/client";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-  SerializeFrom,
 } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import { FoldVertical, Search, UnfoldVertical, X } from "lucide-react";
 import pluralize from "pluralize";
 import { useEffect, useState } from "react";
@@ -43,8 +41,6 @@ import { useContainerHeight } from "~/hooks/use-container-height";
 import { useMemberRole } from "~/utils";
 import {
   DroppableIdEnums,
-  TSet,
-  TSong,
   compareSets,
   getAvailableSongs,
   onDragEnd,
@@ -55,6 +51,10 @@ import { totalSetLength } from "~/utils/sets";
 export async function loader(args: LoaderFunctionArgs) {
   return await setlistLoader(args);
 }
+
+type TLoader = ReturnType<typeof useLoaderData<typeof loader>>;
+export type TSong = TLoader["allSongs"][number];
+export type TSet = Record<string, TSong[]>;
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: data?.setlist.name || "Setlist Detail" }];
@@ -138,7 +138,7 @@ export default function SetlistPage() {
   const intitialSets = setlist.sets.reduce((acc: TSet, set) => {
     const setSongs = set.songs
       ?.filter((song) => Boolean(song) && Boolean(song.song))
-      .map((song) => song.song) as TSong[];
+      .map((song) => song.song) as unknown as TSong[];
     acc[set.id] = setSongs;
     return acc;
   }, {} as TSet);
@@ -189,7 +189,7 @@ export default function SetlistPage() {
     });
   };
 
-  const handleSwapSong = (newSong: SerializeFrom<Song & { feels: Feel[] }>) => {
+  const handleSwapSong = (newSong: TSong) => {
     setSets((prev) => {
       const updatedSets = { ...prev };
       if (!songToSwap) return updatedSets;

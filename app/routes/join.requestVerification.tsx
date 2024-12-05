@@ -1,4 +1,4 @@
-import { json, redirect } from "@remix-run/node";
+import { data, redirect } from "@remix-run/node";
 import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -32,7 +32,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const email = urlSearchParams.get("email");
   const user = await getUser(request);
 
-  return json({ email, user });
+  return { email, user };
 }
 
 export const meta: MetaFunction = () => {
@@ -45,13 +45,13 @@ export async function action({ request }: ActionFunctionArgs) {
     honeypot.check(formData);
   } catch (error) {
     if (error instanceof Error) {
-      throw json({ message: error.message }, { status: 400 });
+      throw data({ message: error.message }, { status: 400 });
     }
   }
   const email = formData.get("email");
 
   if (!validateEmail(email)) {
-    return json({
+    return data({
       errors: {
         email: "invalid email address",
       },
@@ -60,7 +60,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const user = await getUserByEmail(email);
   if (!user) {
-    return json({
+    return data({
       errors: {
         email: "User does not exist with this email",
       },
@@ -102,8 +102,8 @@ export default function RequestVerification() {
                 placeholder="Account email"
                 defaultValue={displayEmail}
               />
-              {actionData?.errors.email ? (
-                <ErrorMessage message={actionData?.errors.email} />
+              {actionData?.data.errors.email ? (
+                <ErrorMessage message={actionData?.data.errors.email} />
               ) : null}
             </div>
           </FlexList>

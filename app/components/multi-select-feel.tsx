@@ -1,5 +1,3 @@
-import { Feel } from "@prisma/client";
-import { Jsonify } from "@remix-run/server-runtime/dist/jsonify";
 import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
@@ -18,13 +16,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { TFeel } from "~/routes/$bandId.songs._index";
 
 export const MultiSelectFeel = ({
   feels,
   values,
   onChange,
 }: {
-  feels: Jsonify<Feel>[];
+  feels: TFeel[];
   values: string[];
   onChange: (value: string[]) => void;
 }) => {

@@ -2,9 +2,9 @@ import { getInputProps, useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import {
   ActionFunctionArgs,
+  data,
   LoaderFunctionArgs,
   MetaFunction,
-  json,
 } from "@remix-run/node";
 import { Form, useLoaderData, useParams } from "@remix-run/react";
 import { CircleCheck, CircleX } from "lucide-react";
@@ -61,7 +61,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
     .filter((member) => member.userId !== memberId)
     .some((member) => member.role === RoleEnum.ADMIN);
 
-  return json({ member: augmentedMember, canRemoveAsAdmin });
+  return { member: augmentedMember, canRemoveAsAdmin };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -88,7 +88,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     type: "success",
   });
   emitter.emit(emitterKeys.band_settings);
-  return json(null, { headers: toastHeaders });
+  return data(null, { headers: toastHeaders });
 }
 
 export default function BandSettingsMembers() {

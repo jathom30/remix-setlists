@@ -3,12 +3,11 @@ import { parseWithZod } from "@conform-to/zod";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import {
   ActionFunctionArgs,
-  json,
   LoaderFunctionArgs,
   MetaFunction,
-  SerializeFrom,
 } from "@remix-run/node";
 import { useFetcher, useParams } from "@remix-run/react";
+import { Jsonify } from "@remix-run/server-runtime/dist/jsonify";
 import { CirclePlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -97,7 +96,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const notes = await getSetlistNotes(setlistId);
   await markAllNotesAsSeen(setlistId, userId);
-  return json({ setlist, notes });
+  return { setlist, notes };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -176,7 +175,7 @@ export default function SetlistNotes() {
 const NoteContainer = ({
   note,
 }: {
-  note: SerializeFrom<Awaited<ReturnType<typeof getSetlistNotes>>[number]>;
+  note: Jsonify<Awaited<ReturnType<typeof loader>>["notes"][number]>;
 }) => {
   const user = useUser();
 
@@ -219,9 +218,9 @@ const SeenBy = ({
   seenBy,
   createdBy,
 }: {
-  seenBy: SerializeFrom<
-    Awaited<ReturnType<typeof getSetlistNotes>>[number]
-  >["seenBy"];
+  seenBy: Jsonify<
+    Awaited<ReturnType<typeof getSetlistNotes>>[number]["seenBy"]
+  >;
   createdBy?: string;
 }) => {
   const user = useUser();

@@ -1,11 +1,10 @@
 import { Draggable, Droppable } from "@hello-pangea/dnd";
-import { Feel, Song } from "@prisma/client";
-import { SerializeFrom } from "@remix-run/node";
 import { Search } from "lucide-react";
 
 import { Card, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { TSong } from "~/routes/$bandId.setlists.$setlistId._index";
 import { DroppableIdEnums } from "~/utils/dnd";
 
 import { SongContainer } from "../song-container";
@@ -17,7 +16,7 @@ export const AvailableSongsCardDesktop = ({
 }: {
   query: string;
   setQuery: (query: string) => void;
-  songs: SerializeFrom<Song & { feels: Feel[] }>[];
+  songs: TSong[];
 }) => {
   return (
     <Card className="h-full flex-grow px-2 flex flex-col gap-2 overflow-auto w-full">

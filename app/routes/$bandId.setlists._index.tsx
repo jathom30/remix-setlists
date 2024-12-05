@@ -4,8 +4,7 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-  SerializeFrom,
-  json,
+  data,
 } from "@remix-run/node";
 import { Form, Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import {
@@ -99,7 +98,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   };
 
   const setlists = await getSetlists(bandId, filterParams);
-  return json(
+  return data(
     {
       setlists,
       sort,
@@ -187,10 +186,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return null;
 }
 
+export type TSetlist = ReturnType<
+  typeof useLoaderData<typeof loader>
+>["data"]["setlists"][number];
+
 export default function Setlists() {
-  const { setlists, sort } = useLiveLoader<typeof loader>(() =>
-    toast("Setlists updated!"),
-  );
+  const {
+    data: { setlists, sort },
+  } = useLiveLoader<typeof loader>(() => toast("Setlists updated!"));
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
 
@@ -278,12 +281,10 @@ export default function Setlists() {
   );
 }
 
-const SetlistActions = ({
-  setlist,
-}: {
-  setlist: SerializeFrom<Awaited<ReturnType<typeof getSetlists>>[number]>;
-}) => {
-  const { domainUrl } = useLoaderData<typeof loader>();
+const SetlistActions = ({ setlist }: { setlist: TSetlist }) => {
+  const {
+    data: { domainUrl },
+  } = useLoaderData<typeof loader>();
   const [showEditName, setShowEditName] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showClone, setShowClone] = useState(false);

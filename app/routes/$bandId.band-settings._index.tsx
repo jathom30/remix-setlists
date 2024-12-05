@@ -4,7 +4,6 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-  json,
 } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import { EllipsisVertical, Pencil, Trash } from "lucide-react";
@@ -97,7 +96,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const domainUrl = getDomainUrl(request);
   const qrCodeAddress = `${domainUrl}/home/add-band/existing?code=${band.code}`;
 
-  return json({ band, members: augmentedMembers, qrCodeAddress });
+  return { band, members: augmentedMembers, qrCodeAddress };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {

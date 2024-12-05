@@ -1,9 +1,4 @@
-import type {
-  LoaderFunctionArgs,
-  MetaFunction,
-  SerializeFrom,
-} from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import {
   Link,
   isRouteErrorResponse,
@@ -38,7 +33,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   invariant(setlistId, "setlistId not found");
 
   const setlist = await getPublicSetlist(setlistId);
-  return json({ setlist });
+  return { setlist };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -62,7 +57,7 @@ export default function PublicSetlist() {
   const bandId = urlSearchParams.get("bandId");
   const setlistId = urlSearchParams.get("setlistId");
 
-  const setLength = (set: SerializeFrom<(typeof setlist)["sets"]>[number]) =>
+  const setLength = (set: (typeof setlist)["sets"][number]) =>
     set.songs.reduce((acc, song) => (acc += song.song?.length || 0), 0);
 
   return (

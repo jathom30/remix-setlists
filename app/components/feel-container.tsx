@@ -1,18 +1,13 @@
-import { Feel } from "@prisma/client";
-import { SerializeFrom } from "@remix-run/node";
 import pluralize from "pluralize";
 import { ReactNode } from "react";
 
 import { Card } from "@/components/ui/card";
+import { TFeel } from "~/routes/$bandId.feels._index";
 
 import { FlexList } from "./FlexList";
 import { Large, Muted } from "./typography";
 
-export const FeelContainer = ({
-  feel,
-}: {
-  feel: SerializeFrom<Feel & { songs: { id: string }[] }>;
-}) => {
+export const FeelContainer = ({ feel }: { feel: TFeel }) => {
   return (
     <div className="flex-grow">
       <FlexList direction="row" items="center" justify="between" gap={2}>
