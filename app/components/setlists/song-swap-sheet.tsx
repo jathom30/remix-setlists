@@ -1,5 +1,3 @@
-import { Feel, Song } from "@prisma/client";
-import { SerializeFrom } from "@remix-run/node";
 import { Search } from "lucide-react";
 import { useState } from "react";
 
@@ -7,6 +5,7 @@ import { Card, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { TSong } from "~/routes/$bandId.setlists.$setlistId._index";
 
 import { FlexList } from "../FlexList";
 import { MaxWidth } from "../MaxWidth";
@@ -18,8 +17,8 @@ export const SongSwapSheet = ({
   onOpenChange,
   open,
 }: {
-  availableSongs: SerializeFrom<Song & { feels: Feel[] }>[];
-  onSubmit: (newSongId: SerializeFrom<Song & { feels: Feel[] }>) => void;
+  availableSongs: TSong[];
+  onSubmit: (newSongId: TSong) => void;
   onOpenChange: (open: boolean) => void;
   open: boolean;
 }) => {

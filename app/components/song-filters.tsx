@@ -1,6 +1,4 @@
-import { Feel } from "@prisma/client";
 import { useSearchParams } from "@remix-run/react";
-import { SerializeFrom } from "@remix-run/server-runtime";
 import { Filter } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { z } from "zod";
@@ -19,6 +17,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { TFeel } from "~/routes/$bandId.songs._index";
 
 import { FlexList } from "./FlexList";
 import { MultiSelectFeel } from "./multi-select-feel";
@@ -248,7 +247,7 @@ const SongFiltersBody = ({
   onChange,
   filters: { tempo, position, feels, artist },
 }: {
-  feelOptions: SerializeFrom<Feel>[];
+  feelOptions: TFeel[];
   onChange: (
     type: "tempo" | "position" | "feels" | "artist",
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

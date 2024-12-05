@@ -1,9 +1,4 @@
-import { Feel, Set, Setlist, Song } from "@prisma/client";
-import {
-  LoaderFunctionArgs,
-  MetaFunction,
-  SerializeFrom,
-} from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
@@ -37,12 +32,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: `${data?.setlist.name} Metrics` }];
 };
 
-type TSetlist = SerializeFrom<
-  Setlist & {
-    sets: (Set & { songs: { song: Song & { feels: Feel[] } }[] })[];
-    band: { name: string };
-  }
->;
+type TSetlist = ReturnType<typeof useLoaderData<typeof loader>>["setlist"];
 
 const getSongCounts = (setlist: TSetlist, setId: string) => {
   const bandName = setlist.band.name;
@@ -110,7 +100,7 @@ const getFeels = (setlist: TSetlist, setId: string) => {
     }
     const feels: TTempFeel[] = [];
     set.songs.forEach((song) => {
-      song.song.feels.forEach((feel) => {
+      song.song?.feels.forEach((feel) => {
         if (!feels.find((f) => f.id === feel.id)) {
           feels.push({
             label: feel.label,
@@ -125,7 +115,7 @@ const getFeels = (setlist: TSetlist, setId: string) => {
   if (setId === "all-sets") {
     return setlist.sets.reduce((acc: TTempFeel[], set) => {
       return set.songs.reduce((acc, song) => {
-        song.song.feels.forEach((feel) => {
+        song.song?.feels.forEach((feel) => {
           if (!acc.find((f) => f.id === feel.id)) {
             acc.push({
               label: feel.label,

@@ -1,7 +1,7 @@
 import { Draggable } from "@hello-pangea/dnd";
-import { Feel, Song } from "@prisma/client";
-import { SerializeFrom } from "@remix-run/node";
 import { ReactNode } from "react";
+
+import { TSong } from "~/routes/$bandId.setlists.$setlistId._index";
 
 import { FlexList } from "../FlexList";
 import { SongContainer } from "../song-container";
@@ -11,7 +11,7 @@ export const DraggableSong = ({
   songIndex,
   children,
 }: {
-  song: SerializeFrom<Song & { feels: Feel[] }>;
+  song: TSong;
   songIndex: number;
   children?: ReactNode;
 }) => {

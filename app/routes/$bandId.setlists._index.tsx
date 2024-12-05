@@ -4,7 +4,6 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-  SerializeFrom,
   data,
 } from "@remix-run/node";
 import { Form, Link, useLoaderData, useSearchParams } from "@remix-run/react";
@@ -187,6 +186,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return null;
 }
 
+export type TSetlist = ReturnType<
+  typeof useLoaderData<typeof loader>
+>["data"]["setlists"][number];
+
 export default function Setlists() {
   const {
     data: { setlists, sort },
@@ -278,11 +281,7 @@ export default function Setlists() {
   );
 }
 
-const SetlistActions = ({
-  setlist,
-}: {
-  setlist: SerializeFrom<Awaited<ReturnType<typeof getSetlists>>[number]>;
-}) => {
+const SetlistActions = ({ setlist }: { setlist: TSetlist }) => {
   const {
     data: { domainUrl },
   } = useLoaderData<typeof loader>();

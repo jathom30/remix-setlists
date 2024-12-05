@@ -86,6 +86,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return null;
 }
 
+export type TSetlistFromSong = ReturnType<
+  typeof useLoaderData<typeof loader>
+>["setlists"];
+
 export default function SongPage() {
   const { song, setlists } = useLoaderData<typeof loader>();
   const [expandNotes, setExpandNotes] = useState(false);
@@ -247,7 +251,9 @@ export default function SongPage() {
                     key={setlist.id}
                   >
                     <SetlistContainer.Card>
-                      <SetlistContainer.Setlist setlist={setlist} />
+                      <SetlistContainer.Setlist
+                        setlist={{ ...setlist, notes: [] }}
+                      />
                     </SetlistContainer.Card>
                   </Link>
                 ))}

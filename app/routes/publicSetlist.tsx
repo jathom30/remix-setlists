@@ -1,8 +1,4 @@
-import type {
-  LoaderFunctionArgs,
-  MetaFunction,
-  SerializeFrom,
-} from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import {
   Link,
   isRouteErrorResponse,
@@ -61,7 +57,7 @@ export default function PublicSetlist() {
   const bandId = urlSearchParams.get("bandId");
   const setlistId = urlSearchParams.get("setlistId");
 
-  const setLength = (set: SerializeFrom<(typeof setlist)["sets"]>[number]) =>
+  const setLength = (set: (typeof setlist)["sets"][number]) =>
     set.songs.reduce((acc, song) => (acc += song.song?.length || 0), 0);
 
   return (

@@ -1,6 +1,5 @@
 import type { BandIcon } from "@prisma/client";
 import { useMatches } from "@remix-run/react";
-import type { SerializeFrom } from "@remix-run/server-runtime";
 import { useMemo } from "react";
 import { z } from "zod";
 
@@ -102,7 +101,7 @@ export function validateEmail(email: unknown): email is string {
 
 const isBand = (
   data: unknown,
-): data is { band: { icon: SerializeFrom<BandIcon>; name: string } } => {
+): data is { band: { icon: BandIcon; name: string } } => {
   const bandData = data && typeof data === "object" && "band" in data;
   return Boolean(bandData);
 };

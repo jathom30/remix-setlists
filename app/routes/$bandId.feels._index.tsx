@@ -1,14 +1,18 @@
 import { getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Feel } from "@prisma/client";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-  SerializeFrom,
   data,
 } from "@remix-run/node";
-import { Form, Link, useParams, useSearchParams } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  useLoaderData,
+  useParams,
+  useSearchParams,
+} from "@remix-run/react";
 import {
   ArrowDown01,
   ArrowDownAZ,
@@ -122,6 +126,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return null;
 }
 
+export type TFeel = ReturnType<
+  typeof useLoaderData<typeof loader>
+>["data"]["feels"][0];
+
 export default function BandFeels() {
   const {
     data: { feels, sort },
@@ -229,7 +237,7 @@ export default function BandFeels() {
   );
 }
 
-const FeelActions = ({ feel }: { feel: SerializeFrom<Feel> }) => {
+const FeelActions = ({ feel }: { feel: TFeel }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const isSub = useMemberRole() === RoleEnum.SUB;
   return (

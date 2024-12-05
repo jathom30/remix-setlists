@@ -1,5 +1,4 @@
 import type { Band, Feel, Setlist, Song } from "@prisma/client";
-import type { SerializeFrom } from "@remix-run/server-runtime";
 
 import { prisma } from "~/db.server";
 import { TEditSongSchema } from "~/domain/song";
@@ -271,19 +270,20 @@ export async function getSongsNotInSetlist(
 }
 
 export const handleSongFormData = (formData: FormData) => {
-  const { fields, errors } = getFields<
-    SerializeFrom<Song & { feels: Feel["id"][] }>
-  >(formData, [
-    { name: "name", type: "string", isRequired: true },
-    { name: "length", type: "number", isRequired: true },
-    { name: "keyLetter", type: "string", isRequired: false },
-    { name: "isMinor", type: "boolean", isRequired: false },
-    { name: "tempo", type: "number", isRequired: true },
-    { name: "position", type: "string", isRequired: true },
-    { name: "rank", type: "string", isRequired: true },
-    { name: "note", type: "string", isRequired: false },
-    { name: "author", type: "string", isRequired: false },
-  ]);
+  const { fields, errors } = getFields<Song & { feels: Feel["id"][] }>(
+    formData,
+    [
+      { name: "name", type: "string", isRequired: true },
+      { name: "length", type: "number", isRequired: true },
+      { name: "keyLetter", type: "string", isRequired: false },
+      { name: "isMinor", type: "boolean", isRequired: false },
+      { name: "tempo", type: "number", isRequired: true },
+      { name: "position", type: "string", isRequired: true },
+      { name: "rank", type: "string", isRequired: true },
+      { name: "note", type: "string", isRequired: false },
+      { name: "author", type: "string", isRequired: false },
+    ],
+  );
   const feels = formData.getAll("feels");
   const entries = formData.entries();
 

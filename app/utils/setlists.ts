@@ -1,5 +1,4 @@
 import type { Song, SongsInSets } from "@prisma/client";
-import type { SerializeFrom } from "@remix-run/node";
 import { z } from "zod";
 
 export interface SetlistFilters {
@@ -14,7 +13,7 @@ export interface SetlistSettings {
 }
 
 export const getSetLength = (
-  songs: Pick<SerializeFrom<SongsInSets & { song: Song | null }>, "song">[],
+  songs: Pick<SongsInSets & { song: Song | null }, "song">[],
 ) => songs.reduce((total, song) => (total += song.song?.length || 0), 0);
 
 function randomIntFromMax(max: number) {

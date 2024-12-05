@@ -1,13 +1,13 @@
 import { getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Song } from "@prisma/client";
+import { ActionFunctionArgs, LoaderFunctionArgs, data } from "@remix-run/node";
 import {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  SerializeFrom,
-  data,
-} from "@remix-run/node";
-import { Form, Link, MetaFunction, useSearchParams } from "@remix-run/react";
+  Form,
+  Link,
+  MetaFunction,
+  useLoaderData,
+  useSearchParams,
+} from "@remix-run/react";
 import {
   CirclePlus,
   EllipsisVertical,
@@ -118,6 +118,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
   return null;
 }
+
+export type TFeel = ReturnType<
+  typeof useLoaderData<typeof loader>
+>["data"]["feels"][0];
+type TSong = ReturnType<
+  typeof useLoaderData<typeof loader>
+>["data"]["songs"][0];
 
 export default function SongsList() {
   const {
@@ -291,7 +298,7 @@ export default function SongsList() {
   );
 }
 
-const SongActions = ({ song }: { song: SerializeFrom<Song> }) => {
+const SongActions = ({ song }: { song: TSong }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   return (
     <div>
