@@ -19,19 +19,14 @@ export default defineConfig({
       basename: "/",
       buildDirectory: "build",
       ignoredRouteFiles: ["**/*.css"],
-      // routes(defineRoutes) {
-      //   return defineRoutes((route) => {
-      //     route("/somewhere/cool/*", "catchall.tsx");
-      //   });
-      // },
       serverBuildFile: "index.js",
       future: {
         v3_fetcherPersist: true,
         v3_relativeSplatPath: true,
         v3_throwAbortReason: true,
-        v3_singleFetch: true,
+        // v3_singleFetch: true,
         v3_lazyRouteDiscovery: true,
-        // v3_routeConfig: true,
+        v3_routeConfig: true,
       },
     }),
     tsconfigPaths(),
