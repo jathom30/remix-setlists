@@ -9,12 +9,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { TSetlist } from "~/routes/$bandId.setlists._index";
+import { TSetlistBandId } from "~/routes/$bandId._index";
+import { TSetlistSetlists } from "~/routes/$bandId.setlists._index";
 
 import { FlexList } from "./FlexList";
 import { Large, Muted, P, Small } from "./typography";
 
-export const SetlistContainer = ({ setlist }: { setlist: TSetlist }) => {
+export const SetlistContainer = ({
+  setlist,
+}: {
+  setlist: TSetlistSetlists | TSetlistBandId;
+}) => {
   return (
     <div className="flex-grow">
       <FlexList direction="row" items="center" justify="between" gap={2}>

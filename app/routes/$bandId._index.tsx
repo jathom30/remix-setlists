@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Link } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { AudioLines, Boxes, Dna, Link2, List, Settings } from "lucide-react";
 import pluralize from "pluralize";
 import { toast } from "sonner";
@@ -57,6 +57,10 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   const feels = await getMostRecentFeels(bandId);
   return { setlists, songs, band, feels, counts };
 }
+
+export type TSetlistBandId = ReturnType<
+  typeof useLoaderData<typeof loader>
+>["setlists"][number];
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
   return [{ title: data?.band.name || "Band Home" }];

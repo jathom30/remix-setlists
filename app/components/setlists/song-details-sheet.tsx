@@ -27,7 +27,7 @@ export const SongDetailsSheet = ({
   open,
   onOpenChange,
 }: {
-  song: TSong;
+  song: TSong & { links?: { id: string; href: string }[] };
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) => {

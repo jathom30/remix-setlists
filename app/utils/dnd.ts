@@ -6,9 +6,6 @@ import { z } from "zod";
 import { getSetlist } from "~/models/setlist.server";
 import { TSet } from "~/routes/$bandId.setlists.$setlistId._index";
 
-// export type TSong = Jsonify<Awaited<ReturnType<typeof getSongs>>>[number];
-// export type TSet = Record<string, TSong[]>;
-
 export const DroppableIdEnums = z.enum(["available-songs", "new-set"]);
 
 export const getAvailableSongs = (

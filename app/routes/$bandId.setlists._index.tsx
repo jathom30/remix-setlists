@@ -186,7 +186,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return null;
 }
 
-export type TSetlist = ReturnType<
+export type TSetlistSetlists = ReturnType<
   typeof useLoaderData<typeof loader>
 >["data"]["setlists"][number];
 
@@ -281,7 +281,7 @@ export default function Setlists() {
   );
 }
 
-const SetlistActions = ({ setlist }: { setlist: TSetlist }) => {
+const SetlistActions = ({ setlist }: { setlist: TSetlistSetlists }) => {
   const {
     data: { domainUrl },
   } = useLoaderData<typeof loader>();
