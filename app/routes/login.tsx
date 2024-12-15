@@ -116,9 +116,9 @@ export default function LoginPage() {
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
-    if (actionData?.data.errors?.email) {
+    if (actionData?.errors?.email) {
       emailRef.current?.focus();
-    } else if (actionData?.data.errors?.password) {
+    } else if (actionData?.errors?.password) {
       passwordRef.current?.focus();
     }
   }, [actionData]);
@@ -147,18 +147,16 @@ export default function LoginPage() {
                     name="email"
                     type="email"
                     autoComplete="email"
-                    aria-invalid={
-                      actionData?.data.errors?.email ? true : undefined
-                    }
+                    aria-invalid={actionData?.errors?.email ? true : undefined}
                     aria-describedby="email-error"
                     className="input input-bordered w-full"
                   />
-                  {actionData?.data.errors?.email ? (
+                  {actionData?.errors?.email ? (
                     <div
                       className="pt-1 text-destructive text-sm"
                       id="email-error"
                     >
-                      {actionData.data.errors.email}
+                      {actionData.errors.email}
                     </div>
                   ) : null}
                 </div>
@@ -175,14 +173,14 @@ export default function LoginPage() {
                     type="password"
                     autoComplete="current-password"
                     aria-invalid={
-                      actionData?.data.errors?.password ? true : undefined
+                      actionData?.errors?.password ? true : undefined
                     }
                     aria-describedby="password-error"
                     className="input input-bordered w-full"
                   />
-                  {actionData?.data.errors?.password ? (
+                  {actionData?.errors?.password ? (
                     <div className="pt-1 text-error" id="password-error">
-                      {actionData.data.errors.password}
+                      {actionData.errors.password}
                     </div>
                   ) : null}
                 </div>

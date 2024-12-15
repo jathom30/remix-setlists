@@ -48,9 +48,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function AddToBand() {
-  const {
-    data: { error },
-  } = useLoaderData<typeof loader>();
+  const { error } = useLoaderData<typeof loader>();
   return (
     <div className="p-2 space-y-2">
       <H1>Oops...</H1>

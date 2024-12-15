@@ -7,7 +7,6 @@ import {
   MetaFunction,
 } from "@remix-run/node";
 import { useFetcher, useParams } from "@remix-run/react";
-import { Jsonify } from "@remix-run/server-runtime/dist/jsonify";
 import { CirclePlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -175,7 +174,7 @@ export default function SetlistNotes() {
 const NoteContainer = ({
   note,
 }: {
-  note: Jsonify<Awaited<ReturnType<typeof loader>>["notes"][number]>;
+  note: Awaited<ReturnType<typeof loader>>["notes"][number];
 }) => {
   const user = useUser();
 
@@ -218,9 +217,7 @@ const SeenBy = ({
   seenBy,
   createdBy,
 }: {
-  seenBy: Jsonify<
-    Awaited<ReturnType<typeof getSetlistNotes>>[number]["seenBy"]
-  >;
+  seenBy: Awaited<ReturnType<typeof getSetlistNotes>>[number]["seenBy"];
   createdBy?: string;
 }) => {
   const user = useUser();

@@ -150,9 +150,9 @@ export default function Join() {
   const { tests, strength } = passwordStrength(password);
 
   React.useEffect(() => {
-    if (actionData?.data.errors?.email) {
+    if (actionData?.errors?.email) {
       emailRef.current?.focus();
-    } else if (actionData?.data.errors?.password) {
+    } else if (actionData?.errors?.password) {
       passwordRef.current?.focus();
     }
   }, [actionData]);
@@ -184,15 +184,13 @@ export default function Join() {
                     autoFocus={true}
                     name="name"
                     type="text"
-                    aria-invalid={
-                      actionData?.data.errors?.name ? true : undefined
-                    }
+                    aria-invalid={actionData?.errors?.name ? true : undefined}
                     aria-describedby="name-error"
                     className="input input-bordered w-full"
                   />
-                  {actionData?.data.errors?.name ? (
+                  {actionData?.errors?.name ? (
                     <div className="pt-1 text-error" id="email-error">
-                      {actionData.data.errors.name}
+                      {actionData.errors.name}
                     </div>
                   ) : null}
                 </div>
@@ -211,15 +209,13 @@ export default function Join() {
                     name="email"
                     type="email"
                     autoComplete="email"
-                    aria-invalid={
-                      actionData?.data.errors?.email ? true : undefined
-                    }
+                    aria-invalid={actionData?.errors?.email ? true : undefined}
                     aria-describedby="email-error"
                     className="input input-bordered w-full"
                   />
-                  {actionData?.data.errors?.email ? (
+                  {actionData?.errors?.email ? (
                     <div className="pt-1 text-error" id="email-error">
-                      {actionData.data.errors.email}
+                      {actionData.errors.email}
                     </div>
                   ) : null}
                 </div>
@@ -239,7 +235,7 @@ export default function Join() {
                     onChange={(e) => setPassword(e.target.value)}
                     autoComplete="new-password"
                     aria-invalid={
-                      actionData?.data.errors?.password ? true : undefined
+                      actionData?.errors?.password ? true : undefined
                     }
                     aria-describedby="password-error"
                     className="input input-bordered w-full"
@@ -247,9 +243,9 @@ export default function Join() {
                   <div className="pt-2">
                     <PasswordStrength tests={tests} strength={strength} />
                   </div>
-                  {actionData?.data.errors?.password ? (
+                  {actionData?.errors?.password ? (
                     <div className="pt-1 text-error" id="password-error">
-                      {actionData.data.errors.password}
+                      {actionData.errors.password}
                     </div>
                   ) : null}
                 </div>

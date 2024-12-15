@@ -102,8 +102,8 @@ export default function RequestVerification() {
                 placeholder="Account email"
                 defaultValue={displayEmail}
               />
-              {actionData?.data.errors.email ? (
-                <ErrorMessage message={actionData?.data.errors.email} />
+              {actionData?.errors.email ? (
+                <ErrorMessage message={actionData?.errors.email} />
               ) : null}
             </div>
           </FlexList>

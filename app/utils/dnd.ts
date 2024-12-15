@@ -1,6 +1,5 @@
 import { DropResult } from "@hello-pangea/dnd";
 import { Feel, Link, Song } from "@prisma/client";
-import { Jsonify } from "@remix-run/server-runtime/dist/jsonify";
 import { z } from "zod";
 
 import { getSetlist } from "~/models/setlist.server";
@@ -9,8 +8,8 @@ import { TSet } from "~/routes/$bandId.setlists.$setlistId._index";
 export const DroppableIdEnums = z.enum(["available-songs", "new-set"]);
 
 export const getAvailableSongs = (
-  setlist: Jsonify<Awaited<ReturnType<typeof getSetlist>>>,
-  allSongs: Jsonify<Song & { feels: Feel[]; links?: Link[] }>[],
+  setlist: Awaited<ReturnType<typeof getSetlist>>,
+  allSongs: (Song & { feels: Feel[]; links?: Link[] })[],
 ) => {
   const setlistSongIds = setlist?.sets.reduce((songs: string[], set) => {
     const songsInSet = set.songs

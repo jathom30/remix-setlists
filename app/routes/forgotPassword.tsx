@@ -55,8 +55,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function ForgotPassword() {
   const actionData = useActionData<typeof action>();
-  const emailError = actionData?.data.errors?.email;
-  const emailSuccess = actionData?.data.email;
+  const emailError = actionData?.errors?.email;
+  const emailSuccess = actionData?.email;
 
   return (
     <div className="max-w-lg m-auto mt-8">
