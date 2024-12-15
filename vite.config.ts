@@ -8,6 +8,13 @@ interface VitestConfigExport extends UserConfig {
   test: InlineConfig;
 }
 
+declare module "@remix-run/server-runtime" {
+  // or cloudflare, deno, etc.
+  interface Future {
+    v3_singleFetch: true;
+  }
+}
+
 export default defineConfig({
   test: {
     globals: true,
@@ -24,7 +31,7 @@ export default defineConfig({
         v3_fetcherPersist: true,
         v3_relativeSplatPath: true,
         v3_throwAbortReason: true,
-        // v3_singleFetch: true,
+        v3_singleFetch: true,
         v3_lazyRouteDiscovery: true,
         v3_routeConfig: true,
       },

@@ -119,17 +119,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return null;
 }
 
-export type TFeel = ReturnType<
-  typeof useLoaderData<typeof loader>
->["data"]["feels"][0];
-type TSong = ReturnType<
-  typeof useLoaderData<typeof loader>
->["data"]["songs"][0];
+export type TFeel = ReturnType<typeof useLoaderData<typeof loader>>["feels"][0];
+type TSong = ReturnType<typeof useLoaderData<typeof loader>>["songs"][0];
 
 export default function SongsList() {
-  const {
-    data: { songs, sort, feels },
-  } = useLiveLoader<typeof loader>(() => toast("Songs updated"));
+  const { songs, sort, feels } = useLiveLoader<typeof loader>(() =>
+    toast("Songs updated"),
+  );
   const isSub = useMemberRole() === RoleEnum.SUB;
 
   const [searchParams, setSearchParams] = useSearchParams();

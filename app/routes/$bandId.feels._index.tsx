@@ -126,14 +126,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
   return null;
 }
 
-export type TFeel = ReturnType<
-  typeof useLoaderData<typeof loader>
->["data"]["feels"][0];
+export type TFeel = ReturnType<typeof useLoaderData<typeof loader>>["feels"][0];
 
 export default function BandFeels() {
-  const {
-    data: { feels, sort },
-  } = useLiveLoader<typeof loader>(() => toast("Feels updated"));
+  const { feels, sort } = useLiveLoader<typeof loader>(() =>
+    toast("Feels updated"),
+  );
   const isSub = useMemberRole() === RoleEnum.SUB;
 
   const [searchParams, setSearchParams] = useSearchParams();

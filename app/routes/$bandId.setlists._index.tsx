@@ -188,12 +188,12 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
 export type TSetlistSetlists = ReturnType<
   typeof useLoaderData<typeof loader>
->["data"]["setlists"][number];
+>["setlists"][number];
 
 export default function Setlists() {
-  const {
-    data: { setlists, sort },
-  } = useLiveLoader<typeof loader>(() => toast("Setlists updated!"));
+  const { setlists, sort } = useLiveLoader<typeof loader>(() =>
+    toast("Setlists updated!"),
+  );
   const memberRole = useMemberRole();
   const isSub = memberRole === RoleEnum.SUB;
 
@@ -282,9 +282,7 @@ export default function Setlists() {
 }
 
 const SetlistActions = ({ setlist }: { setlist: TSetlistSetlists }) => {
-  const {
-    data: { domainUrl },
-  } = useLoaderData<typeof loader>();
+  const { domainUrl } = useLoaderData<typeof loader>();
   const [showEditName, setShowEditName] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showClone, setShowClone] = useState(false);
