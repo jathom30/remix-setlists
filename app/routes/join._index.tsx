@@ -3,7 +3,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { data, redirect } from "@remix-run/node";
 import {
   Form,
   Link,
@@ -51,7 +51,7 @@ import { honeypot } from "~/utils/honeypot.server";
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await getUserId(request);
   if (userId) return redirect("/");
-  return json({});
+  return {};
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -60,7 +60,7 @@ export async function action({ request }: ActionFunctionArgs) {
     honeypot.check(formData);
   } catch (error) {
     if (error instanceof Error) {
-      throw json({ message: error.message }, { status: 400 });
+      throw data({ message: error.message }, { status: 400 });
     }
   }
   const email = formData.get("email");
@@ -69,21 +69,21 @@ export async function action({ request }: ActionFunctionArgs) {
   invariant(process.env.RESEND_API_KEY, "resend api key must be set");
 
   if (!validateEmail(email)) {
-    return json(
+    return data(
       { errors: { email: "Email is invalid", password: null, name: null } },
       { status: 400 },
     );
   }
 
   if (typeof password !== "string" || password.length === 0) {
-    return json(
+    return data(
       { errors: { email: null, password: "Password is required", name: null } },
       { status: 400 },
     );
   }
 
   if (typeof name !== "string" || name.length === 0) {
-    return json(
+    return data(
       { errors: { email: null, password: null, name: "Name is required" } },
       { status: 400 },
     );
@@ -93,7 +93,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const passwordError = getPasswordError(tests);
 
   if (passwordError) {
-    return json(
+    return data(
       {
         errors: {
           email: null,
@@ -108,7 +108,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   const existingUser = await getUserByEmail(email);
   if (existingUser) {
-    return json(
+    return data(
       {
         errors: {
           email: "A user already exists with this email",

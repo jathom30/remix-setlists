@@ -1,5 +1,4 @@
 import type { Feel, Song } from "@prisma/client";
-import type { SerializeFrom } from "@remix-run/node";
 
 export const svgHeight = 13;
 
@@ -44,7 +43,7 @@ function getCoordinatesForPercent(percent: number) {
 export const createPaths = (
   slices: {
     percent: number;
-    feel: Pick<SerializeFrom<Feel>, "color" | "label">;
+    feel: Pick<Feel, "color" | "label">;
   }[],
 ) => {
   let cumulativePercent = 0;

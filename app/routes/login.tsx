@@ -3,7 +3,7 @@ import type {
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { data, redirect } from "@remix-run/node";
 import {
   Form,
   Link,
@@ -38,7 +38,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const user = await getUser(request);
 
   if (user?.verified) return redirect("/home");
-  return json({});
+  return {};
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -47,7 +47,7 @@ export async function action({ request }: ActionFunctionArgs) {
     honeypot.check(formData);
   } catch (error) {
     if (error instanceof Error) {
-      throw json({ message: error.message }, { status: 400 });
+      throw data({ message: error.message }, { status: 400 });
     }
   }
   const email = formData.get("email");
@@ -56,21 +56,21 @@ export async function action({ request }: ActionFunctionArgs) {
   const remember = formData.get("remember");
 
   if (!validateEmail(email)) {
-    return json(
+    return data(
       { errors: { email: "Email is invalid", password: null } },
       { status: 400 },
     );
   }
 
   if (typeof password !== "string" || password.length === 0) {
-    return json(
+    return data(
       { errors: { email: null, password: "Password is required" } },
       { status: 400 },
     );
   }
 
   if (password.length < 8) {
-    return json(
+    return data(
       { errors: { email: null, password: "Password is too short" } },
       { status: 400 },
     );
@@ -79,7 +79,7 @@ export async function action({ request }: ActionFunctionArgs) {
   const user = await verifyLogin(email, password);
 
   if (!user) {
-    return json(
+    return data(
       { errors: { email: "Invalid email or password", password: null } },
       { status: 400 },
     );

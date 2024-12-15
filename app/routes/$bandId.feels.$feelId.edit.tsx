@@ -4,7 +4,6 @@ import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-  json,
   redirect,
 } from "@remix-run/node";
 import {
@@ -61,7 +60,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (feel.bandId !== bandId) {
     throw new Response("Feel does not belong to this band.", { status: 403 });
   }
-  return json({ feel });
+  return { feel };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -198,7 +197,7 @@ export default function EditFeelPage() {
       <Card>
         <CardHeader>
           <div className="flex flex-col gap-2 sm:flex-row-reverse">
-            <Button type="submit">Update Feel</Button>
+            <Button type="submit">Save</Button>
             <Button variant="outline" asChild>
               <Link to={redirectTo ?? `/${feel.bandId}/feels/${feel.id}`}>
                 Cancel

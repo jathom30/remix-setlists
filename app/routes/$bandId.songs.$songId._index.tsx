@@ -1,6 +1,5 @@
 import {
   type LoaderFunctionArgs,
-  json,
   ActionFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
@@ -55,7 +54,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!song) {
     throw new Response("Song not found", { status: 404 });
   }
-  return json({ song, setlists });
+  return { song, setlists };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -86,6 +85,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
 
   return null;
 }
+
+export type TSetlistFromSong = ReturnType<
+  typeof useLoaderData<typeof loader>
+>["setlists"];
 
 export default function SongPage() {
   const { song, setlists } = useLoaderData<typeof loader>();
@@ -248,7 +251,9 @@ export default function SongPage() {
                     key={setlist.id}
                   >
                     <SetlistContainer.Card>
-                      <SetlistContainer.Setlist setlist={setlist} />
+                      <SetlistContainer.Setlist
+                        setlist={{ ...setlist, notes: [] }}
+                      />
                     </SetlistContainer.Card>
                   </Link>
                 ))}

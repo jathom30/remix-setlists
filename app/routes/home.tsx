@@ -1,5 +1,4 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import { Link, Outlet, useLocation } from "@remix-run/react";
 import { Boxes, ChevronRight } from "lucide-react";
 
@@ -23,7 +22,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!bands) {
     throw new Response("Bands not found", { status: 404 });
   }
-  return json({ bands });
+  return { bands };
 }
 
 export default function Home() {

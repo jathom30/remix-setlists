@@ -1,5 +1,3 @@
-import { Feel, Song } from "@prisma/client";
-import { SerializeFrom } from "@remix-run/node";
 import { ChevronFirst, ChevronLast } from "lucide-react";
 import pluralize from "pluralize";
 import { ReactNode } from "react";
@@ -12,15 +10,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { TSong } from "~/routes/$bandId.setlists.$setlistId._index";
 
 import { FlexList } from "./FlexList";
 import { Large, Muted, P, Small } from "./typography";
 
-export const SongContainer = ({
-  song,
-}: {
-  song: SerializeFrom<Song & { feels: Feel[] }>;
-}) => {
+export const SongContainer = ({ song }: { song: TSong }) => {
   const positionIcon =
     {
       opener: <ChevronFirst className="h-4 w-4" />,

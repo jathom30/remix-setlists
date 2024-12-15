@@ -12,8 +12,6 @@ import { RemixServer } from "@remix-run/react";
 import isbot from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 
-const ABORT_DELAY = 5_000;
-
 export default function handleRequest(
   request: Request,
   responseStatusCode: number,
@@ -42,12 +40,8 @@ function handleBotRequest(
   remixContext: EntryContext,
 ) {
   return new Promise((resolve, reject) => {
-    const { abort, pipe } = renderToPipeableStream(
-      <RemixServer
-        context={remixContext}
-        url={request.url}
-        abortDelay={ABORT_DELAY}
-      />,
+    const { pipe } = renderToPipeableStream(
+      <RemixServer context={remixContext} url={request.url} />,
       {
         onAllReady() {
           const body = new PassThrough();
@@ -72,8 +66,6 @@ function handleBotRequest(
         },
       },
     );
-
-    setTimeout(abort, ABORT_DELAY);
   });
 }
 
@@ -84,12 +76,8 @@ function handleBrowserRequest(
   remixContext: EntryContext,
 ) {
   return new Promise((resolve, reject) => {
-    const { abort, pipe } = renderToPipeableStream(
-      <RemixServer
-        context={remixContext}
-        url={request.url}
-        abortDelay={ABORT_DELAY}
-      />,
+    const { pipe } = renderToPipeableStream(
+      <RemixServer context={remixContext} url={request.url} />,
       {
         onShellReady() {
           const body = new PassThrough();
@@ -114,7 +102,5 @@ function handleBrowserRequest(
         },
       },
     );
-
-    setTimeout(abort, ABORT_DELAY);
   });
 }

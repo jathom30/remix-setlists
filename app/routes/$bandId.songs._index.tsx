@@ -1,13 +1,13 @@
 import { getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Song } from "@prisma/client";
+import { ActionFunctionArgs, LoaderFunctionArgs, data } from "@remix-run/node";
 import {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  SerializeFrom,
-  json,
-} from "@remix-run/node";
-import { Form, Link, MetaFunction, useSearchParams } from "@remix-run/react";
+  Form,
+  Link,
+  MetaFunction,
+  useLoaderData,
+  useSearchParams,
+} from "@remix-run/react";
 import {
   CirclePlus,
   EllipsisVertical,
@@ -86,7 +86,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const songs = await getSongs(bandId, songParams);
   const feels = await getThinFeels(bandId);
-  return json({ songs, sort, feels }, { headers: header });
+  return data({ songs, sort, feels }, { headers: header });
 }
 
 export const meta: MetaFunction<typeof loader> = () => {
@@ -114,10 +114,13 @@ export async function action({ request, params }: ActionFunctionArgs) {
     });
     emitter.emit(emitterKeys.songs);
     emitter.emit(emitterKeys.dashboard);
-    return json({ success: true }, { headers: toastHeaders });
+    return data({ success: true }, { headers: toastHeaders });
   }
   return null;
 }
+
+export type TFeel = ReturnType<typeof useLoaderData<typeof loader>>["feels"][0];
+type TSong = ReturnType<typeof useLoaderData<typeof loader>>["songs"][0];
 
 export default function SongsList() {
   const { songs, sort, feels } = useLiveLoader<typeof loader>(() =>
@@ -291,7 +294,7 @@ export default function SongsList() {
   );
 }
 
-const SongActions = ({ song }: { song: SerializeFrom<Song> }) => {
+const SongActions = ({ song }: { song: TSong }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   return (
     <div>

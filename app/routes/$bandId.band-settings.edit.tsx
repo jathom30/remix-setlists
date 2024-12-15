@@ -5,7 +5,6 @@ import {
   LoaderFunctionArgs,
   MetaFunction,
   UploadHandler,
-  json,
   unstable_composeUploadHandlers,
   unstable_createMemoryUploadHandler,
   unstable_parseMultipartFormData,
@@ -59,7 +58,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
   if (!band) {
     throw new Response("Band not found", { status: 404 });
   }
-  return json({ band });
+  return { band };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {

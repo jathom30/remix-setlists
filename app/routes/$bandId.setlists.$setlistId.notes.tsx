@@ -3,10 +3,8 @@ import { parseWithZod } from "@conform-to/zod";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import {
   ActionFunctionArgs,
-  json,
   LoaderFunctionArgs,
   MetaFunction,
-  SerializeFrom,
 } from "@remix-run/node";
 import { useFetcher, useParams } from "@remix-run/react";
 import { CirclePlus } from "lucide-react";
@@ -97,7 +95,7 @@ export async function loader({ request, params }: LoaderFunctionArgs) {
 
   const notes = await getSetlistNotes(setlistId);
   await markAllNotesAsSeen(setlistId, userId);
-  return json({ setlist, notes });
+  return { setlist, notes };
 }
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
@@ -176,7 +174,7 @@ export default function SetlistNotes() {
 const NoteContainer = ({
   note,
 }: {
-  note: SerializeFrom<Awaited<ReturnType<typeof getSetlistNotes>>[number]>;
+  note: Awaited<ReturnType<typeof loader>>["notes"][number];
 }) => {
   const user = useUser();
 
@@ -219,9 +217,7 @@ const SeenBy = ({
   seenBy,
   createdBy,
 }: {
-  seenBy: SerializeFrom<
-    Awaited<ReturnType<typeof getSetlistNotes>>[number]
-  >["seenBy"];
+  seenBy: Awaited<ReturnType<typeof getSetlistNotes>>[number]["seenBy"];
   createdBy?: string;
 }) => {
   const user = useUser();

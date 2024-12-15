@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, MetaFunction, json } from "@remix-run/node";
+import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Link, NavLink, useSearchParams } from "@remix-run/react";
 import { CirclePlus, SearchIcon } from "lucide-react";
 import pluralize from "pluralize";
@@ -25,7 +25,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!bands) {
     throw new Response("Bands not found", { status: 404 });
   }
-  return json({ bands });
+  return { bands };
 }
 
 export const meta: MetaFunction<typeof loader> = () => {

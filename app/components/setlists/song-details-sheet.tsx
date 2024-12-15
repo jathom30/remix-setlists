@@ -14,8 +14,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { TSong } from "~/routes/$bandId.setlists.$setlistId._index";
 import { useMemberRole } from "~/utils";
-import { TSong } from "~/utils/dnd";
 import { RoleEnum } from "~/utils/enums";
 
 import { FlexList } from "../FlexList";
@@ -27,7 +27,7 @@ export const SongDetailsSheet = ({
   open,
   onOpenChange,
 }: {
-  song: TSong;
+  song: TSong & { links?: { id: string; href: string }[] };
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) => {

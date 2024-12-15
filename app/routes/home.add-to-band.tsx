@@ -1,4 +1,4 @@
-import { json, LoaderFunctionArgs } from "@remix-run/node";
+import { data, LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 
@@ -29,7 +29,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const safeParse = addBandSchema.safeParse({ token, bandId });
   if (!safeParse.success) {
-    return json({ error: "no token or band id found" }, { status: 400 });
+    return data({ error: "no token or band id found" }, { status: 400 });
   }
   // verify token
   const isMatchingToken = await compareBandToken(
@@ -37,7 +37,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     safeParse.data.bandId,
   );
   if (!isMatchingToken) {
-    return json({ error: "Token does not match" }, { status: 403 });
+    return data({ error: "Token does not match" }, { status: 403 });
   }
   await addUserToBand(userId, safeParse.data.bandId);
   return redirectWithToast(`/${safeParse.data.bandId}`, {
@@ -49,7 +49,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function AddToBand() {
   const { error } = useLoaderData<typeof loader>();
-  console.log(error);
   return (
     <div className="p-2 space-y-2">
       <H1>Oops...</H1>

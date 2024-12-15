@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -55,7 +56,15 @@ export const MainNavSheet = ({
       </SheetTrigger>
       <SheetContent side="left">
         <SheetHeader>
-          <SheetTitle>{band?.name || "setlists.pro"}</SheetTitle>
+          <div className="flex gap-2 items-center justify-center">
+            <Avatar>
+              <AvatarImage src={band?.icon.path || ""} alt={band?.name} />
+              <AvatarFallback>
+                {band?.name.charAt(0)?.toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <SheetTitle>{band?.name || "setlists.pro"}</SheetTitle>
+          </div>
           <SheetDescription asChild>
             <span>
               You are {role === "ADMIN" ? "an" : "a"}{" "}

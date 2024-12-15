@@ -18,8 +18,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { TSong } from "~/routes/$bandId.setlists.$setlistId._index";
 import { useMemberRole } from "~/utils";
-import { TSong } from "~/utils/dnd";
 import { RoleEnum } from "~/utils/enums";
 
 import { SongDetailsSheet } from "./song-details-sheet";

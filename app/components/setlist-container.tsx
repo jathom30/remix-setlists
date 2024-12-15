@@ -1,5 +1,3 @@
-import { Setlist, Song } from "@prisma/client";
-import { SerializeFrom } from "@remix-run/node";
 import { Eye } from "lucide-react";
 import pluralize from "pluralize";
 import { ReactNode } from "react";
@@ -11,6 +9,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { TSetlistBandId } from "~/routes/$bandId._index";
+import { TSetlistSetlists } from "~/routes/$bandId.setlists._index";
 
 import { FlexList } from "./FlexList";
 import { Large, Muted, P, Small } from "./typography";
@@ -18,14 +18,7 @@ import { Large, Muted, P, Small } from "./typography";
 export const SetlistContainer = ({
   setlist,
 }: {
-  setlist: SerializeFrom<
-    Setlist & {
-      sets: {
-        updatedAt: string;
-        songs: { song: { length: Song["length"] } | null }[];
-      }[];
-    }
-  >;
+  setlist: TSetlistSetlists | TSetlistBandId;
 }) => {
   return (
     <div className="flex-grow">

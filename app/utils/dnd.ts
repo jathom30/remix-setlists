@@ -1,30 +1,23 @@
 import { DropResult } from "@hello-pangea/dnd";
-import { Feel, Link, Setlist, Song, Set } from "@prisma/client";
-import { SerializeFrom } from "@remix-run/node";
+import { Feel, Link, Song } from "@prisma/client";
 import { z } from "zod";
 
-export type TSet = Record<
-  string,
-  SerializeFrom<Song & { feels: Feel[]; links?: Link[] }>[]
->;
-
-export type TSong = SerializeFrom<Song & { feels: Feel[]; links?: Link[] }>;
+import { getSetlist } from "~/models/setlist.server";
+import { TSet } from "~/routes/$bandId.setlists.$setlistId._index";
 
 export const DroppableIdEnums = z.enum(["available-songs", "new-set"]);
 
 export const getAvailableSongs = (
-  setlist: SerializeFrom<
-    Setlist & { sets: (Set & { songs: { song: Song | null }[] })[] }
-  >,
-  allSongs: SerializeFrom<Song & { feels: Feel[]; links?: Link[] }>[],
+  setlist: Awaited<ReturnType<typeof getSetlist>>,
+  allSongs: (Song & { feels: Feel[]; links?: Link[] })[],
 ) => {
-  const setlistSongIds = setlist.sets.reduce((songs: string[], set) => {
+  const setlistSongIds = setlist?.sets.reduce((songs: string[], set) => {
     const songsInSet = set.songs
       .map((song) => song.song?.id)
       .filter((id): id is string => Boolean(id));
     return [...songs, ...songsInSet];
   }, []);
-  return allSongs.filter((song) => !setlistSongIds.includes(song.id));
+  return allSongs.filter((song) => !setlistSongIds?.includes(song.id));
 };
 
 export const onDragEnd = (

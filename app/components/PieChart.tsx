@@ -1,5 +1,4 @@
 import type { Feel } from "@prisma/client";
-import type { SerializeFrom } from "@remix-run/node";
 
 import { Badge } from "@/components/ui/badge";
 import { contrastColor } from "~/utils/assorted";
@@ -13,7 +12,7 @@ export const PieChart = ({
 }: {
   slices: {
     percent: number;
-    feel: Pick<SerializeFrom<Feel>, "color" | "label">;
+    feel: Pick<Feel, "color" | "label">;
   }[];
   noFeel?: number;
 }) => {
