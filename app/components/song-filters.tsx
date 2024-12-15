@@ -1,4 +1,4 @@
-import { useSearchParams } from "@remix-run/react";
+import { useSearchParams } from "react-router";
 import { Filter } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { z } from "zod";

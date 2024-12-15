@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Link } from "react-router";
 import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";

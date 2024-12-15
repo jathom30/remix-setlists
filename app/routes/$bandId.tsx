@@ -1,11 +1,5 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import {
-  Link,
-  Outlet,
-  useLocation,
-  useMatches,
-  useParams,
-} from "@remix-run/react";
+import type { LoaderFunctionArgs } from "react-router";
+import { Link, Outlet, useLocation, useMatches, useParams } from "react-router";
 import { ChevronRight } from "lucide-react";
 import { Fragment } from "react";
 import invariant from "tiny-invariant";

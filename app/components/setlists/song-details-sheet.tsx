@@ -1,4 +1,4 @@
-import { Link, useParams } from "@remix-run/react";
+import { Link, useParams } from "react-router";
 import { Maximize, Minimize, Pencil } from "lucide-react";
 import pluralize from "pluralize";
 import { useState } from "react";

@@ -1,9 +1,8 @@
-import { json } from "@remix-run/node";
-import type { LoaderFunction } from "@remix-run/node";
+import { data, type LoaderFunction } from "react-router";
 
 export const loader: LoaderFunction = () => {
   // https://github.com/ShafSpecs/remix-pwa#going-deeper
-  return json(
+  return data(
     {
       short_name: "Setlists",
       name: "Setlists",

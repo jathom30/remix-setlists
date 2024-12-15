@@ -1,9 +1,5 @@
-import type {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/node";
-import { data, redirect } from "@remix-run/node";
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "react-router";
+import { data, redirect } from "react-router";
 import {
   Form,
   Link,
@@ -11,7 +7,7 @@ import {
   useActionData,
   useRouteError,
   useSearchParams,
-} from "@remix-run/react";
+} from "react-router";
 import * as React from "react";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
 

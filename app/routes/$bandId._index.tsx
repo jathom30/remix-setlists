@@ -1,7 +1,7 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
 import { AudioLines, Boxes, Dna, Link2, List, Settings } from "lucide-react";
 import pluralize from "pluralize";
+import type { LoaderFunctionArgs, MetaFunction } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import { toast } from "sonner";
 import invariant from "tiny-invariant";
 

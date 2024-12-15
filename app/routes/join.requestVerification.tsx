@@ -1,10 +1,6 @@
-import { data, redirect } from "@remix-run/node";
-import type {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/node";
-import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
+import { data, redirect } from "react-router";
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "react-router";
+import { Form, Link, useActionData, useLoaderData } from "react-router";
 import { Mail } from "lucide-react";
 import { HoneypotInputs } from "remix-utils/honeypot/react";
 

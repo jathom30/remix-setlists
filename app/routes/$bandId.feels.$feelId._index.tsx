@@ -1,10 +1,13 @@
+import { SearchIcon, Trash } from "lucide-react";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-} from "@remix-run/node";
-import { Form, Link, useLoaderData, useSearchParams } from "@remix-run/react";
-import { SearchIcon, Trash } from "lucide-react";
+  Form,
+  Link,
+  useLoaderData,
+  useSearchParams,
+} from "react-router";
 import invariant from "tiny-invariant";
 
 import {

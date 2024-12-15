@@ -1,5 +1,5 @@
 // writeAsyncIterableToWritable is a Node-only utility
-import { writeAsyncIterableToWritable } from "@remix-run/node";
+import { writeAsyncIterableToWritable } from "@react-router/node";
 import type { UploadApiResponse } from "cloudinary";
 import { v2 as cloudinary } from "cloudinary";
 

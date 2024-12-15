@@ -1,5 +1,5 @@
-import { data, LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { data, LoaderFunctionArgs } from "react-router";
+import { useLoaderData } from "react-router";
 import { z } from "zod";
 
 import {
