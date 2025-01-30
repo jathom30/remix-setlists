@@ -13,7 +13,7 @@ export const loader: LoaderFunction = () => {
       shortcuts: [
         {
           name: "Homepage",
-          url: "/",
+          url: "/home",
           icons: [
             {
               src: "/icons/android-chrome-192x192.png",
