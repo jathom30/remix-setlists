@@ -1,16 +1,16 @@
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import { type FileUpload, parseFormData } from "@mjackson/form-data-parser";
 import { ChangeEvent, useState } from "react";
 import {
   ActionFunctionArgs,
   LoaderFunctionArgs,
   MetaFunction,
-  UploadHandler,
-  unstable_composeUploadHandlers,
-  unstable_createMemoryUploadHandler,
-  unstable_parseMultipartFormData,
+  Form,
+  Link,
+  useLoaderData,
+  useNavigation,
 } from "react-router";
-import { Form, Link, useLoaderData, useNavigation } from "react-router";
 import { useSpinDelay } from "spin-delay";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -70,28 +70,17 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const { bandId } = params;
   invariant(bandId, "bandId is required");
 
-  const uploadHandler: UploadHandler = unstable_composeUploadHandlers(
-    async ({
-      name,
-      data,
-      filename,
-    }): Promise<string | File | null | undefined> => {
-      if (name !== "file") {
-        return undefined;
-      }
-      // form allows for empty file uploads
-      if (!filename) {
-        return undefined;
-      }
-      const uploadedImage = await uploadImage(data, bandId);
-      return uploadedImage.secure_url;
-    },
-    unstable_createMemoryUploadHandler(),
-  );
-  const formData = await unstable_parseMultipartFormData(
-    request,
-    uploadHandler,
-  );
+  const uploadHandler = async (fileUpload: FileUpload) => {
+    if (fileUpload.fieldName !== "file" || !fileUpload.name) {
+      return undefined;
+    }
+    const bytes: Promise<Uint8Array<ArrayBufferLike>> = fileUpload.bytes();
+    const uploadedImage = await uploadImage(bytes, bandId);
+    return uploadedImage.secure_url;
+  };
+
+  const formData = await parseFormData(request, uploadHandler);
+
   const submission = parseWithZod(formData, {
     schema: z.object({
       band_name: z.string().min(1),
@@ -141,6 +130,8 @@ export default function BandSettingsEdit() {
     }
     setImage(URL.createObjectURL(e.target.files[0]));
   };
+
+  console.log(form.allErrors);
 
   return (
     <div className="p-2 space-y-2">
