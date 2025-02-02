@@ -1,4 +1,4 @@
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "react-router";
 import { Check, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { QRCode } from "react-qrcode-logo";

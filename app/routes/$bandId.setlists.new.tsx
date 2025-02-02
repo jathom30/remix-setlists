@@ -1,5 +1,5 @@
-import { Link, MetaFunction, useParams } from "@remix-run/react";
-import { LoaderFunctionArgs } from "@remix-run/server-runtime";
+import { Link, MetaFunction, useParams } from "react-router";
+import { LoaderFunctionArgs } from "react-router";
 import { Hammer, WandSparkles } from "lucide-react";
 import invariant from "tiny-invariant";
 

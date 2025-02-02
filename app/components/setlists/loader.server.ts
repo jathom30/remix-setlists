@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
+import { LoaderFunctionArgs } from "react-router";
 import invariant from "tiny-invariant";
 
 import { getUnseenNotesCount } from "~/models/setlist-notes";

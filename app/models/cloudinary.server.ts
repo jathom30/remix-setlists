@@ -1,5 +1,5 @@
-// writeAsyncIterableToWritable is a Node-only utility
-import { writeAsyncIterableToWritable } from "@remix-run/node";
+import { Readable } from "stream";
+
 import type { UploadApiResponse } from "cloudinary";
 import { v2 as cloudinary } from "cloudinary";
 
@@ -13,7 +13,7 @@ cloudinary.config({
 const folder = "band-avatar";
 
 export async function uploadImage(
-  data: AsyncIterable<Uint8Array>,
+  data: Promise<Uint8Array<ArrayBufferLike>>,
   bandId: string,
 ) {
   const uploadPromise = new Promise<UploadApiResponse>(
@@ -37,7 +37,19 @@ export async function uploadImage(
           resolve(result);
         },
       );
-      await writeAsyncIterableToWritable(data, uploadStream);
+      // Await the promise to get the Uint8Array<ArrayBufferLike>
+      const byteArray = await data;
+
+      // Convert Uint8Array to a readable stream
+      const readableStream = new Readable();
+      readableStream._read = () => {
+        throw new Error("_read method not implemented");
+      }; // _read is required but you can noop it
+      readableStream.push(byteArray);
+      readableStream.push(null);
+
+      // Pipe the readable stream to the upload stream
+      readableStream.pipe(uploadStream);
     },
   );
 

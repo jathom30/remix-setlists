@@ -1,6 +1,6 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
-import { Link } from "@remix-run/react";
+import type { LoaderFunctionArgs, MetaFunction } from "react-router";
+import { redirect } from "react-router";
+import { Link } from "react-router";
 import { motion, useAnimation, useInView } from "framer-motion";
 import { CircleChevronDown } from "lucide-react";
 import type { ReactNode } from "react";

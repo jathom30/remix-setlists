@@ -1,5 +1,5 @@
 import { parseWithZod } from "@conform-to/zod";
-import { ActionFunctionArgs, data } from "@remix-run/node";
+import { ActionFunctionArgs, data } from "react-router";
 import invariant from "tiny-invariant";
 
 import {

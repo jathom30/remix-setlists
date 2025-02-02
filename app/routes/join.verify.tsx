@@ -1,10 +1,6 @@
-import type {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/node";
-import { redirect } from "@remix-run/node";
-import { Form, Link, useNavigation } from "@remix-run/react";
+import type { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "react-router";
+import { redirect } from "react-router";
+import { Form, Link, useNavigation } from "react-router";
 import { Ban, CheckCircle } from "lucide-react";
 import { useSpinDelay } from "spin-delay";
 import invariant from "tiny-invariant";

@@ -1,5 +1,5 @@
-import { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Link, NavLink, useSearchParams } from "@remix-run/react";
+import { LoaderFunctionArgs, MetaFunction } from "react-router";
+import { Link, NavLink, useSearchParams } from "react-router";
 import { CirclePlus, SearchIcon } from "lucide-react";
 import pluralize from "pluralize";
 import { toast } from "sonner";

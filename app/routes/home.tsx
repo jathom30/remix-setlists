@@ -1,5 +1,5 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { Link, Outlet, useLocation } from "@remix-run/react";
+import type { LoaderFunctionArgs } from "react-router";
+import { Link, Outlet, useLocation } from "react-router";
 import { Boxes, ChevronRight } from "lucide-react";
 
 import {

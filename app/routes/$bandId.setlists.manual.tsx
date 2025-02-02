@@ -5,12 +5,8 @@ import {
   DropResult,
   Droppable,
 } from "@hello-pangea/dnd";
-import {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { ActionFunctionArgs, LoaderFunctionArgs, MetaFunction } from "react-router";
+import { useFetcher, useLoaderData } from "react-router";
 import { Search } from "lucide-react";
 import pluralize from "pluralize";
 import { FormEvent, useEffect, useState } from "react";

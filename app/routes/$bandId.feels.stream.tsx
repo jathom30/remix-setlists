@@ -1,4 +1,4 @@
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "react-router";
 
 import { createEventStream } from "~/utils/create-event-stream.server";
 import { emitterKeys } from "~/utils/emitter-keys";

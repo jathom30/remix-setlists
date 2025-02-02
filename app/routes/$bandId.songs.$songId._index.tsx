@@ -1,12 +1,12 @@
+import { Maximize, Minimize, Pencil, Trash } from "lucide-react";
+import pluralize from "pluralize";
+import { useState } from "react";
+import { Form, Link, useLoaderData } from "react-router";
 import {
   type LoaderFunctionArgs,
   ActionFunctionArgs,
   MetaFunction,
-} from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
-import { Maximize, Minimize, Pencil, Trash } from "lucide-react";
-import pluralize from "pluralize";
-import { useState } from "react";
+} from "react-router";
 import invariant from "tiny-invariant";
 
 import {

@@ -1,5 +1,5 @@
-import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { data, Form, Link, useActionData } from "@remix-run/react";
+import type { ActionFunctionArgs, MetaFunction } from "react-router";
+import { data, Form, Link, useActionData } from "react-router";
 import invariant from "tiny-invariant";
 
 import { Button } from "@/components/ui/button";

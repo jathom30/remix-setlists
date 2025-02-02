@@ -1,11 +1,5 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import {
-  Link,
-  isRouteErrorResponse,
-  useLoaderData,
-  useLocation,
-  useRouteError,
-} from "@remix-run/react";
+import type { LoaderFunctionArgs, MetaFunction } from "react-router";
+import { Link, isRouteErrorResponse, useLoaderData, useLocation, useRouteError } from "react-router";
 import pluralize from "pluralize";
 import invariant from "tiny-invariant";
 

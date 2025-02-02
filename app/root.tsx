@@ -1,6 +1,6 @@
-import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type { LinksFunction, LoaderFunctionArgs } from "react-router";
 import {
+  data,
   Links,
   Meta,
   Outlet,
@@ -8,7 +8,7 @@ import {
   ScrollRestoration,
   useLoaderData,
   useLocation,
-} from "@remix-run/react";
+} from "react-router";
 import { HoneypotProvider } from "remix-utils/honeypot/react";
 
 import { EpicToaster } from "@/components/ui/sonner";
@@ -40,7 +40,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const cookie = (await userPrefs.parse(cookieHeader)) || {};
 
   const { toast, headers: toastHeaders } = await getToast(request);
-  return json(
+  return data(
     {
       user,
       honeyportInputProps: honeypot.getInputProps(),
