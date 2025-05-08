@@ -153,7 +153,9 @@ export async function getPublicSetlist(setlistId: Setlist["id"]) {
       sets: {
         include: {
           songs: {
-            include: { song: { select: { name: true, length: true } } },
+            include: {
+              song: { select: { name: true, length: true, author: true } },
+            },
             orderBy: { positionInSet: "asc" },
           },
         },

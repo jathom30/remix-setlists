@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FlexList } from "~/components";
-import { H1, P } from "~/components/typography";
+import { H1, P, Muted } from "~/components/typography";
 import { getSetlist } from "~/models/setlist.server";
 import { requireUserId } from "~/session.server";
 
@@ -35,6 +35,8 @@ export default function SetlistCondensedPage() {
   const { setlist } = useLoaderData<typeof loader>();
   const totalSetLength = (set: (typeof setlist.sets)[0]) =>
     set.songs.reduce((total, song) => total + (song.song?.length || 0), 0);
+
+  console.log(setlist);
   return (
     <div className="p-2 space-y-2">
       <FlexList direction="row" items="center" gap={2}>
@@ -51,9 +53,12 @@ export default function SetlistCondensedPage() {
             </CardHeader>
             <CardContent>
               {set.songs.map((song, songIndex) => (
-                <P key={song.songId}>
-                  {songIndex + 1}. {song.song?.name}
-                </P>
+                <div className="flex gap-2 items-baseline" key={song.songId}>
+                  <P>
+                    {songIndex + 1}. {song.song?.name}
+                  </P>
+                  {song.song?.author ? <Muted>{song.song.author}</Muted> : null}
+                </div>
               ))}
             </CardContent>
           </Card>

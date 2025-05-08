@@ -24,7 +24,7 @@ import {
   Header,
   MaxWidth,
 } from "~/components";
-import { H1, P } from "~/components/typography";
+import { H1, P, Muted } from "~/components/typography";
 import { getPublicSetlist } from "~/models/setlist.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -88,9 +88,17 @@ export default function PublicSetlist() {
                 </CardHeader>
                 <CardContent>
                   {set.songs.map((song, songIndex) => (
-                    <P key={song.songId}>
-                      {songIndex + 1}. {song.song?.name}
-                    </P>
+                    <div
+                      className="flex gap-2 items-baseline"
+                      key={song.songId}
+                    >
+                      <P>
+                        {songIndex + 1}. {song.song?.name}
+                      </P>
+                      {song.song?.author ? (
+                        <Muted>{song.song.author}</Muted>
+                      ) : null}
+                    </div>
                   ))}
                 </CardContent>
               </Card>
