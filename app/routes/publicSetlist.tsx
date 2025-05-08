@@ -89,7 +89,7 @@ export default function PublicSetlist() {
                 <CardContent>
                   {set.songs.map((song, songIndex) => (
                     <div
-                      className="flex gap-2 items-baseline"
+                      className="flex gap-2 flex-wrap items-baseline"
                       key={song.songId}
                     >
                       <P>

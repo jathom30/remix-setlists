@@ -53,7 +53,10 @@ export default function SetlistCondensedPage() {
             </CardHeader>
             <CardContent>
               {set.songs.map((song, songIndex) => (
-                <div className="flex gap-2 items-baseline" key={song.songId}>
+                <div
+                  className="flex gap-2 flex-wrap items-baseline"
+                  key={song.songId}
+                >
                   <P>
                     {songIndex + 1}. {song.song?.name}
                   </P>
