@@ -179,11 +179,11 @@ export default function SetlistPage() {
   }, [allSongs, fetcher.data, fetcher.state]);
 
   const [isChangedSetlist, setIsChangedSetlist] = useState(false);
-
   const handleDragEnd = (drop: DropResult) => {
     if (isSub) return;
     setSets((prev) => {
       const updatedSets = onDragEnd(drop, sets)(prev);
+      setCollapsed(Object.keys(updatedSets));
       setIsChangedSetlist(compareSets(defaultSets, updatedSets));
       return updatedSets;
     });
