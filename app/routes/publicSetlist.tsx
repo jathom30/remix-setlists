@@ -104,32 +104,35 @@ export default function PublicSetlist() {
                         setOpenNotes(open ? song.songId : null)
                       }
                     >
-                      <div className="flex justify-between">
-                        <div className="flex gap-2 flex-wrap items-baseline">
-                          <P>
-                            <span
-                              className={
-                                openNotes === song.songId ? "font-bold" : ""
-                              }
-                            >
-                              {songIndex + 1}. {song.song?.name}
-                            </span>
-                          </P>
-                          {song.song?.author ? (
-                            <Muted>{song.song.author}</Muted>
-                          ) : null}
-                        </div>
-                        <CollapsibleTrigger asChild>
-                          <Button
-                            title="View Song Lyrics"
-                            variant="ghost"
-                            size="sm"
-                            disabled={!song.song?.note}
+                      <CollapsibleTrigger asChild>
+                        <button className="flex justify-between w-full hover:bg-muted/50 rounded p-2">
+                          <div className="flex gap-2 flex-wrap items-baseline">
+                            <P>
+                              <span
+                                className={
+                                  openNotes === song.songId ? "font-bold" : ""
+                                }
+                              >
+                                {songIndex + 1}. {song.song?.name}
+                              </span>
+                            </P>
+                            {song.song?.author ? (
+                              <Muted>{song.song.author}</Muted>
+                            ) : null}
+                          </div>
+                          <div
+                            className={`
+                              ${
+                                song.song?.note
+                                  ? "text-foreground"
+                                  : "text-muted-foreground"
+                              } grid place-items-center
+                            `}
                           >
                             <NotepadText size="16" />
-                          </Button>
-                        </CollapsibleTrigger>
-                      </div>
+                          </div>
+                        </button>
+                      </CollapsibleTrigger>
                       <CollapsibleContent className="mt-1">
                         <Card className="p-4">
                           {song.song?.note
