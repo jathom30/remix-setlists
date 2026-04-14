@@ -1,3 +1,4 @@
+import { Collapsible } from "@radix-ui/react-collapsible";
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import {
   Link,
@@ -6,7 +7,9 @@ import {
   useLocation,
   useRouteError,
 } from "@remix-run/react";
+import { NotepadText } from "lucide-react";
 import pluralize from "pluralize";
+import { useState } from "react";
 import invariant from "tiny-invariant";
 
 import { Button } from "@/components/ui/button";
@@ -17,6 +20,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   CatchContainer,
   ErrorContainer,
@@ -60,6 +67,8 @@ export default function PublicSetlist() {
   const setLength = (set: (typeof setlist)["sets"][number]) =>
     set.songs.reduce((acc, song) => (acc += song.song?.length || 0), 0);
 
+  const [openNotes, setOpenNotes] = useState<string | null>(null);
+
   return (
     <div className="bg-muted/40 h-full">
       <div className="p-2 border-b sticky top-0 inset-x-0 z-10 bg-background">
@@ -77,7 +86,7 @@ export default function PublicSetlist() {
       <MaxWidth>
         <div className="p-2 space-y-2">
           <H1>{setlist.name}</H1>
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid gap-2">
             {setlist.sets.map((set, index) => (
               <Card key={set.id}>
                 <CardHeader>
@@ -86,19 +95,51 @@ export default function PublicSetlist() {
                     {pluralize("minutes", setLength(set), true)}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="flex flex-col gap-0.5">
                   {set.songs.map((song, songIndex) => (
-                    <div
-                      className="flex gap-2 flex-wrap items-baseline"
+                    <Collapsible
                       key={song.songId}
+                      open={openNotes === song.songId}
+                      onOpenChange={(open) =>
+                        setOpenNotes(open ? song.songId : null)
+                      }
                     >
-                      <P>
-                        {songIndex + 1}. {song.song?.name}
-                      </P>
-                      {song.song?.author ? (
-                        <Muted>{song.song.author}</Muted>
-                      ) : null}
-                    </div>
+                      <div className="flex justify-between">
+                        <div className="flex gap-2 flex-wrap items-baseline">
+                          <P>
+                            <span
+                              className={
+                                openNotes === song.songId ? "font-bold" : ""
+                              }
+                            >
+                              {songIndex + 1}. {song.song?.name}
+                            </span>
+                          </P>
+                          {song.song?.author ? (
+                            <Muted>{song.song.author}</Muted>
+                          ) : null}
+                        </div>
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            title="View Song Lyrics"
+                            variant="ghost"
+                            size="sm"
+                            disabled={!song.song?.note}
+                          >
+                            <NotepadText size="16" />
+                          </Button>
+                        </CollapsibleTrigger>
+                      </div>
+                      <CollapsibleContent className="mt-1">
+                        <Card className="p-4">
+                          {song.song?.note
+                            ?.split("\n")
+                            .map((line, index) => (
+                              <P key={line + index}>{line}</P>
+                            )) || <Muted>No lyrics/notes provided</Muted>}
+                        </Card>
+                      </CollapsibleContent>
+                    </Collapsible>
                   ))}
                 </CardContent>
               </Card>
