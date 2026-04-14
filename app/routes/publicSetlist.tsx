@@ -87,7 +87,7 @@ export default function PublicSetlist() {
       <MaxWidth>
         <div className="p-2 space-y-2">
           <H1>{setlist.name}</H1>
-          <div className="grid gap-2 md:grid-cols-2">
+          <div className="grid gap-2">
             {setlist.sets.map((set, index) => (
               <Card key={set.id}>
                 <CardHeader>
