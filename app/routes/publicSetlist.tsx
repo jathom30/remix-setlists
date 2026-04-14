@@ -60,7 +60,6 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 export default function PublicSetlist() {
   const { setlist } = useLoaderData<typeof loader>();
   const { search } = useLocation();
-  console.log(setlist);
   const urlSearchParams = new URLSearchParams(search);
   const bandId = urlSearchParams.get("bandId");
   const setlistId = urlSearchParams.get("setlistId");
